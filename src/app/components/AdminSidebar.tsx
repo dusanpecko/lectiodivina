@@ -4,13 +4,12 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 
-const sidebarKeys = ["dashboard", "calendar", "daily_quotes", "content_cards"] as const;
-
 const links = [
   { href: "/admin", key: "dashboard" },
   { href: "/admin/calendar", key: "calendar" },
-  { href: "/admin/daily-quotes", key: "daily_quotes" },
-  { href: "/admin/content-cards", key: "content_cards" },
+  { href: "/admin/daily_quotes", key: "daily_quotes" },   // <-- podtržítko je ok
+  { href: "/admin/news", key: "news" },                   // <-- NOVÁ POLOŽKA NEWS
+  { href: "/admin/content_cards", key: "content_cards" }, // <-- podtržítko je ok
 ] as const;
 
 type SidebarKey = typeof links[number]["key"];
@@ -18,7 +17,7 @@ type SidebarKey = typeof links[number]["key"];
 export default function AdminSidebar() {
   const pathname = usePathname();
   const { lang } = useLanguage();
-  const t = translations[lang] as Record<SidebarKey, string>; // <- typový hint
+  const t = translations[lang] as Record<SidebarKey, string>;
 
   return (
     <aside className="bg-gray-100 min-h-screen w-60 flex flex-col gap-2 px-6 py-8 border-r border-gray-200">
@@ -27,7 +26,7 @@ export default function AdminSidebar() {
           key={link.href}
           href={link.href}
           className={`block px-3 py-2 rounded hover:bg-blue-100 transition
-            ${pathname === link.href ? "bg-blue-200 font-semibold" : ""}`}
+            ${pathname.startsWith(link.href) ? "bg-blue-200 font-semibold" : ""}`}
         >
           {t[link.key]}
         </Link>
