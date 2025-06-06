@@ -1,15 +1,28 @@
 "use client";
-
-import { useState } from "react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export default function LoginPage() {
+  const session = useSession();
+  const supabase = useSupabaseClient();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const supabase = useSupabaseClient();
-  const router = useRouter();
+
+  useEffect(() => {
+    if (session !== undefined && session) {
+      router.replace("/admin");
+    }
+  }, [session, router]);
+
+  if (session === undefined) {
+    return <div className="flex min-h-screen items-center justify-center">Načítavam…</div>;
+  }
+  if (session) {
+    return null;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
