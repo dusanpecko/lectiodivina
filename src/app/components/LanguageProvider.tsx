@@ -1,25 +1,51 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type Language = "sk" | "cz" | "en" | "es";
-
-const LanguageContext = createContext<{
+type LanguageContextType = {
   lang: Language;
-  changeLang: (lng: Language) => void;
-} | null>(null);
+  changeLang: (lang: Language) => void;
+};
 
-export function useLanguage() {
-  const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error("useLanguage must be used inside LanguageProvider");
-  return ctx;
-}
+// Vytvoríme Context
+const LanguageContext = createContext<LanguageContextType>({
+  lang: "sk",
+  changeLang: () => {},
+});
 
-export default function LanguageProvider({ children }: { children: React.ReactNode }) {
+// Provider pre celú appku
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Language>("sk");
-  const changeLang = (lng: Language) => setLang(lng);
+
+  // Pri prvom načítaní: načítaj z localStorage ak je tam uložený jazyk
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedLang = localStorage.getItem("preferredLang");
+      if (
+        storedLang &&
+        ["sk", "cz", "en", "es"].includes(storedLang)
+      ) {
+        setLang(storedLang as Language);
+      }
+    }
+  }, []);
+
+  // Pri zmene jazyka: uložiť do localStorage
+  const changeLang = (newLang: Language) => {
+    setLang(newLang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("preferredLang", newLang);
+    }
+  };
+
   return (
     <LanguageContext.Provider value={{ lang, changeLang }}>
       {children}
     </LanguageContext.Provider>
   );
+}
+
+// Hook pre pohodlné použitie v komponentoch
+export function useLanguage() {
+  return useContext(LanguageContext);
 }

@@ -7,12 +7,16 @@ import type { Language } from "./components/LanguageProvider";
 import { motion } from "framer-motion";
 import DailyQuote from "./components/DailyQuote";
 import Logo from "./components/Logo";
+import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 
+type LectioStep = {
+  title: string;
+  desc: string;
+};
 
-const lectioSteps = [
-  {
-    icon: (
-      <svg
+const lectioIcons = [
+    // LECTIO
+  <svg
     xmlns="http://www.w3.org/2000/svg"
     className="w-14 h-14 text-indigo-400 mb-2"
     viewBox="0 0 512 512"
@@ -64,14 +68,9 @@ const lectioSteps = [
     <path d="M206.748,311.966c-52.693-12.365-112.572,3.379-115.089,4.062c-4.548,1.22-7.253,5.897-6.033,10.453
       c1.024,3.814,4.471,6.332,8.235,6.332c0.734,0,1.476-0.102,2.219-0.299c0.572-0.162,58.223-15.326,106.778-3.934
       c4.565,1.067,9.182-1.775,10.257-6.366C214.189,317.632,211.339,313.041,206.748,311.966z"/>
-  </svg>
-    ),
-    title: "LECTIO",
-    desc: "Začnite čítať Písmo – čítajte ho znova, pomaly a nechajte ho vsiaknuť. Vyhraďte si čas, aby ste si našli čas. Niet sa kam ponáhľať.",
-  },
-  {
-    icon: (
-      <svg
+  </svg>,
+   // MEDITATIO
+  <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 516.657 516.657"
         className="w-14 h-14 text-indigo-400 mb-2"
@@ -79,39 +78,27 @@ const lectioSteps = [
       >
         <path d="M487.404 134.943c-15.433-17.093-35.591-28.433-57.82-32.747-1.316-18.283-8.667-35.487-21.202-49.247-14.773-16.219-34.978-25.713-56.893-26.734-12.913-.609-25.528 1.78-37.119 6.945-18.304-19.896-43.535-31.77-70.994-33.05-23.558-1.094-46.984 5.988-65.946 19.955-14.661 10.8-26.212 25.345-33.44 41.872-5.676-1.104-11.439-1.797-17.244-2.067-65.413-3.073-121.055 47.663-124.102 113.045-2.195 47.086 23.782 90.834 65.415 111.684 3.283 21.936 16.314 40.779 34.581 51.921-6.026 10.335-9.496 22.335-9.496 35.137 0 38.599 31.402 70 70 70 34.515 0 63.256-25.116 68.955-58.028.484.008.969.034 1.453.034 26.318-.002 51.089-11.993 67.49-32.025 12.71 8.537 27.546 13.48 43.141 14.207 20.277.945 40.235-5.432 56.186-17.958 12.872-10.109 22.491-23.686 27.768-38.969 47.64-8.597 83.961-49.271 86.262-98.604 1.298-27.885-8.288-54.652-26.995-75.371zm-324.261 276.714c-22.056 0-40-17.944-40-40s17.944-40 40-40 40 17.944 40 40-17.944 40-40 40zm321.286-202.739c-1.764 37.846-31.531 68.563-69.239 71.452-6.679.512-12.21 5.39-13.551 11.953-2.577 12.611-9.609 23.965-19.802 31.97-10.291 8.081-23.174 12.177-36.26 11.585-14.075-.656-27.196-6.64-36.946-16.85-3.354-3.512-8.201-5.18-13.006-4.484-4.806.698-8.976 3.68-11.191 8.002-10.204 19.906-31.213 32.08-53.528 31.056-.047-.002-.093-.007-.139-.009-7.987-29.869-35.272-51.936-67.624-51.936-14.568 0-28.108 4.478-39.324 12.123-15.443-6.575-26.302-21.777-26.565-39.435-.09-6.026-3.778-11.414-9.364-13.678-34.814-14.11-57.028-48.814-55.278-86.356 2.278-48.856 43.897-86.743 92.735-84.475 8.021.375 15.931 1.821 23.509 4.299 3.904 1.276 8.161.896 11.777-1.052s6.275-5.294 7.356-9.257c4.304-15.775 13.976-29.841 27.234-39.607 13.634-10.041 29.794-14.917 46.756-14.143 22.685 1.059 43.229 12.316 56.365 30.887 4.684 6.624 13.786 8.322 20.542 3.835 9.275-6.156 20.073-9.119 31.207-8.617 13.91.648 26.734 6.675 36.111 16.97 9.377 10.294 14.184 23.623 13.535 37.531-.043.925-.125 1.947-.25 3.125-.433 4.085.827 8.168 3.487 11.298s6.487 5.031 10.588 5.262c40.987 2.301 72.777 37.539 70.865 78.551z"/>
         <path d="M52.143 416.657c-27.57 0-50 22.43-50 50s22.43 50 50 50 50-22.43 50-50-22.43-50-50-50zm0 70c-11.028 0-20-8.972-20-20s8.972-20 20-20 20 8.972 20 20-8.972 20-20 20z"/>
-      </svg>
-    ),
-    title: "MEDITATIO",
-    desc: "Čo na teba vyskočí z toho, čo si čítal? Čo sa deje v časti Písma? Viete si v ňom predstaviť seba? Oživte kúsoček vo svojom srdci a mysli.",
-  },
-  {
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 64 64"
-        className="w-14 h-14 text-indigo-400 mb-2"
-        fill="#4a5085"
-      >
-        <path d="m56.95117 43.9209-3.92041-3.9209a3.105 3.105 0 0 0 -4.5117.26908l-2.51271-1.48685a3.0539 3.0539 0 0 1 -1.49854-2.84571l.44483-6.60839a11.06321 11.06321 0 0 0 -.72071-4.71778l-7.21582-18.5791a3.04842 3.04842 0 0 0 -4.98089-1.10089 3.03879 3.03879 0 0 0 -1.317-.80438 3.09259 3.09259 0 0 0 -3.73437 1.83593l-7.21578 18.58009c-1.3494 2.83758-.3692 8.29357-.27589 11.3262a3.0544 3.0544 0 0 1 -1.49853 2.84665l-2.512 1.48651a3.04917 3.04917 0 0 0 -4.51191-.26967l-3.92091 3.92085a.99962.99962 0 0 0 0 1.41406l14.37207 14.37207a.99962.99962 0 0 0 1.41406 0l3.9209-3.9209a3.0142 3.0142 0 0 0 0-4.24218l-.39884-.39887c.958-.75763 4.68556-3.45176 5.62634-5.70468.91964 2.28558 4.682 4.99657 5.65961 5.77312a3.29964 3.29964 0 0 0 -1.27718 2.5199 2.98081 2.98081 0 0 0 .87838 2.12107l3.92083 3.92087a.99962.99962 0 0 0 1.41406 0l14.37211-14.372a.99962.99962 0 0 0 0-1.4141zm-25.0083-11.98633a8.75247 8.75247 0 0 1 .05181-3.91083 8.92494 8.92494 0 0 1 .0624 3.97821c-.05454.30017-.0635.13162-.11421-.06738zm.08942-12.86157a3.38643 3.38643 0 0 0 -1.58081-.92957l1.54046-6.67627 1.55646 6.74445a3.38377 3.38377 0 0 0 -1.51611.86139zm-6.69049 35.23071-3.21387 3.21387-12.958-12.958 3.21387-3.21387a1.00319 1.00319 0 0 1 1.41406 0l11.54346 11.544a1.0049 1.0049 0 0 1 .00048 1.414zm3.77246-8.23633a31.369 31.369 0 0 1 -4.20111 3.56549l-7.97187-7.97187 2.07093-1.22546a5.044 5.044 0 0 0 2.47509-4.70214l-.44482-6.6074a9.05609 9.05609 0 0 1 .58984-3.85938l7.21582-18.5801a1.07637 1.07637 0 0 1 2.04978.627l-2.52092 10.9236a3.38959 3.38959 0 0 0 -2.0484 2.15546l-2.59472 8.13086a.99988.99988 0 1 0 1.90527.60742l2.59474-8.13086a1.41255 1.41255 0 0 1 2.73679.64754l-1.13084 7.20793c-.4436 3.80718 1.192 5.81579 1.15166 10.70369.04495 2.39772-.3733 5.11718-1.87724 6.50822zm5.77148.06836c-1.51756-1.4047-1.93317-4.161-1.87613-6.583-.02465-4.85791 1.59381-6.83817 1.15075-10.62889l-1.13106-7.208a1.4125 1.4125 0 0 1 2.73683-.64738l2.59471 8.1298a.99988.99988 0 1 0 1.90527-.60742l-2.59472-8.12988a3.38689 3.38689 0 0 0 -2.04816-2.15424l-2.52118-10.92294a1.07651 1.07651 0 0 1 2.04982-.62879l7.21581 18.58a9.054 9.054 0 0 1 .58984 3.8584l-.44482 6.6084a5.04248 5.04248 0 0 0 2.47509 4.70117l2.07154 1.22583-7.97248 7.97247a31.369 31.369 0 0 1 -4.20111-3.56553zm6.98633 11.4502-3.21338-3.21387a.99319.99319 0 0 1 -.293-.707c0-.26758 11.83692-12.251 11.83692-12.251a1.00343 1.00343 0 0 1 1.41357 0l3.21387 3.21386z"/>
-      </svg>
-    ),
-    title: "ORATIO",
-    desc: "Keď necháte Písmo ožiť, aké modlitby sa formujú vo vašom srdci? Čo chceš prediskutovať s Bohom? Aký rozhovor sa pre vás začína?",
-  },
-  {
-    icon: (
-       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 48 48"
-        className="w-14 h-14 text-indigo-400 mb-2"
-        fill="#4a5085"
-      >
-        <path d="M40,16.025V11a7.008,7.008,0,0,0-7-7H15a7.008,7.008,0,0,0-7,7v5.025a5.5,5.5,0,0,0-3,9.716V35a5,5,0,0,0,3,4.576V42a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V40H34v2a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V39.576A5,5,0,0,0,43,35V25.741a5.5,5.5,0,0,0-3-9.716ZM15,6H33a5.006,5.006,0,0,1,5,5v5.213A5.506,5.506,0,0,0,34,21.5v6.309A64.945,64.945,0,0,0,24,27a64.945,64.945,0,0,0-10,.809V21.5a5.506,5.506,0,0,0-4-5.287V11A5.006,5.006,0,0,1,15,6ZM12,42H10V40h2Zm26,0H36V40h2Zm3.443-17.59a1,1,0,0,0-.443.83V35a3,3,0,0,1-3,3H10a3,3,0,0,1-3-3V25.24a1,1,0,0,0-.443-.83A3.5,3.5,0,1,1,12,21.5V29a1,1,0,0,0,.366.773.991.991,0,0,0,.83.207A62.407,62.407,0,0,1,24,29a62.407,62.407,0,0,1,10.8.98A1,1,0,0,0,36,29V21.5a3.5,3.5,0,1,1,5.443,2.91Z"/>
-      </svg>
-    ),
-    title: "CONTEMPLATIO",
-    desc: "Čo ti hovorí Boh v tomto kuse Písma? Ako to rezonuje vo vašom živote? Ako je to pre vás náročné alebo povzbudzujúce?",
-  },
+      </svg>,
+  // ORATIO
+  <svg
+    key="oratio"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 64 64"
+    className="w-14 h-14 text-indigo-400 mb-2"
+    fill="#4a5085"
+  >
+    <path d="m56.95117 43.9209-3.92041-3.9209a3.105 3.105 0 0 0 -4.5117.26908l-2.51271-1.48685a3.0539 3.0539 0 0 1 -1.49854-2.84571l.44483-6.60839a11.06321 11.06321 0 0 0 -.72071-4.71778l-7.21582-18.5791a3.04842 3.04842 0 0 0 -4.98089-1.10089 3.03879 3.03879 0 0 0 -1.317-.80438 3.09259 3.09259 0 0 0 -3.73437 1.83593l-7.21578 18.58009c-1.3494 2.83758-.3692 8.29357-.27589 11.3262a3.0544 3.0544 0 0 1 -1.49853 2.84665l-2.512 1.48651a3.04917 3.04917 0 0 0 -4.51191-.26967l-3.92091 3.92085a.99962.99962 0 0 0 0 1.41406l14.37207 14.37207a.99962.99962 0 0 0 1.41406 0l3.9209-3.9209a3.0142 3.0142 0 0 0 0-4.24218l-.39884-.39887c.958-.75763 4.68556-3.45176 5.62634-5.70468.91964 2.28558 4.682 4.99657 5.65961 5.77312a3.29964 3.29964 0 0 0 -1.27718 2.5199 2.98081 2.98081 0 0 0 .87838 2.12107l3.92083 3.92087a.99962.99962 0 0 0 1.41406 0l14.37211-14.372a.99962.99962 0 0 0 0-1.4141zm-25.0083-11.98633a8.75247 8.75247 0 0 1 .05181-3.91083 8.92494 8.92494 0 0 1 .0624 3.97821c-.05454.30017-.0635.13162-.11421-.06738zm.08942-12.86157a3.38643 3.38643 0 0 0 -1.58081-.92957l1.54046-6.67627 1.55646 6.74445a3.38377 3.38377 0 0 0 -1.51611.86139zm-6.69049 35.23071-3.21387 3.21387-12.958-12.958 3.21387-3.21387a1.00319 1.00319 0 0 1 1.41406 0l11.54346 11.544a1.0049 1.0049 0 0 1 .00048 1.414zm3.77246-8.23633a31.369 31.369 0 0 1 -4.20111 3.56549l-7.97187-7.97187 2.07093-1.22546a5.044 5.044 0 0 0 2.47509-4.70214l-.44482-6.6074a9.05609 9.05609 0 0 1 .58984-3.85938l7.21582-18.5801a1.07637 1.07637 0 0 1 2.04978.627l-2.52092 10.9236a3.38959 3.38959 0 0 0 -2.0484 2.15546l-2.59472 8.13086a.99988.99988 0 1 0 1.90527.60742l2.59474-8.13086a1.41255 1.41255 0 0 1 2.73679.64754l-1.13084 7.20793c-.4436 3.80718 1.192 5.81579 1.15166 10.70369.04495 2.39772-.3733 5.11718-1.87724 6.50822zm5.77148.06836c-1.51756-1.4047-1.93317-4.161-1.87613-6.583-.02465-4.85791 1.59381-6.83817 1.15075-10.62889l-1.13106-7.208a1.4125 1.4125 0 0 1 2.73683-.64738l2.59471 8.1298a.99988.99988 0 1 0 1.90527-.60742l-2.59472-8.12988a3.38689 3.38689 0 0 0 -2.04816-2.15424l-2.52118-10.92294a1.07651 1.07651 0 0 1 2.04982-.62879l7.21581 18.58a9.054 9.054 0 0 1 .58984 3.8584l-.44482 6.6084a5.04248 5.04248 0 0 0 2.47509 4.70117l2.07154 1.22583-7.97248 7.97247a31.369 31.369 0 0 1 -4.20111-3.56553zm6.98633 11.4502-3.21338-3.21387a.99319.99319 0 0 1 -.293-.707c0-.26758 11.83692-12.251 11.83692-12.251a1.00343 1.00343 0 0 1 1.41357 0l3.21387 3.21386z"/>
+  </svg>,
+  // CONTEMPLATIO
+  <svg
+    key="contemplatio"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 48 48"
+    className="w-14 h-14 text-indigo-400 mb-2"
+    fill="#4a5085"
+  >
+    <path d="M40,16.025V11a7.008,7.008,0,0,0-7-7H15a7.008,7.008,0,0,0-7,7v5.025a5.5,5.5,0,0,0-3,9.716V35a5,5,0,0,0,3,4.576V42a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V40H34v2a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V39.576A5,5,0,0,0,43,35V25.741a5.5,5.5,0,0,0-3-9.716ZM15,6H33a5.006,5.006,0,0,1,5,5v5.213A5.506,5.506,0,0,0,34,21.5v6.309A64.945,64.945,0,0,0,24,27a64.945,64.945,0,0,0-10,.809V21.5a5.506,5.506,0,0,0-4-5.287V11A5.006,5.006,0,0,1,15,6ZM12,42H10V40h2Zm26,0H36V40h2Zm3.443-17.59a1,1,0,0,0-.443.83V35a3,3,0,0,1-3,3H10a3,3,0,0,1-3-3V25.24a1,1,0,0,0-.443-.83A3.5,3.5,0,1,1,12,21.5V29a1,1,0,0,0,.366.773.991.991,0,0,0,.83.207A62.407,62.407,0,0,1,24,29a62.407,62.407,0,0,1,10.8.98A1,1,0,0,0,36,29V21.5a3.5,3.5,0,1,1,5.443,2.91Z"/>
+  </svg>,
 ];
 
 function getCountdown(target: Date) {
@@ -150,18 +137,18 @@ export default function HomePage() {
   }, [targetDate]);
 
   return (
-    <div className="h-screen=100% flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Hero sekcia */}
-      <section className="relative z-20 h-screen max-w-full overflow-hidden flex flex-col">
+      <section className="relative z-20 min-h-screen w-full overflow-hidden flex flex-col">
         <img
           src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=cover&w=1500&q=80"
           alt="Pozadie"
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40 z-10"></div>
-        <div className="relative z-20 px-8 pt-8 flex justify-between items-center">
-        <Logo className="h-12 w-35 pt-3 pl-3" />
-        <div className="flex items-center gap-6">
+        <div className="relative z-20 px-4 sm:px-8 pt-6 sm:pt-8 flex justify-between items-center">
+          <Logo className="h-12 w-auto pt-3 pl-3" />
+          <div className="flex items-center gap-4 sm:gap-6">
             <button
               onClick={() => router.push("/login")}
               className="text-white font-medium hover:underline transition"
@@ -182,32 +169,32 @@ export default function HomePage() {
             </select>
           </div>
         </div>
-        <div className="relative z-20 flex flex-col justify-center h-[70vh] max-w-4xl mx-auto px-8 pt-16">
+        <div className="relative z-20 flex flex-col justify-center min-h-[60vh] sm:h-[70vh] max-w-4xl mx-auto px-4 sm:px-8 pt-8 sm:pt-16">
           <div className="space-y-4">
             <div className="text-yellow-400 font-bold tracking-widest text-sm mb-2">{t.preparing}</div>
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
               {t.app_title}<br />
               <span className="font-light text-neutral-200">{t.app_subtitle}</span>
             </h1>
-            <p className="text-xl text-neutral-200 mb-6">
+            <p className="text-lg sm:text-xl text-neutral-200 mb-6">
               {t.app_desc}
             </p>
-            <div className="flex gap-8 mb-6">
-              <div className="flex flex-col items-center">
-                <span className="text-4xl font-bold text-white">{countdown.days}</span>
-                <span className="text-sm text-neutral-300 uppercase">{t.days}</span>
+            <div className="flex flex-wrap gap-4 sm:gap-8 mb-6">
+              <div className="flex flex-col items-center min-w-[70px]">
+                <span className="text-2xl sm:text-4xl font-bold text-white">{countdown.days}</span>
+                <span className="text-xs sm:text-sm text-neutral-300 uppercase">{t.days}</span>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-4xl font-bold text-white">{countdown.hours}</span>
-                <span className="text-sm text-neutral-300 uppercase">{t.hours}</span>
+              <div className="flex flex-col items-center min-w-[70px]">
+                <span className="text-2xl sm:text-4xl font-bold text-white">{countdown.hours}</span>
+                <span className="text-xs sm:text-sm text-neutral-300 uppercase">{t.hours}</span>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-4xl font-bold text-white">{countdown.minutes}</span>
-                <span className="text-sm text-neutral-300 uppercase">{t.minutes}</span>
+              <div className="flex flex-col items-center min-w-[70px]">
+                <span className="text-2xl sm:text-4xl font-bold text-white">{countdown.minutes}</span>
+                <span className="text-xs sm:text-sm text-neutral-300 uppercase">{t.minutes}</span>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-4xl font-bold text-white">{countdown.seconds}</span>
-                <span className="text-sm text-neutral-300 uppercase">{t.seconds}</span>
+              <div className="flex flex-col items-center min-w-[70px]">
+                <span className="text-2xl sm:text-4xl font-bold text-white">{countdown.seconds}</span>
+                <span className="text-xs sm:text-sm text-neutral-300 uppercase">{t.seconds}</span>
               </div>
             </div>
             <a href="#" className="inline-block px-8 py-3 rounded-full bg-white/90 text-black font-bold text-lg shadow hover:bg-white transition">
@@ -216,76 +203,87 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      
-
-     <section className="relative z-20 bg-gray-100 h-screen flex flex-col justify-center">
-      <div className="max-w-6xl mx-auto px-8 w-full">
-        <h2 className="text-3xl md:text-4xl font-semibold text-center text-[#4a5085] mb-2">
-          Lectio divina – Actio
-        </h2>
-        <div className="w-16 h-1 mx-auto" style={{ background: "#4a5085", borderRadius: 8, marginBottom: 32 }} />
-        {/* ---- DENNÝ CITÁT (Supabase) ---- */}
-        <DailyQuote />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {lectioSteps.map((step, idx) => (
-            <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.5, delay: idx * 0.13 }}
-              whileHover={{
-                scale: 1.06,
-                boxShadow: "0 8px 32px 0 rgba(74,80,133,0.16)",
-              }}
-              className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center cursor-pointer transition"
-            >
-              {step.icon}
-              <h3 className="font-bold text-xl text-[#4a5085] mb-2 tracking-wide">{step.title}</h3>
-              <p className="text-center text-gray-600 text-sm">{step.desc}</p>
-            </motion.div>
-          ))}
+      {/* ---- LECTIO sekcia ---- */}
+      <section className="relative z-20 bg-gray-100 min-h-screen flex flex-col justify-center py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 w-full">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-center text-[#4a5085] mb-2">
+            {t.lectio_section_title}
+          </h2>
+          <div className="w-16 h-1 mx-auto" style={{ background: "#4a5085", borderRadius: 8, marginBottom: 32 }} />
+          {/* ---- DENNÝ CITÁT (Supabase) ---- */}
+          <DailyQuote />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            {t.lectio_steps.map((step: LectioStep, idx: number) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, delay: idx * 0.13 }}
+                whileHover={{
+                  scale: 1.06,
+                  boxShadow: "0 8px 32px 0 rgba(74,80,133,0.16)",
+                }}
+                className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col items-center cursor-pointer transition"
+              >
+                {lectioIcons[idx]}
+                <h3 className="font-bold text-lg sm:text-xl text-[#4a5085] mb-2 tracking-wide">{step.title}</h3>
+                <p className="text-center text-gray-600 text-sm">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <HomeNewsSection /> 
+        <section className="py-16 sm:py-24 bg-white flex flex-col items-center justify-center w-full">
+      <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-12 px-4">
+        <div className="flex-1 w-full">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#4a5085] mb-4 uppercase tracking-tight">
+            {t.app_section.headline}
+          </h2>
+          <div className="w-16 h-1 mb-8 rounded bg-[#4a5085]" />
+          <p className="text-base sm:text-lg text-gray-600 mb-2">
+            <span className="font-bold">{t.app_section.lead}</span>
+          </p>
+          <p className="text-base sm:text-lg text-gray-600 mb-2">{t.app_section.p1}</p>
+          <p className="text-base sm:text-lg text-gray-600 mb-2">{t.app_section.p2}</p>
+          <p className="text-base sm:text-lg text-gray-600 mb-6">{t.app_section.p3}</p>
+          <p className="text-md text-[#880024] mb-4">{t.app_section.note}</p>
+          <div className="flex items-center gap-4 sm:gap-6 mb-6 flex-wrap">
+            <a href="https://play.google.com/store/apps/details?id=YOUR_APP_ID" target="_blank" rel="noopener">
+              <img src="https://play.google.com/intl/en_us/badges/static/images/badges/sk_badge_web_generic.png"
+                alt="Google Play"
+                className="h-10 sm:h-14 object-contain"
+                style={{ minWidth: 140, maxWidth: 180 }} />
+            </a>
+            <a href="https://apps.apple.com/sk/app/lectio-divina/idYOUR_APP_ID" target="_blank" rel="noopener">
+              <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                alt="App Store"
+                className="h-10 sm:h-14 object-contain"
+                style={{ minWidth: 140, maxWidth: 180, paddingTop: 4, paddingBottom: 4 }}
+              />
+            </a>
+          </div>
+          <a
+            href="https://www.lectiodivina.sk"
+            target="_blank"
+            rel="noopener"
+            className="text-[#4a5085] font-semibold underline hover:text-indigo-700"
+          >
+            {t.app_section.more}
+          </a>
+        </div>
+        <div className="flex-1 flex justify-center w-full mt-8 md:mt-0">
+          <img
+            src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=500&q=80"
+            alt={t.app_section.alt}
+            className="rounded-3xl shadow-2xl w-full max-w-[410px] object-cover"
+          />
         </div>
       </div>
     </section>
-     {/* ---- FOOTER ---- */}
-     <footer className="bg-black/90 text-gray-100 pt-12 pb-4 mt-0 relative z-20">
-        <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row gap-12 md:gap-0 justify-between">
-          <div>
-            <h4 className="font-bold text-lg mb-2">Kontakt</h4>
-            <div className="text-sm space-y-1">
-              <div>
-                <span className="font-semibold">Adresa:</span><br />
-                KROK – Pastoračný fond Žilinskej diecézy<br />
-                Jána Kalinčiaka 1,<br />
-                010 01 Žilina
-              </div>
-              <div>
-                <span className="font-semibold">Telefón:</span><br />
-                <a href="tel:+421903982982" className="hover:underline text-yellow-400">+421 903 982 982</a>
-              </div>
-              <div>
-                <span className="font-semibold">Email:</span><br />
-                <a href="mailto:mojkrok@dcza.sk" className="hover:underline text-yellow-400">mojkrok@dcza.sk</a>
-              </div>
-            </div>
-          </div>
-          <div className="text-sm space-y-1">
-            <div><span className="font-semibold">IČO:</span> 52 60 18 97</div>
-            <div><span className="font-semibold">DIČ:</span> 21 21 13 90 42</div>
-            <div>
-              <span className="font-semibold">IBAN:</span><br />
-              <span className="select-all">SK04 8330 0000 0029 0168 8673</span>
-            </div>
-          </div>
-        </div>
-        <div className="mt-10 text-xs text-gray-400 text-center border-t border-gray-800 pt-4">
-          © 2022 - 2025 Dušan Pecko | Pastoračný fond Žilinskej diecézy (<a href="https://mojkrok.sk" target="_blank" rel="noopener" className="underline hover:text-yellow-400">mojkrok.sk</a>) | Všetky práva vyhradené |
-          created by <a href="https://myprofile.sk" target="_blank" rel="noopener" className="underline hover:text-yellow-400">MYPROFILE</a>
-        </div>
-      </footer>
 
+  );
     </div>
   );
 }

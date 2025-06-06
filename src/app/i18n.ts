@@ -1,4 +1,26 @@
-export const translations = {
+import { Users } from "lucide-react";
+import { useContext, createContext } from "react";
+
+// 1. Definícia typov jazykov, ktoré podporuješ
+export type Language = "sk" | "cz" | "en" | "es";
+
+// 2. Typ pre hodnotu translations (kľudne môžeš rozšíriť/typovať ešte presnejšie)
+export type Translations = typeof translations;
+
+// 3. Kontext pre jazyk
+export const LangContext = createContext<{ lang: Language }>({ lang: "sk" });
+
+// 4. Hook na získanie aktuálneho jazyka
+export function useLang() {
+  return useContext(LangContext);
+}
+
+// 5. Prehľad všetkých podporovaných jazykov (užitočné pre select input, kontrolu, ...):
+export const supportedLangs: Language[] = ["sk", "cz", "en", "es"];
+
+// 6. Príklad prekladov (za týmto blokom vlož tvoj pôvodný `translations`)
+export const translations: Record<Language, any> = {
+
   sk: {
     welcome: "Vitajte na stránke Lectio Divina",
     home: "Domov",
@@ -76,6 +98,60 @@ export const translations = {
     minutes: "Minúty",
     seconds: "Sekundy",
     more: "Zisti viac",
+    lectio_steps: [
+      {
+        title: "LECTIO",
+        desc: "Začnite čítať Písmo – čítajte ho znova, pomaly a nechajte ho vsiaknuť. Vyhraďte si čas, aby ste si našli čas. Niet sa kam ponáhľať.",
+      },
+      {
+        title: "MEDITATIO",
+        desc: "Čo na teba vyskočí z toho, čo si čítal? Čo sa deje v časti Písma? Viete si v ňom predstaviť seba? Oživte kúsoček vo svojom srdci a mysli.",
+      },
+      {
+        title: "ORATIO",
+        desc: "Keď necháte Písmo ožiť, aké modlitby sa formujú vo vašom srdci? Čo chceš prediskutovať s Bohom? Aký rozhovor sa pre vás začína?",
+      },
+      {
+        title: "CONTEMPLATIO",
+        desc: "Čo ti hovorí Boh v tomto kuse Písma? Ako to rezonuje vo vašom živote? Ako je to pre vás náročné alebo povzbudzujúce?",
+      },
+    ],
+    lectio_section_title: "Lectio divina – Actio",
+    cookie_info: "Táto stránka používa cookies a localStorage pre lepší zážitok a uloženie jazykovej preferencie.",
+    cookie_agree: "Súhlasím",
+    cookie_decline: "Odmietam",
+    accept_cookies: "Súhlasím s cookies",
+    decline_cookies: "Nesúhlasím",
+    cookie_title: "Cookies",
+    cookie_text: "Táto stránka používa cookies na analýzu návštevnosti a localStorage pre lepší zážitok a uloženie jazykovej preferencie.",
+    close: "Zavrieť",
+    accept_cookies_text: "Súhlasím s používaním cookies pre lepší zážitok a ukladanie jazykových preferencií.",
+    decline_cookies_text: "Nesúhlasím s používaním cookies a localStorage. Môže to ovplyvniť funkčnosť stránky.",
+    cookie_consent: "Súhlas s cookies",
+    cookie_consent_desc: "Táto stránka používa cookies a localStorage na zlepšenie používateľského zážitku a ukladanie jazykových preferencií. Môžete si vybrať, či súhlasíte s ich používaním.",
+    cookie_consent_agree: "Súhlasím",
+    cookie_consent_decline: "Nesúhlasím",
+    cookie_consent_info: "Táto stránka používa cookies a localStorage na analýzu návštevnosti a zlepšenie používateľského zážitku. Môžete si vybrať, či súhlasíte s ich používaním.",
+    cookie_consent_agree_text: "Súhlasím s používaním cookies a localStorage pre lepší zážitok a ukladanie jazykových preferencií.",
+    cookie_consent_decline_text: "Nesúhlasím s používaním cookies a localStorage. Môže to ovplyvniť funkčnosť stránky.",
+    cookie_consent_title: "Súhlas s cookies",
+    app_section: {
+      headline: "MOBILNÁ APLIKÁCIA",
+      lead: "Pozývame vás prehĺbiť svoj duchovný život s aplikáciou Lectio Divina!",
+      p1: "Lectio Divina je starobylá forma modlitby, ktorú po stáročia praktizovali rehoľné komunity aj jednotlivci. Teraz môžete túto obohacujúcu prax integrovať do svojho každodenného života aj vy!",
+      p2: "Pozývame vás stiahnuť si našu novú aplikáciu Lectio Divina a dať Božiemu Slovu priestor vo vašom srdci. Či už sa rozhodnete pre Lectio osamote, v rodine, alebo v malej skupine, prostredníctvom čítania Božieho Slova sa váš život s Bohom začne prehlbovať a rozkvitať.",
+      p3: "Stiahnite si aplikáciu Lectio Divina ešte dnes a začnite svoju cestu k hlbšiemu vzťahu s Bohom!",
+      note: "Aplikácia je momentálne dostupná v slovenčine.",
+      more: "Viac o Lectio Divina na www.lectiodivina.sk",
+      alt: "Ilustrácia mobilnej aplikácie",
+    },
+    users_id:"Používatelia",
+    latest_news: "Najnovšie články",
+    show_article: "Zobraziť článok",
+    show_all_news: "Zobraziť všetky články",
+    no_articles: "Žiadne články neboli nájdené.",
+    previous_article: "Predchádzajúci článok",
+    next_article: "Nasledujúci článok",
   },
   cz: {
     welcome: "Vítejte na stránce Lectio Divina",
@@ -154,6 +230,60 @@ export const translations = {
     minutes: "Minuty",
     seconds: "Sekundy",
     more: "Zjistit více",
+    lectio_steps: [
+      {
+        title: "LECTIO",
+        desc: "Začněte číst Písmo – čtěte jej pomalu, opakovaně a nechte je na sebe působit. Dopřejte si čas, není kam spěchat.",
+      },
+      {
+        title: "MEDITATIO",
+        desc: "Co vás oslovilo? Co se v textu děje? Dokážete se v něm vidět? Oživte tuto část ve svém srdci a mysli.",
+      },
+      {
+        title: "ORATIO",
+        desc: "Jaké modlitby ve vás text vyvolává? O čem chcete Bohu říct? Jaký rozhovor začíná mezi vámi a Bohem?",
+      },
+      {
+        title: "CONTEMPLATIO",
+        desc: "Co vám Bůh říká v tomto úryvku? Jak to rezonuje ve vašem životě? Je to pro vás těžké nebo povzbuzující?",
+      },
+    ],
+    lectio_section_title: "Lectio divina – Actio",
+    cookie_info: "Tato stránka používá cookies a localStorage pro lepší zážitek a uložení jazykové preference.",
+    cookie_agree: "Souhlasím",
+    cookie_decline: "Odmítám",
+    accept_cookies: "Souhlasím s cookies",
+    decline_cookies: "Nesouhlasím",
+    cookie_title: "Cookies",
+    cookie_text: "Tato stránka používá cookies k analýze návštěvnosti a zlepšení fungování.",
+    close: "Zavřít",
+    accept_cookies_text: "Souhlasím s používáním cookies pro lepší zážitek a uložení jazykových preferencí.",
+    decline_cookies_text: "Nesouhlasím s používáním cookies a localStorage. Může to ovlivnit funkčnost stránky.",
+    cookie_consent: "Souhlas s cookies",
+    cookie_consent_desc: "Tato stránka používá cookies a localStorage pro zlepšení uživatelského zážitku a uložení jazykových preferencí. Můžete si vybrat, zda souhlasíte s jejich používáním.",
+    cookie_consent_agree: "Souhlasím",
+    cookie_consent_decline: "Nesouhlasím",
+    cookie_consent_info: "Tato stránka používá cookies a localStorage k analýze návštěvnosti a zlepšení uživatelského zážitku. Můžete si vybrat, zda souhlasíte s jejich používáním.",
+    cookie_consent_agree_text: "Souhlasím s používáním cookies a localStorage pro lepší zážitek a uložení jazykových preferencí.",
+    cookie_consent_decline_text: "Nesouhlasím s používáním cookies a localStorage. Může to ovlivnit funkčnost stránky.",
+    cookie_consent_title: "Souhlas s cookies",  
+    app_section: {
+      headline: "MOBILNÍ APLIKACE",
+      lead: "Zveme vás, abyste prohloubili svůj duchovní život s aplikací Lectio Divina!",
+      p1: "Lectio Divina je starobylá forma modlitby, kterou po staletí praktikovali řeholní komunity i jednotlivci. Nyní můžete tuto obohacující praxi začlenit do svého každodenního života i vy!",
+      p2: "Zveme vás ke stažení naší nové aplikace Lectio Divina a k tomu, abyste dali Božímu Slovu prostor ve svém srdci. Ať už se rozhodnete pro Lectio sami, v rodině nebo v malé skupině, skrze čtení Božího Slova se váš život s Bohem začne prohlubovat a rozkvétat.",
+      p3: "Stáhněte si aplikaci Lectio Divina ještě dnes a začněte svou cestu k hlubšímu vztahu s Bohem!",
+      note: "Aplikace je momentálně dostupná v slovenštině.",
+      more: "Více o Lectio Divina na www.lectiodivina.sk",
+      alt: "Ilustrace mobilní aplikace",
+    },
+    users_id: "Uživatelé",
+    latest_news: "Nejnovější články",
+    show_article: "Zobrazit článek",
+    show_all_news: "Zobrazit všechny články",
+    no_articles: "Žádné články nebyly nalezeny.",
+    previous_article: "Předchozí článek",
+    next_article: "Následující článek",
   },
   en: {
     welcome: "Welcome to Lectio Divina website",
@@ -232,6 +362,60 @@ export const translations = {
     minutes: "Minutes",
     seconds: "Seconds",
     more: "Learn more",
+    lectio_steps: [
+      {
+        title: "LECTIO",
+        desc: "Begin by reading Scripture – read it again, slowly, and let it sink in. Take your time. There’s no need to rush.",
+      },
+      {
+        title: "MEDITATIO",
+        desc: "What stands out to you in what you read? What is happening in the passage? Can you picture yourself in it? Bring it alive in your heart and mind.",
+      },
+      {
+        title: "ORATIO",
+        desc: "As Scripture comes alive, what prayers form in your heart? What do you want to discuss with God? What conversation begins for you?",
+      },
+      {
+        title: "CONTEMPLATIO",
+        desc: "What is God saying to you in this passage? How does it resonate in your life? Is it challenging or encouraging for you?",
+      },
+    ],
+    lectio_section_title: "Lectio divina – Actio",
+    cookie_info: "This website uses cookies and localStorage for a better experience and to store language preferences.",
+    cookie_agree: "I agree",
+    cookie_decline: "Decline",
+    accept_cookies: "I agree to cookies",
+    decline_cookies: "I do not agree",
+    cookie_title: "Cookies",
+    cookie_text: "This site uses cookies to analyze traffic and improve functionality.",
+    close: "Close",
+    accept_cookies_text: "I agree to the use of cookies for a better experience and to store language preferences.",
+    decline_cookies_text: "I do not agree to the use of cookies and localStorage. This may affect site functionality.",
+    cookie_consent: "Cookie Consent",
+    cookie_consent_desc: "This site uses cookies and localStorage to enhance user experience and store language preferences. You can choose whether you agree to their use.",
+    cookie_consent_agree: "I agree",
+    cookie_consent_decline: "I do not agree",
+    cookie_consent_info: "This site uses cookies and localStorage to analyze traffic and improve user experience. You can choose whether you agree to their use.",
+    cookie_consent_agree_text: "I agree to the use of cookies and localStorage for a better experience and to store language preferences.",
+    cookie_consent_decline_text: "I do not agree to the use of cookies and localStorage. This may affect site functionality.",
+    cookie_consent_title: "Cookie Consent",
+    app_section: {
+      headline: "MOBILE APP",
+      lead: "We invite you to deepen your spiritual life with the Lectio Divina app!",
+      p1: "Lectio Divina is an ancient form of prayer practiced for centuries by religious communities and individuals. Now you can integrate this enriching practice into your everyday life!",
+      p2: "Download our new Lectio Divina app and give God's Word space in your heart. Whether you choose Lectio alone, with your family, or in a small group, through reading God's Word your life with God will deepen and blossom.",
+      p3: "Download the Lectio Divina app today and begin your journey to a deeper relationship with God!",
+      note: "The app is currently available in Slovak.",
+      more: "More about Lectio Divina at www.lectiodivina.sk",
+      alt: "Illustration of the mobile app",
+    },
+    users_id: "Users",
+    latest_news: "Latest Articles",
+    show_article: "Read Article",
+    show_all_news: "Show all articles",
+    no_articles: "No articles found.",
+    previous_article: "Previous article",
+    next_article: "Next article",
   },
   es: {
     welcome: "Bienvenido a la página de Lectio Divina",
@@ -310,5 +494,59 @@ export const translations = {
     minutes: "Minutos",
     seconds: "Segundos",
     more: "Saber más",
+    lectio_steps: [
+      {
+        title: "LECTIO",
+        desc: "Comienza leyendo la Escritura, léela de nuevo, despacio, y deja que penetre en ti. Tómate tu tiempo. No hay prisa.",
+      },
+      {
+        title: "MEDITATIO",
+        desc: "¿Qué te llama la atención de lo que has leído? ¿Qué sucede en el pasaje? ¿Puedes verte allí? Hazlo vivo en tu mente y corazón.",
+      },
+      {
+        title: "ORATIO",
+        desc: "Al dejar que la Escritura cobre vida, ¿qué oraciones se forman en tu corazón? ¿Qué quieres compartir con Dios? ¿Qué diálogo se inicia?",
+      },
+      {
+        title: "CONTEMPLATIO",
+        desc: "¿Qué te dice Dios en este fragmento? ¿Cómo resuena en tu vida? ¿Te desafía o te anima?",
+      },
+    ],
+    lectio_section_title: "Lectio divina – Actio",
+    cookie_info: "Este sitio web utiliza cookies y localStorage para una mejor experiencia y para guardar las preferencias de idioma.",
+    cookie_agree: "Acepto",
+    cookie_decline: "Rechazo",
+    accept_cookies: "Acepto las cookies",
+    decline_cookies: "No acepto",
+    cookie_title: "Cookies",
+    cookie_text: "Este sitio utiliza cookies para analizar el tráfico y mejorar la funcionalidad.",
+    close: "Cerrar",
+    accept_cookies_text: "Acepto el uso de cookies para una mejor experiencia y para guardar las preferencias de idioma.",
+    decline_cookies_text: "No acepto el uso de cookies y localStorage. Esto puede afectar la funcionalidad del sitio.",
+    cookie_consent: "Consentimiento de cookies",
+    cookie_consent_desc: "Este sitio utiliza cookies y localStorage para mejorar la experiencia del usuario y guardar las preferencias de idioma. Puedes elegir si aceptas su uso.",
+    cookie_consent_agree: "Acepto",
+    cookie_consent_decline: "No acepto",
+    cookie_consent_info: "Este sitio utiliza cookies y localStorage para analizar el tráfico y mejorar la experiencia del usuario. Puedes elegir si aceptas su uso.",
+    cookie_consent_agree_text: "Acepto el uso de cookies y localStorage para una mejor experiencia y para guardar las preferencias de idioma.",
+    cookie_consent_decline_text: "No acepto el uso de cookies y localStorage. Esto puede afectar la funcionalidad del sitio.",
+    cookie_consent_title: "Consentimiento de cookies",
+    app_section: {
+      headline: "APLICACIÓN MÓVIL",
+      lead: "¡Te invitamos a profundizar tu vida espiritual con la aplicación Lectio Divina!",
+      p1: "Lectio Divina es una forma antigua de oración practicada durante siglos por comunidades religiosas e individuos. ¡Ahora puedes integrar esta práctica enriquecedora en tu vida cotidiana!",
+      p2: "Descarga nuestra nueva aplicación Lectio Divina y dale un espacio a la Palabra de Dios en tu corazón. Ya sea que elijas Lectio a solas, en familia o en un pequeño grupo, a través de la lectura de la Palabra de Dios tu vida con Él empezará a profundizarse y florecer.",
+      p3: "¡Descarga la aplicación Lectio Divina hoy y comienza tu camino hacia una relación más profunda con Dios!",
+      note: "La aplicación está disponible actualmente en eslovaco.",
+      more: "Más sobre Lectio Divina en www.lectiodivina.sk",
+      alt: "Ilustración de la aplicación móvil",
+    },
+    users_id: "Usuarios",
+    latest_news: "Artículos más recientes",
+    show_article: "Ver artículo",
+    show_all_news: "Ver todos los artículos",
+    no_articles: "No se encontraron artículos.",
+    previous_article: "Artículo anterior",
+    next_article: "Siguiente artículo",
   },
 };

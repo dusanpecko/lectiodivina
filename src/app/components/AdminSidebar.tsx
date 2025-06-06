@@ -9,7 +9,8 @@ const links = [
   { href: "/admin/calendar", key: "calendar" },
   { href: "/admin/daily_quotes", key: "daily_quotes" },   // <-- podtržítko je ok
   { href: "/admin/news", key: "news" },                   // <-- NOVÁ POLOŽKA NEWS
-  { href: "/admin/content_cards", key: "content_cards" }, // <-- podtržítko je ok
+  { href: "/admin/content_cards", key: "content_cards" }, 
+  { href: "/admin/users", key: "users_id" }, 
 ] as const;
 
 type SidebarKey = typeof links[number]["key"];
