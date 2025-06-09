@@ -198,7 +198,7 @@ export default function ContentCardsAdminPage() {
         >
           Export Excel
         </button>
-        <Link href="/admin/content-cards/new">
+        <Link href="/admin/content_cards/new">
           <button
             className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 h-11 rounded hover:bg-blue-700 transition ml-auto"
             aria-label="Pridať kartu"
@@ -327,7 +327,7 @@ export default function ContentCardsAdminPage() {
                   <td className="p-3">{card.priority}</td>
                   <td className="p-3">{card.lang}</td>
                   <td className="p-3 flex gap-2 items-center justify-center">
-                    <Link href={`/admin/content-cards/${card.id}`}>
+                    <Link href={`/admin/content_cards/${card.id}`}>
                       <button
                         className="p-2 rounded hover:bg-blue-100 transition"
                         title="Edit"

@@ -88,7 +88,7 @@ export default function ContentCardEditPage() {
       if (!error && data?.id) {
         setMessage("Úspešne uložené");
         setMessageType("success");
-        router.replace(`/admin/content-cards/${data.id}`);
+        router.replace(`/admin/content_cards/${data.id}`);
       } else {
         setMessage((error?.message ? error.message + " " : "") + "Chyba pri ukladaní");
         setMessageType("error");
@@ -152,7 +152,6 @@ export default function ContentCardEditPage() {
               apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
               init={{
                 height: 200,
-                plugins: "link lists code paste",
                 toolbar: "undo redo | bold italic | code paste",
                 menubar: false,
               }}

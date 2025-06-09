@@ -179,7 +179,6 @@ export default function NewsEditPage() {
               apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
               init={{
                 height: 500,
-                plugins: "link image lists code paste",
                 toolbar:
                   "undo redo | formatselect | bold italic | link image | alignleft aligncenter alignright | code paste",
                 paste_data_images: true,
