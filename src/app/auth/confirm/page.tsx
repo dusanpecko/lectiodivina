@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabaseClient'; // uprav cestu podľa projektu
+import { supabase } from '../../lib/supabaseClient';
 
 export default function AuthConfirmPage() {
   const searchParams = useSearchParams();
