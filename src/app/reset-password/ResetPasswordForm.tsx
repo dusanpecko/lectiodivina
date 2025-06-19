@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const accessToken = searchParams.get('access_token');
+  const accessToken = searchParams.get('access_token') ?? searchParams.get('code'); // <-- OPRAVENE
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
