@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
+
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function ResetPasswordForm() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const code = searchParams.get('access_token') ?? searchParams.get('code');
-
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -19,10 +22,6 @@ export default function ResetPasswordForm() {
     setError(null);
     setSuccess(null);
 
-    if (!code) {
-      setError('Reset token is missing or invalid.');
-      return;
-    }
     if (!password || !confirmPassword) {
       setError('Please enter and confirm your new password.');
       return;
@@ -34,42 +33,15 @@ export default function ResetPasswordForm() {
 
     setLoading(true);
     try {
-      // 1. Vymeniť code za access_token
-      const tokenResp = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=recovery`, {
-        method: 'POST',
-        headers: {
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-      });
-      const tokenData = await tokenResp.json();
-      if (!tokenResp.ok || !tokenData.access_token) {
-        setError(tokenData.error_description || 'Failed to exchange code for access token.');
-        setLoading(false);
-        return;
-      }
-      const accessToken = tokenData.access_token;
+      const { error } = await supabase.auth.updateUser({ password });
 
-      // 2. Zmena hesla
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`, {
-        method: 'PUT',
-        headers: {
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.msg || data.error_description || 'Password reset failed.');
+      if (error) {
+        setError(error.message || 'Password reset failed.');
       } else {
         setSuccess('Password reset successful! Redirecting...');
         setTimeout(() => router.push('/login'), 3000);
       }
-    } catch (e) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
