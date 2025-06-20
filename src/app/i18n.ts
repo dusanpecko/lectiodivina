@@ -157,6 +157,64 @@ export const translations: Record<Language, any> = {
     suradnice_pismo: "Súradnice Písma",
     datum: "Dátum",
     lectio:"Lectio divina",
+    // PRIDAJTE reset password sekciu:
+    resetPassword: {
+      // Page titles and headers
+      title: 'Obnova hesla',
+      verifyingLink: 'Overujem odkaz na obnovu hesla...',
+      processingAuth: 'Spracovávam autentifikáciu...',
+      
+      // Form labels
+      newPassword: 'Nové heslo',
+      confirmPassword: 'Potvrdiť nové heslo',
+      enterNewPassword: 'Zadajte nové heslo',
+      confirmNewPassword: 'Potvrďte nové heslo',
+      changePassword: 'Zmeniť heslo',
+      saving: 'Zapisujem...',
+      
+      // Password requirements
+      passwordRequirements: 'Heslo musí obsahovať aspoň 8 znakov, veľké a malé písmeno, číslicu a špeciálny znak.',
+      mustBeDifferent: 'Musí byť odlišné od vašeho súčasného hesla.',
+      
+      // Validation messages
+      passwordMinLength: 'Heslo musí mať aspoň 8 znakov.',
+      passwordLowercase: 'Heslo musí obsahovať malé písmeno.',
+      passwordUppercase: 'Heslo musí obsahovať veľké písmeno.',
+      passwordNumber: 'Heslo musí obsahovať číslicu.',
+      passwordSpecial: 'Heslo musí obsahovať špeciálny znak.',
+      passwordsMismatch: 'Heslá sa nezhodujú.',
+      
+      // Error messages
+      verificationFailed: 'Nepodarilo sa overiť odkaz',
+      sessionCreateFailed: 'Session sa nepodarilo vytvoriť z autentifikačného kódu.',
+      systemError: 'Systémová chyba',
+      missingCode: 'Chýbajúci autentifikačný kód v odkaze.',
+      unknownError: 'Neznáma chyba',
+      sessionExpired: 'Session expirovala. Prosím, použite nový odkaz na obnovu hesla.',
+      sessionCheckError: 'Chyba pri kontrole session',
+      invalidLink: 'Link na obnovenie hesla je neplatný alebo expirovaný.',
+      passwordDifferentRequired: 'Nové heslo musí byť odlišné od vašeho súčasného hesla.',
+      passwordTooWeak: 'Heslo je príliš slabé. Použite silnejšie heslo.',
+      passwordUpdateFailed: 'Nepodarilo sa zmeniť heslo. Skúste to znovu.',
+      
+      // Success messages
+      passwordChanged: 'Heslo bolo úspešne zmenené! Môžete sa teraz prihlásiť v aplikácii s novým heslom.',
+      success: 'Úspech!',
+      
+      // Instructions
+      nextSteps: 'Ďalšie kroky:',
+      openMobileApp: 'Otvorte si mobilnú aplikáciu Lectio Divina',
+      loginWithNewPassword: 'Prihláste sa s vaším emailom a novým heslom',
+      closeThisPage: 'Túto stránku môžete zatvoriť',
+      
+      // Invalid link section
+      invalidLinkTitle: 'Neplatný odkaz',
+      linkExpiredDesc: 'Odkaz na obnovenie hesla expiroval alebo je neplatný.',
+      requestNewLink: 'Požiadať o nový odkaz na obnovu hesla',
+      
+      // Tips
+      tipEmailValidity: 'Email odkazy na obnovenie hesla sú platné len 1 hodinu z bezpečnostných dôvodov.',
+    }
   },
   cz: {
     welcome: "Vítejte na stránce Lectio Divina",
@@ -431,6 +489,63 @@ export const translations: Record<Language, any> = {
     suradnice_pismo: "Scripture reference",
     datum: "Date",
     lectio:"Lectio divina",
+  resetPassword: {
+      // Page titles and headers
+      title: 'Reset Password',
+      verifyingLink: 'Verifying password reset link...',
+      processingAuth: 'Processing authentication...',
+      
+      // Form labels
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm Password',
+      enterNewPassword: 'Enter new password',
+      confirmNewPassword: 'Confirm new password',
+      changePassword: 'Change Password',
+      saving: 'Saving...',
+      
+      // Password requirements
+      passwordRequirements: 'Password must contain at least 8 characters, uppercase and lowercase letters, a number, and a special character.',
+      mustBeDifferent: 'Must be different from your current password.',
+      
+      // Validation messages
+      passwordMinLength: 'Password must be at least 8 characters long.',
+      passwordLowercase: 'Password must contain a lowercase letter.',
+      passwordUppercase: 'Password must contain an uppercase letter.',
+      passwordNumber: 'Password must contain a number.',
+      passwordSpecial: 'Password must contain a special character.',
+      passwordsMismatch: 'Passwords do not match.',
+      
+      // Error messages
+      verificationFailed: 'Failed to verify link',
+      sessionCreateFailed: 'Failed to create session from authentication code.',
+      systemError: 'System error',
+      missingCode: 'Missing authentication code in link.',
+      unknownError: 'Unknown error',
+      sessionExpired: 'Session expired. Please use a new password reset link.',
+      sessionCheckError: 'Error checking session',
+      invalidLink: 'Password reset link is invalid or expired.',
+      passwordDifferentRequired: 'New password must be different from your current password.',
+      passwordTooWeak: 'Password is too weak. Use a stronger password.',
+      passwordUpdateFailed: 'Failed to change password. Please try again.',
+      
+      // Success messages
+      passwordChanged: 'Password successfully changed! You can now sign in to the app with your new password.',
+      success: 'Success!',
+      
+      // Instructions
+      nextSteps: 'Next steps:',
+      openMobileApp: 'Open the Lectio Divina mobile app',
+      loginWithNewPassword: 'Sign in with your email and new password',
+      closeThisPage: 'You can close this page',
+      
+      // Invalid link section
+      invalidLinkTitle: 'Invalid Link',
+      linkExpiredDesc: 'The password reset link has expired or is invalid.',
+      requestNewLink: 'Request a new password reset link',
+      
+      // Tips
+      tipEmailValidity: 'Email password reset links are valid for only 1 hour for security reasons.',
+    },
   },
   es: {
     welcome: "Bienvenido a la página de Lectio Divina",

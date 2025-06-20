@@ -1,3 +1,4 @@
+// 2. VYTVORTE: app/auth/reset-password/page.tsx
 import { Suspense } from 'react';
 import ResetPasswordForm from './ResetPasswordForm';
 

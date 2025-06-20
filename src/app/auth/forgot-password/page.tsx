@@ -1,4 +1,4 @@
-// app/forgot-password/page.tsx
+// 1. app/auth/forgot-password/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -18,17 +18,23 @@ export default function ForgotPasswordPage() {
     setMessage(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
 
-    if (error) {
-      setError('Nepodarilo sa odoslať email. Skontrolujte adresu.');
-    } else {
-      setMessage('Na váš email bol odoslaný odkaz na obnovenie hesla.');
+      if (error) {
+        throw error;
+      }
+
+      setMessage('Na váš email bol odoslaný odkaz na obnovenie hesla. Skontrolujte si doručenú poštu a spam.');
       setEmail('');
+    } catch (err: any) {
+      console.error('Reset password error:', err);
+      setError(err.message || 'Nepodarilo sa odoslať email. Skontrolujte adresu.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -45,16 +51,23 @@ export default function ForgotPasswordPage() {
           placeholder="Váš email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border px-3 py-2 rounded"
+          className="border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={loading}
         />
         <button
           type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white py-2 rounded font-semibold"
+          disabled={loading || !email}
+          className="bg-blue-600 text-white py-2 rounded font-semibold disabled:bg-gray-400 hover:bg-blue-700 transition-colors"
         >
           {loading ? 'Odosielam...' : 'Odoslať obnovovací email'}
         </button>
       </form>
+      
+      <div className="mt-4 text-center">
+        <a href="/auth/login" className="text-blue-600 hover:underline text-sm">
+          Späť na prihlásenie
+        </a>
+      </div>
     </main>
   );
 }
