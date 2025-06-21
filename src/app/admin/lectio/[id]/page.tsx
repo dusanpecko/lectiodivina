@@ -100,6 +100,7 @@ export default function LectioEditPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
+  const [activeTab, setActiveTab] = useState("basic");
 
   useEffect(() => {
     if (isNew) return;
@@ -124,7 +125,6 @@ export default function LectioEditPage() {
     setLectio((old) => ({ ...old!, [e.target.name]: e.target.value }));
   };
 
-  // Pre textové polia s Editorom
   const handleEditorChange = (name: keyof Lectio, value: string) => {
     setLectio((old) => ({ ...old!, [name]: value }));
   };
@@ -134,14 +134,15 @@ export default function LectioEditPage() {
     setSaving(true);
     setMessage(null);
     setMessageType(null);
+    
     if (!lectio) {
       setSaving(false);
       setMessage(t.save_error || "Chyba pri ukladaní");
       setMessageType("error");
       return;
     }
+    
     if (isNew) {
-      // INSERT NEW
       const { data, error } = await supabase
         .from("lectio")
         .insert([lectio])
@@ -160,7 +161,6 @@ export default function LectioEditPage() {
         setMessageType("error");
       }
     } else {
-      // UPDATE
       const { error } = await supabase
         .from("lectio")
         .update(lectio)
@@ -175,318 +175,495 @@ export default function LectioEditPage() {
     }
   };
 
-  if (loading) return <div>{t.loading || "Načítavam..."}</div>;
-  if (!lectio) return <div>{t.item_not_found || "Položka nenájdená"}</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 flex items-center space-x-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="text-gray-700 font-medium">{t.loading || "Načítavam..."}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!lectio) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            {t.item_not_found || "Položka nenájdená"}
+          </h2>
+          <p className="text-gray-600">Požadovaný záznam sa nenašiel v databáze.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: "basic", label: "Základné informácie", icon: "📝" },
+    { id: "content", label: "Hlavný obsah", icon: "📖" },
+    { id: "bible", label: "Biblické texty", icon: "✝️" },
+    { id: "audio", label: "Audio a médiá", icon: "🎵" },
+  ];
+
+  const InputField = ({ 
+    label, 
+    name, 
+    type = "text", 
+    required = false, 
+    placeholder = "", 
+    rows = 3,
+    value,
+    onChange
+  }: {
+    label: string;
+    name: string;
+    type?: string;
+    required?: boolean;
+    placeholder?: string;
+    rows?: number;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  }) => (
+    <div className="space-y-2">
+      <label className="block text-sm font-semibold text-gray-700">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {type === "textarea" ? (
+        <textarea
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-vertical"
+          placeholder={placeholder}
+          rows={rows}
+          required={required}
+        />
+      ) : (
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+          placeholder={placeholder}
+          required={required}
+        />
+      )}
+    </div>
+  );
+
+  const EditorField = ({ 
+    label, 
+    name, 
+    value, 
+    onChange, 
+    height = 200 
+  }: {
+    label: string;
+    name: keyof Lectio;
+    value: string;
+    onChange: (name: keyof Lectio, value: string) => void;
+    height?: number;
+  }) => (
+    <div className="space-y-2">
+      <label className="block text-sm font-semibold text-gray-700">{label}</label>
+      <div className="border border-gray-300 rounded-lg overflow-hidden">
+        <Editor
+          apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
+          init={{
+            height,
+            plugins: "link image lists code paste table emoticons",
+            toolbar: "undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | table | emoticons | code",
+            menubar: false,
+            paste_data_images: true,
+            content_style: "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.6; }",
+          }}
+          value={value}
+          onEditorChange={(val) => onChange(name, val)}
+        />
+      </div>
+    </div>
+  );
 
   return (
-    <main className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">
-        {isNew
-          ? t.add_lectio_title || "Pridať nový Lectio záznam"
-          : t.edit_lectio_title
-          ? `${t.edit_lectio_title} ${lectio.hlava}`
-          : `Upraviť Lectio: ${lectio.hlava}`}
-      </h1>
-      <form onSubmit={handleSave} className="flex flex-col gap-4">
-        {/* Základné info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <label>
-            {t.hlava || "Nadpis"}:
-            <input
-              name="hlava"
-              value={lectio.hlava || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              required
-            />
-          </label>
-          <label>
-            {t.suradnice_pismo || "Súradnice Písma"}:
-            <input
-              name="suradnice_pismo"
-              value={lectio.suradnice_pismo || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              required
-            />
-          </label>
-          <label>
-            {t.datum || "Dátum"}:
-            <input
-              name="datum"
-              type="date"
-              value={lectio.datum?.slice(0, 10) || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              required
-            />
-          </label>
-          <label>
-            {t.lang || "Jazyk"}:
-            <select
-              name="lang"
-              value={lectio.lang || appLang}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-            >
-              <option value="sk">Slovenčina</option>
-              <option value="cz">Čeština</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-            </select>
-          </label>
-        </div>
-
-        {/* Audio, video, úvodné polia */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <label>
-            {t.uvod || "Úvod"}:
-            <textarea
-              name="uvod"
-              value={lectio.uvod || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              rows={2}
-            />
-          </label>
-          <label>
-            {t.uvod_audio || "Úvod - audio (URL)"}:
-            <input
-              name="uvod_audio"
-              value={lectio.uvod_audio || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              type="url"
-              placeholder="https://..."
-            />
-          </label>
-          <label>
-            {t.video || "Video (URL)"}:
-            <input
-              name="video"
-              value={lectio.video || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              type="url"
-              placeholder="https://..."
-            />
-          </label>
-        </div>
-
-        {/* Dynamický editor pre hlavné časti */}
-        <label>
-          {t.lectio_text || "Lectio – text"}:
-          <Editor
-            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-            init={{
-              height: 250,
-              toolbar:
-                "undo redo | formatselect | bold italic | link image | alignleft aligncenter alignright | code paste",
-              paste_data_images: true,
-            }}
-            value={lectio.lectio_text || ""}
-            onEditorChange={(value) =>
-              handleEditorChange("lectio_text", value)
-            }
-          />
-        </label>
-
-        <label>
-          {t.meditatio_text || "Meditatio – text"}:
-          <Editor
-            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-            init={{
-              height: 200,
-              plugins: "link image lists code paste",
-              toolbar:
-                "undo redo | formatselect | bold italic | link image | alignleft aligncenter alignright | code paste",
-              paste_data_images: true,
-            }}
-            value={lectio.meditatio_text || ""}
-            onEditorChange={(value) =>
-              handleEditorChange("meditatio_text", value)
-            }
-          />
-        </label>
-
-        <label>
-          {t.oratio_text || "Oratio – text"}:
-          <Editor
-            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-            init={{
-              height: 200,
-              plugins: "link image lists code paste",
-              toolbar:
-                "undo redo | formatselect | bold italic | link image | alignleft aligncenter alignright | code paste",
-              paste_data_images: true,
-            }}
-            value={lectio.oratio_text || ""}
-            onEditorChange={(value) =>
-              handleEditorChange("oratio_text", value)
-            }
-          />
-        </label>
-
-        <label>
-          {t.contemplatio_text || "Contemplatio – text"}:
-          <Editor
-            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-            init={{
-              height: 200,
-              plugins: "link image lists code paste",
-              toolbar:
-                "undo redo | formatselect | bold italic | link image | alignleft aligncenter alignright | code paste",
-              paste_data_images: true,
-            }}
-            value={lectio.contemplatio_text || ""}
-            onEditorChange={(value) =>
-              handleEditorChange("contemplatio_text", value)
-            }
-          />
-        </label>
-
-        <label>
-          {t.actio_text || "Actio – text"}:
-          <Editor
-            apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
-            init={{
-              height: 200,
-              plugins: "link image lists code paste",
-              toolbar:
-                "undo redo | formatselect | bold italic | link image | alignleft aligncenter alignright | code paste",
-              paste_data_images: true,
-            }}
-            value={lectio.actio_text || ""}
-            onEditorChange={(value) =>
-              handleEditorChange("actio_text", value)
-            }
-          />
-        </label>
-
-        {/* Ďalšie jednoduché polia */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <label>
-            {t.modlitba_uvod || "Modlitba úvod"}:
-            <textarea
-              name="modlitba_uvod"
-              value={lectio.modlitba_uvod || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              rows={2}
-            />
-          </label>
-          <label>
-            {t.modlitba_audio || "Modlitba audio (URL)"}:
-            <input
-              name="modlitba_audio"
-              value={lectio.modlitba_audio || ""}
-              onChange={handleChange}
-              className="border rounded w-full p-2"
-              type="url"
-              placeholder="https://..."
-            />
-          </label>
-        </div>
-
-        {/* Biblia bloky */}
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="border rounded p-3 my-2">
-            <h3 className="font-semibold mb-2">
-              {t[`biblia_${i}`] || `Biblia ${i}`}
-            </h3>
-            <label>
-              {t[`nazov_biblia_${i}`] || "Názov"}:
-              <input
-                name={`nazov_biblia_${i}`}
-                value={lectio[`nazov_biblia_${i}` as keyof Lectio] || ""}
-                onChange={handleChange}
-                className="border rounded w-full p-2"
-              />
-            </label>
-            <label>
-              {t[`biblia_${i}`] || "Text"}:
-              <textarea
-                name={`biblia_${i}`}
-                value={lectio[`biblia_${i}` as keyof Lectio] || ""}
-                onChange={handleChange}
-                className="border rounded w-full p-2"
-                rows={2}
-              />
-            </label>
-            <label>
-              {t[`biblia_${i}_audio`] || "Audio (URL)"}:
-              <input
-                name={`biblia_${i}_audio`}
-                value={lectio[`biblia_${i}_audio` as keyof Lectio] || ""}
-                onChange={handleChange}
-                className="border rounded w-full p-2"
-                type="url"
-                placeholder="https://..."
-              />
-            </label>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                {isNew
+                  ? t.add_lectio_title || "Pridať nový Lectio záznam"
+                  : t.edit_lectio_title
+                  ? `${t.edit_lectio_title} ${lectio.hlava}`
+                  : `Upraviť Lectio: ${lectio.hlava}`}
+              </h1>
+              <p className="text-gray-600">
+                {isNew ? "Vytvorte nový duchovný záznam" : "Upravte existujúci záznam"}
+              </p>
+            </div>
+            <div className="text-4xl">
+              {isNew ? "✨" : "📝"}
+            </div>
           </div>
-        ))}
+        </div>
 
-        {/* Záver, požehnanie, extra audio */}
-        <label>
-          {t.modlitba_zaver || "Modlitba záver"}:
-          <textarea
-            name="modlitba_zaver"
-            value={lectio.modlitba_zaver || ""}
-            onChange={handleChange}
-            className="border rounded w-full p-2"
-            rows={2}
-          />
-        </label>
-        <label>
-          {t.audio_5_min || "Audio 5 minút (URL)"}:
-          <input
-            name="audio_5_min"
-            value={lectio.audio_5_min || ""}
-            onChange={handleChange}
-            className="border rounded w-full p-2"
-            type="url"
-            placeholder="https://..."
-          />
-        </label>
-        <label>
-          {t.zaver || "Záver"}:
-          <textarea
-            name="zaver"
-            value={lectio.zaver || ""}
-            onChange={handleChange}
-            className="border rounded w-full p-2"
-            rows={2}
-          />
-        </label>
-        <label>
-          {t.pozehnanie || "Požehnanie"}:
-          <textarea
-            name="pozehnanie"
-            value={lectio.pozehnanie || ""}
-            onChange={handleChange}
-            className="border rounded w-full p-2"
-            rows={2}
-          />
-        </label>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded font-semibold"
-          disabled={saving}
-        >
-          {saving ? t.saving || "Ukladám..." : t.save || "Uložiť"}
-        </button>
+        {/* Message */}
         {message && (
-          <div
-            className={`mt-2 ${
-              messageType === "error" ? "text-red-600" : "text-green-600"
-            }`}
-          >
-            {message}
+          <div className={`mb-6 p-4 rounded-lg shadow-md ${
+            messageType === "error" 
+              ? "bg-red-50 border border-red-200 text-red-800" 
+              : "bg-green-50 border border-green-200 text-green-800"
+          }`}>
+            <div className="flex items-center space-x-2">
+              <span className="text-xl">
+                {messageType === "error" ? "❌" : "✅"}
+              </span>
+              <span className="font-medium">{message}</span>
+            </div>
           </div>
         )}
-      </form>
-    </main>
+
+        <form onSubmit={handleSave} className="space-y-8">
+          {/* Tabs */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeTab === tab.id
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    }`}
+                  >
+                    <span className="mr-2">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <div className="p-6">
+              {/* Basic Tab */}
+              {activeTab === "basic" && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputField
+                      label={t.hlava || "Nadpis"}
+                      name="hlava"
+                      value={lectio.hlava || ""}
+                      onChange={handleChange}
+                      required
+                      placeholder="Zadajte nadpis lectio..."
+                    />
+                    <InputField
+                      label={t.suradnice_pismo || "Súradnice Písma"}
+                      name="suradnice_pismo"
+                      value={lectio.suradnice_pismo || ""}
+                      onChange={handleChange}
+                      required
+                      placeholder="napr. Mt 5,1-12"
+                    />
+                    <InputField
+                      label={t.datum || "Dátum"}
+                      name="datum"
+                      type="date"
+                      value={lectio.datum?.slice(0, 10) || ""}
+                      onChange={handleChange}
+                      required
+                    />
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold text-gray-700">
+                        {t.lang || "Jazyk"} <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="lang"
+                        value={lectio.lang || appLang}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      >
+                        <option value="sk">🇸🇰 Slovenčina</option>
+                        <option value="cz">🇨🇿 Čeština</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <InputField
+                    label={t.uvod || "Úvod"}
+                    name="uvod"
+                    type="textarea"
+                    value={lectio.uvod || ""}
+                    onChange={handleChange}
+                    placeholder="Úvodný text pre lectio..."
+                    rows={4}
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputField
+                      label={t.uvod_audio || "Úvod - audio (URL)"}
+                      name="uvod_audio"
+                      type="url"
+                      value={lectio.uvod_audio || ""}
+                      onChange={handleChange}
+                      placeholder="https://example.com/audio.mp3"
+                    />
+                    <InputField
+                      label={t.video || "Video (URL)"}
+                      name="video"
+                      type="url"
+                      value={lectio.video || ""}
+                      onChange={handleChange}
+                      placeholder="https://youtube.com/watch?v=..."
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Content Tab */}
+              {activeTab === "content" && (
+                <div className="space-y-8">
+                  <EditorField
+                    label={t.lectio_text || "Lectio – text"}
+                    name="lectio_text"
+                    value={lectio.lectio_text || ""}
+                    onChange={handleEditorChange}
+                    height={300}
+                  />
+                  
+                  <EditorField
+                    label={t.meditatio_text || "Meditatio – text"}
+                    name="meditatio_text"
+                    value={lectio.meditatio_text || ""}
+                    onChange={handleEditorChange}
+                    height={250}
+                  />
+                  
+                  <EditorField
+                    label={t.oratio_text || "Oratio – text"}
+                    name="oratio_text"
+                    value={lectio.oratio_text || ""}
+                    onChange={handleEditorChange}
+                    height={250}
+                  />
+                  
+                  <EditorField
+                    label={t.contemplatio_text || "Contemplatio – text"}
+                    name="contemplatio_text"
+                    value={lectio.contemplatio_text || ""}
+                    onChange={handleEditorChange}
+                    height={250}
+                  />
+                  
+                  <EditorField
+                    label={t.actio_text || "Actio – text"}
+                    name="actio_text"
+                    value={lectio.actio_text || ""}
+                    onChange={handleEditorChange}
+                    height={250}
+                  />
+                </div>
+              )}
+
+              {/* Bible Tab */}
+              {activeTab === "bible" && (
+                <div className="space-y-8">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                      <div className="flex items-center mb-4">
+                        <span className="text-2xl mr-3">📖</span>
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {t[`biblia_${i}`] || `Biblický text ${i}`}
+                        </h3>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <InputField
+                          label={t[`nazov_biblia_${i}`] || "Názov"}
+                          name={`nazov_biblia_${i}`}
+                          value={String(lectio[`nazov_biblia_${i}` as keyof Lectio] ?? "")}
+                          onChange={handleChange}
+                          placeholder="Názov biblického textu..."
+                        />
+                        
+                        <InputField
+                          label={t[`biblia_${i}`] || "Text"}
+                          name={`biblia_${i}`}
+                          type="textarea"
+                          value={String(lectio[`biblia_${i}` as keyof Lectio] ?? "")}
+                          onChange={handleChange}
+                          placeholder="Biblický text..."
+                          rows={4}
+                        />
+                        
+                        <InputField
+                          label={t[`biblia_${i}_audio`] || "Audio (URL)"}
+                          name={`biblia_${i}_audio`}
+                          type="url"
+                          value={String(lectio[`biblia_${i}_audio` as keyof Lectio] ?? "")}
+                          onChange={handleChange}
+                          placeholder="https://example.com/audio.mp3"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Audio Tab */}
+              {activeTab === "audio" && (
+                <div className="space-y-6">
+                  <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                    <div className="flex items-center mb-4">
+                      <span className="text-2xl mr-3">🎵</span>
+                      <h3 className="text-lg font-semibold text-gray-800">Audio súbory</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <InputField
+                        label={t.lectio_audio || "Lectio audio (URL)"}
+                        name="lectio_audio"
+                        type="url"
+                        value={lectio.lectio_audio || ""}
+                        onChange={handleChange}
+                        placeholder="https://example.com/lectio.mp3"
+                      />
+                      <InputField
+                        label={t.meditatio_audio || "Meditatio audio (URL)"}
+                        name="meditatio_audio"
+                        type="url"
+                        value={lectio.meditatio_audio || ""}
+                        onChange={handleChange}
+                        placeholder="https://example.com/meditatio.mp3"
+                      />
+                      <InputField
+                        label={t.oratio_audio || "Oratio audio (URL)"}
+                        name="oratio_audio"
+                        type="url"
+                        value={lectio.oratio_audio || ""}
+                        onChange={handleChange}
+                        placeholder="https://example.com/oratio.mp3"
+                      />
+                      <InputField
+                        label={t.contemplatio_audio || "Contemplatio audio (URL)"}
+                        name="contemplatio_audio"
+                        type="url"
+                        value={lectio.contemplatio_audio || ""}
+                        onChange={handleChange}
+                        placeholder="https://example.com/contemplatio.mp3"
+                      />
+                      <InputField
+                        label={t.actio_audio || "Actio audio (URL)"}
+                        name="actio_audio"
+                        type="url"
+                        value={lectio.actio_audio || ""}
+                        onChange={handleChange}
+                        placeholder="https://example.com/actio.mp3"
+                      />
+                      <InputField
+                        label={t.audio_5_min || "Audio 5 minút (URL)"}
+                        name="audio_5_min"
+                        type="url"
+                        value={lectio.audio_5_min || ""}
+                        onChange={handleChange}
+                        placeholder="https://example.com/5min.mp3"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-6 border border-green-200">
+                    <div className="flex items-center mb-4">
+                      <span className="text-2xl mr-3">🙏</span>
+                      <h3 className="text-lg font-semibold text-gray-800">Modlitby a záver</h3>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <InputField
+                          label={t.modlitba_uvod || "Modlitba úvod"}
+                          name="modlitba_uvod"
+                          type="textarea"
+                          value={lectio.modlitba_uvod || ""}
+                          onChange={handleChange}
+                          placeholder="Úvodná modlitba..."
+                          rows={3}
+                        />
+                        <InputField
+                          label={t.modlitba_audio || "Modlitba audio (URL)"}
+                          name="modlitba_audio"
+                          type="url"
+                          value={lectio.modlitba_audio || ""}
+                          onChange={handleChange}
+                          placeholder="https://example.com/modlitba.mp3"
+                        />
+                      </div>
+                      
+                      <InputField
+                        label={t.modlitba_zaver || "Modlitba záver"}
+                        name="modlitba_zaver"
+                        type="textarea"
+                        value={lectio.modlitba_zaver || ""}
+                        onChange={handleChange}
+                        placeholder="Záverečná modlitba..."
+                        rows={3}
+                      />
+                      
+                      <InputField
+                        label={t.zaver || "Záver"}
+                        name="zaver"
+                        type="textarea"
+                        value={lectio.zaver || ""}
+                        onChange={handleChange}
+                        placeholder="Záverečné slová..."
+                        rows={3}
+                      />
+                      
+                      <InputField
+                        label={t.pozehnanie || "Požehnanie"}
+                        name="pozehnanie"
+                        type="textarea"
+                        value={lectio.pozehnanie || ""}
+                        onChange={handleChange}
+                        placeholder="Záverečné požehnanie..."
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={saving}
+                className="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                    {t.saving || "Ukladám..."}
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">💾</span>
+                    {t.save || "Uložiť"}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

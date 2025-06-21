@@ -22,6 +22,7 @@ export const supportedLangs: Language[] = ["sk", "cz", "en", "es"];
 export const translations: Record<Language, any> = {
 
   sk: {
+    support: "Podporiť projekt",
     welcome: "Vitajte na stránke Lectio Divina",
     home: "Domov",
     admin: "Administrácia",
@@ -214,9 +215,82 @@ export const translations: Record<Language, any> = {
       
       // Tips
       tipEmailValidity: 'Email odkazy na obnovenie hesla sú platné len 1 hodinu z bezpečnostných dôvodov.',
-    }
+    },
+    footer: {
+      contact: "Kontakt",
+      legal_info: "Právne informácie",
+      links: "Odkazy",
+      terms: "Všeobecné obchodné podmienky",
+      privacy: "Ochrana osobných údajov",
+      manage_cookies: "Spravovať cookies",
+      all_rights_reserved: "Všetky práva vyhradené",
+      created_by: "vytvoril",
+      admin_tooltip: "Administrácia"
+    },
+  community_section: {
+      headline: "Pridajte sa k nám",
+      subtitle: "Staňte sa súčasťou našej rastúcej komunity veriacich",
+      description: "Hľadáme nadšencov, ktorí nám pomôžu vytvoriť lepšiu aplikáciu pre modlitbu a duchovný rast. Bez ohľadu na to, či chcete testovať, získavať novinky alebo zdieľať nápady - máme pre vás miesto.",
+      tester_title: "Staň sa testerom",
+      tester_desc: "Pomôžte nám otestovať nové funkcie a vylepšenia pred ich oficiálnym spustením. Vaša spätná väzba je neoceniteľná pre vývoj aplikácie.",
+      newsletter_title: "Prihláste sa na newsletter",
+      newsletter_desc: "Buďte prvými, ktorí sa dozviete o nových funkciách, duchovných článkoch a dôležitých aktualizáciách aplikácie.",
+      idea_title: "Máte nápad?",
+      idea_desc: "Zdieľajte s nami svoje nápady na vylepšenie aplikácie, nové funkcie alebo obsah, ktorý by vám pomohol v duchovnom raste.",
+      form_name: "Vaše meno",
+      form_email: "Emailová adresa",
+      form_message: "Správa alebo nápad",
+      form_interests: "Čo vás zaujíma?",
+      interest_tester: "Chcem pomôcť s testovaním aplikácie",
+      interest_newsletter: "Chcem dostávať newsletter",
+      interest_idea: "Mám nápad na vylepšenie",
+      submit_btn: "Pridať sa ku komunite",
+      success_message: "Ďakujeme! Vaša žiadosť bola úspešne odoslaná. Čoskoro vás budeme kontaktovať.",
+      error_message: "Nastala chyba. Skontrolujte, či ste vyplnili všetky povinné polia a skúste znova.",
+      required_field: "Povinné pole"
+    },
+    // Community admin preklady
+    community_admin_title: "Správa členov komunity",
+    community_member_detail: "Detail člena komunity",
+    community_stats: {
+      total_members: "Celkom členov",
+      testers: "Testeri", 
+      newsletter_subscribers: "Newsletter",
+      idea_contributors: "Nápady"
+    },
+    community_interests: {
+      testing: "Testovanie",
+      newsletter: "Newsletter", 
+      ideas: "Nápady"
+    },
+    community_actions: {
+      send_email: "Napísať email",
+      invite_testing: "Pozvať na testovanie",
+      add_newsletter: "Pridať do newslettera",
+      edit_member: "Upraviť člena",
+      delete_member: "Vymazať člena"
+    },
+    community_filters: {
+      want_testing: "Chce testovať",
+      want_newsletter: "Chce newsletter",
+      has_idea: "Má nápad",
+      registration_date: "Dátum registrácie"
+    },
+    community_form: {
+      basic_info: "Základné informácie",
+      interests_preferences: "Záujmy a preferencie",
+      message_idea: "Správa alebo nápad",
+      quick_actions: "Rýchle akcie",
+      wants_testing: "Chce testovať aplikáciu",
+      wants_newsletter: "Chce dostávať newsletter", 
+      has_improvement_idea: "Má nápad na vylepšenie",
+      no_message: "Žiadna správa nebola zadaná",
+      last_updated: "Posledná aktualizácia"
+    },
+    community: "Komunita",
   },
   cz: {
+    support: "Podpořit projekt",
     welcome: "Vítejte na stránce Lectio Divina",
     home: "Domů",
     admin: "Administrace",
@@ -352,8 +426,80 @@ export const translations: Record<Language, any> = {
     suradnice_pismo: "Souřadnice Písma",
     datum: "Datum",
     lectio:"Lectio divina",
+    footer: {
+      contact: "Kontakt",
+      legal_info: "Právní informace",
+      links: "Odkazy",
+      terms: "Všeobecné obchodní podmínky",
+      privacy: "Ochrana osobních údajů",
+      manage_cookies: "Spravovat cookies",
+      all_rights_reserved: "Všechna práva vyhrazena",
+      created_by: "vytvořil",
+      admin_tooltip: "Administrace"
+    },
+    community_section: {
+      headline: "Připojte se k nám",
+      subtitle: "Staňte se součástí naší rostoucí komunity věřících",
+      description: "Hledáme nadšence, kteří nám pomohou vytvořit lepší aplikaci pro modlitbu a duchovní růst. Bez ohledu na to, zda chcete testovat, získávat novinky nebo sdílet nápady - máme pro vás místo.",
+      tester_title: "Staň se testerem",
+      tester_desc: "Pomozte nám otestovat nové funkce a vylepšení před jejich oficiálním spuštěním. Vaše zpětná vazba je neocenitelná pro vývoj aplikace.",
+      newsletter_title: "Přihlaste se k newsletteru",
+      newsletter_desc: "Buďte prvními, kteří se dozvědí o nových funkcích, duchovních článcích a důležitých aktualizacích aplikace.",
+      idea_title: "Máte nápad?",
+      idea_desc: "Sdílejte s námi své nápady na vylepšení aplikace, nové funkce nebo obsah, který by vám pomohl v duchovním růstu.",
+      form_name: "Vaše jméno",
+      form_email: "Emailová adresa",
+      form_message: "Zpráva nebo nápad",
+      form_interests: "Co vás zajímá?",
+      interest_tester: "Chci pomoci s testováním aplikace",
+      interest_newsletter: "Chci dostávat newsletter",
+      interest_idea: "Mám nápad na vylepšení",
+      submit_btn: "Připojit se ke komunitě",
+      success_message: "Děkujeme! Vaše žádost byla úspěšně odeslána. Brzy vás budeme kontaktovat.",
+      error_message: "Nastala chyba. Zkontrolujte, zda jste vyplnili všechna povinná pole a zkuste znovu.",
+      required_field: "Povinné pole"
+    },
+    community_admin_title: "Správa členů komunity",
+    community_member_detail: "Detail člena komunity",
+    community_stats: {
+      total_members: "Celkem členů",
+      testers: "Testoři",
+      newsletter_subscribers: "Newsletter", 
+      idea_contributors: "Nápady"
+    },
+    community_interests: {
+      testing: "Testování",
+      newsletter: "Newsletter",
+      ideas: "Nápady"
+    },
+    community_actions: {
+      send_email: "Napsat email",
+      invite_testing: "Pozvat na testování",
+      add_newsletter: "Přidat do newsletteru",
+      edit_member: "Upravit člena",
+      delete_member: "Smazat člena"
+    },
+    community_filters: {
+      want_testing: "Chce testovat",
+      want_newsletter: "Chce newsletter",
+      has_idea: "Má nápad",
+      registration_date: "Datum registrace"
+    },
+    community_form: {
+      basic_info: "Základní informace",
+      interests_preferences: "Zájmy a preference",
+      message_idea: "Zpráva nebo nápad",
+      quick_actions: "Rychlé akce",
+      wants_testing: "Chce testovat aplikaci",
+      wants_newsletter: "Chce dostávat newsletter",
+      has_improvement_idea: "Má nápad na vylepšení",
+      no_message: "Žádná zpráva nebyla zadána",
+      last_updated: "Poslední aktualizace"
+    },
+    community: "Komunita",
   },
   en: {
+    support: "Support Project",
     welcome: "Welcome to Lectio Divina website",
     home: "Home",
     admin: "Administration",
@@ -546,8 +692,80 @@ export const translations: Record<Language, any> = {
       // Tips
       tipEmailValidity: 'Email password reset links are valid for only 1 hour for security reasons.',
     },
+    footer: {
+      contact: "Contact",
+      legal_info: "Legal Information",
+      links: "Links",
+      terms: "Terms and Conditions",
+      privacy: "Privacy Policy",
+      manage_cookies: "Manage cookies",
+      all_rights_reserved: "All rights reserved",
+      created_by: "created by",
+      admin_tooltip: "Administration"
+    },
+    community_section: {
+      headline: "Join Our Community",
+      subtitle: "Become part of our growing community of believers",
+      description: "We're looking for enthusiasts who will help us create a better app for prayer and spiritual growth. Whether you want to test, receive news, or share ideas - we have a place for you.",
+      tester_title: "Become a Tester",
+      tester_desc: "Help us test new features and improvements before their official release. Your feedback is invaluable for app development.",
+      newsletter_title: "Subscribe to Newsletter",
+      newsletter_desc: "Be the first to learn about new features, spiritual articles, and important app updates.",
+      idea_title: "Have an Idea?",
+      idea_desc: "Share your ideas for app improvements, new features, or content that would help you in spiritual growth.",
+      form_name: "Your Name",
+      form_email: "Email Address",
+      form_message: "Message or Idea",
+      form_interests: "What interests you?",
+      interest_tester: "I want to help with app testing",
+      interest_newsletter: "I want to receive newsletter",
+      interest_idea: "I have an improvement idea",
+      submit_btn: "Join the Community",
+      success_message: "Thank you! Your request has been successfully submitted. We will contact you soon.",
+      error_message: "An error occurred. Please check that you have filled in all required fields and try again.",
+      required_field: "Required field"
+    },
+    community_admin_title: "Community Members Management",
+    community_member_detail: "Community Member Detail",
+    community_stats: {
+      total_members: "Total Members",
+      testers: "Testers",
+      newsletter_subscribers: "Newsletter",
+      idea_contributors: "Ideas"
+    },
+    community_interests: {
+      testing: "Testing",
+      newsletter: "Newsletter",
+      ideas: "Ideas"
+    },
+    community_actions: {
+      send_email: "Send Email",
+      invite_testing: "Invite to Testing",
+      add_newsletter: "Add to Newsletter",
+      edit_member: "Edit Member",
+      delete_member: "Delete Member"
+    },
+    community_filters: {
+      want_testing: "Wants Testing",
+      want_newsletter: "Wants Newsletter",
+      has_idea: "Has Idea",
+      registration_date: "Registration Date"
+    },
+    community_form: {
+      basic_info: "Basic Information",
+      interests_preferences: "Interests and Preferences",
+      message_idea: "Message or Idea",
+      quick_actions: "Quick Actions",
+      wants_testing: "Wants to test application",
+      wants_newsletter: "Wants to receive newsletter",
+      has_improvement_idea: "Has improvement idea",
+      no_message: "No message was provided",
+      last_updated: "Last Updated"
+    },
+    community: "Community", 
   },
   es: {
+    support: "Apoyar Proyecto",
     welcome: "Bienvenido a la página de Lectio Divina",
     home: "Inicio",
     admin: "Administración",
@@ -683,5 +901,76 @@ export const translations: Record<Language, any> = {
     suradnice_pismo: "Referencia bíblica",
     datum: "Fecha",
     lectio:"Lectio divina",
+    footer: {
+      contact: "Contacto",
+      legal_info: "Información Legal",
+      links: "Enlaces",
+      terms: "Términos y Condiciones",
+      privacy: "Política de Privacidad",
+      manage_cookies: "Gestionar cookies",
+      all_rights_reserved: "Todos los derechos reservados",
+      created_by: "creado por",
+      admin_tooltip: "Administración",
+    },
+    community_section: {
+      headline: "Únete a Nuestra Comunidad",
+      subtitle: "Forma parte de nuestra creciente comunidad de creyentes",
+      description: "Buscamos entusiastas que nos ayuden a crear una mejor aplicación para la oración y el crecimiento espiritual. Ya sea que quieras probar, recibir noticias o compartir ideas, tenemos un lugar para ti.",
+      tester_title: "Conviértete en Probador",
+      tester_desc: "Ayúdanos a probar nuevas características y mejoras antes de su lanzamiento oficial. Tus comentarios son invaluables para el desarrollo de la aplicación.",
+      newsletter_title: "Suscríbete al Newsletter",
+      newsletter_desc: "Sé el primero en conocer nuevas características, artículos espirituales y actualizaciones importantes de la aplicación.",
+      idea_title: "¿Tienes una Idea?",
+      idea_desc: "Comparte tus ideas para mejoras de la aplicación, nuevas características o contenido que te ayudaría en el crecimiento espiritual.",
+      form_name: "Tu Nombre",
+      form_email: "Dirección de Email",
+      form_message: "Mensaje o Idea",
+      form_interests: "¿Qué te interesa?",
+      interest_tester: "Quiero ayudar con las pruebas de la aplicación",
+      interest_newsletter: "Quiero recibir el newsletter",
+      interest_idea: "Tengo una idea de mejora",
+      submit_btn: "Unirse a la Comunidad",
+      success_message: "¡Gracias! Tu solicitud ha sido enviada exitosamente. Te contactaremos pronto.",
+      error_message: "Ocurrió un error. Por favor verifica que hayas completado todos los campos obligatorios e intenta de nuevo.",
+      required_field: "Campo obligatorio"
+    },
+    community_admin_title: "Gestión de Miembros de la Comunidad",
+    community_member_detail: "Detalle del Miembro de la Comunidad",
+    community_stats: {
+      total_members: "Total de Miembros",
+      testers: "Probadores",
+      newsletter_subscribers: "Newsletter",
+      idea_contributors: "Ideas"
+    },
+    community_interests: {
+      testing: "Pruebas",
+      newsletter: "Newsletter", 
+      ideas: "Ideas"
+    },
+    community_actions: {
+      send_email: "Enviar Email",
+      invite_testing: "Invitar a Pruebas",
+      add_newsletter: "Agregar al Newsletter",
+      edit_member: "Editar Miembro",
+      delete_member: "Eliminar Miembro"
+    },
+    community_filters: {
+      want_testing: "Quiere Probar",
+      want_newsletter: "Quiere Newsletter",
+      has_idea: "Tiene Idea",
+      registration_date: "Fecha de Registro"
+    },
+    community_form: {
+      basic_info: "Información Básica",
+      interests_preferences: "Intereses y Preferencias",
+      message_idea: "Mensaje o Idea",
+      quick_actions: "Acciones Rápidas",
+      wants_testing: "Quiere probar la aplicación",
+      wants_newsletter: "Quiere recibir newsletter",
+      has_improvement_idea: "Tiene idea de mejora",
+      no_message: "No se proporcionó ningún mensaje",
+      last_updated: "Última Actualización"
+    },
+    community: "Comunidad",
   },
-};
+}

@@ -3,8 +3,30 @@
 import { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
-import { Pencil, Trash2, PlusCircle, Eraser } from "lucide-react";
+import { 
+  CreditCard,
+  Trash2, 
+  PlusCircle, 
+  Eraser, 
+  Edit3,
+  Download,
+  Upload,
+  Filter,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Globe,
+  Calendar,
+  Star,
+  Eye,
+  EyeOff,
+  Image as ImageIcon,
+  Type,
+  Hash
+} from "lucide-react";
 import * as XLSX from "xlsx";
+import { useLanguage } from "@/app/components/LanguageProvider";
+import { translations } from "@/app/i18n";
 
 interface ContentCard {
   id?: number;
@@ -27,7 +49,17 @@ interface ContentCard {
 
 const PAGE_SIZE = 20;
 
+const languageOptions = [
+  { value: "sk", label: "Slovenčina", flag: "🇸🇰" },
+  { value: "cz", label: "Čeština", flag: "🇨🇿" },
+  { value: "en", label: "English", flag: "🇺🇸" },
+  { value: "es", label: "Español", flag: "🇪🇸" },
+];
+
 export default function ContentCardsAdminPage() {
+  const { lang: appLang } = useLanguage();
+  const t = translations[appLang];
+
   const supabase = useSupabaseClient();
   const [cards, setCards] = useState<ContentCard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,16 +67,16 @@ export default function ContentCardsAdminPage() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // Filtre, pridaj lang
+  // Filtre a vyhľadávanie
+  const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState({
     title: "",
     priority: "",
     visible_from: "",
     visible_to: "",
-    lang: "sk", // predvolene SK
+    lang: "sk",
   });
   const [globalSearch, setGlobalSearch] = useState("");
-
   const [importLoading, setImportLoading] = useState(false);
 
   const fetchCards = async () => {
@@ -62,18 +94,26 @@ export default function ContentCardsAdminPage() {
         `title.ilike.${val},description_1.ilike.${val},description_2.ilike.${val},description_3.ilike.${val},lang.ilike.${val}`
       );
     } else {
-      if (filter.title)
+      if (filter.title) {
         dataQuery = dataQuery.ilike("title", `%${filter.title}%`);
-      if (filter.priority)
+        countQuery = countQuery.ilike("title", `%${filter.title}%`);
+      }
+      if (filter.priority) {
         dataQuery = dataQuery.eq("priority", filter.priority);
-      if (filter.visible_from)
+        countQuery = countQuery.eq("priority", filter.priority);
+      }
+      if (filter.visible_from) {
         dataQuery = dataQuery.gte("visible_from", filter.visible_from);
-      if (filter.visible_to)
+        countQuery = countQuery.gte("visible_from", filter.visible_from);
+      }
+      if (filter.visible_to) {
         dataQuery = dataQuery.lte("visible_to", filter.visible_to);
-      if (filter.lang)
+        countQuery = countQuery.lte("visible_to", filter.visible_to);
+      }
+      if (filter.lang) {
         dataQuery = dataQuery.eq("lang", filter.lang);
-      if (filter.lang)
         countQuery = countQuery.eq("lang", filter.lang);
+      }
     }
 
     dataQuery = dataQuery.order("priority", { ascending: false })
@@ -97,9 +137,9 @@ export default function ContentCardsAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, globalSearch, page, supabase]);
 
-  // Vymazať položku
+  // Vymazać položku
   const handleDelete = async (id: number) => {
-    if (!confirm("Naozaj vymazať?")) return;
+    if (!confirm("Naozaj chcete vymazať túto kartu?")) return;
     setDeletingId(id);
     const { error } = await supabase.from("content_cards").delete().eq("id", id);
     if (!error) {
@@ -115,16 +155,16 @@ export default function ContentCardsAdminPage() {
     setPage(1);
   };
 
-  // EXPORT vrátane lang
+  // Export
   const handleExportExcel = () => {
     const exportData = cards.map(({ id, created_at, ...item }) => item);
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "content_cards");
-    XLSX.writeFile(wb, "content_cards_export.xlsx");
+    XLSX.writeFile(wb, `content_cards_export_${filter.lang}_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  // IMPORT s lang
+  // Import
   const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -139,7 +179,6 @@ export default function ContentCardsAdminPage() {
       const worksheet = workbook.Sheets[sheetName];
       const json: any[] = XLSX.utils.sheet_to_json(worksheet, { raw: false });
 
-      // podpora lang, defaultne z filtra
       const newItems = json.map(row => ({
         title: row["title"] || "",
         image_url: row["image_url"] || "",
@@ -169,209 +208,490 @@ export default function ContentCardsAdminPage() {
       if (error) {
         alert("Chyba pri importe: " + error.message);
       } else {
-        alert("Importované!");
+        alert(`Úspešne importovaných ${newItems.length} kariet!`);
         fetchCards();
       }
     };
     reader.readAsArrayBuffer(file);
   };
 
+  const hasActiveFilters = globalSearch || Object.entries(filter).some(([key, value]) => key !== 'lang' && value !== "");
+
+  // Zistiť, či je karta aktuálne viditeľná
+  const isCardVisible = (card: ContentCard) => {
+    const now = new Date();
+    const visibleFrom = card.visible_from ? new Date(card.visible_from) : null;
+    const visibleTo = card.visible_to ? new Date(card.visible_to) : null;
+    
+    if (visibleFrom && now < visibleFrom) return false;
+    if (visibleTo && now > visibleTo) return false;
+    return true;
+  };
+
+  // Získať štatistiky
+  const getStats = () => {
+    return {
+      total: cards.length,
+      visible: cards.filter(isCardVisible).length,
+      hidden: cards.filter(card => !isCardVisible(card)).length,
+      avgPriority: cards.length ? Math.round(cards.reduce((sum, card) => sum + (card.priority || 0), 0) / cards.length) : 0,
+    };
+  };
+
+  const stats = getStats();
+
   return (
-    <main>
-      <h1 className="text-2xl font-bold mb-6">Správa kariet (content_cards)</h1>
-      <div className="flex items-center gap-4 mb-4">
-        <label className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 h-11 rounded hover:bg-blue-700 transition cursor-pointer">
-          <span>Import Excel</span>
-          <input
-            type="file"
-            accept=".xlsx"
-            onChange={handleExcelImport}
-            className="hidden"
-            disabled={importLoading}
-          />
-        </label>
-        <button
-          className="inline-flex items-center gap-2 bg-yellow-500 text-white px-3 py-2 h-11 rounded hover:bg-yellow-600 transition"
-          onClick={handleExportExcel}
-          aria-label="Exportovať Excel"
-          type="button"
-        >
-          Export Excel
-        </button>
-        <Link href="/admin/content_cards/new">
-          <button
-            className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 h-11 rounded hover:bg-blue-700 transition ml-auto"
-            aria-label="Pridať kartu"
-            type="button"
-          >
-            <PlusCircle size={20} /> Pridať kartu
-          </button>
-        </Link>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Hlavička */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <CreditCard size={24} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  Správa content kariet
+                </h1>
+                <p className="text-gray-600">Obsah a multimedia karty</p>
+              </div>
+            </div>
+            
+            {/* Štatistiky */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-indigo-600">{stats.total}</div>
+                <div className="text-sm text-gray-500">Celkom</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{stats.visible}</div>
+                <div className="text-sm text-gray-500">Viditeľné</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600">{stats.hidden}</div>
+                <div className="text-sm text-gray-500">Skryté</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {languageOptions.find(l => l.value === filter.lang)?.flag}
+                </div>
+                <div className="text-sm text-gray-500">Jazyk</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Filtre */}
-      <div className="flex gap-4 mb-4 flex-wrap items-end">
-        <div>
-          <label className="block text-xs">Hľadaj</label>
-          <input
-            type="text"
-            value={globalSearch}
-            onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-            className="border rounded px-2 py-1 h-10 min-w-[200px]"
-            placeholder="Hľadaj"
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Nadpis</label>
-          <input
-            type="text"
-            value={filter.title}
-            onChange={e => { setFilter(f => ({ ...f, title: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder="Nadpis"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Priorita</label>
-          <input
-            type="number"
-            value={filter.priority}
-            onChange={e => { setFilter(f => ({ ...f, priority: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder="Priorita"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Viditeľné od</label>
-          <input
-            type="date"
-            value={filter.visible_from}
-            onChange={e => { setFilter(f => ({ ...f, visible_from: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Viditeľné do</label>
-          <input
-            type="date"
-            value={filter.visible_to}
-            onChange={e => { setFilter(f => ({ ...f, visible_to: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Jazyk</label>
-          <select
-            value={filter.lang}
-            onChange={e => { setFilter(f => ({ ...f, lang: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-          >
-            <option value="sk">Slovenčina</option>
-            <option value="cz">Čeština</option>
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
-        </div>
-        <button
-          onClick={clearFilters}
-          className="flex gap-1 items-center px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm font-semibold transition"
-          type="button"
-        >
-          <Eraser size={16} /> Vymazať filtre
-        </button>
-      </div>
+        {/* Ovládacie panely */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Výber jazyka */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe size={20} className="text-indigo-600" />
+              <h3 className="font-semibold text-gray-800">Jazyk kariet</h3>
+            </div>
+            <select
+              value={filter.lang}
+              onChange={e => { setFilter(f => ({ ...f, lang: e.target.value })); setPage(1); }}
+              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            >
+              {languageOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.flag} {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <div className="overflow-x-auto rounded-xl shadow">
-        <table className="w-full bg-white">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-3">Nadpis</th>
-              <th className="p-3">Obrázok 1</th>
-              <th className="p-3">Obrázok 2</th>
-              <th className="p-3">Viditeľné od</th>
-              <th className="p-3">Viditeľné do</th>
-              <th className="p-3">Priorita</th>
-              <th className="p-3">Jazyk</th>
-              <th className="p-3 text-center">Akcie</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={8} className="p-6 text-center text-gray-400">
-                  Načítavam...
-                </td>
-              </tr>
-            ) : cards.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="p-6 text-center text-gray-400">
-                  Žiadne záznamy
-                </td>
-              </tr>
-            ) : (
-              cards.map(card => (
-                <tr key={card.id} className="border-b hover:bg-blue-50 transition">
-                  <td className="p-3">{card.title}</td>
-                  <td className="p-3">
-                    {card.image_url ? <img src={card.image_url} alt="" style={{ maxWidth: 64 }} /> : ""}
-                  </td>
-                  <td className="p-3">
-                    {card.image_url_2 ? <img src={card.image_url_2} alt="" style={{ maxWidth: 64 }} /> : ""}
-                  </td>
-                  <td className="p-3">{card.visible_from}</td>
-                  <td className="p-3">{card.visible_to}</td>
-                  <td className="p-3">{card.priority}</td>
-                  <td className="p-3">{card.lang}</td>
-                  <td className="p-3 flex gap-2 items-center justify-center">
-                    <Link href={`/admin/content_cards/${card.id}`}>
-                      <button
-                        className="p-2 rounded hover:bg-blue-100 transition"
-                        title="Edit"
-                        aria-label="Edit"
-                      >
-                        <Pencil size={18} className="text-blue-600" />
-                      </button>
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(card.id!)}
-                      disabled={deletingId === card.id}
-                      className="p-2 rounded hover:bg-red-100 transition disabled:opacity-50"
-                      title="Delete"
-                      aria-label="Delete"
-                    >
-                      <Trash2 size={18} className="text-red-500" />
-                    </button>
-                  </td>
+          {/* Import/Export */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Download size={20} className="text-green-600" />
+              <h3 className="font-semibold text-gray-800">Import / Export</h3>
+            </div>
+            <div className="flex gap-2">
+              <label className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2">
+                <Upload size={16} />
+                {importLoading ? "Importujem..." : "Import"}
+                <input
+                  type="file"
+                  accept=".xlsx"
+                  onChange={handleExcelImport}
+                  className="hidden"
+                  disabled={importLoading}
+                />
+              </label>
+              <button
+                onClick={handleExportExcel}
+                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center justify-center gap-2"
+              >
+                <Download size={16} />
+                Export
+              </button>
+            </div>
+          </div>
+
+          {/* Akcie */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <PlusCircle size={20} className="text-purple-600" />
+              <h3 className="font-semibold text-gray-800">Akcie</h3>
+            </div>
+            <Link href="/admin/content_cards/new">
+              <button className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2">
+                <PlusCircle size={16} />
+                Pridať kartu
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Vyhľadávanie a filtre */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Search size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-800">Vyhľadávanie a filtre</h3>
+              {hasActiveFilters && (
+                <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                  Aktívne filtre
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition"
+            >
+              <Filter size={16} />
+              {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
+
+          {/* Globálne vyhľadávanie */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={globalSearch}
+                onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="Vyhľadať v názvoch a popisoch..."
+              />
+            </div>
+          </div>
+
+          {/* Detailné filtre */}
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Type size={16} className="inline mr-1" />
+                  Názov karty
+                </label>
+                <input
+                  type="text"
+                  value={filter.title}
+                  onChange={e => { setFilter(f => ({ ...f, title: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="Filtrovať..."
+                  disabled={!!globalSearch}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Hash size={16} className="inline mr-1" />
+                  Priorita
+                </label>
+                <input
+                  type="number"
+                  value={filter.priority}
+                  onChange={e => { setFilter(f => ({ ...f, priority: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  placeholder="Priorita..."
+                  disabled={!!globalSearch}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Viditeľné od</label>
+                <input
+                  type="date"
+                  value={filter.visible_from}
+                  onChange={e => { setFilter(f => ({ ...f, visible_from: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  disabled={!!globalSearch}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Viditeľné do</label>
+                <input
+                  type="date"
+                  value={filter.visible_to}
+                  onChange={e => { setFilter(f => ({ ...f, visible_to: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  disabled={!!globalSearch}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Vyčistiť filtre */}
+          {hasActiveFilters && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+              >
+                <Eraser size={16} />
+                Vyčistiť filtre
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Tabuľka */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Type size={16} />
+                      Názov
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon size={16} />
+                      Obrázky
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} />
+                      Viditeľnosť
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Star size={16} />
+                      Priorita
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Globe size={16} />
+                      Jazyk
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Stav</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Akcie</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-gray-500">Načítavam...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : cards.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center">
+                      <div className="text-gray-500">
+                        <CreditCard size={48} className="mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg font-medium">Žiadne karty</p>
+                        <p>Skúste zmeniť filtre alebo pridajte novú kartu</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  cards.map(card => (
+                    <tr key={card.id} className="hover:bg-indigo-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">{card.title}</div>
+                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                          {card.description_1}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          {card.image_url && (
+                            <img 
+                              src={card.image_url} 
+                              alt="Obrázok 1" 
+                              className="w-12 h-12 object-cover rounded-lg border-2 border-gray-200"
+                            />
+                          )}
+                          {card.image_url_2 && (
+                            <img 
+                              src={card.image_url_2} 
+                              alt="Obrázok 2" 
+                              className="w-12 h-12 object-cover rounded-lg border-2 border-gray-200"
+                            />
+                          )}
+                          {!card.image_url && !card.image_url_2 && (
+                            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                              <ImageIcon size={16} className="text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-600">
+                          {card.visible_from && (
+                            <div>Od: {new Date(card.visible_from).toLocaleDateString()}</div>
+                          )}
+                          {card.visible_to && (
+                            <div>Do: {new Date(card.visible_to).toLocaleDateString()}</div>
+                          )}
+                          {!card.visible_from && !card.visible_to && (
+                            <span className="text-gray-400">Vždy viditeľné</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-medium ${
+                          (card.priority || 0) >= 5 
+                            ? "bg-green-100 text-green-800" 
+                            : (card.priority || 0) >= 3
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}>
+                          <Star size={12} />
+                          {card.priority || 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">
+                          {languageOptions.find(l => l.value === card.lang)?.flag}
+                          {card.lang?.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {isCardVisible(card) ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                            <Eye size={12} />
+                            Viditeľné
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">
+                            <EyeOff size={12} />
+                            Skryté
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <Link href={`/admin/content_cards/${card.id}`}>
+                            <button className="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg transition">
+                              <Edit3 size={18} />
+                            </button>
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(card.id!)}
+                            disabled={deletingId === card.id}
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition disabled:opacity-50"
+                          >
+                            {deletingId === card.id ? (
+                              <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                              <Trash2 size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Stránkovanie */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Zobrazujem <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
+              <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
+              <span className="font-medium">{total}</span> kariet
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronDown size={16} className="rotate-90" />
+                Predchádzajúca
+              </button>
+              
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const totalPages = Math.ceil(total / PAGE_SIZE);
+                  const maxVisible = 5;
+                  
+                  if (totalPages <= maxVisible) {
+                    return Array.from({ length: totalPages }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          key={`page-${pageNum}`}
+                          onClick={() => setPage(pageNum)}
+                          className={`w-10 h-10 rounded-lg transition ${
+                            page === pageNum
+                              ? "bg-indigo-600 text-white"
+                              : "border border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    });
+                  }
+                  
+                  const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
+                  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                  
+                  const pages = [];
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={`page-${i}`}
+                        onClick={() => setPage(i)}
+                        className={`w-10 h-10 rounded-lg transition ${
+                          page === i
+                            ? "bg-indigo-600 text-white"
+                            : "border border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  
+                  return pages;
+                })()}
+              </div>
+              
+              <button
+                onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                disabled={page * PAGE_SIZE >= total}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Ďalšia
+                <ChevronDown size={16} className="-rotate-90" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      {/* Stránkovanie */}
-      <div className="flex justify-center items-center gap-6 py-6">
-        <button
-          className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-40"
-          onClick={() => setPage(p => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          Predošlá
-        </button>
-        <span>
-          Strana <b>{page}</b> z <b>{Math.ceil(total / PAGE_SIZE) || 1}</b>
-        </span>
-        <button
-          className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-40"
-          onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-          disabled={page * PAGE_SIZE >= total}
-        >
-          Ďalšia
-        </button>
-      </div>
-    </main>
+    </div>
   );
 }

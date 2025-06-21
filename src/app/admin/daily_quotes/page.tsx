@@ -3,7 +3,26 @@
 import { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
-import { Pencil, Trash2, PlusCircle, Eraser, PencilLine } from "lucide-react";
+import { 
+  Quote,
+  Trash2, 
+  PlusCircle, 
+  Eraser, 
+  Edit3,
+  Download,
+  Upload,
+  Filter,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Globe,
+  Calendar,
+  BookOpen,
+  MessageSquare,
+  Hash,
+  X,
+  Save
+} from "lucide-react";
 import * as XLSX from "xlsx";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
@@ -17,6 +36,13 @@ interface DailyQuote {
 }
 
 const PAGE_SIZE = 20;
+
+const languageOptions = [
+  { value: "sk", label: "Slovenčina", flag: "🇸🇰" },
+  { value: "cz", label: "Čeština", flag: "🇨🇿" },
+  { value: "en", label: "English", flag: "🇺🇸" },
+  { value: "es", label: "Español", flag: "🇪🇸" },
+];
 
 export default function DailyQuotesAdminPage() {
   const { lang: appLang } = useLanguage();
@@ -35,7 +61,8 @@ export default function DailyQuotesAdminPage() {
   const [editData, setEditData] = useState<Partial<DailyQuote>>({});
   const [editLoading, setEditLoading] = useState(false);
 
-  // Multivyhľadávanie
+  // Filtre a vyhľadávanie
+  const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState({
     quote: "",
     reference: "",
@@ -54,7 +81,6 @@ export default function DailyQuotesAdminPage() {
   });
   const [addLoading, setAddLoading] = useState(false);
 
-  // Aktualizácia lang v addData pri zmene filterLang
   useEffect(() => {
     setAddData(a => ({ ...a, lang: filterLang }));
   }, [filterLang]);
@@ -90,7 +116,6 @@ export default function DailyQuotesAdminPage() {
         dataQuery = dataQuery.ilike("reference", `%${filter.reference}%`);
         countQuery = countQuery.ilike("reference", `%${filter.reference}%`);
       }
-      // Filtrovanie podľa dátumu od/do
       if (filter.dateFrom) {
         dataQuery = dataQuery.gte("date", filter.dateFrom);
         countQuery = countQuery.gte("date", filter.dateFrom);
@@ -128,7 +153,7 @@ export default function DailyQuotesAdminPage() {
     setAddLoading(true);
 
     if (!addData.date || !addData.quote || !addData.reference || !addData.lang) {
-      alert(t.error_add || "Chýbajú povinné polia.");
+      alert("Chýbajú povinné polia");
       setAddLoading(false);
       return;
     }
@@ -140,7 +165,7 @@ export default function DailyQuotesAdminPage() {
       setAddData({ date: "", quote: "", reference: "", lang: filterLang });
       fetchQuotes();
     } else {
-      alert(t.error_add || "Chyba pri ukladaní.");
+      alert("Chyba pri pridávaní citátu");
     }
   };
 
@@ -167,13 +192,13 @@ export default function DailyQuotesAdminPage() {
       setEditData({});
       fetchQuotes();
     } else {
-      alert(t.error_edit || "Chyba pri ukladaní.");
+      alert("Chyba pri ukladaní");
     }
   };
 
   // Vymazať položku
   const handleDelete = async (id: string) => {
-    if (!confirm(t.confirm_delete || "Naozaj vymazať?")) return;
+    if (!confirm("Naozaj chcete vymazať tento citát?")) return;
     setDeletingId(id);
     const { error } = await supabase.from("daily_quotes").delete().eq("id", id);
     if (!error) {
@@ -207,16 +232,16 @@ export default function DailyQuotesAdminPage() {
       })).filter(item => item.date && item.quote && item.reference && item.lang);
 
       if (newItems.length === 0) {
-        alert(t.error_import + ": " + t.no_records);
+        alert("Nenašli sa žiadne validné záznamy na import");
         return;
       }
 
       const { error } = await supabase.from("daily_quotes").insert(newItems);
 
       if (error) {
-        alert(t.error_import + ": " + error.message);
+        alert("Chyba pri importe: " + error.message);
       } else {
-        alert(t.imported);
+        alert(`Úspešne importovaných ${newItems.length} citátov!`);
         fetchQuotes();
       }
     };
@@ -229,324 +254,569 @@ export default function DailyQuotesAdminPage() {
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "DailyQuotes");
-    XLSX.writeFile(wb, "daily_quotes_export.xlsx");
+    XLSX.writeFile(wb, `daily_quotes_export_${filterLang}_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  // Vyčistiť všetky filtre (aj dátumové!)
+  // Vyčistiť všetky filtre
   const clearFilters = () => {
     setFilter({ quote: "", reference: "", dateFrom: "", dateTo: "" });
     setGlobalSearch("");
     setPage(1);
   };
 
+  const hasActiveFilters = globalSearch || Object.values(filter).some(f => f !== "");
+
+  // Získať štatistiky
+  const getStats = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    
+    return {
+      total: quotes.length,
+      today: quotes.filter(q => q.date === today).length,
+      thisMonth: quotes.filter(q => q.date.startsWith(thisMonth)).length,
+      language: filterLang.toUpperCase(),
+    };
+  };
+
+  const stats = getStats();
+
   return (
-    <main>
-      <h1 className="text-2xl font-bold mb-6">{t.daily_quotes_admin_title || "Denné citáty"}</h1>
-      <div className="flex items-center gap-4 mb-4">
-        <div>
-          <label className="mr-2">{t.language || "Jazyk dát"}:</label>
-          <select
-            value={filterLang}
-            onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
-            className="border rounded px-2 py-1 h-11"
-          >
-            <option value="sk">Slovenčina</option>
-            <option value="cz">Čeština</option>
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Hlavička */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                <Quote size={24} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  Správa denných citátov
+                </h1>
+                <p className="text-gray-600">Inšpirujúce citáty na každý deň</p>
+              </div>
+            </div>
+            
+            {/* Štatistiky */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{stats.total}</div>
+                <div className="text-sm text-gray-500">Celkom</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{stats.today}</div>
+                <div className="text-sm text-gray-500">Dnes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{stats.thisMonth}</div>
+                <div className="text-sm text-gray-500">Tento mesiac</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {languageOptions.find(l => l.value === filterLang)?.flag}
+                </div>
+                <div className="text-sm text-gray-500">Jazyk</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <label className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 h-11 rounded hover:bg-blue-700 transition cursor-pointer">
-          <span>{t.import_excel || "Importovať Excel"}</span>
-          <input
-            type="file"
-            accept=".xlsx"
-            onChange={handleExcelImport}
-            className="hidden"
-          />
-        </label>
-        <button
-          className="inline-flex items-center gap-2 bg-yellow-500 text-white px-3 py-2 h-11 rounded hover:bg-yellow-600 transition"
-          onClick={handleExportExcel}
-          aria-label={t.export_excel || "Exportovať Excel"}
-          type="button"
-        >
-          {t.export_excel || "Exportovať Excel"}
-        </button>
-        <button
-          className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 h-11 rounded hover:bg-green-600 transition ml-auto"
-          onClick={() => setShowAdd(a => !a)}
-          aria-label={t.add_item}
-        >
-          <PlusCircle size={20} /> {t.add_item || "Pridať"}
-        </button>
-      </div>
 
-      {/* Filtre */}
-      <div className="flex gap-4 mb-4 flex-wrap items-end">
-        <div>
-          <label className="block text-xs">{t.global_search || "Hľadaj"}</label>
-          <input
-            type="text"
-            value={globalSearch}
-            onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-            className="border rounded px-2 py-1 h-10 min-w-[200px]"
-            placeholder={t.global_search || "Hľadaj"}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Citát</label>
-          <input
-            type="text"
-            value={filter.quote}
-            onChange={e => { setFilter(f => ({ ...f, quote: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder="Citát"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Reference</label>
-          <input
-            type="text"
-            value={filter.reference}
-            onChange={e => { setFilter(f => ({ ...f, reference: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder="Odkaz"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">{t.date_from || "Dátum od"}</label>
-          <input
-            type="date"
-            value={filter.dateFrom}
-            onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder={t.date_from || "Dátum od"}
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">{t.date_to || "Dátum do"}</label>
-          <input
-            type="date"
-            value={filter.dateTo}
-            onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder={t.date_to || "Dátum do"}
-            disabled={!!globalSearch}
-          />
-        </div>
-        <button
-          onClick={clearFilters}
-          className="flex gap-1 items-center px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm font-semibold transition"
-          type="button"
-          aria-label={t.clear_filters}
-        >
-          <Eraser size={16} /> {t.clear_filters || "Vymazať filtre"}
-        </button>
-      </div>
-
-      {/* Formulár na pridanie */}
-      {showAdd && (
-        <form onSubmit={handleAdd} className="mb-4 flex flex-wrap gap-3 items-end bg-green-50 p-4 rounded shadow">
-          <div>
-            <label className="block text-sm">{t.date || "Dátum"}</label>
-            <input
-              required
-              type="date"
-              value={addData.date || ""}
-              onChange={e => setAddData(a => ({ ...a, date: e.target.value }))}
-              className="border rounded px-2 py-2 h-11"
-            />
-          </div>
-          <div>
-            <label className="block text-sm">Citát</label>
-            <input
-              required
-              value={addData.quote || ""}
-              onChange={e => setAddData(a => ({ ...a, quote: e.target.value }))}
-              className="border rounded px-2 py-2 h-11"
-            />
-          </div>
-          <div>
-            <label className="block text-sm">Reference</label>
-            <input
-              required
-              value={addData.reference || ""}
-              onChange={e => setAddData(a => ({ ...a, reference: e.target.value }))}
-              className="border rounded px-2 py-2 h-11"
-            />
-          </div>
-          <div>
-            <label className="block text-sm">{t.lang || "Jazyk"}</label>
+        {/* Ovládacie panely */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Výber jazyka */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe size={20} className="text-purple-600" />
+              <h3 className="font-semibold text-gray-800">Jazyk citátov</h3>
+            </div>
             <select
-              value={addData.lang || filterLang}
-              onChange={e => setAddData(a => ({ ...a, lang: e.target.value }))}
-              className="border rounded px-2 py-2 h-11 min-w-[80px]"
+              value={filterLang}
+              onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
+              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
             >
-              <option value="sk">SK</option>
-              <option value="cz">CZ</option>
-              <option value="en">EN</option>
-              <option value="es">ES</option>
+              {languageOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.flag} {option.label}
+                </option>
+              ))}
             </select>
           </div>
-          <button
-            type="submit"
-            disabled={addLoading}
-            className="bg-green-600 text-white px-5 py-2 h-11 rounded hover:bg-green-700 transition"
-            aria-label={t.add || "Pridať"}
-          >
-            {addLoading ? t.adding || "Pridávam..." : t.add || "Pridať"}
-          </button>
-        </form>
-      )}
 
-      <div className="overflow-x-auto rounded-xl shadow">
-        <table className="w-full bg-white">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-3">{t.date || "Dátum"}</th>
-              <th className="p-3">Citát</th>
-              <th className="p-3">Reference</th>
-              <th className="p-3">{t.lang || "Jazyk"}</th>
-              <th className="p-3 text-center">{t.actions || "Akcie"}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-400">
-                  {t.loading || "Načítavam..."}
-                </td>
-              </tr>
-            ) : quotes.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-400">
-                  {t.no_records || "Žiadne záznamy"}
-                </td>
-              </tr>
-            ) : (
-              quotes.map(q =>
-                editingId === q.id ? (
-                  <tr key={q.id} className="border-b bg-yellow-50">
-                    <td className="p-3">
-                      <input
-                        type="date"
-                        value={editData.date || ""}
-                        onChange={e => setEditData(ed => ({ ...ed, date: e.target.value }))}
-                        className="border rounded px-2 py-1"
-                      />
+          {/* Import/Export */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Download size={20} className="text-green-600" />
+              <h3 className="font-semibold text-gray-800">Import / Export</h3>
+            </div>
+            <div className="flex gap-2">
+              <label className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2">
+                <Upload size={16} />
+                Import
+                <input
+                  type="file"
+                  accept=".xlsx"
+                  onChange={handleExcelImport}
+                  className="hidden"
+                />
+              </label>
+              <button
+                onClick={handleExportExcel}
+                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center justify-center gap-2"
+              >
+                <Download size={16} />
+                Export
+              </button>
+            </div>
+          </div>
+
+          {/* Akcie */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <PlusCircle size={20} className="text-pink-600" />
+              <h3 className="font-semibold text-gray-800">Akcie</h3>
+            </div>
+            <button
+              onClick={() => setShowAdd(!showAdd)}
+              className="w-full bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition flex items-center justify-center gap-2"
+            >
+              <PlusCircle size={16} />
+              {showAdd ? "Zrušiť pridanie" : "Pridať citát"}
+            </button>
+          </div>
+        </div>
+
+        {/* Vyhľadávanie a filtre */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Search size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-800">Vyhľadávanie a filtre</h3>
+              {hasActiveFilters && (
+                <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+                  Aktívne filtre
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition"
+            >
+              <Filter size={16} />
+              {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
+
+          {/* Globálne vyhľadávanie */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={globalSearch}
+                onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                placeholder="Vyhľadať v citátoch a referenciách..."
+              />
+            </div>
+          </div>
+
+          {/* Detailné filtre */}
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <MessageSquare size={16} className="inline mr-1" />
+                  Citát
+                </label>
+                <input
+                  type="text"
+                  value={filter.quote}
+                  onChange={e => { setFilter(f => ({ ...f, quote: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  placeholder="Filtrovať citáty..."
+                  disabled={!!globalSearch}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <BookOpen size={16} className="inline mr-1" />
+                  Referencia
+                </label>
+                <input
+                  type="text"
+                  value={filter.reference}
+                  onChange={e => { setFilter(f => ({ ...f, reference: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  placeholder="Filtrovať referencie..."
+                  disabled={!!globalSearch}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum od</label>
+                <input
+                  type="date"
+                  value={filter.dateFrom}
+                  onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  disabled={!!globalSearch}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum do</label>
+                <input
+                  type="date"
+                  value={filter.dateTo}
+                  onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  disabled={!!globalSearch}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Vyčistiť filtre */}
+          {hasActiveFilters && (
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+              >
+                <Eraser size={16} />
+                Vyčistiť filtre
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Formulár na pridanie */}
+        {showAdd && (
+          <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl shadow-lg p-6 mb-6 border border-pink-200">
+            <div className="flex items-center gap-3 mb-4">
+              <PlusCircle size={20} className="text-pink-600" />
+              <h3 className="font-semibold text-gray-800">Pridať nový citát</h3>
+            </div>
+            <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum *</label>
+                <input
+                  required
+                  type="date"
+                  value={addData.date || ""}
+                  onChange={e => setAddData(a => ({ ...a, date: e.target.value }))}
+                  className="w-full border-2 border-pink-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Citát *</label>
+                <input
+                  required
+                  value={addData.quote || ""}
+                  onChange={e => setAddData(a => ({ ...a, quote: e.target.value }))}
+                  className="w-full border-2 border-pink-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                  placeholder="Zadajte citát..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Referencia *</label>
+                <input
+                  required
+                  value={addData.reference || ""}
+                  onChange={e => setAddData(a => ({ ...a, reference: e.target.value }))}
+                  className="w-full border-2 border-pink-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                  placeholder="Zdroj citátu..."
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  disabled={addLoading}
+                  className="w-full bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {addLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Pridávam...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} />
+                      Pridať
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Tabuľka */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} />
+                      Dátum
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare size={16} />
+                      Citát
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <BookOpen size={16} />
+                      Referencia
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Globe size={16} />
+                      Jazyk
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Akcie</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-gray-500">Načítavam...</span>
+                      </div>
                     </td>
-                    <td className="p-3">
-                      <input
-                        value={editData.quote || ""}
-                        onChange={e => setEditData(ed => ({ ...ed, quote: e.target.value }))}
-                        className="border rounded px-2 py-1"
-                      />
-                    </td>
-                    <td className="p-3">
-                      <input
-                        value={editData.reference || ""}
-                        onChange={e => setEditData(ed => ({ ...ed, reference: e.target.value }))}
-                        className="border rounded px-2 py-1"
-                      />
-                    </td>
-                    <td className="p-3">
-                      <select
-                        value={editData.lang || ""}
-                        onChange={e => setEditData(ed => ({ ...ed, lang: e.target.value }))}
-                        className="border rounded px-2 py-1"
-                      >
-                        <option value="sk">SK</option>
-                        <option value="cz">CZ</option>
-                        <option value="en">EN</option>
-                        <option value="es">ES</option>
-                      </select>
-                    </td>
-                    <td className="p-3 flex gap-2 items-center justify-center">
-                      <button
-                        onClick={saveEdit}
-                        disabled={editLoading}
-                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                      >
-                        {t.save || "Uložiť"}
-                      </button>
-                      <button
-                        onClick={cancelEdit}
-                        className="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                      >
-                        {t.cancel || "Zrušiť"}
-                      </button>
+                  </tr>
+                ) : quotes.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center">
+                      <div className="text-gray-500">
+                        <Quote size={48} className="mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg font-medium">Žiadne citáty</p>
+                        <p>Skúste zmeniť filtre alebo pridajte nový citát</p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
-                  <tr key={q.id} className="border-b hover:bg-blue-50 transition">
-                    <td className="p-3">{q.date}</td>
-                    <td className="p-3">{q.quote}</td>
-                    <td className="p-3">{q.reference}</td>
-                    <td className="p-3">{q.lang}</td>
-                    <td className="p-3 flex gap-2 items-center justify-center">
-                      {/* Link na podstránku detail/edit */}
-                      <Link href={`/admin/daily_quotes/${q.id}`}>
-                        <button
-                          className="p-2 rounded hover:bg-red-100 transition"
-                          title={t.edit || "Editovať"}
-                          aria-label={t.edit || "Editovať"}
-                        >
-                          <PencilLine size={20} className="text-red-600" />
-                        </button>
-                      </Link>
-                      {/* Inline edit */}
-                      <button
-                        className="p-2 rounded hover:bg-blue-100 transition"
-                        title={t.edit || "Editovať"}
-                        aria-label={t.edit || "Editovať"}
-                        onClick={() => startEdit(q)}
-                      >
-                        <Pencil size={18} className="text-blue-600" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(q.id)}
-                        disabled={deletingId === q.id}
-                        className="p-2 rounded hover:bg-red-100 transition disabled:opacity-50"
-                        title={t.delete || "Vymazať"}
-                        aria-label={t.delete || "Vymazať"}
-                      >
-                        <Trash2 size={18} className="text-red-500" />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              )
-            )}
-          </tbody>
-        </table>
-      </div>
+                  quotes.map(q =>
+                    editingId === q.id ? (
+                      <tr key={q.id} className="bg-yellow-50 border-l-4 border-yellow-400">
+                        <td className="px-6 py-4">
+                          <input
+                            type="date"
+                            value={editData.date || ""}
+                            onChange={e => setEditData(ed => ({ ...ed, date: e.target.value }))}
+                            className="w-full border-2 border-yellow-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <textarea
+                            value={editData.quote || ""}
+                            onChange={e => setEditData(ed => ({ ...ed, quote: e.target.value }))}
+                            rows={3}
+                            className="w-full border-2 border-yellow-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition resize-none"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <input
+                            value={editData.reference || ""}
+                            onChange={e => setEditData(ed => ({ ...ed, reference: e.target.value }))}
+                            className="w-full border-2 border-yellow-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <select
+                            value={editData.lang || ""}
+                            onChange={e => setEditData(ed => ({ ...ed, lang: e.target.value }))}
+                            className="w-full border-2 border-yellow-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition"
+                          >
+                            {languageOptions.map(option => (
+                              <option key={option.value} value={option.value}>
+                                {option.flag} {option.value.toUpperCase()}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={saveEdit}
+                              disabled={editLoading}
+                              className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
+                            >
+                              {editLoading ? (
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <Save size={16} />
+                              )}
+                              Uložiť
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="bg-gray-400 text-white px-3 py-2 rounded-lg hover:bg-gray-500 transition flex items-center gap-2"
+                            >
+                              <X size={16} />
+                              Zrušiť
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr key={q.id} className="hover:bg-purple-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-900">
+                            {new Date(q.date + 'T00:00:00').toLocaleDateString('sk-SK', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-gray-900 leading-relaxed">
+                            <Quote size={16} className="inline text-purple-400 mr-2" />
+                            {q.quote.length > 100 ? (
+                              <span title={q.quote}>{q.quote.slice(0, 100)}...</span>
+                            ) : (
+                              q.quote
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-gray-700 font-medium">{q.reference}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
+                            {languageOptions.find(l => l.value === q.lang)?.flag}
+                            {q.lang.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <Link href={`/admin/daily_quotes/${q.id}`}>
+                              <button
+                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition"
+                                title="Upraviť detail"
+                              >
+                                <Edit3 size={18} />
+                              </button>
+                            </Link>
+                            <button
+                              onClick={() => startEdit(q)}
+                              className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition"
+                              title="Rýchla editácia"
+                            >
+                              <Edit3 size={18} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(q.id)}
+                              disabled={deletingId === q.id}
+                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition disabled:opacity-50"
+                              title="Vymazať"
+                            >
+                              {deletingId === q.id ? (
+                                <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <Trash2 size={18} />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      {/* Stránkovanie */}
-      <div className="flex justify-center items-center gap-6 py-6">
-        <button
-          className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-40"
-          onClick={() => setPage(p => Math.max(1, p - 1))}
-          disabled={page === 1}
-          aria-label={t.previous}
-        >
-          {t.previous || "<"}
-        </button>
-        <span>
-          {t.page || "Strana"} <b>{page}</b> {t.of || "z"} <b>{Math.ceil(total / PAGE_SIZE) || 1}</b>
-        </span>
-        <button
-          className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-40"
-          onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-          disabled={page * PAGE_SIZE >= total}
-          aria-label={t.next}
-        >
-          {t.next || ">"}
-        </button>
+        {/* Stránkovanie */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Zobrazujem <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
+              <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
+              <span className="font-medium">{total}</span> citátov
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronDown size={16} className="rotate-90" />
+                Predchádzajúca
+              </button>
+              
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const totalPages = Math.ceil(total / PAGE_SIZE);
+                  const maxVisible = 5;
+                  
+                  if (totalPages <= maxVisible) {
+                    return Array.from({ length: totalPages }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          key={`page-${pageNum}`}
+                          onClick={() => setPage(pageNum)}
+                          className={`w-10 h-10 rounded-lg transition ${
+                            page === pageNum
+                              ? "bg-purple-600 text-white"
+                              : "border border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    });
+                  }
+                  
+                  const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
+                  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                  
+                  const pages = [];
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={`page-${i}`}
+                        onClick={() => setPage(i)}
+                        className={`w-10 h-10 rounded-lg transition ${
+                          page === i
+                            ? "bg-purple-600 text-white"
+                            : "border border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  
+                  return pages;
+                })()}
+              </div>
+              
+              <button
+                onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                disabled={page * PAGE_SIZE >= total}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Ďalšia
+                <ChevronDown size={16} className="-rotate-90" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
