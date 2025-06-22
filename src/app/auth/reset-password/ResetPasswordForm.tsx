@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useSupabase } from '../../components/SupabaseProvider'; // ← ZMENA: náš provider
 import { 
   Key, 
   Mail, 
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 export default function ResetPasswordForm() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState('');

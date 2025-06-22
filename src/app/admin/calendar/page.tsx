@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import Link from "next/link";
 import { 
   Calendar as CalendarIcon, 
@@ -50,7 +50,7 @@ export default function CalendarAdminPage() {
   const t = translations[appLang];
 
   const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const [days, setDays] = useState<CalendarDay[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);

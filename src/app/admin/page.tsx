@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import Link from "next/link";
 import {
   Users,
@@ -158,7 +158,7 @@ const RecentActivityItem = ({ action, time, user, type }: {
 };
 
 export default function AdminPage() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 

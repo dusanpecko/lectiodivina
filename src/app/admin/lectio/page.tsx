@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ✅ OPRAVA
 import { 
   BookOpen, Trash2, PlusCircle, Edit3, Download, Upload, 
   Filter, Search, ChevronDown, ChevronUp, Globe, Calendar, 
@@ -130,7 +130,7 @@ export default function LectioAdminPage() {
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];
   const router = useRouter();
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase();
 
   // State
   const [lectios, setLectios] = useState<Lectio[]>([]);

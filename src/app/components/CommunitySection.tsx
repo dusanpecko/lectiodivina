@@ -1,12 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
-
-// Supabase konfigurácia
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { useSupabase } from "./SupabaseProvider"; // ← ZMENA: náš provider
 
 interface CommunitySectionProps {
   translations: {
@@ -45,6 +40,7 @@ interface FormData {
 }
 
 export default function CommunitySection({ translations }: CommunitySectionProps) {
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto direktného createClient
   const t = translations.community_section;
   const [formData, setFormData] = useState<FormData>({
     name: '',

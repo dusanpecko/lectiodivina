@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSupabase } from "../components/SupabaseProvider"; // Náš nový provider
 import { 
   Mail, 
   Lock, 
@@ -18,8 +18,7 @@ import {
 } from "lucide-react";
 
 export default function LoginPage() {
-  const session = useSession();
-  const supabase = useSupabaseClient();
+  const { supabase, session } = useSupabase(); // Používame náš provider
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,14 +27,25 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loginType, setLoginType] = useState<'email' | 'social'>('email');
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   useEffect(() => {
-    if (session !== undefined && session) {
+    // Počkaj na načítanie session
+    const timer = setTimeout(() => {
+      setIsCheckingSession(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (session && !isCheckingSession) {
       router.replace("/admin");
     }
-  }, [session, router]);
+  }, [session, router, isCheckingSession]);
 
-  if (session === undefined) {
+  // Loading screen počas kontroly session
+  if (isCheckingSession) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-12 text-center">
@@ -55,6 +65,7 @@ export default function LoginPage() {
     );
   }
 
+  // Ak je už prihlásený, nič nezobrazuj (prebieha redirect)
   if (session) {
     return null;
   }
@@ -64,45 +75,64 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      console.log("Attempting login with:", { email, supabase: !!supabase });
 
-    if (authError) {
-      setLoading(false);
-      setError(authError.message);
-      return;
-    }
+      if (!supabase) {
+        throw new Error("Supabase client nie je dostupný");
+      }
 
-    // Kontrola role v databáze
-    if (authData?.user?.email) {
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("role")
-        .eq("email", authData.user.email)
-        .single();
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      setLoading(false);
+      console.log("Login response:", { authData, authError });
 
-      if (userError) {
-        setError("Chyba pri kontrole oprávnení. Kontaktujte administrátora.");
-        await supabase.auth.signOut();
+      if (authError) {
+        setLoading(false);
+        setError(authError.message);
         return;
       }
 
-      if (!userData || userData.role !== "admin") {
-        setError("Nemáte oprávnenie na prístup do administrácie. Iba admin užívatelia môžu pristupovať.");
-        await supabase.auth.signOut();
-        return;
-      }
+      // Kontrola role v databáze
+      if (authData?.user?.email) {
+        console.log("Checking user role for:", authData.user.email);
+        
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("role")
+          .eq("email", authData.user.email)
+          .single();
 
-      // Úspešné prihlásenie s admin rolou
-      router.push("/admin");
-    } else {
+        console.log("User role response:", { userData, userError });
+
+        setLoading(false);
+
+        if (userError) {
+          setError("Chyba pri kontrole oprávnení. Kontaktujte administrátora.");
+          await supabase.auth.signOut();
+          return;
+        }
+
+        if (!userData || userData.role !== "admin") {
+          setError("Nemáte oprávnenie na prístup do administrácie. Iba admin užívatelia môžu pristupovať.");
+          await supabase.auth.signOut();
+          return;
+        }
+
+        // Úspešné prihlásenie s admin rolou
+        console.log("Login successful, redirecting to admin");
+        router.push("/admin");
+      } else {
+        setLoading(false);
+        setError("Nepodarilo sa overiť používateľa.");
+        await supabase.auth.signOut();
+      }
+    } catch (err) {
+      console.error("Login error:", err);
       setLoading(false);
-      setError("Nepodarilo sa overiť používateľa.");
-      await supabase.auth.signOut();
+      setError(err instanceof Error ? err.message : "Neznáma chyba");
     }
   };
 
@@ -110,23 +140,40 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+    try {
+      if (!supabase) {
+        throw new Error("Supabase client nie je dostupný");
       }
-    });
 
-    setLoading(false);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
 
-    if (error) {
-      setError(error.message);
+      setLoading(false);
+
+      if (error) {
+        setError(error.message);
+      }
+    } catch (err) {
+      console.error("Social login error:", err);
+      setLoading(false);
+      setError(err instanceof Error ? err.message : "Neznáma chyba");
     }
-    // Note: Kontrola role bude vykonaná v callback handleri
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Debug info - odstráňte v produkcii */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
+          <p>Supabase client: {supabase ? '✅ Dostupný' : '❌ Nedostupný'}</p>
+          <p>Session: {session ? '✅ Prihlásený' : '❌ Neprihlásený'}</p>
+        </div>
+      )}
+
       {/* Hlavička */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg mb-4">
@@ -251,7 +298,7 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !supabase}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
           >
             {loading ? (
@@ -272,7 +319,7 @@ export default function LoginPage() {
         <div className="space-y-4">
           <button
             onClick={() => handleSocialLogin('google')}
-            disabled={loading}
+            disabled={loading || !supabase}
             className="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition-all duration-200 disabled:opacity-50"
           >
             <Chrome size={20} className="text-red-500" />
@@ -281,7 +328,7 @@ export default function LoginPage() {
 
           <button
             onClick={() => handleSocialLogin('github')}
-            disabled={loading}
+            disabled={loading || !supabase}
             className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 transition-all duration-200 disabled:opacity-50"
           >
             <Github size={20} />

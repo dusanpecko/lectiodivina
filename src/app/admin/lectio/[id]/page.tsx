@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ✅ ZMENA TU
 import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
@@ -49,7 +49,7 @@ interface Lectio {
 }
 
 export default function LectioEditPage() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ✅ ZMENA TU
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -134,14 +134,14 @@ export default function LectioEditPage() {
     setSaving(true);
     setMessage(null);
     setMessageType(null);
-    
+
     if (!lectio) {
       setSaving(false);
       setMessage(t.save_error || "Chyba pri ukladaní");
       setMessageType("error");
       return;
     }
-    
+
     if (isNew) {
       const { data, error } = await supabase
         .from("lectio")

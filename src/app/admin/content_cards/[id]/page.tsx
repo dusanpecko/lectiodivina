@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
@@ -61,7 +61,7 @@ export default function ContentCardEditPage() {
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];
 
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;

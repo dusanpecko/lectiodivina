@@ -1,6 +1,5 @@
 "use client";
 import NavBar from "../components/NavBar";
-import "../globals.css";
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ✅ ZMENA
 import Link from "next/link";
 import { 
   Quote,
@@ -27,6 +27,7 @@ import * as XLSX from "xlsx";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 
+// ... rozhrania a konštanty
 interface DailyQuote {
   id: string;
   date: string;
@@ -48,20 +49,18 @@ export default function DailyQuotesAdminPage() {
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];
 
+  const { supabase } = useSupabase(); // ✅ ZMENA
   const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
-  const supabase = useSupabaseClient();
   const [quotes, setQuotes] = useState<DailyQuote[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // Inline editácia
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<DailyQuote>>({});
   const [editLoading, setEditLoading] = useState(false);
 
-  // Filtre a vyhľadávanie
   const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState({
     quote: "",
@@ -71,7 +70,6 @@ export default function DailyQuotesAdminPage() {
   });
   const [globalSearch, setGlobalSearch] = useState("");
 
-  // Formulár na pridanie
   const [showAdd, setShowAdd] = useState(false);
   const [addData, setAddData] = useState<Partial<DailyQuote>>({
     date: "",
@@ -85,7 +83,6 @@ export default function DailyQuotesAdminPage() {
     setAddData(a => ({ ...a, lang: filterLang }));
   }, [filterLang]);
 
-  // Načítanie dát
   const fetchQuotes = async () => {
     setLoading(true);
 
@@ -147,7 +144,6 @@ export default function DailyQuotesAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterLang, filter, globalSearch, page, supabase]);
 
-  // Pridať položku
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setAddLoading(true);
@@ -169,7 +165,6 @@ export default function DailyQuotesAdminPage() {
     }
   };
 
-  // Inline editácia
   const startEdit = (q: DailyQuote) => {
     setEditingId(q.id);
     setEditData({ ...q });
@@ -196,7 +191,6 @@ export default function DailyQuotesAdminPage() {
     }
   };
 
-  // Vymazať položku
   const handleDelete = async (id: string) => {
     if (!confirm("Naozaj chcete vymazať tento citát?")) return;
     setDeletingId(id);
@@ -211,7 +205,6 @@ export default function DailyQuotesAdminPage() {
     setDeletingId(null);
   };
 
-  // Import z Excelu
   const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -248,7 +241,6 @@ export default function DailyQuotesAdminPage() {
     reader.readAsArrayBuffer(file);
   };
 
-  // Export do Excelu
   const handleExportExcel = () => {
     const exportData = quotes.map(({ id, ...item }) => item);
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -257,7 +249,6 @@ export default function DailyQuotesAdminPage() {
     XLSX.writeFile(wb, `daily_quotes_export_${filterLang}_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
-  // Vyčistiť všetky filtre
   const clearFilters = () => {
     setFilter({ quote: "", reference: "", dateFrom: "", dateTo: "" });
     setGlobalSearch("");
@@ -266,7 +257,6 @@ export default function DailyQuotesAdminPage() {
 
   const hasActiveFilters = globalSearch || Object.values(filter).some(f => f !== "");
 
-  // Získať štatistiky
   const getStats = () => {
     const today = new Date().toISOString().slice(0, 10);
     const thisMonth = new Date().toISOString().slice(0, 7);

@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "../../components/SupabaseProvider"; // ← ZMENA: náš provider
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 export default function AuthCallbackPage() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');

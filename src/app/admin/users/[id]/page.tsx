@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useParams, useRouter } from "next/navigation";
 import { User, Mail, Shield, Calendar, Camera, Globe, Save, ArrowLeft, Eye, AlertCircle } from "lucide-react";
 
@@ -16,7 +16,7 @@ interface UserData {
 }
 
 export default function UserEditPage() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;

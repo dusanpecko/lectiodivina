@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import Link from "next/link";
 import { 
   CreditCard,
@@ -60,7 +60,7 @@ export default function ContentCardsAdminPage() {
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];
 
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const [cards, setCards] = useState<ContentCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);

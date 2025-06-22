@@ -1,12 +1,12 @@
 "use client";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
 import AdminSidebar from "../components/AdminSidebar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = useSession();
+  const { session } = useSupabase(); // ← ZMENA: náš provider namiesto useSession
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);

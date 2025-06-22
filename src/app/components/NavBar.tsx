@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useLanguage, Language } from "./LanguageProvider";
 import { translations } from "../i18n";
-import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { useSupabase } from "./SupabaseProvider"; // ← ZMENA: náš provider
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
@@ -24,8 +24,7 @@ interface NavBarProps {
 
 export default function NavBar({ onMenuClick }: NavBarProps) {
   const { lang, changeLang } = useLanguage();
-  const supabase = useSupabaseClient();
-  const session = useSession();
+  const { supabase, session } = useSupabase(); // ← ZMENA: náš provider namiesto starých hooks
   const router = useRouter();
   const pathname = usePathname();
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);

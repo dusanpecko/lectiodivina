@@ -1,13 +1,8 @@
 // components/DailyQuote.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { useLanguage } from "./LanguageProvider";
-
-// nastav si svoje Supabase kľúče
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { useSupabase } from "./SupabaseProvider"; // ← ZMENA: náš provider
 
 type DailyQuoteRow = {
   date: string;
@@ -18,6 +13,7 @@ type DailyQuoteRow = {
 
 export default function DailyQuote() {
   const { lang } = useLanguage();
+  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto direktného createClient
   const [quote, setQuote] = useState<DailyQuoteRow | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +33,7 @@ export default function DailyQuote() {
       setLoading(false);
     }
     fetchQuote();
-  }, [lang]);
+  }, [lang, supabase]); // ← ZMENA: pridaný supabase do dependencies
 
   if (loading)
     return (
@@ -54,7 +50,7 @@ export default function DailyQuote() {
     );
 
   return (
-    <div className="/10 py-8 px-6 my-0 flex flex-col items-center">
+    <div className="bg-[#4a5085]/10 py-8 px-6 my-0 flex flex-col items-center">
       <blockquote className="text-2xl text-[#4a5085] font-semibold text-center mb-3">
         {quote.quote}
       </blockquote>

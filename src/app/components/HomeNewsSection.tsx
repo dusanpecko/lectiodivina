@@ -1,7 +1,9 @@
+'use client'
+
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
-import { useLanguage } from "@/app/components/LanguageProvider";
+import { useLanguage } from "./LanguageProvider";
+import { useSupabase } from "./SupabaseProvider";
 
 interface News {
   id: number;
@@ -17,42 +19,95 @@ interface News {
 }
 
 export function HomeNewsSection() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase();
   const { lang: appLang } = useLanguage();
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchNews = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("news")
-        .select("*")
-        .eq("lang", appLang)
-        .order("published_at", { ascending: false })
-        .limit(3);
+      try {
+        console.log("Fetching news for language:", appLang);
+        setLoading(true);
+        setError(null);
+        
+        const { data, error } = await supabase
+          .from("news")
+          .select("*")
+          .eq("lang", appLang)
+          .order("published_at", { ascending: false })
+          .limit(3);
 
-      setNews(data || []);
-      setLoading(false);
+        console.log("Supabase response:", { data, error });
+
+        if (error) {
+          console.error("Supabase error:", error);
+          setError(error.message);
+        } else {
+          console.log("Fetched news:", data);
+          setNews(data || []);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError(err instanceof Error ? err.message : "Chyba pri načítavaní článkov");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchNews();
+
+    if (supabase && appLang) {
+      fetchNews();
+    }
   }, [supabase, appLang]);
+
+  console.log("HomeNewsSection render:", { loading, error, newsCount: news.length, appLang });
 
   if (loading) {
     return (
-      <section className="py-12">
-        <div className="container mx-auto">
-          <div className="text-center text-gray-400">Načítavam články...</div>
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center">Najnovšie články</h2>
+          <div className="text-center text-gray-400">
+            Načítavam články pre jazyk: {appLang}...
+          </div>
         </div>
       </section>
     );
   }
 
-  if (!news.length) return null;
+  if (error) {
+    return (
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center">Najnovšie články</h2>
+          <div className="text-center text-red-500">
+            Chyba: {error}
+          </div>
+          <div className="text-center text-sm text-gray-500 mt-2">
+            Skontrolujte Supabase databázu a údaje pre jazyk "{appLang}"
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!news.length) {
+    return (
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center">Najnovšie články</h2>
+          <div className="text-center text-gray-500">
+            Žiadne články pre jazyk "{appLang}" neboli nájdené.
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 bg-gray-50">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8 text-center">Najnovšie články</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {news.map((n) => (
@@ -62,10 +117,14 @@ export function HomeNewsSection() {
             >
               <div className="relative h-56 w-full overflow-hidden">
                 <img
-                  src={n.image_url}
+                  src={n.image_url || '/placeholder-image.jpg'}
                   alt={n.title}
                   className="object-cover w-full h-full transition scale-100 hover:scale-105"
                   loading="lazy"
+                  onError={(e) => {
+                    console.error("Image load error for:", n.image_url);
+                    e.currentTarget.src = '/placeholder-image.jpg';
+                  }}
                 />
               </div>
               <div className="flex flex-col flex-1 p-6">

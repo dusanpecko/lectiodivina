@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabase } from "@/app/components/SupabaseProvider";
 import Link from "next/link";
 import { Pencil, Trash2, PlusCircle, Eraser, Download, Upload, Search, Filter, User, Mail, Shield, Calendar, Users, Crown, UserCheck, Clock } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -19,7 +19,7 @@ interface User {
 const PAGE_SIZE = 20;
 
 export default function UsersAdminPage() {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
