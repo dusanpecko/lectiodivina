@@ -8,18 +8,21 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-pink-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse animation-delay-4000"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse [animation-delay:2s]"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-pink-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse [animation-delay:4s]"></div>
         
         {/* Geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
         
         {/* Floating shapes */}
-        <div className="absolute top-32 right-32 w-4 h-4 bg-blue-400/40 rounded-full animate-bounce animation-delay-1000"></div>
-        <div className="absolute bottom-32 left-32 w-6 h-6 bg-purple-400/40 rounded-full animate-bounce animation-delay-3000"></div>
-        <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-pink-400/40 rounded-full animate-bounce animation-delay-5000"></div>
+        <div className="absolute top-32 right-32 w-4 h-4 bg-blue-400/40 rounded-full animate-bounce [animation-delay:1s]"></div>
+        <div className="absolute bottom-32 left-32 w-6 h-6 bg-purple-400/40 rounded-full animate-bounce [animation-delay:3s]"></div>
+        <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-pink-400/40 rounded-full animate-bounce [animation-delay:5s]"></div>
       </div>
 
       {/* Main content */}
@@ -68,7 +71,7 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                 {/* Features list */}
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -77,7 +80,7 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -86,7 +89,7 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -95,7 +98,7 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -118,7 +121,7 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   "Najjednoduchšie a najintuítivnejšie administračné rozhranie, aké som kedy používal."
                 </p>
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-sm font-medium">M</span>
                   </div>
                   <div>
@@ -140,25 +143,6 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
           </div>
         </main>
       </div>
-
-      {/* Custom animations */}
-      <style jsx>{`
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-3000 {
-          animation-delay: 3s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .animation-delay-5000 {
-          animation-delay: 5s;
-        }
-      `}</style>
     </div>
   );
 }
