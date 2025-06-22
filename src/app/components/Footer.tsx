@@ -2,14 +2,22 @@
 "use client";
 import { useLanguage } from "./LanguageProvider";
 import { translations } from "@/app/i18n";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useCookieConsent } from "./CookieConsentContext";
 import Link from "next/link";
 
 export default function Footer() {
-  const { open } = useCookieConsent();
+  const { open, consentStatus } = useCookieConsent();
   const { lang } = useLanguage();
   const t = translations[lang];
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Tooltip text podľa stavu cookies
+  const getCookieStatusText = () => {
+    if (consentStatus === 'accepted') return 'Cookies prijaté - Zmeniť nastavenia';
+    if (consentStatus === 'declined') return 'Cookies odmietnuté - Zmeniť nastavenia';
+    return 'Nastaviť cookies';
+  };
 
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-gray-100 relative z-20">
@@ -93,20 +101,76 @@ export default function Footer() {
                     </svg>
                     {t.footer?.terms || "Všeobecné obchodné podmienky"}
                   </Link>
+                  
                   <Link href="/privacy" className="text-gray-300 hover:text-yellow-400 transition-colors duration-200 inline-flex items-center group">
                     <svg className="w-4 h-4 mr-2 text-yellow-400 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     {t.footer?.privacy || "Ochrana osobných údajov"}
                   </Link>
+                  
+                  {/* ✨ ENHANCED Cookie Settings Button */}
                   <button
                     onClick={open}
-                    className="text-gray-300 hover:text-yellow-400 transition-colors duration-200 inline-flex items-center group text-left"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    className="text-gray-300 hover:text-yellow-400 transition-all duration-300 inline-flex items-center group text-left relative"
+                    title={getCookieStatusText()}
                   >
-                    <svg className="w-4 h-4 mr-2 text-yellow-400 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                    {/* Cookie Icon with Status Indicator */}
+                    <div className="relative mr-2">
+                      {/* Main Cookie Icon */}
+                      <svg 
+                        className="w-4 h-4 text-yellow-400 opacity-60 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110" 
+                        fill="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        {/* Cookie Crumbs */}
+                        <circle cx="8" cy="10" r="0.8" opacity="0.7"/>
+                        <circle cx="12" cy="8" r="0.6" opacity="0.7"/>
+                        <circle cx="10" cy="13" r="0.7" opacity="0.7"/>
+                        <circle cx="15" cy="11" r="0.5" opacity="0.7"/>
+                      </svg>
+                      
+                      {/* Status Indicator */}
+                      <div 
+                        className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                          consentStatus === 'accepted' 
+                            ? 'bg-green-400 shadow-green-400/50' 
+                            : consentStatus === 'declined'
+                            ? 'bg-red-400 shadow-red-400/50'
+                            : 'bg-gray-400 shadow-gray-400/50'
+                        } ${isHovered ? 'shadow-lg scale-110' : 'shadow-sm'}`}
+                      />
+                    </div>
+                    
+                    {/* Text with Status */}
+                    <span className="flex flex-col">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        {t.footer?.manage_cookies || t.manage_cookies || "Nastavenia cookies"}
+                      </span>
+                      <span className={`text-xs transition-all duration-300 ${
+                        consentStatus === 'accepted' 
+                          ? 'text-green-400' 
+                          : consentStatus === 'declined'
+                          ? 'text-red-400'
+                          : 'text-gray-500'
+                      }`}>
+                        {consentStatus === 'accepted' && '✓ Prijaté'}
+                        {consentStatus === 'declined' && '✗ Odmietnuté'}
+                        {!consentStatus && '⚪ Nenastavené'}
+                      </span>
+                    </span>
+                    
+                    {/* Settings Gear Icon */}
+                    <svg 
+                      className="w-3 h-3 ml-auto text-gray-500 group-hover:text-yellow-400 group-hover:rotate-90 transition-all duration-300" 
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
                       <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                     </svg>
-                    {t.footer?.manage_cookies || t.manage_cookies || "Spravovať cookies"}
                   </button>
                 </div>
               </div>
@@ -126,6 +190,7 @@ export default function Footer() {
               </a>
               ) | {t.footer?.all_rights_reserved || "Všetky práva vyhradené"}
             </div>
+            
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-400">
                 {t.footer?.created_by || "vytvoril"}{" "}
@@ -133,9 +198,31 @@ export default function Footer() {
                   MYPROFILE
                 </a>
               </span>
+              
+              {/* Cookie Status Floating Button */}
+              <button
+                onClick={open}
+                className={`p-2 rounded-full transition-all duration-300 group relative ${
+                  consentStatus === 'accepted' 
+                    ? 'bg-green-800/30 hover:bg-green-700/50 text-green-400' 
+                    : consentStatus === 'declined'
+                    ? 'bg-red-800/30 hover:bg-red-700/50 text-red-400'
+                    : 'bg-gray-800 hover:bg-gray-700 text-gray-400'
+                } hover:text-yellow-400 hover:scale-110`}
+                title={getCookieStatusText()}
+              >
+                <span className="text-lg" role="img" aria-label="Cookie">🍪</span>
+                
+                {/* Pulse animation pro nenastavené cookies */}
+                {!consentStatus && (
+                  <div className="absolute inset-0 rounded-full bg-yellow-400/20 animate-ping"></div>
+                )}
+              </button>
+              
+              {/* Admin Button */}
               <Link 
                 href="/admin" 
-                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-yellow-400 transition-all duration-200 group" 
+                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-yellow-400 transition-all duration-200 group hover:scale-110" 
                 title={t.footer?.admin_tooltip || t.admin || "Administrácia"}
               >
                 <svg 

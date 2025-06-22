@@ -1,3 +1,6 @@
+// ============================================
+// src/app/layout.tsx - AKTUALIZOVANÝ
+// ============================================
 import { createClient } from '@/app/lib/supabase/server'
 import SupabaseProvider from './components/SupabaseProvider'
 import { LanguageProvider } from './components/LanguageProvider'
@@ -15,6 +18,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // ✅ OPRAVENÉ - await je späť lebo server.ts je async
   const supabase = await createClient()
 
   const {
