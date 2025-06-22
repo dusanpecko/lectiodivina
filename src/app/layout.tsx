@@ -2,6 +2,7 @@ import { createClient } from '@/app/lib/supabase/server'
 import SupabaseProvider from './components/SupabaseProvider'
 import { LanguageProvider } from './components/LanguageProvider'
 import { CookieConsentProvider } from './components/CookieConsentContext'
+import Footer from './components/Footer'
 import './globals.css'
 
 export const metadata = {
@@ -27,6 +28,7 @@ export default async function RootLayout({
           <SupabaseProvider session={session}>
             <LanguageProvider>
               {children}
+              <Footer />
             </LanguageProvider>
           </SupabaseProvider>
         </CookieConsentProvider>
