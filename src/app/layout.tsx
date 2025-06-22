@@ -1,7 +1,7 @@
-import { createClient } from '@/app/lib/supabase/server' // Aktuálna cesta
+import { createClient } from '@/app/lib/supabase/server'
 import SupabaseProvider from './components/SupabaseProvider'
 import { LanguageProvider } from './components/LanguageProvider'
-import { CookieConsentProvider } from './components/CookieConsentContext'; 
+import { CookieConsentProvider } from './components/CookieConsentContext'
 import './globals.css'
 
 export const metadata = {
@@ -15,22 +15,22 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  
+
   const {
     data: { session },
   } = await supabase.auth.getSession()
 
-   return (
+  return (
     <html lang="sk">
       <body>
-        <SupabaseProvider session={session}>
-          <LanguageProvider>
-            <CookieConsentProvider>
+        <CookieConsentProvider>
+          <SupabaseProvider session={session}>
+            <LanguageProvider>
               {children}
-            </CookieConsentProvider>
-          </LanguageProvider>
-        </SupabaseProvider>
+            </LanguageProvider>
+          </SupabaseProvider>
+        </CookieConsentProvider>
       </body>
     </html>
-  );
+  )
 }
