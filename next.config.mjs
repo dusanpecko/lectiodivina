@@ -2,19 +2,15 @@
 const nextConfig = {
   poweredByHeader: false,
   compress: true,
-  output: 'standalone',
   
-  // ✅ PRIDANÉ: Optimalizácie pre production
-  swcMinify: true,
-  
-  // ✅ PRIDANÉ: Image optimalizácie
+  // ✅ Image optimalizácie
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
-  // ✅ PRIDANÉ: Headers pre performance a security
+  // ✅ Headers pre performance a security
   async headers() {
     return [
       {
@@ -46,23 +42,40 @@ const nextConfig = {
     ]
   },
   
-  // ✅ PRIDANÉ: Experimental features pre performance
-  experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js'
-        }
+  // ✅ Turbopack nastavenia (presunute z experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js'
       }
     }
   },
   
-  // ✅ PRIDANÉ: Webpack optimalizácie
+  // ✅ Experimental features pre performance
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion']
+  },
+  
+  // ✅ Webpack optimalizácie - opravené
   webpack: (config, { dev, isServer }) => {
+    // Bundle analyzer support
+    if (process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+      config.plugins.push(new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        openAnalyzer: false
+      }))
+    }
+    
     // Production optimalizácie
     if (!dev) {
+      // Bezpečné nastavenie optimization objektu
+      config.optimization = config.optimization || {}
+      config.optimization.splitChunks = config.optimization.splitChunks || {}
+      config.optimization.splitChunks.cacheGroups = config.optimization.splitChunks.cacheGroups || {}
+      
+      // Teraz môžeme bezpečne nastaviť vendor
       config.optimization.splitChunks.cacheGroups.vendor = {
         name: 'vendor',
         test: /[\\/]node_modules[\\/]/,
@@ -73,16 +86,7 @@ const nextConfig = {
     }
     
     return config
-  },
-  
-  // ✅ PRIDANÉ: Bundle analyzer support
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config) => {
-      const { BundleAnalyzerPlugin } = require('@next/bundle-analyzer')()
-      config.plugins.push(new BundleAnalyzerPlugin())
-      return config
-    }
-  })
+  }
 }
 
 export default nextConfig
