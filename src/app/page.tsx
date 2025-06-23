@@ -325,7 +325,7 @@ export default function HomePage() {
               </a>
               
               <a 
-                href="https://www.paypal.com/donate/?hosted_button_id=YOUR_BUTTON_ID" 
+                href="https://dcza.24-pay.sk/darovat/lectio-divina" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center space-x-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg shadow-2xl hover:shadow-emerald-500/25 hover:scale-105 transition-all duration-300"
