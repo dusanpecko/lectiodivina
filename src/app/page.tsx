@@ -104,16 +104,19 @@ export default function HomePage() {
   const t = translations[lang];
   const router = useRouter();
 
-  // Nastavenie cieľového dátumu na 1.1.2026 00:00:00
-  const [targetDate] = useState(() => {
-    return new Date('2026-01-01T00:00:00');
-  });
+  // Fixed target date to prevent server/client mismatch
+  const targetDate = new Date('2026-01-01T00:00:00');
+  
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isClient, setIsClient] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setIsClient(true);
+    
+    // Initialize countdown after mount
     setCountdown(getCountdown(targetDate));
     const timer = setInterval(() => setCountdown(getCountdown(targetDate)), 1000);
     
@@ -124,7 +127,106 @@ export default function HomePage() {
       clearInterval(timer);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [targetDate]);
+  }, []);
+
+  // Show basic layout until mounted
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col relative overflow-hidden">
+        {/* Basic hero section without dynamic content */}
+        <section className="relative z-20 min-h-screen w-full overflow-hidden flex flex-col">
+          <div className="absolute inset-0 z-0">
+            <img
+              src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=cover&w=1500&q=80"
+              alt="Pozadie"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/70 to-slate-900/60 z-10"></div>
+          
+          <div className="relative z-30 px-4 sm:px-8 pt-6 sm:pt-8 flex justify-between items-center">
+            <Logo className="h-12 w-auto pt-3 pl-3 drop-shadow-lg" />
+            <div className="flex items-center gap-4 sm:gap-6 bg-white/10 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20">
+              <button
+                onClick={() => router.push("/login")}
+                className="text-white font-medium hover:text-blue-300 transition-colors duration-300 flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{t.admin}</span>
+              </button>
+              <div className="w-px h-6 bg-white/30"></div>
+              <label htmlFor="lang-select" className="text-white mr-1 text-sm font-medium">{t.select_language}:</label>
+              <select
+                id="lang-select"
+                value={lang}
+                onChange={e => changeLang(e.target.value as Language)}
+                className="bg-white/20 backdrop-blur-sm text-white rounded-lg px-3 py-1 border border-white/30 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+              >
+                <option value="sk" className="text-black">🇸🇰 SK</option>
+                <option value="cz" className="text-black">🇨🇿 CZ</option>
+                <option value="en" className="text-black">🇬🇧 EN</option>
+                <option value="es" className="text-black">🇪🇸 ES</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="relative z-30 flex flex-col justify-center min-h-[60vh] sm:h-[70vh] max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-16">
+            <div className="space-y-6">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+                  {t.app_title}
+                </span>
+                <br />
+                <span className="font-light text-slate-300 text-3xl sm:text-4xl md:text-5xl">
+                  {t.app_subtitle}
+                </span>
+              </h1>
+              
+              <p className="text-xl sm:text-2xl text-slate-200 mb-8 max-w-3xl leading-relaxed">
+                {t.app_desc}
+              </p>
+              
+              {/* Static countdown placeholder */}
+              <div className="grid grid-cols-4 gap-4 sm:gap-8 mb-8 max-w-2xl">
+                {[
+                  { label: t.days },
+                  { label: t.hours },
+                  { label: t.minutes },
+                  { label: t.seconds }
+                ].map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-6 text-center"
+                  >
+                    <div className="text-3xl sm:text-5xl font-bold text-white mb-2 font-mono">
+                      --
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-300 uppercase tracking-widest font-medium">
+                      {item.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Basic sections without dynamic content */}
+        <section className="relative z-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen flex flex-col justify-center py-24">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 w-full">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
+                {t.lectio_section_title}
+              </h2>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -511,25 +613,26 @@ export default function HomePage() {
         <CommunitySection translations={translations[lang]} />
       </div>
 
-      {/* Floating scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="fixed bottom-8 right-8 z-50"
-      >
-        <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-          style={{ display: scrollY > 500 ? 'block' : 'none' }}
+      {/* Floating scroll indicator - only show when mounted and scrolled */}
+      {mounted && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: scrollY > 500 ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed bottom-8 right-8 z-50"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-          </svg>
-        </motion.button>
-      </motion.div>
+          <motion.button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+          </motion.button>
+        </motion.div>
+      )}
 
       {/* Custom animations styles */}
       <style jsx>{`

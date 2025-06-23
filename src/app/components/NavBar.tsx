@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useLanguage, Language } from "./LanguageProvider";
 import { translations } from "../i18n";
-import { useSupabase } from "./SupabaseProvider"; // ← ZMENA: náš provider
+import { useSupabase } from "./SupabaseProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
@@ -24,7 +24,7 @@ interface NavBarProps {
 
 export default function NavBar({ onMenuClick }: NavBarProps) {
   const { lang, changeLang } = useLanguage();
-  const { supabase, session } = useSupabase(); // ← ZMENA: náš provider namiesto starých hooks
+  const { supabase, session } = useSupabase();
   const router = useRouter();
   const pathname = usePathname();
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
@@ -32,7 +32,14 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [notifications, setNotifications] = useState(3); // Mock notifications
+  const [notifications, setNotifications] = useState(0); // Start with 0 to prevent mismatch
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Set notifications after mount to prevent hydration mismatch
+    setNotifications(3);
+  }, []);
 
   useEffect(() => {
     // Načítaj meno a avatar používateľa z DB ak je prihlásený
@@ -49,8 +56,10 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
         }
       }
     };
-    fetchUserData();
-  }, [session, supabase]);
+    if (mounted) {
+      fetchUserData();
+    }
+  }, [session, supabase, mounted]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -60,7 +69,8 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
     setTimeout(() => setShowLogoutMessage(false), 3000);
   };
 
-  const isAdminPage = pathname?.startsWith('/admin');
+  // Safe pathname checking
+  const isAdminPage = mounted && pathname?.startsWith('/admin');
 
   const flagEmojis = {
     sk: "🇸🇰",
@@ -68,6 +78,68 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
     en: "🇬🇧",
     es: "🇪🇸"
   };
+
+  // Show basic navbar until mounted
+  if (!mounted) {
+    return (
+      <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            
+            {/* Left Section - Logo & Main Nav */}
+            <div className="flex items-center space-x-8">
+              <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                <Menu size={20} />
+              </button>
+
+              <Link href="/" className="flex items-center space-x-3 group">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Home size={18} className="text-white" />
+                </div>
+                <span className="hidden sm:block text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  Lectio divina
+                </span>
+              </Link>
+
+              <div className="hidden lg:flex items-center space-x-6">
+                <Link 
+                  href="/" 
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200"
+                >
+                  <Home size={16} />
+                  <span>{translations[lang].home}</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Section */}
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <select
+                  value={lang}
+                  onChange={e => changeLang(e.target.value as Language)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                >
+                  <option value="sk">{flagEmojis.sk} SK</option>
+                  <option value="cz">{flagEmojis.cz} CZ</option>
+                  <option value="en">{flagEmojis.en} EN</option>
+                  <option value="es">{flagEmojis.es} ES</option>
+                </select>
+                <Globe size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+
+              <Link
+                href="/login"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Prihlásiť sa
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <>

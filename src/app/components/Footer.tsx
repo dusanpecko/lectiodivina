@@ -2,7 +2,7 @@
 "use client";
 import { useLanguage } from "./LanguageProvider";
 import { translations } from "@/app/i18n";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useCookieConsent } from "./CookieConsentContext";
 import Link from "next/link";
 
@@ -11,13 +11,22 @@ export default function Footer() {
   const { lang } = useLanguage();
   const t = translations[lang];
   const [isHovered, setIsHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Tooltip text podľa stavu cookies
   const getCookieStatusText = () => {
+    if (!mounted) return 'Nastaviť cookies';
     if (consentStatus === 'accepted') return 'Cookies prijaté - Zmeniť nastavenia';
     if (consentStatus === 'declined') return 'Cookies odmietnuté - Zmeniť nastavenia';
     return 'Nastaviť cookies';
   };
+
+  // Safe consent status for rendering
+  const safeConsentStatus = mounted ? consentStatus : null;
 
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-gray-100 relative z-20">
@@ -133,16 +142,18 @@ export default function Footer() {
                         <circle cx="15" cy="11" r="0.5" opacity="0.7"/>
                       </svg>
                       
-                      {/* Status Indicator */}
-                      <div 
-                        className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                          consentStatus === 'accepted' 
-                            ? 'bg-green-400 shadow-green-400/50' 
-                            : consentStatus === 'declined'
-                            ? 'bg-red-400 shadow-red-400/50'
-                            : 'bg-gray-400 shadow-gray-400/50'
-                        } ${isHovered ? 'shadow-lg scale-110' : 'shadow-sm'}`}
-                      />
+                      {/* Status Indicator - only show after mount */}
+                      {mounted && (
+                        <div 
+                          className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                            safeConsentStatus === 'accepted' 
+                              ? 'bg-green-400 shadow-green-400/50' 
+                              : safeConsentStatus === 'declined'
+                              ? 'bg-red-400 shadow-red-400/50'
+                              : 'bg-gray-400 shadow-gray-400/50'
+                          } ${isHovered ? 'shadow-lg scale-110' : 'shadow-sm'}`}
+                        />
+                      )}
                     </div>
                     
                     {/* Text with Status */}
@@ -150,17 +161,19 @@ export default function Footer() {
                       <span className="group-hover:translate-x-1 transition-transform duration-300">
                         {t.footer?.manage_cookies || t.manage_cookies || "Nastavenia cookies"}
                       </span>
-                      <span className={`text-xs transition-all duration-300 ${
-                        consentStatus === 'accepted' 
-                          ? 'text-green-400' 
-                          : consentStatus === 'declined'
-                          ? 'text-red-400'
-                          : 'text-gray-500'
-                      }`}>
-                        {consentStatus === 'accepted' && '✓ Prijaté'}
-                        {consentStatus === 'declined' && '✗ Odmietnuté'}
-                        {!consentStatus && '⚪ Nenastavené'}
-                      </span>
+                      {mounted && (
+                        <span className={`text-xs transition-all duration-300 ${
+                          safeConsentStatus === 'accepted' 
+                            ? 'text-green-400' 
+                            : safeConsentStatus === 'declined'
+                            ? 'text-red-400'
+                            : 'text-gray-500'
+                        }`}>
+                          {safeConsentStatus === 'accepted' && '✓ Prijaté'}
+                          {safeConsentStatus === 'declined' && '✗ Odmietnuté'}
+                          {!safeConsentStatus && '⚪ Nenastavené'}
+                        </span>
+                      )}
                     </span>
                     
                     {/* Settings Gear Icon */}
@@ -203,9 +216,9 @@ export default function Footer() {
               <button
                 onClick={open}
                 className={`p-2 rounded-full transition-all duration-300 group relative ${
-                  consentStatus === 'accepted' 
+                  mounted && safeConsentStatus === 'accepted' 
                     ? 'bg-green-800/30 hover:bg-green-700/50 text-green-400' 
-                    : consentStatus === 'declined'
+                    : mounted && safeConsentStatus === 'declined'
                     ? 'bg-red-800/30 hover:bg-red-700/50 text-red-400'
                     : 'bg-gray-800 hover:bg-gray-700 text-gray-400'
                 } hover:text-yellow-400 hover:scale-110`}
@@ -213,8 +226,8 @@ export default function Footer() {
               >
                 <span className="text-lg" role="img" aria-label="Cookie">🍪</span>
                 
-                {/* Pulse animation pro nenastavené cookies */}
-                {!consentStatus && (
+                {/* Pulse animation pro nenastavené cookies - only show after mount */}
+                {mounted && !safeConsentStatus && (
                   <div className="absolute inset-0 rounded-full bg-yellow-400/20 animate-ping"></div>
                 )}
               </button>
