@@ -16,6 +16,7 @@ type LectioStep = {
 };
 
 const lectioIcons = [
+  
   // LECTIO - Jednoduchá ikona
   <div key="lectio" className="relative">
     <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-2xl blur-xl"></div>
@@ -28,7 +29,7 @@ const lectioIcons = [
   <div key="meditatio" className="relative">
     <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-2xl blur-xl"></div>
     <div className="relative w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mb-3 text-white text-3xl font-bold">
-      🧘
+      🕐
     </div>
   </div>,
   
