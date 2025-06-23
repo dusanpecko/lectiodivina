@@ -42,7 +42,7 @@ function renderIcon(emoji: string, bg: string, color: string) {
 
 export default function HomePage() {
   const { lang, changeLang } = useLanguage();
-  const t = translations[lang];
+  const t = translations[lang] ?? translations["sk"];
   const router = useRouter();
 
   const targetDate = new Date('2026-01-01T00:00:00');
@@ -116,7 +116,7 @@ export default function HomePage() {
         <section className="py-24">
           <div className="max-w-6xl mx-auto px-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-              {t.lectio_steps.map((step: { title: string; desc: string }, idx: number) => (
+              {Array.isArray(t.lectio_steps) && t.lectio_steps.map((step: { title: string; desc: string }, idx: number) => (
                 <div key={idx} className="text-center">
                   {renderIcon(icons[idx].emoji, icons[idx].bg, icons[idx].color)}
                   <h3 className="text-xl font-bold mt-4">{step.title}</h3>
