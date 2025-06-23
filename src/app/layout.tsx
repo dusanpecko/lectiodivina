@@ -1,5 +1,5 @@
 // ============================================
-// src/app/layout.tsx - OPRAVENÝ PRE SAFARI A MOBILNÉ ZARIADENIA
+// src/app/layout.tsx - OPRAVENÝ PRE HYDRATION ISSUES
 // ============================================
 import { createClient } from '@/app/lib/supabase/server'
 import SupabaseProvider from './components/SupabaseProvider'
@@ -8,19 +8,23 @@ import { CookieConsentProvider } from './components/CookieConsentContext'
 import Footer from './components/Footer'
 import './globals.css'
 
+// Opravené metadata - bez viewport a themeColor (budú v viewport export)
 export const metadata = {
   title: 'Lectio Divina',
   description: 'Duchovná aplikácia pre Lectio Divina',
-  // Pridané pre lepšiu kompatibilitu
-  viewport: 'width=device-width, initial-scale=1',
   charset: 'utf-8',
-  // Pre Safari a mobilné zariadenia
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
   },
-  // Pre lepšie SEO a kompatibilitu
   robots: 'index, follow',
+}
+
+// Viewport export (Next.js 14+ odporúčanie)
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
   themeColor: '#ffffff',
 }
 
@@ -32,7 +36,6 @@ export default async function RootLayout({
   let session = null
   
   try {
-    // Safer approach pre Safari
     const supabase = await createClient()
     const {
       data: { session: userSession },
@@ -46,14 +49,12 @@ export default async function RootLayout({
   return (
     <html lang="sk">
       <head>
-        {/* Explicitne pridané meta tagy pre Safari */}
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        {/* Minimálne meta tagy - ostatné sa pridajú cez metadata/viewport export */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body>
+      <body suppressHydrationWarning={true}>
         <CookieConsentProvider>
           <SupabaseProvider session={session}>
             <LanguageProvider>
