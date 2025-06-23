@@ -1,9 +1,9 @@
 module.exports = {
   apps: [{
-    name: 'lectio-divina',
+    name: 'lectio',
     script: 'node',
     args: 'server.js',
-    cwd: '/var/www/your-project',
+    cwd: '//www/wwwroot/lectiodivina.org',
     instances: 1,
     exec_mode: 'cluster',
     watch: false,
@@ -20,9 +20,9 @@ module.exports = {
       NODE_ENV: 'development',
       PORT: 3000
     },
-    error_file: '/var/log/pm2/lectio-divina-err.log',
-    out_file: '/var/log/pm2/lectio-divina-out.log',
-    log_file: '/var/log/pm2/lectio-divina-combined.log',
+    error_file: '/var/log/pm2/lectio-err.log',
+    out_file: '/var/log/pm2/lectio-out.log',
+    log_file: '/var/log/pm2/lectio-combined.log',
     time: true,
     log_date_format: 'YYYY-MM-DD HH:mm Z',
     merge_logs: true,

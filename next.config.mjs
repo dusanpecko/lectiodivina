@@ -1,21 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Pre Nginx deployment
   output: 'standalone',
-  
-  // Asset handling
   assetPrefix: '',
-  
-  // Safari compatibility
-  experimental: {
-    esmExternals: 'loose'
-  },
-  
-  // Optimizations
   poweredByHeader: false,
-  compress: false, // Nginx bude kompresovať
+  compress: false,
   
-  // Webpack config
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

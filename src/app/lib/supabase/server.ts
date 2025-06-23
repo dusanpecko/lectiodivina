@@ -1,12 +1,9 @@
-// ============================================
-// src/lib/supabase/server.ts - OPRAVENÉ
-// ============================================
+// src/app/lib/supabase/server.ts
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-// ✅ OPRAVENÉ - funkcia je SYNC a s await na cookies()
 export async function createClient() {
-  const cookieStore = await cookies(); // ✅ PRIDANÉ await
+  const cookieStore = await cookies();
   
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,15 +17,14 @@ export async function createClient() {
           try {
             cookieStore.set({ name, value, ...options });
           } catch (error) {
-            // V Next.js App Router, cookies môžu byť nastavené len v Server Actions/Route Handlers
-            console.warn('Cookie set failed (expected in client-side context):', error);
+            // Server-side cookie set failed - expected in some contexts
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: "", ...options, maxAge: -1 });
           } catch (error) {
-            console.warn('Cookie remove failed (expected in client-side context):', error);
+            // Server-side cookie remove failed - expected in some contexts
           }
         },
       },
