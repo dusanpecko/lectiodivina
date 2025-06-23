@@ -15,6 +15,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   const { lang } = useLanguage();
   const t = translations[lang];
   const acceptRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -39,6 +40,47 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
       return () => clearTimeout(timer);
     }
   }, [visible, isProcessing]);
+
+  // Focus trap pre accessibility
+  useEffect(() => {
+    if (!visible) return;
+
+    const focusableElements = dialogRef.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    
+    const firstElement = focusableElements?.[0] as HTMLElement;
+    const lastElement = focusableElements?.[focusableElements.length - 1] as HTMLElement;
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement?.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement?.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleTabKey);
+    return () => document.removeEventListener('keydown', handleTabKey);
+  }, [visible]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (visible) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [visible]);
 
   const acceptCookies = async () => {
     if (!isClient || isProcessing) return;
@@ -143,15 +185,20 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
       onKeyDown={handleKeyDown}
       onClick={handleOverlayClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 text-center relative animate-fade-in border transform transition-all duration-300 scale-100">
+      <div 
+        ref={dialogRef}
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 text-center relative animate-fade-in border transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto"
+      >
         {/* Close button */}
         <button
           onClick={onClose}
           disabled={isProcessing}
           aria-label={t.close || "Zavrieť"}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
         >
-          ✕
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
         
         {/* Cookie icon */}
@@ -172,13 +219,22 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         
         {/* Rozšírená informácia */}
         <details className="mb-6 text-left">
-          <summary className="cursor-pointer text-sm text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded">
+          <summary className="cursor-pointer text-sm text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-1 py-1">
             {t.cookie_details || "Viac informácií o cookies"}
           </summary>
-          <div className="mt-2 text-xs text-gray-500 space-y-2 pl-4 border-l-2 border-gray-200">
-            <p><strong>Funkčné cookies:</strong> Potrebné pre základné fungovanie stránky</p>
-            <p><strong>Analytické cookies:</strong> Pomáhajú nám pochopiť, ako návštevníci používajú stránku</p>
-            <p><strong>Marketing cookies:</strong> Používané na zobrazovanie relevantných reklám</p>
+          <div className="mt-3 text-xs text-gray-500 space-y-2 pl-4 border-l-2 border-gray-200">
+            <div>
+              <strong className="text-gray-700">Funkčné cookies:</strong>
+              <p className="mt-1">Potrebné pre základné fungovanie stránky (navigácia, autentifikácia)</p>
+            </div>
+            <div>
+              <strong className="text-gray-700">Analytické cookies:</strong>
+              <p className="mt-1">Pomáhajú nám pochopiť, ako návštevníci používajú stránku (Google Analytics)</p>
+            </div>
+            <div>
+              <strong className="text-gray-700">Marketing cookies:</strong>
+              <p className="mt-1">Používané na zobrazovanie relevantných reklám a meranie ich účinnosti</p>
+            </div>
           </div>
         </details>
         

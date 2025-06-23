@@ -1,5 +1,7 @@
 // utils/cookieHelpers.ts
 
+export type CookieConsentStatus = 'accepted' | 'declined' | null;
+
 /**
  * Vymaže len cookies, ktoré vytvára vaša aplikácia
  * NEKASUJE Supabase session cookies (sb-access-token, sb-refresh-token, sb-csrf-token)!
@@ -8,26 +10,37 @@ export function removeAppCookies() {
   if (typeof document === 'undefined') return; // Server-side safety
   
   try {
+    const hostname = window.location.hostname;
+    const rootDomain = hostname.startsWith('www.') ? hostname.substring(4) : hostname;
+    
     // Jazykové nastavenia
     document.cookie = "lang=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;";
     
-    // Analytické cookies
-    document.cookie = "analyticsConsent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;";
-    document.cookie = "_ga=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
-    document.cookie = "_ga_=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
-    document.cookie = "_gid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+    // Analytické cookies - vymaž pre všetky možné domény
+    const analyticsCookies = ['_ga', '_ga_', '_gid', '_gat', 'analyticsConsent'];
+    analyticsCookies.forEach(cookieName => {
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname};`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${rootDomain};`;
+    });
     
     // Marketing cookies
-    document.cookie = "fbp=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
-    document.cookie = "_fbp=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+    const marketingCookies = ['fbp', '_fbp', 'fr'];
+    marketingCookies.forEach(cookieName => {
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname};`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${rootDomain};`;
+    });
     
     // Vlastné cookies aplikácie
-    document.cookie = "userPreferences=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;";
-    document.cookie = "themeMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;";
+    const appCookies = ['userPreferences', 'themeMode', 'sessionId'];
+    appCookies.forEach(cookieName => {
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict;`;
+    });
     
-    console.log('App cookies removed successfully');
+    console.log('✅ App cookies removed successfully');
   } catch (error) {
-    console.error('Error removing cookies:', error);
+    console.error('❌ Error removing cookies:', error);
   }
 }
 
@@ -43,25 +56,41 @@ export function removeAppLocalStorage() {
     // localStorage.removeItem('cookieConsent'); // ❌ ZLE
     
     // ✅ Odstráň len tieto keys:
-    localStorage.removeItem('lang');
-    localStorage.removeItem('userPreferences');
-    localStorage.removeItem('themeMode');
-    localStorage.removeItem('analyticsData');
-    localStorage.removeItem('visitCount');
-    localStorage.removeItem('lastVisit');
+    const keysToRemove = [
+      'lang',
+      'userPreferences', 
+      'themeMode',
+      'analyticsData',
+      'visitCount',
+      'lastVisit',
+      'ga_session',
+      'tracking_data'
+    ];
+    
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+    });
     
     // Session storage tiež
-    sessionStorage.removeItem('tempData');
-    sessionStorage.removeItem('formDraft');
+    const sessionKeysToRemove = [
+      'tempData',
+      'formDraft',
+      'analytics_session'
+    ];
     
-    console.log('App localStorage cleaned successfully');
+    sessionKeysToRemove.forEach(key => {
+      sessionStorage.removeItem(key);
+    });
+    
+    console.log('✅ App localStorage cleaned successfully');
   } catch (error) {
-    console.error('Error cleaning localStorage:', error);
+    console.error('❌ Error cleaning localStorage:', error);
   }
 }
 
 /**
  * Skontroluje či má používateľ udelený súhlas s cookies
+ * @deprecated Použite getCookieConsentStatus() === 'accepted'
  */
 export function hasCookieConsent(): boolean {
   if (typeof window === 'undefined') return false;
@@ -77,16 +106,19 @@ export function hasCookieConsent(): boolean {
 /**
  * Získa stav cookie súhlasu
  */
-export function getCookieConsentStatus(): 'accepted' | 'declined' | null {
+export function getCookieConsentStatus(): CookieConsentStatus {
   if (typeof window === 'undefined') return null;
   
   try {
     const consent = localStorage.getItem('cookieConsent');
+    
+    // Validácia hodnoty
     if (consent === 'accepted' || consent === 'declined') {
       return consent;
     }
     return null;
-  } catch {
+  } catch (error) {
+    console.error('Error reading cookie consent status:', error);
     return null;
   }
 }
@@ -101,12 +133,83 @@ export function setCookieConsent(status: 'accepted' | 'declined') {
     localStorage.setItem('cookieConsent', status);
     localStorage.setItem('cookieConsentDate', new Date().toISOString());
     
+    // Backup do cookie pre prípad problémov s localStorage
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1); // 1 rok
+    
+    document.cookie = `cookieConsent=${status}; expires=${expiry.toUTCString()}; path=/; SameSite=Strict; Secure`;
+    
+    // Dispatch custom event pre cross-component sync
+    window.dispatchEvent(new CustomEvent('cookieConsentChanged', { 
+      detail: { status } 
+    }));
+    
     if (status === 'declined') {
       // Ak odmietol, vymaž tracking data
       removeAppCookies();
       removeAppLocalStorage();
     }
+    
+    console.log(`✅ Cookie consent set to: ${status}`);
   } catch (error) {
-    console.error('Error setting cookie consent:', error);
+    console.error('❌ Error setting cookie consent:', error);
+    
+    // Fallback: len cookie
+    try {
+      const expiry = new Date();
+      expiry.setFullYear(expiry.getFullYear() + 1);
+      document.cookie = `cookieConsent=${status}; expires=${expiry.toUTCString()}; path=/; SameSite=Strict; Secure`;
+    } catch (cookieError) {
+      console.error('❌ Fallback cookie save failed:', cookieError);
+    }
+  }
+}
+
+/**
+ * Kontroluje či má užívateľ súhlas na tracking cookies
+ */
+export function hasTrackingConsent(): boolean {
+  return getCookieConsentStatus() === 'accepted';
+}
+
+/**
+ * Kontroluje či sú funkčné cookies povolené (vždy true)
+ */
+export function hasFunctionalConsent(): boolean {
+  // Funkčné cookies sú vždy povolené
+  return true;
+}
+
+/**
+ * Inicializuje tracking služby ak má súhlas
+ */
+export function initializeTrackingIfConsented() {
+  if (hasTrackingConsent()) {
+    // Tu môžete spustiť tracking služby
+    // initializeGoogleAnalytics();
+    // initializeFacebookPixel();
+    console.log('✅ Tracking services initialized');
+  }
+}
+
+/**
+ * Vypne všetky tracking služby
+ */
+export function disableAllTracking() {
+  try {
+    // Vypni Google Analytics
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('consent', 'update', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied'
+      });
+    }
+    
+    // Tu môžete pridať ďalšie služby
+    // disableFacebookPixel();
+    
+    console.log('✅ All tracking disabled');
+  } catch (error) {
+    console.error('❌ Error disabling tracking:', error);
   }
 }

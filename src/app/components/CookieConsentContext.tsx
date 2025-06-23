@@ -1,5 +1,5 @@
 // ============================================
-// src/components/CookieConsentContext.tsx - OPRAVENÉ
+// src/components/CookieConsentContext.tsx - VYLEPŠENÉ
 // ============================================
 "use client";
 
@@ -24,6 +24,7 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
   const [visible, setVisible] = useState(false);
   const [consentStatus, setConsentStatus] = useState<'accepted' | 'declined' | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [autoShowTimeoutId, setAutoShowTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Načítaj consent status pri štarte
   useEffect(() => {
@@ -48,7 +49,22 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
         const newStatus = getCookieConsentStatus();
         setConsentStatus(newStatus);
         
-        // Ak sa status zmenil, zatvor dialog
+        // Ak sa status zmenil, zatvor dialog a zruš timeout
+        if (newStatus !== null) {
+          setVisible(false);
+          if (autoShowTimeoutId) {
+            clearTimeout(autoShowTimeoutId);
+            setAutoShowTimeoutId(null);
+          }
+        }
+      }
+    };
+
+    const handleFocus = () => {
+      // Refresh status keď sa užívateľ vráti na tab
+      const newStatus = getCookieConsentStatus();
+      if (newStatus !== consentStatus) {
+        setConsentStatus(newStatus);
         if (newStatus !== null) {
           setVisible(false);
         }
@@ -56,22 +72,49 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [consentStatus, autoShowTimeoutId]);
+
+  // Cleanup timeout pri unmount
+  useEffect(() => {
+    return () => {
+      if (autoShowTimeoutId) {
+        clearTimeout(autoShowTimeoutId);
+      }
+    };
+  }, [autoShowTimeoutId]);
 
   // Spustí sa iba keď užívateľ ešte nevyplnil consent (len po načítaní)
   const showIfNeeded = useCallback(() => {
-    if (isLoaded && consentStatus === null) {
+    if (isLoaded && consentStatus === null && !visible) {
+      // Zruš existujúci timeout ak existuje
+      if (autoShowTimeoutId) {
+        clearTimeout(autoShowTimeoutId);
+      }
+      
       // Malý delay pre plynulé zobrazenie po načítaní stránky
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setVisible(true);
+        setAutoShowTimeoutId(null);
       }, 1500);
+      
+      setAutoShowTimeoutId(timeoutId);
     }
-  }, [isLoaded, consentStatus]);
+  }, [isLoaded, consentStatus, visible, autoShowTimeoutId]);
 
   const open = useCallback(() => {
+    // Zruš auto-show timeout ak užívateľ manuálne otvorí
+    if (autoShowTimeoutId) {
+      clearTimeout(autoShowTimeoutId);
+      setAutoShowTimeoutId(null);
+    }
     setVisible(true);
-  }, []);
+  }, [autoShowTimeoutId]);
 
   const close = useCallback(() => {
     setVisible(false);
@@ -80,12 +123,12 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     setConsentStatus(newStatus);
   }, []);
 
-  // Auto-show logic
+  // Auto-show logic - spustí sa len raz po načítaní
   useEffect(() => {
-    if (isLoaded && consentStatus === null && !visible) {
+    if (isLoaded && consentStatus === null && !visible && !autoShowTimeoutId) {
       showIfNeeded();
     }
-  }, [isLoaded, consentStatus, visible, showIfNeeded]);
+  }, [isLoaded, consentStatus, visible, autoShowTimeoutId, showIfNeeded]);
 
   // Memoizuj context value pre performance
   const contextValue = useMemo(() => ({
