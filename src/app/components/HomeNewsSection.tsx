@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageProvider";
 import { useSupabase } from "./SupabaseProvider";
@@ -26,44 +26,62 @@ export function HomeNewsSection() {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Ref na predchádzajúci jazyk pre porovnanie
+  const prevLangRef = useRef<string | undefined>(undefined);
+  const isInitialMount = useRef(true);
+
+  const fetchNews = useCallback(async (language: string) => {
+    if (!supabase || !language) return;
+    
+    try {
+      console.log("Fetching news for language:", language);
+      setLoading(true);
+      setError(null);
+      
+      const { data, error } = await supabase
+        .from("news")
+        .select("*")
+        .eq("lang", language)
+        .order("published_at", { ascending: false })
+        .limit(3);
+
+      console.log("Supabase response:", { data, error });
+
+      if (error) {
+        console.error("Supabase error:", error);
+        setError(error.message);
+        setNews([]);
+      } else {
+        console.log("Fetched news:", data);
+        setNews(data || []);
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(err instanceof Error ? err.message : "Chyba pri načítavaní článkov");
+      setNews([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [supabase]);
 
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        console.log("Fetching news for language:", appLang);
-        setLoading(true);
-        setError(null);
-        
-        const { data, error } = await supabase
-          .from("news")
-          .select("*")
-          .eq("lang", appLang)
-          .order("published_at", { ascending: false })
-          .limit(3);
-
-        console.log("Supabase response:", { data, error });
-
-        if (error) {
-          console.error("Supabase error:", error);
-          setError(error.message);
-        } else {
-          console.log("Fetched news:", data);
-          setNews(data || []);
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError(err instanceof Error ? err.message : "Chyba pri načítavaní článkov");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (supabase && appLang) {
-      fetchNews();
+    // Fetch iba ak sa jazyk zmenil alebo je to prvé načítanie
+    if (appLang && (isInitialMount.current || prevLangRef.current !== appLang)) {
+      fetchNews(appLang);
+      prevLangRef.current = appLang;
+      isInitialMount.current = false;
     }
-  }, [supabase, appLang]);
+  }, [appLang, fetchNews]);
 
-  console.log("HomeNewsSection render:", { loading, error, newsCount: news.length, appLang });
+  // Debug log iba ak sa skutočne niečo zmenilo
+  const currentState = { loading, error: !!error, newsCount: news.length, appLang };
+  const prevStateRef = useRef(currentState);
+  
+  if (JSON.stringify(currentState) !== JSON.stringify(prevStateRef.current)) {
+    console.log("HomeNewsSection render:", currentState);
+    prevStateRef.current = currentState;
+  }
 
   if (loading) {
     return (
