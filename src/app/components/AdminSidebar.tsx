@@ -1,8 +1,10 @@
+//app/components/AdminSidebar.tsx
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
+import { useState, useEffect } from "react";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -106,16 +108,109 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile = false }: AdminSidebarProps) {
   const pathname = usePathname();
-  const { lang } = useLanguage();
-  const t = translations[lang] as Record<SidebarKey, string>;
+  const { lang, isLoaded } = useLanguage();
+  const [mounted, setMounted] = useState(false);
+  
+  // Mark as mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Safe translations - wait for language to load
+  const t = (mounted && isLoaded) ? translations[lang] as Record<SidebarKey, string> : {} as Record<SidebarKey, string>;
 
   const isActive = (href: string) => {
+    if (!mounted) return false; // No active state during SSR/hydration
+    
     if (href === "/admin") {
       return pathname === "/admin";
     }
     return pathname.startsWith(href);
   };
 
+  // Show static version during SSR/hydration
+  if (!mounted || !isLoaded) {
+    return (
+      <aside className={`
+        bg-gradient-to-b from-white via-gray-50 to-gray-100 
+        min-h-screen flex flex-col border-r border-gray-200 shadow-xl
+        transition-all duration-300 ease-in-out
+        ${isCollapsed ? 'w-16' : 'w-72'}
+        ${isMobile ? 'fixed z-50' : 'relative'}
+      `}>
+        {/* Static header */}
+        <div className={`
+          p-6 border-b border-gray-200 bg-white/90 backdrop-blur-sm
+          ${isCollapsed ? 'p-4' : 'p-6'}
+        `}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Settings size={20} className="text-white" />
+            </div>
+            
+            {!isCollapsed && (
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-gray-800">Admin Panel</h2>
+                <p className="text-sm text-gray-500">Správa obsahu</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Static navigation */}
+        <nav className={`flex-1 space-y-2 overflow-y-auto ${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {links.map(link => {
+            const Icon = link.icon;
+            
+            return (
+              <div
+                key={link.href}
+                className={`group relative flex items-center gap-3 rounded-xl border border-transparent transition-all duration-200 ${
+                  isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'
+                } hover:bg-gray-50 hover:border-gray-200`}
+              >
+                {/* Icon */}
+                <div className="flex-shrink-0 text-gray-500 transition-colors">
+                  <Icon size={20} />
+                </div>
+                
+                {/* Text - only show if not collapsed */}
+                {!isCollapsed && (
+                  <span className="flex-1 font-medium transition-colors text-gray-700">
+                    Loading...
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Static footer */}
+        <div className={`border-t border-gray-200 bg-white/90 backdrop-blur-sm ${isCollapsed ? 'p-2' : 'p-4'}`}>
+          {isCollapsed ? (
+            <div className="flex justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">A</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
+              <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">A</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-800">Admin</p>
+                <p className="text-xs text-gray-500">Načítavam...</p>
+              </div>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
+          )}
+        </div>
+      </aside>
+    );
+  }
+
+  // Full interactive version after mount and language load
   return (
     <aside className={`
       bg-gradient-to-b from-white via-gray-50 to-gray-100 
@@ -189,7 +284,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   <span className={`flex-1 font-medium transition-colors ${
                     active ? colors.text : 'text-gray-700 group-hover:text-gray-800'
                   }`}>
-                    {t[link.key]}
+                    {t[link.key] || link.key}
                   </span>
                   
                   {/* Šípka pre aktívnu položku */}
@@ -207,7 +302,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
               {/* Tooltip pre collapsed mode */}
               {isCollapsed && (
                 <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
-                  {t[link.key]}
+                  {t[link.key] || link.key}
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
                 </div>
               )}

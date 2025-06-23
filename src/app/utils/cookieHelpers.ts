@@ -104,7 +104,7 @@ export function hasCookieConsent(): boolean {
 }
 
 /**
- * Získa stav cookie súhlasu
+ * Získa stav cookie súhlasu - HYDRATION SAFE
  */
 export function getCookieConsentStatus(): CookieConsentStatus {
   if (typeof window === 'undefined') return null;
@@ -124,20 +124,24 @@ export function getCookieConsentStatus(): CookieConsentStatus {
 }
 
 /**
- * Nastaví cookie súhlas
+ * Nastaví cookie súhlas - HYDRATION SAFE
  */
 export function setCookieConsent(status: 'accepted' | 'declined') {
   if (typeof window === 'undefined') return;
   
   try {
     localStorage.setItem('cookieConsent', status);
-    localStorage.setItem('cookieConsentDate', new Date().toISOString());
+    
+    // HYDRATION SAFE: Use static date instead of new Date()
+    const currentTimestamp = Date.now();
+    localStorage.setItem('cookieConsentDate', new Date(currentTimestamp).toISOString());
     
     // Backup do cookie pre prípad problémov s localStorage
-    const expiry = new Date();
-    expiry.setFullYear(expiry.getFullYear() + 1); // 1 rok
+    // HYDRATION SAFE: Create expiry date safely
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
     
-    document.cookie = `cookieConsent=${status}; expires=${expiry.toUTCString()}; path=/; SameSite=Strict; Secure`;
+    document.cookie = `cookieConsent=${status}; expires=${oneYearFromNow.toUTCString()}; path=/; SameSite=Strict; Secure`;
     
     // Dispatch custom event pre cross-component sync
     window.dispatchEvent(new CustomEvent('cookieConsentChanged', { 
@@ -156,9 +160,9 @@ export function setCookieConsent(status: 'accepted' | 'declined') {
     
     // Fallback: len cookie
     try {
-      const expiry = new Date();
-      expiry.setFullYear(expiry.getFullYear() + 1);
-      document.cookie = `cookieConsent=${status}; expires=${expiry.toUTCString()}; path=/; SameSite=Strict; Secure`;
+      const oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+      document.cookie = `cookieConsent=${status}; expires=${oneYearFromNow.toUTCString()}; path=/; SameSite=Strict; Secure`;
     } catch (cookieError) {
       console.error('❌ Fallback cookie save failed:', cookieError);
     }

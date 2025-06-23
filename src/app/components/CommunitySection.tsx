@@ -1,7 +1,8 @@
+//app/components/CommunitySection.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useSupabase } from "./SupabaseProvider"; // ← ZMENA: náš provider
+import { useSupabase } from "./SupabaseProvider";
 
 interface CommunitySectionProps {
   translations: {
@@ -40,7 +41,7 @@ interface FormData {
 }
 
 export default function CommunitySection({ translations }: CommunitySectionProps) {
-  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto direktného createClient
+  const { supabase } = useSupabase();
   const t = translations.community_section;
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -50,6 +51,12 @@ export default function CommunitySection({ translations }: CommunitySectionProps
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [mounted, setMounted] = useState(false);
+
+  // HYDRATION SAFE: Mark as mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleInterestChange = (interest: InterestType) => {
     setFormData(prev => ({
@@ -72,6 +79,7 @@ export default function CommunitySection({ translations }: CommunitySectionProps
     setSubmitStatus('idle');
 
     try {
+      // HYDRATION SAFE: new Date() only on client
       const { error } = await supabase
         .from('community_members')
         .insert([
@@ -103,6 +111,94 @@ export default function CommunitySection({ translations }: CommunitySectionProps
     visible: { opacity: 1, y: 0 }
   };
 
+  // HYDRATION SAFE: Show static version until mounted
+  if (!mounted) {
+    return (
+      <section className="py-16 sm:py-24 bg-gradient-to-br from-amber-50 to-orange-100 relative overflow-hidden">
+        {/* Static background */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20">
+            <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
+              <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
+            </svg>
+          </div>
+          <div className="absolute top-32 right-20 w-16 h-16">
+            <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
+              <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
+            </svg>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10">
+          {/* Static header */}
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#4a5085] mb-4">
+              {t.headline}
+            </h2>
+            <div className="w-20 h-1 bg-amber-500 mx-auto mb-6 rounded-full" />
+            <p className="text-lg sm:text-xl text-amber-800 mb-4 max-w-3xl mx-auto font-medium">
+              {t.subtitle}
+            </p>
+            <p className="text-base sm:text-lg text-amber-700 max-w-4xl mx-auto">
+              {t.description}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Static cards */}
+            <div className="space-y-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.tester_title}</h3>
+                </div>
+                <p className="text-gray-700">{t.tester_desc}</p>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.newsletter_title}</h3>
+                </div>
+                <p className="text-gray-700">{t.newsletter_desc}</p>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.idea_title}</h3>
+                </div>
+                <p className="text-gray-700">{t.idea_desc}</p>
+              </div>
+            </div>
+
+            {/* Static form */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl border border-amber-200">
+              <div className="space-y-6">
+                <div className="text-center text-gray-500">
+                  Načítavam formulár...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Full interactive version after mount
   return (
     <section className="py-16 sm:py-24 bg-gradient-to-br from-amber-50 to-orange-100 relative overflow-hidden">
       {/* Medové pozadie s hexagónmi */}

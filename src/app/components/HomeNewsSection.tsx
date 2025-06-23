@@ -1,3 +1,5 @@
+//app/components/HomeNewsSection.tsx
+
 'use client'
 
 import { useEffect, useState } from "react";

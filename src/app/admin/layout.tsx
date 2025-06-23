@@ -1,3 +1,5 @@
+//admin/layout.tsx
+
 "use client";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useRouter } from "next/navigation";
@@ -9,7 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { session } = useSupabase();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Default closed to prevent mismatch
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -23,13 +25,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [session, router]);
 
-  // Handle mobile detection and sidebar state
+  // Handle mobile detection and sidebar state - ONLY after mount
   useEffect(() => {
     setMounted(true);
     
+    // Mobile detection function
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
+      
+      // Set sidebar state based on screen size - but only after mount
       if (mobile) {
         setSidebarOpen(false);
       } else {
@@ -37,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     };
 
-    // Set initial state
+    // Only set initial state after mount
     handleResize();
     
     window.addEventListener('resize', handleResize);
@@ -77,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // Show basic layout until mounted (prevents hydration mismatch)
+  // CRITICAL: Show consistent static layout until mounted (prevents hydration mismatch)
   if (!mounted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -91,10 +96,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           
           <div className="flex flex-1 relative">
+            {/* Static sidebar - always show consistent state */}
             <AdminSidebar 
-              isCollapsed={false}
-              onToggle={() => {}}
-              isMobile={false}
+              isCollapsed={true}  // Always collapsed during SSR/hydration
+              onToggle={() => {}} // No-op during hydration
+              isMobile={false}    // Consistent default
             />
             
             <main className="flex-1 min-w-0">
@@ -110,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // Ak je session, zobraz admin rozhranie
+  // After mount - fully interactive version
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Background pattern */}

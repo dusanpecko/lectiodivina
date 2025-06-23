@@ -1,4 +1,3 @@
-// src/components/CookieConsent.tsx
 "use client";
 import { useLanguage } from "./LanguageProvider";
 import { translations } from "@/app/i18n";
@@ -12,38 +11,43 @@ type Props = {
 };
 
 export default function CookieConsent({ visible, onClose, showIfNeeded }: Props) {
-  const { lang } = useLanguage();
+  const { lang, isLoaded } = useLanguage();
   const t = translations[lang];
   const acceptRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Zabráni hydration errorom
+  // HYDRATION SAFE: Mark as mounted
   useEffect(() => {
-    setIsClient(true);
-    // Malý delay pre plynulé zobrazenie
-    const timer = setTimeout(() => {
-      showIfNeeded();
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [showIfNeeded]);
+    setMounted(true);
+  }, []);
 
-  // Focus management pre accessibility
+  // HYDRATION SAFE: Only show if needed after mount and language loaded
   useEffect(() => {
-    if (visible && acceptRef.current && !isProcessing) {
+    if (mounted && isLoaded) {
+      const timer = setTimeout(() => {
+        showIfNeeded();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showIfNeeded, mounted, isLoaded]);
+
+  // Focus management - only after mount
+  useEffect(() => {
+    if (mounted && visible && acceptRef.current && !isProcessing) {
       const timer = setTimeout(() => {
         acceptRef.current?.focus();
       }, 100);
       
       return () => clearTimeout(timer);
     }
-  }, [visible, isProcessing]);
+  }, [visible, isProcessing, mounted]);
 
-  // Focus trap pre accessibility
+  // Focus trap - only after mount
   useEffect(() => {
-    if (!visible) return;
+    if (!mounted || !visible) return;
 
     const focusableElements = dialogRef.current?.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -70,47 +74,38 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
 
     document.addEventListener('keydown', handleTabKey);
     return () => document.removeEventListener('keydown', handleTabKey);
-  }, [visible]);
+  }, [visible, mounted]);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll - only after mount
   useEffect(() => {
-    if (visible) {
+    if (mounted && visible) {
       document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = 'unset';
       };
     }
-  }, [visible]);
+  }, [visible, mounted]);
 
   const acceptCookies = async () => {
-    if (!isClient || isProcessing) return;
+    if (!mounted || isProcessing) return;
     
     setIsProcessing(true);
     
     try {
-      // Používame centralizovanú funkciu
       setCookieConsent("accepted");
-      
-      // Tu môžeš spustiť Analytics alebo iné tracking služby
-      // initializeGoogleAnalytics();
-      // initializeFacebookPixel();
-      
       console.log("✅ Cookies accepted successfully");
       
-      // Malý delay pre UX
       await new Promise(resolve => setTimeout(resolve, 200));
       onClose();
       
     } catch (error) {
       console.error("❌ Chyba pri ukladaní cookie súhlasu:", error);
       
-      // Fallback: použij session cookie
       try {
         document.cookie = "cookieConsent=accepted; path=/; SameSite=Strict; Secure";
         onClose();
       } catch (fallbackError) {
         console.error("❌ Fallback cookie failed:", fallbackError);
-        // Aj tak zatvor dialog
         onClose();
       }
     } finally {
@@ -119,39 +114,29 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   };
 
   const declineCookies = async () => {
-    if (!isClient || isProcessing) return;
+    if (!mounted || isProcessing) return;
     
     setIsProcessing(true);
     
     try {
-      // Používame centralizovanú funkciu
       setCookieConsent("declined");
-      
-      // Vymaž tracking data
       removeAppLocalStorage();
       removeAppCookies();
       
-      // Vypni tracking služby
-      // disableGoogleAnalytics();
-      // disableFacebookPixel();
-      
       console.log("✅ Cookies declined successfully");
       
-      // Malý delay pre UX
       await new Promise(resolve => setTimeout(resolve, 200));
       onClose();
       
     } catch (error) {
       console.error("❌ Chyba pri odmietnutí cookies:", error);
       
-      // Fallback: použij session cookie
       try {
         document.cookie = "cookieConsent=declined; path=/; SameSite=Strict; Secure";
         removeAppCookies();
         onClose();
       } catch (fallbackError) {
         console.error("❌ Fallback cookie failed:", fallbackError);
-        // Aj tak zatvor dialog
         onClose();
       }
     } finally {
@@ -166,14 +151,13 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   };
 
   const handleOverlayClick = (event: React.MouseEvent) => {
-    // Zatvor len ak klikneš na overlay, nie na dialog
     if (event.target === event.currentTarget && !isProcessing) {
       onClose();
     }
   };
 
-  // Nerender na serveri alebo ak nie je viditeľný
-  if (!isClient || !visible) return null;
+  // HYDRATION SAFE: Don't render until mounted, language loaded, and visible
+  if (!mounted || !isLoaded || !visible) return null;
 
   return (
     <div

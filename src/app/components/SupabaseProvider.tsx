@@ -8,6 +8,7 @@ import type { SupabaseClient, Session } from '@supabase/supabase-js'
 type SupabaseContext = {
   supabase: SupabaseClient
   session: Session | null
+  isLoading: boolean
 }
 
 const Context = createContext<SupabaseContext | undefined>(undefined)
@@ -21,30 +22,28 @@ export default function SupabaseProvider({
 }) {
   const [supabase] = useState(() => createClient())
   const [currentSession, setCurrentSession] = useState<Session | null>(session)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    // Set initial session if provided
-    setCurrentSession(session)
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth event:', event, session?.user?.email || 'no user')
-      
-      if (event === 'SIGNED_OUT') {
-        setCurrentSession(null)
-      } else if (event === 'SIGNED_IN') {
-        setCurrentSession(session)
-      } else if (event === 'TOKEN_REFRESHED') {
-        setCurrentSession(session)
-      }
+      setCurrentSession(session)
+      setIsLoading(false)
     })
 
     // Handle initial session check with error handling
     supabase.auth.getSession().then(({ data: { session: initialSession }, error }) => {
       if (error) {
-        // Gracefully handle refresh token errors on initial load
         if (error.message.includes('refresh_token_not_found') || error.message.includes('Invalid Refresh Token')) {
           console.log('No valid session found (expected on first visit)')
           setCurrentSession(null)
@@ -55,13 +54,24 @@ export default function SupabaseProvider({
       } else {
         setCurrentSession(initialSession)
       }
+      setIsLoading(false)
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase, session])
+  }, [supabase, isMounted])
+
+  // Počas server-side rendering a počiatočného client mount, 
+  // renderuj konzistentný obsah
+  if (!isMounted || isLoading) {
+    return (
+      <Context.Provider value={{ supabase, session: null, isLoading: true }}>
+        {children}
+      </Context.Provider>
+    )
+  }
 
   return (
-    <Context.Provider value={{ supabase, session: currentSession }}>
+    <Context.Provider value={{ supabase, session: currentSession, isLoading: false }}>
       {children}
     </Context.Provider>
   )

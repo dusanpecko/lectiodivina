@@ -1,6 +1,4 @@
-// ============================================
-// src/components/CookieConsentContext.tsx - VYLEPŠENÉ
-// ============================================
+//app/components/CookieConsentContext.tsx
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
@@ -16,40 +14,49 @@ export type CookieConsentContextType = {
   isLoaded: boolean;
 };
 
-// ✅ OPRAVENÉ - jediné export pre Context
+type CookieConsentProps = {
+  visible: boolean;
+  onClose: () => void;
+  showIfNeeded: () => void;
+};
+
 export const CookieConsentContext = createContext<CookieConsentContextType | undefined>(undefined);
 
-// ✅ Hlavný Provider s integrovaným CookieConsent komponentom
 export function CookieConsentProvider({ children }: { children: ReactNode }) {
   const [visible, setVisible] = useState(false);
   const [consentStatus, setConsentStatus] = useState<'accepted' | 'declined' | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [autoShowTimeoutId, setAutoShowTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
-  // Načítaj consent status pri štarte
+  // Mark as mounted first
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const status = getCookieConsentStatus();
-        setConsentStatus(status);
-        setIsLoaded(true);
-      } catch (error) {
-        console.error('Error loading cookie consent status:', error);
-        setIsLoaded(true);
-      }
-    }
+    setMounted(true);
   }, []);
 
-  // Aktualizuj consent status keď sa zmení v localStorage (cross-tab sync)
+  // HYDRATION SAFE: Load consent status only after mount
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!mounted) return;
+
+    try {
+      const status = getCookieConsentStatus();
+      setConsentStatus(status);
+      setIsLoaded(true);
+    } catch (error) {
+      console.error('Error loading cookie consent status:', error);
+      setIsLoaded(true);
+    }
+  }, [mounted]);
+
+  // Handle storage changes - only after mount
+  useEffect(() => {
+    if (!mounted) return;
 
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'cookieConsent') {
         const newStatus = getCookieConsentStatus();
         setConsentStatus(newStatus);
         
-        // Ak sa status zmenil, zatvor dialog a zruš timeout
         if (newStatus !== null) {
           setVisible(false);
           if (autoShowTimeoutId) {
@@ -61,7 +68,6 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     };
 
     const handleFocus = () => {
-      // Refresh status keď sa užívateľ vráti na tab
       const newStatus = getCookieConsentStatus();
       if (newStatus !== consentStatus) {
         setConsentStatus(newStatus);
@@ -78,7 +84,7 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [consentStatus, autoShowTimeoutId]);
+  }, [consentStatus, autoShowTimeoutId, mounted]);
 
   // Cleanup timeout pri unmount
   useEffect(() => {
@@ -89,15 +95,12 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     };
   }, [autoShowTimeoutId]);
 
-  // Spustí sa iba keď užívateľ ešte nevyplnil consent (len po načítaní)
   const showIfNeeded = useCallback(() => {
-    if (isLoaded && consentStatus === null && !visible) {
-      // Zruš existujúci timeout ak existuje
+    if (mounted && isLoaded && consentStatus === null && !visible) {
       if (autoShowTimeoutId) {
         clearTimeout(autoShowTimeoutId);
       }
       
-      // Malý delay pre plynulé zobrazenie po načítaní stránky
       const timeoutId = setTimeout(() => {
         setVisible(true);
         setAutoShowTimeoutId(null);
@@ -105,10 +108,9 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
       
       setAutoShowTimeoutId(timeoutId);
     }
-  }, [isLoaded, consentStatus, visible, autoShowTimeoutId]);
+  }, [mounted, isLoaded, consentStatus, visible, autoShowTimeoutId]);
 
   const open = useCallback(() => {
-    // Zruš auto-show timeout ak užívateľ manuálne otvorí
     if (autoShowTimeoutId) {
       clearTimeout(autoShowTimeoutId);
       setAutoShowTimeoutId(null);
@@ -118,42 +120,43 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
 
   const close = useCallback(() => {
     setVisible(false);
-    // Refresh consent status po zatvorení
-    const newStatus = getCookieConsentStatus();
-    setConsentStatus(newStatus);
-  }, []);
+    if (mounted) {
+      const newStatus = getCookieConsentStatus();
+      setConsentStatus(newStatus);
+    }
+  }, [mounted]);
 
-  // Auto-show logic - spustí sa len raz po načítaní
+  // Auto-show logic - only after mount
   useEffect(() => {
-    if (isLoaded && consentStatus === null && !visible && !autoShowTimeoutId) {
+    if (mounted && isLoaded && consentStatus === null && !visible && !autoShowTimeoutId) {
       showIfNeeded();
     }
-  }, [isLoaded, consentStatus, visible, autoShowTimeoutId, showIfNeeded]);
+  }, [mounted, isLoaded, consentStatus, visible, autoShowTimeoutId, showIfNeeded]);
 
-  // Memoizuj context value pre performance
   const contextValue = useMemo(() => ({
     open,
     close,
     visible,
     showIfNeeded,
     consentStatus,
-    isLoaded
-  }), [open, close, visible, showIfNeeded, consentStatus, isLoaded]);
+    isLoaded: mounted && isLoaded
+  }), [open, close, visible, showIfNeeded, consentStatus, mounted, isLoaded]);
 
   return (
     <CookieConsentContext.Provider value={contextValue}>
       {children}
-      {/* ✅ CookieConsent komponent je integrovaný v Provider */}
-      <CookieConsent 
-        visible={visible} 
-        onClose={close} 
-        showIfNeeded={showIfNeeded}
-      />
+      {/* Only render CookieConsent after mount */}
+      {mounted && (
+        <CookieConsent 
+          visible={visible} 
+          onClose={close} 
+          showIfNeeded={showIfNeeded}
+        />
+      )}
     </CookieConsentContext.Provider>
   );
 }
 
-// ✅ Hook s lepším error handling
 export function useCookieConsent() {
   const context = useContext(CookieConsentContext);
   

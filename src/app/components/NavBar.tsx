@@ -1,3 +1,4 @@
+//app/components/NavBar.tsx
 "use client";
 import Link from "next/link";
 import { useLanguage, Language } from "./LanguageProvider";
@@ -23,7 +24,7 @@ interface NavBarProps {
 }
 
 export default function NavBar({ onMenuClick }: NavBarProps) {
-  const { lang, changeLang } = useLanguage();
+  const { lang, changeLang, isLoaded: langLoaded } = useLanguage();
   const { supabase, session } = useSupabase();
   const router = useRouter();
   const pathname = usePathname();
@@ -32,17 +33,26 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [notifications, setNotifications] = useState(0); // Start with 0 to prevent mismatch
+  const [notifications, setNotifications] = useState(0); // Consistent default
   const [mounted, setMounted] = useState(false);
 
+  // HYDRATION SAFE: Mark as mounted
   useEffect(() => {
     setMounted(true);
-    // Set notifications after mount to prevent hydration mismatch
-    setNotifications(3);
   }, []);
 
+  // HYDRATION SAFE: Set notifications only after mount
   useEffect(() => {
-    // Načítaj meno a avatar používateľa z DB ak je prihlásený
+    if (mounted) {
+      // Simulate loading notifications from API
+      setTimeout(() => {
+        setNotifications(3);
+      }, 100);
+    }
+  }, [mounted]);
+
+  // Fetch user data only after mount
+  useEffect(() => {
     const fetchUserData = async () => {
       if (session?.user?.email) {
         const { data, error } = await supabase
@@ -56,7 +66,8 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
         }
       }
     };
-    if (mounted) {
+
+    if (mounted && session) {
       fetchUserData();
     }
   }, [session, supabase, mounted]);
@@ -69,7 +80,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
     setTimeout(() => setShowLogoutMessage(false), 3000);
   };
 
-  // Safe pathname checking
+  // HYDRATION SAFE: pathname checking
   const isAdminPage = mounted && pathname?.startsWith('/admin');
 
   const flagEmojis = {
@@ -79,8 +90,8 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
     es: "🇪🇸"
   };
 
-  // Show basic navbar until mounted
-  if (!mounted) {
+  // HYDRATION SAFE: Show static version until mounted and language loaded
+  if (!mounted || !langLoaded) {
     return (
       <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,13 +113,10 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
               </Link>
 
               <div className="hidden lg:flex items-center space-x-6">
-                <Link 
-                  href="/" 
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200"
-                >
+                <div className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-gray-700">
                   <Home size={16} />
-                  <span>{translations[lang].home}</span>
-                </Link>
+                  <span>Domov</span>
+                </div>
               </div>
             </div>
 
@@ -128,12 +136,9 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 <Globe size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
 
-              <Link
-                href="/login"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Prihlásiť sa
-              </Link>
+              <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">
+                Načítavam...
+              </div>
             </div>
           </div>
         </div>
@@ -141,6 +146,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
     );
   }
 
+  // Full interactive version after mount and language load
   return (
     <>
       {/* Logout Success Message */}
@@ -240,7 +246,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
 
               {session ? (
                 <>
-                  {/* Notifications */}
+                  {/* Notifications - Safe rendering */}
                   <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
                     <Bell size={20} className="text-gray-600" />
                     {notifications > 0 && (
