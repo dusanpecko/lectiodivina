@@ -29,14 +29,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body suppressHydrationWarning>
+      <body className="min-h-screen overflow-x-hidden bg-white text-black" suppressHydrationWarning>
         <CookieConsentProvider>
           <SupabaseProvider session={null}>
             <LanguageProvider>
-              <div id="root" suppressHydrationWarning>
-                {children}
-                <Footer />
-              </div>
+              {children}
+              <Footer />
             </LanguageProvider>
           </SupabaseProvider>
         </CookieConsentProvider>
