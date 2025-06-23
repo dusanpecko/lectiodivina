@@ -3,7 +3,7 @@
 echo "🚀 Starting Lectio Divina deployment..."
 
 # Configuration
-PROJECT_DIR="/var/www/your-project"
+PROJECT_DIR="/www/wwwroot/lectiodivina.org"
 APP_NAME="lectio-divina"
 
 # Navigate to project directory
