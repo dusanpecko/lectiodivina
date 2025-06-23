@@ -4,7 +4,7 @@ echo "🚀 Starting Lectio Divina deployment..."
 
 # Configuration
 PROJECT_DIR="/www/wwwroot/lectiodivina.org"
-APP_NAME="lectio-divina"
+APP_NAME="lectio"  # ✅ OPRAVENÉ
 
 # Navigate to project directory
 cd $PROJECT_DIR
@@ -68,4 +68,4 @@ else
 fi
 
 echo "✅ Deployment completed successfully!"
-echo "📍 Check your app at: http://lectiodivina.org"
+echo "📍 Check your app at: https://lectiodivina.org"

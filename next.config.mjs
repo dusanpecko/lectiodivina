@@ -1,10 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  assetPrefix: '',
-  poweredByHeader: false,
-  compress: false,
+  // ❌ ODSTRÁNENÉ: output: 'standalone',
   
+  // Asset handling
+  assetPrefix: '',
+  
+  // Optimizations
+  poweredByHeader: false,
+  compress: false, // Nginx bude kompresovať
+  
+  // Webpack config
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
