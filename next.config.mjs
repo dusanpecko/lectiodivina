@@ -1,15 +1,20 @@
+// next.config.mjs - na Macu
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ❌ ODSTRÁNENÉ: output: 'standalone',
-  
-  // Asset handling
   assetPrefix: '',
-  
-  // Optimizations
   poweredByHeader: false,
-  compress: false, // Nginx bude kompresovať
+  compress: false,
   
-  // Webpack config
+  // ✅ PRIDANÉ: Force cache bust pre Safari
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
+  },
+  
+  // ✅ PRIDANÉ: Safari chunk loading fix
+  experimental: {
+    optimizeCss: false // Disable CSS optimization pre Safari
+  },
+  
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -17,6 +22,22 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
+      }
+      
+      // ✅ Safari specific fixes
+      config.output.publicPath = '/_next/'
+      config.output.crossOriginLoading = 'anonymous'
+      
+      // Force chunk loading strategy
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: {
+            minChunks: 1,
+            priority: -20,
+            reuseExistingChunk: true
+          }
+        }
       }
     }
     return config
