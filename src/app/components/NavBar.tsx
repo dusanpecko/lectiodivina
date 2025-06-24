@@ -16,7 +16,8 @@ import {
   Search,
   Menu,
   X,
-  ChevronDown
+  ChevronDown,
+  Mail
 } from "lucide-react";
 
 interface NavBarProps {
@@ -82,6 +83,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
 
   // HYDRATION SAFE: pathname checking
   const isAdminPage = mounted && pathname?.startsWith('/admin');
+  const isContactPage = mounted && pathname?.startsWith('/contact');
 
   const flagEmojis = {
     sk: "🇸🇰",
@@ -116,6 +118,10 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 <div className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-gray-700">
                   <Home size={16} />
                   <span>Domov</span>
+                </div>
+                <div className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-gray-700">
+                  <Mail size={16} />
+                  <span>Kontakt</span>
                 </div>
               </div>
             </div>
@@ -196,6 +202,18 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 >
                   <Home size={16} />
                   <span>{translations[lang].home}</span>
+                </Link>
+
+                <Link 
+                  href="/contact" 
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    isContactPage
+                      ? 'bg-green-100 text-green-700' 
+                      : 'text-gray-700 hover:text-green-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Mail size={16} />
+                  <span>{translations[lang].contact || 'Kontakt'}</span>
                 </Link>
                 
                 {session && (
@@ -382,6 +400,19 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
               >
                 <Home size={18} />
                 <span>{translations[lang].home}</span>
+              </Link>
+
+              <Link 
+                href="/contact" 
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg font-medium transition-colors ${
+                  isContactPage
+                    ? 'bg-green-100 text-green-700' 
+                    : 'text-gray-700 hover:text-green-600 hover:bg-gray-100'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Mail size={18} />
+                <span>{translations[lang].contact || 'Kontakt'}</span>
               </Link>
               
               {session && (

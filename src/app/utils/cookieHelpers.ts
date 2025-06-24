@@ -89,36 +89,28 @@ export function removeAppLocalStorage() {
 }
 
 /**
- * Skontroluje či má používateľ udelený súhlas s cookies
- * @deprecated Použite getCookieConsentStatus() === 'accepted'
- */
-export function hasCookieConsent(): boolean {
-  if (typeof window === 'undefined') return false;
-  
-  try {
-    const consent = localStorage.getItem('cookieConsent');
-    return consent === 'accepted';
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Získa stav cookie súhlasu - HYDRATION SAFE
+ * Získa stav cookie súhlasu - HYDRATION SAFE s debugging
  */
 export function getCookieConsentStatus(): CookieConsentStatus {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    console.log('🍪 getCookieConsentStatus: SSR mode, returning null');
+    return null;
+  }
   
   try {
     const consent = localStorage.getItem('cookieConsent');
+    console.log('🍪 getCookieConsentStatus: localStorage value =', consent);
     
     // Validácia hodnoty
     if (consent === 'accepted' || consent === 'declined') {
+      console.log('🍪 getCookieConsentStatus: valid status =', consent);
       return consent;
     }
+    
+    console.log('🍪 getCookieConsentStatus: no valid consent found, returning null');
     return null;
   } catch (error) {
-    console.error('Error reading cookie consent status:', error);
+    console.error('❌ Error reading cookie consent status:', error);
     return null;
   }
 }
@@ -127,9 +119,14 @@ export function getCookieConsentStatus(): CookieConsentStatus {
  * Nastaví cookie súhlas - HYDRATION SAFE
  */
 export function setCookieConsent(status: 'accepted' | 'declined') {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {
+    console.warn('🍪 setCookieConsent: SSR mode, cannot set consent');
+    return;
+  }
   
   try {
+    console.log('🍪 setCookieConsent: setting status to', status);
+    
     localStorage.setItem('cookieConsent', status);
     
     // HYDRATION SAFE: Use static date instead of new Date()
@@ -163,9 +160,25 @@ export function setCookieConsent(status: 'accepted' | 'declined') {
       const oneYearFromNow = new Date();
       oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
       document.cookie = `cookieConsent=${status}; expires=${oneYearFromNow.toUTCString()}; path=/; SameSite=Strict; Secure`;
+      console.log('✅ Fallback cookie consent saved');
     } catch (cookieError) {
       console.error('❌ Fallback cookie save failed:', cookieError);
     }
+  }
+}
+
+/**
+ * Skontroluje či má používateľ udelený súhlas s cookies
+ * @deprecated Použite getCookieConsentStatus() === 'accepted'
+ */
+export function hasCookieConsent(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    const consent = localStorage.getItem('cookieConsent');
+    return consent === 'accepted';
+  } catch {
+    return false;
   }
 }
 
@@ -215,5 +228,21 @@ export function disableAllTracking() {
     console.log('✅ All tracking disabled');
   } catch (error) {
     console.error('❌ Error disabling tracking:', error);
+  }
+}
+
+/**
+ * DEBUGGING - Vymaže cookie consent pre testovanie
+ */
+export function clearCookieConsentForTesting() {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.removeItem('cookieConsent');
+    localStorage.removeItem('cookieConsentDate');
+    document.cookie = 'cookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    console.log('🧪 Cookie consent cleared for testing');
+  } catch (error) {
+    console.error('❌ Error clearing cookie consent for testing:', error);
   }
 }

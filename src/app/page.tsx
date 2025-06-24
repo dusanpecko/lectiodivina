@@ -10,6 +10,8 @@ import Logo from "./components/Logo";
 import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 import CommunitySection from "./components/CommunitySection";
 
+// ✅ ODSTRÁNENÉ - Debug imports a komponenty
+
 type LectioStep = {
   title: string;
   desc: string;
@@ -191,6 +193,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* ✅ ODSTRÁNENÉ - Debug komponenty */}
+      
       {/* Background Elements */}
       <div className="fixed inset-0 z-0">
         {/* Animated gradient orbs */}
@@ -241,7 +245,7 @@ export default function HomePage() {
               id="lang-select"
               value={lang}
               onChange={e => changeLang(e.target.value as Language)}
-              className="bg-white/20 backdrop-blur-sm text-white rounded-lg px-3 py-1 border border-white/30 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+              className="bg-white/20 backdrop-blur-sm text-white rounded-lg px-3 py-1 border border-white/30 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all"
             >
               <option value="sk" className="text-black">🇸🇰 SK</option>
               <option value="cz" className="text-black">🇨🇿 CZ</option>

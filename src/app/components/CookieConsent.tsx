@@ -18,21 +18,18 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   const [mounted, setMounted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // HYDRATION SAFE: Mark as mounted
+  // ✅ KRITICKÁ OPRAVA - Mark as mounted immediately
   useEffect(() => {
     setMounted(true);
+    console.log('🍪 CookieConsent mounted');
   }, []);
 
-  // HYDRATION SAFE: Only show if needed after mount and language loaded
+  // ✅ KRITICKÁ OPRAVA - Removed dependency on showIfNeeded to prevent blocking
   useEffect(() => {
     if (mounted && isLoaded) {
-      const timer = setTimeout(() => {
-        showIfNeeded();
-      }, 500);
-      
-      return () => clearTimeout(timer);
+      console.log('🍪 CookieConsent ready, language loaded');
     }
-  }, [showIfNeeded, mounted, isLoaded]);
+  }, [mounted, isLoaded]);
 
   // Focus management - only after mount
   useEffect(() => {
@@ -80,8 +77,10 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   useEffect(() => {
     if (mounted && visible) {
       document.body.style.overflow = 'hidden';
+      console.log('🍪 Body scroll disabled');
       return () => {
         document.body.style.overflow = 'unset';
+        console.log('🍪 Body scroll restored');
       };
     }
   }, [visible, mounted]);
@@ -89,6 +88,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   const acceptCookies = async () => {
     if (!mounted || isProcessing) return;
     
+    console.log('🍪 Accepting cookies...');
     setIsProcessing(true);
     
     try {
@@ -116,6 +116,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
   const declineCookies = async () => {
     if (!mounted || isProcessing) return;
     
+    console.log('🍪 Declining cookies...');
     setIsProcessing(true);
     
     try {
@@ -156,8 +157,18 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
     }
   };
 
-  // HYDRATION SAFE: Don't render until mounted, language loaded, and visible
-  if (!mounted || !isLoaded || !visible) return null;
+  // ✅ KRITICKÁ OPRAVA - Render immediately after mount, don't wait for isLoaded
+  if (!mounted) {
+    console.log('🍪 CookieConsent not mounted yet');
+    return null;
+  }
+
+  if (!visible) {
+    console.log('🍪 CookieConsent not visible');
+    return null;
+  }
+
+  console.log('🍪 CookieConsent rendering dialog');
 
   return (
     <div
@@ -177,7 +188,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         <button
           onClick={onClose}
           disabled={isProcessing}
-          aria-label={t.close || "Zavrieť"}
+          aria-label="Zavrieť"
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -192,19 +203,19 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         
         {/* Title */}
         <h3 id="cookie-consent-title" className="text-xl font-bold mb-3 text-gray-900">
-          {t.cookie_title || "Súhlas s cookies"}
+          {isLoaded && t.cookie_title ? t.cookie_title : "Súhlas s cookies"}
         </h3>
         
         {/* Description */}
         <p id="cookie-consent-description" className="text-gray-600 mb-6 text-sm leading-relaxed">
-          {t.cookie_text ||
+          {isLoaded && t.cookie_text ? t.cookie_text :
             "Táto stránka používa cookies na analýzu návštevnosti a zlepšenie používateľského zážitku. Vaše súkromie je pre nás dôležité."}
         </p>
         
         {/* Rozšírená informácia */}
         <details className="mb-6 text-left">
           <summary className="cursor-pointer text-sm text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-1 py-1">
-            {t.cookie_details || "Viac informácií o cookies"}
+            {isLoaded && t.cookie_details ? t.cookie_details : "Viac informácií o cookies"}
           </summary>
           <div className="mt-3 text-xs text-gray-500 space-y-2 pl-4 border-l-2 border-gray-200">
             <div>
@@ -236,7 +247,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
                 <span>Spracováva sa...</span>
               </div>
             ) : (
-              t.accept_cookies || "Prijať všetko"
+              isLoaded && t.accept_cookies ? t.accept_cookies : "Prijať všetko"
             )}
           </button>
           
@@ -251,14 +262,14 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
                 <span>Spracováva sa...</span>
               </div>
             ) : (
-              t.decline_cookies || "Odmietnuť"
+              isLoaded && t.decline_cookies ? t.decline_cookies : "Odmietnuť"
             )}
           </button>
         </div>
         
         {/* Privacy policy link */}
         <p className="text-xs text-gray-400 mt-4">
-          {t.cookie_policy_link || "Viac informácií nájdete v našich"}{" "}
+          {isLoaded && t.cookie_policy_link ? t.cookie_policy_link : "Viac informácií nájdete v našich"}{" "}
           <a 
             href="/privacy-policy" 
             className="text-indigo-600 hover:text-indigo-800 underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded"
@@ -269,6 +280,24 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
           </a>
         </p>
       </div>
+
+      {/* ✅ PRIDANÉ - Fade in animation styles */}
+      <style jsx>{`
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

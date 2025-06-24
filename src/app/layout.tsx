@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import SupabaseProvider from './components/SupabaseProvider'
 import { LanguageProvider } from './components/LanguageProvider'
 import { CookieConsentProvider } from './components/CookieConsentContext'

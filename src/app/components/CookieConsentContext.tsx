@@ -1,4 +1,3 @@
-//app/components/CookieConsentContext.tsx
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
@@ -14,46 +13,77 @@ export type CookieConsentContextType = {
   isLoaded: boolean;
 };
 
-type CookieConsentProps = {
-  visible: boolean;
-  onClose: () => void;
-  showIfNeeded: () => void;
-};
-
 export const CookieConsentContext = createContext<CookieConsentContextType | undefined>(undefined);
 
 export function CookieConsentProvider({ children }: { children: ReactNode }) {
+  // ✅ KRITICKÁ OPRAVA - Initialize states immediately for hydration
   const [visible, setVisible] = useState(false);
   const [consentStatus, setConsentStatus] = useState<'accepted' | 'declined' | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [autoShowTimeoutId, setAutoShowTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
-  // Mark as mounted first
+  console.log('🏗️ CookieConsentProvider render START:', { visible, consentStatus, isLoaded, mounted });
+
+  // ✅ KRITICKÁ OPRAVA - Use useLayoutEffect for immediate mounting
   useEffect(() => {
+    console.log('🏗️ useEffect [MOUNT] triggered');
+    
+    // Set mounted immediately
     setMounted(true);
-  }, []);
-
-  // HYDRATION SAFE: Load consent status only after mount
-  useEffect(() => {
-    if (!mounted) return;
-
-    try {
-      const status = getCookieConsentStatus();
-      setConsentStatus(status);
-      setIsLoaded(true);
-    } catch (error) {
-      console.error('Error loading cookie consent status:', error);
-      setIsLoaded(true);
+    
+    // Load consent status immediately
+    if (typeof window !== 'undefined') {
+      try {
+        console.log('🏗️ Loading consent status immediately...');
+        const status = getCookieConsentStatus();
+        console.log('🍪 Consent status loaded:', status);
+        
+        setConsentStatus(status);
+        setIsLoaded(true);
+        
+        // If no consent, show banner after short delay
+        if (status === null) {
+          console.log('🍪 No consent found, scheduling banner...');
+          const timeoutId = setTimeout(() => {
+            console.log('🍪 Showing banner now!');
+            setVisible(true);
+          }, 500);
+          setAutoShowTimeoutId(timeoutId);
+        }
+      } catch (error) {
+        console.error('❌ Error loading consent status:', error);
+        setConsentStatus(null);
+        setIsLoaded(true);
+        setMounted(true);
+        
+        // Show banner on error too
+        const timeoutId = setTimeout(() => {
+          console.log('🍪 Showing banner after error');
+          setVisible(true);
+        }, 500);
+        setAutoShowTimeoutId(timeoutId);
+      }
     }
-  }, [mounted]);
+  }, []); // ✅ Empty dependency array - run once immediately
 
-  // Handle storage changes - only after mount
+  // ✅ Cleanup timeouts
+  useEffect(() => {
+    return () => {
+      if (autoShowTimeoutId) {
+        console.log('🍪 Cleaning up timeout');
+        clearTimeout(autoShowTimeoutId);
+      }
+    };
+  }, [autoShowTimeoutId]);
+
+  // ✅ Handle storage changes
   useEffect(() => {
     if (!mounted) return;
 
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'cookieConsent') {
+        console.log('🍪 Storage change detected');
         const newStatus = getCookieConsentStatus();
         setConsentStatus(newStatus);
         
@@ -70,6 +100,7 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     const handleFocus = () => {
       const newStatus = getCookieConsentStatus();
       if (newStatus !== consentStatus) {
+        console.log('🍪 Focus refresh:', newStatus);
         setConsentStatus(newStatus);
         if (newStatus !== null) {
           setVisible(false);
@@ -84,33 +115,19 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [consentStatus, autoShowTimeoutId, mounted]);
-
-  // Cleanup timeout pri unmount
-  useEffect(() => {
-    return () => {
-      if (autoShowTimeoutId) {
-        clearTimeout(autoShowTimeoutId);
-      }
-    };
-  }, [autoShowTimeoutId]);
+  }, [mounted, consentStatus, autoShowTimeoutId]);
 
   const showIfNeeded = useCallback(() => {
-    if (mounted && isLoaded && consentStatus === null && !visible) {
-      if (autoShowTimeoutId) {
-        clearTimeout(autoShowTimeoutId);
-      }
-      
-      const timeoutId = setTimeout(() => {
-        setVisible(true);
-        setAutoShowTimeoutId(null);
-      }, 1500);
-      
-      setAutoShowTimeoutId(timeoutId);
+    console.log('🍪 showIfNeeded called:', { mounted, isLoaded, consentStatus, visible });
+    
+    if (consentStatus === null && !visible) {
+      console.log('🍪 Showing banner via showIfNeeded');
+      setVisible(true);
     }
-  }, [mounted, isLoaded, consentStatus, visible, autoShowTimeoutId]);
+  }, [mounted, isLoaded, consentStatus, visible]);
 
   const open = useCallback(() => {
+    console.log('🍪 Manual open called');
     if (autoShowTimeoutId) {
       clearTimeout(autoShowTimeoutId);
       setAutoShowTimeoutId(null);
@@ -119,19 +136,16 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
   }, [autoShowTimeoutId]);
 
   const close = useCallback(() => {
+    console.log('🍪 Close called');
     setVisible(false);
-    if (mounted) {
+    
+    // Refresh status
+    if (typeof window !== 'undefined') {
       const newStatus = getCookieConsentStatus();
+      console.log('🍪 Status after close:', newStatus);
       setConsentStatus(newStatus);
     }
-  }, [mounted]);
-
-  // Auto-show logic - only after mount
-  useEffect(() => {
-    if (mounted && isLoaded && consentStatus === null && !visible && !autoShowTimeoutId) {
-      showIfNeeded();
-    }
-  }, [mounted, isLoaded, consentStatus, visible, autoShowTimeoutId, showIfNeeded]);
+  }, []);
 
   const contextValue = useMemo(() => ({
     open,
@@ -142,17 +156,23 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
     isLoaded: mounted && isLoaded
   }), [open, close, visible, showIfNeeded, consentStatus, mounted, isLoaded]);
 
+  console.log('🏗️ CookieConsentProvider render END:', { 
+    visible, 
+    mounted, 
+    isLoaded,
+    consentStatus,
+    contextValueLoaded: contextValue.isLoaded 
+  });
+
   return (
     <CookieConsentContext.Provider value={contextValue}>
       {children}
-      {/* Only render CookieConsent after mount */}
-      {mounted && (
-        <CookieConsent 
-          visible={visible} 
-          onClose={close} 
-          showIfNeeded={showIfNeeded}
-        />
-      )}
+      {/* ✅ KRITICKÁ OPRAVA - Always render CookieConsent, let it handle its own logic */}
+      <CookieConsent 
+        visible={visible} 
+        onClose={close} 
+        showIfNeeded={showIfNeeded}
+      />
     </CookieConsentContext.Provider>
   );
 }
