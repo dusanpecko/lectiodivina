@@ -10,7 +10,6 @@ import Logo from "./components/Logo";
 import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 import CommunitySection from "./components/CommunitySection";
 
-// ✅ ODSTRÁNENÉ - Debug imports a komponenty
 
 type LectioStep = {
   title: string;

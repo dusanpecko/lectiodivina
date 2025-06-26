@@ -108,8 +108,15 @@ export default function NewsDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <main className="pt-6 pb-16">
+    <div className="min-h-screen">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-32 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-32 w-96 h-96 bg-gradient-to-tr from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-100/10 via-purple-100/10 to-pink-100/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <main className="relative pt-6 pb-16">
         <NewsDetailArticle
           news={news}
           prev={prev}

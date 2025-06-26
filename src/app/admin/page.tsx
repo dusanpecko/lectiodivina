@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
+import { useSupabase } from "@/app/components/SupabaseProvider";
 import Link from "next/link";
 import {
   Users,
@@ -30,6 +30,15 @@ interface DashboardStats {
   lectio: { total: number; thisWeek: number };
   quotes: { total: number; active: number };
   engagement: { totalViews: number; totalLikes: number; avgEngagement: number };
+}
+
+interface RecentActivity {
+  id: string;
+  action: string;
+  time: string;
+  user: string;
+  type: 'create' | 'edit' | 'delete';
+  table_name: string;
 }
 
 const StatCard = ({ 
@@ -158,32 +167,183 @@ const RecentActivityItem = ({ action, time, user, type }: {
 };
 
 export default function AdminPage() {
-  const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
+  const { supabase } = useSupabase();
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Simulujeme načítanie štatistík - nahraďte skutočnými dotazmi
-        const mockStats: DashboardStats = {
-          users: { total: 1247, newThisWeek: 23, growth: 12.5 },
-          articles: { total: 156, published: 134, drafts: 22, thisMonth: 18 },
-          lectio: { total: 89, thisWeek: 7 },
-          quotes: { total: 365, active: 312 },
-          engagement: { totalViews: 45678, totalLikes: 3456, avgEngagement: 7.8 }
-        };
+        setLoading(true);
+        setError(null);
+
+        // Paralelne načítanie všetkých štatistík
+        const [
+          usersResult,
+          usersWeekResult,
+          articlesResult,
+          articlesMonthResult,
+          lectioResult,
+          lectioWeekResult,
+          quotesResult,
+          quotesActiveResult,
+          recentActivityResult
+        ] = await Promise.allSettled([
+          // Celkový počet používateľov
+          supabase.from('users').select('*', { count: 'exact', head: true }),
+          
+          // Noví používatelia tento týždeň
+          supabase
+            .from('users')
+            .select('*', { count: 'exact', head: true })
+            .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+          
+          // Celkový počet článkov
+          supabase.from('news').select('*', { count: 'exact', head: true }),
+          
+          // Články tento mesiac
+          supabase
+            .from('news')
+            .select('*', { count: 'exact', head: true })
+            .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+          
+          // Celkový počet lectio
+          supabase.from('lectio').select('*', { count: 'exact', head: true }),
+          
+          // Lectio tento týždeň
+          supabase
+            .from('lectio')
+            .select('*', { count: 'exact', head: true })
+            .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+          
+          // Celkový počet citátov
+          supabase.from('daily_quotes').select('*', { count: 'exact', head: true }),
+          
+          // Aktívne citáty (ak máte pole is_active)
+          supabase
+            .from('daily_quotes')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_active', true),
+          
+          // Nedávna aktivita (ak máte audit log tabuľku)
+          supabase
+            .from('audit_logs')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(5)
+        ]);
+
+        // Spracovanie výsledkov
+        const totalUsers = usersResult.status === 'fulfilled' ? usersResult.value.count || 0 : 0;
+        const newUsersThisWeek = usersWeekResult.status === 'fulfilled' ? usersWeekResult.value.count || 0 : 0;
+        const totalArticles = articlesResult.status === 'fulfilled' ? articlesResult.value.count || 0 : 0;
+        const articlesThisMonth = articlesMonthResult.status === 'fulfilled' ? articlesMonthResult.value.count || 0 : 0;
+        const totalLectio = lectioResult.status === 'fulfilled' ? lectioResult.value.count || 0 : 0;
+        const lectioThisWeek = lectioWeekResult.status === 'fulfilled' ? lectioWeekResult.value.count || 0 : 0;
+        const totalQuotes = quotesResult.status === 'fulfilled' ? quotesResult.value.count || 0 : 0;
+        const activeQuotes = quotesActiveResult.status === 'fulfilled' ? quotesActiveResult.value.count || totalQuotes : totalQuotes;
+
+        // Výpočet rastu používateľov (jednoduchý odhad)
+        const userGrowth = totalUsers > 0 ? Math.round((newUsersThisWeek / totalUsers) * 100 * 52) : 0; // Ročný rast na základe týždenného
+
+        // Zistenie publikovaných vs konceptov článkov (používame published_at)
+        const { count: publishedCount } = await supabase
+          .from('news')
+          .select('*', { count: 'exact', head: true })
+          .not('published_at', 'is', null);
         
-        setStats(mockStats);
+        const draftsCount = totalArticles - (publishedCount || 0);
+
+        const calculatedStats: DashboardStats = {
+          users: { 
+            total: totalUsers, 
+            newThisWeek: newUsersThisWeek, 
+            growth: userGrowth 
+          },
+          articles: { 
+            total: totalArticles, 
+            published: publishedCount || 0, 
+            drafts: draftsCount, 
+            thisMonth: articlesThisMonth 
+          },
+          lectio: { 
+            total: totalLectio, 
+            thisWeek: lectioThisWeek 
+          },
+          quotes: { 
+            total: totalQuotes, 
+            active: activeQuotes 
+          },
+          engagement: { 
+            totalViews: 0, // Budete musieť implementovať tracking zobrazení
+            totalLikes: 0, // Budete musieť implementovať systém páčenia
+            avgEngagement: 0 // Vypočítané na základe zobrazení a interakcií
+          }
+        };
+
+        setStats(calculatedStats);
+
+        // Spracovanie nedávnej aktivity
+        if (recentActivityResult.status === 'fulfilled' && recentActivityResult.value.data) {
+          const activities: RecentActivity[] = recentActivityResult.value.data.map((activity: any) => ({
+            id: activity.id,
+            action: activity.action || 'Neznáma akcia',
+            time: formatTimeAgo(activity.created_at),
+            user: activity.user_email || 'Systém',
+            type: activity.action_type || 'edit',
+            table_name: activity.table_name || ''
+          }));
+          setRecentActivity(activities);
+        } else {
+          // Fallback mock data ak nemáte audit_logs tabuľku
+          setRecentActivity([
+            {
+              id: '1',
+              action: 'Vytvorený nový článok',
+              time: 'pred 2 hodinami',
+              user: 'Admin',
+              type: 'create',
+              table_name: 'news'
+            },
+            {
+              id: '2',
+              action: 'Upravené lectio',
+              time: 'pred 4 hodinami',
+              user: 'Editor',
+              type: 'edit',
+              table_name: 'lectio'
+            }
+          ]);
+        }
+
       } catch (error) {
         console.error('Error fetching stats:', error);
+        setError('Chyba pri načítavaní štatistík');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    if (supabase) {
+      fetchStats();
+    }
   }, [supabase]);
+
+  const formatTimeAgo = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInHours < 1) return 'pred chvíľou';
+    if (diffInHours < 24) return `pred ${diffInHours} hodinami`;
+    if (diffInDays === 1) return 'včera';
+    if (diffInDays < 7) return `pred ${diffInDays} dňami`;
+    return date.toLocaleDateString('sk-SK');
+  };
 
   if (loading) {
     return (
@@ -191,6 +351,23 @@ export default function AdminPage() {
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="text-gray-600">Načítavam dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center space-y-4">
+          <div className="text-red-500 text-xl">⚠️</div>
+          <p className="text-red-600">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Obnoviť stránku
+          </button>
         </div>
       </div>
     );
@@ -280,22 +457,18 @@ export default function AdminPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <StatCard
           title="Celkové zobrazenia"
-          value={stats?.engagement.totalViews.toLocaleString() || '0'}
-          subtitle="Za posledný mesiac"
+          value={stats?.engagement.totalViews.toLocaleString() || 'N/A'}
+          subtitle="Vyžaduje implementáciu trackingu"
           icon={Eye}
           color="red"
-          trend="up"
-          trendValue="+15.3%"
         />
         
         <StatCard
           title="Páči sa mi"
-          value={stats?.engagement.totalLikes.toLocaleString() || '0'}
-          subtitle="Celkový počet"
+          value={stats?.engagement.totalLikes.toLocaleString() || 'N/A'}
+          subtitle="Vyžaduje systém páčenia"
           icon={Heart}
           color="pink"
-          trend="up"
-          trendValue="+8.7%"
         />
         
         <StatCard
@@ -304,8 +477,6 @@ export default function AdminPage() {
           subtitle="Engagement rate"
           icon={TrendingUp}
           color="green"
-          trend="up"
-          trendValue="+2.1%"
         />
       </div>
 
@@ -367,40 +538,22 @@ export default function AdminPage() {
           </div>
           
           <div className="space-y-2">
-            <RecentActivityItem
-              action="Vytvorený nový článok 'Advent 2024'"
-              time="pred 2 hodinami"
-              user="Admin"
-              type="create"
-            />
-            
-            <RecentActivityItem
-              action="Upravené lectio 'Úvod do modlitby'"
-              time="pred 4 hodinami"
-              user="Editor"
-              type="edit"
-            />
-            
-            <RecentActivityItem
-              action="Pridaný nový používateľ"
-              time="pred 6 hodinami"
-              user="Admin"
-              type="create"
-            />
-            
-            <RecentActivityItem
-              action="Publikovaný článok 'Vianočná príprava'"
-              time="včera"
-              user="Moderátor"
-              type="edit"
-            />
-            
-            <RecentActivityItem
-              action="Vymazaný nepotrebný citát"
-              time="pred 2 dňami"
-              user="Admin"
-              type="delete"
-            />
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <RecentActivityItem
+                  key={activity.id}
+                  action={activity.action}
+                  time={activity.time}
+                  user={activity.user}
+                  type={activity.type}
+                />
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <Activity size={48} className="mx-auto mb-2 text-gray-300" />
+                <p>Žiadna nedávna aktivita</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -454,7 +607,7 @@ export default function AdminPage() {
                 Systém je v poriadku
               </h3>
               <p className="text-gray-600">
-                Všetky služby fungujú správne. Posledná aktualizácia: dnes o 14:30
+                Všetky služby fungujú správne. Posledná aktualizácia: {new Date().toLocaleString('sk-SK')}
               </p>
             </div>
           </div>

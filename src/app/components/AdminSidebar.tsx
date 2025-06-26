@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Settings,
   ChevronLeft,
-  Menu
+  Menu,
+  Kanban // Pridané pre tasks
 } from "lucide-react";
 
 const links = [
@@ -29,6 +30,7 @@ const links = [
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
   { href: "/admin/users", key: "users_id", icon: Users, color: "cyan" }, 
   { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" },
+  { href: "/admin/tasks", key: "tasks", icon: Kanban, color: "pink" }, // Pridané tasks
 ] as const;
 
 type SidebarKey = typeof links[number]["key"];
@@ -97,6 +99,15 @@ const colorVariants = {
     icon: "text-emerald-600",
     active: "bg-emerald-100 border-emerald-300 text-emerald-800",
     hover: "hover:bg-emerald-50 hover:border-emerald-200"
+  },
+  // Pridané pre tasks
+  pink: {
+    bg: "bg-pink-50",
+    border: "border-pink-200",
+    text: "text-pink-700", 
+    icon: "text-pink-600",
+    active: "bg-pink-100 border-pink-300 text-pink-800",
+    hover: "hover:bg-pink-50 hover:border-pink-200"
   }
 };
 
@@ -118,6 +129,12 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
 
   // Safe translations - wait for language to load
   const t = (mounted && isLoaded) ? translations[lang] as Record<SidebarKey, string> : {} as Record<SidebarKey, string>;
+
+  // Fallback pre tasks ak nie je v translations
+  const getTranslation = (key: SidebarKey) => {
+    if (key === 'tasks') return 'Úlohy'; // Fallback pre tasks
+    return t[key] || key;
+  };
 
   const isActive = (href: string) => {
     if (!mounted) return false; // No active state during SSR/hydration
@@ -271,7 +288,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   ? `${colors.active} shadow-md` 
                   : `border-transparent ${colors.hover} hover:shadow-sm`
               }`}
-              title={isCollapsed ? t[link.key] : undefined}
+              title={isCollapsed ? getTranslation(link.key) : undefined}
             >
               {/* Ikona */}
               <div className={`flex-shrink-0 ${active ? colors.icon : 'text-gray-500'} transition-colors`}>
@@ -284,7 +301,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   <span className={`flex-1 font-medium transition-colors ${
                     active ? colors.text : 'text-gray-700 group-hover:text-gray-800'
                   }`}>
-                    {t[link.key] || link.key}
+                    {getTranslation(link.key)}
                   </span>
                   
                   {/* Šípka pre aktívnu položku */}
@@ -302,7 +319,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
               {/* Tooltip pre collapsed mode */}
               {isCollapsed && (
                 <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
-                  {t[link.key] || link.key}
+                  {getTranslation(link.key)}
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
                 </div>
               )}
@@ -324,6 +341,13 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
             >
               <Newspaper size={16} />
               Nový článok
+            </Link>
+            <Link
+              href="/admin/tasks"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <Kanban size={16} />
+              Správa úloh
             </Link>
             <Link
               href="/admin/users/new"
