@@ -281,237 +281,230 @@ export default function LectioSourceEditPage() {
         )}
 
         <form ref={formRef} onSubmit={handleSave} className="space-y-8">
-          {/* Tabs */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-2 border-b-2 font-medium text-sm ${
-                      activeTab === tab.id
-                        ? "border-blue-500 text-blue-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    <span className="mr-2">{tab.icon}</span>
-                    {tab.label}
-                  </button>
-                ))}
-              </nav>
+          {/* Základné informácie */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <span className="text-2xl mr-3">📝</span>
+              <h2 className="text-xl font-semibold text-gray-800">Základné informácie</h2>
             </div>
+            
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    {t.lang || "Jazyk"} <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="lang"
+                    defaultValue={lectioSource.lang || appLang}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="sk">🇸🇰 Slovenčina</option>
+                    <option value="cz">🇨🇿 Čeština</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                  </select>
+                </div>
+                <InputField
+                  label="Kniha"
+                  name="kniha"
+                  defaultValue={lectioSource.kniha || ""}
+                  required
+                  placeholder="Názov biblickej knihy..."
+                />
+                <InputField
+                  label="Kapitola"
+                  name="kapitola"
+                  defaultValue={lectioSource.kapitola || ""}
+                  required
+                  placeholder="Číslo kapitoly..."
+                />
+                <InputField
+                  label={t.suradnice_pismo || "Súradnice Písma"}
+                  name="suradnice_pismo"
+                  defaultValue={lectioSource.suradnice_pismo || ""}
+                  required
+                  placeholder="napr. Mt 5,1-12"
+                />
+              </div>
+              
+              <InputField
+                label={t.hlava || "Nadpis"}
+                name="hlava"
+                defaultValue={lectioSource.hlava || ""}
+                required
+                placeholder="Nadpis lectio..."
+              />
+            </div>
+          </div>
 
-            <div className="p-6">
-              {/* Basic Tab */}
-              {activeTab === "basic" && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-gray-700">
-                        {t.lang || "Jazyk"} <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        name="lang"
-                        defaultValue={lectioSource.lang || appLang}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="sk">🇸🇰 Slovenčina</option>
-                        <option value="cz">🇨🇿 Čeština</option>
-                        <option value="en">🇬🇧 English</option>
-                        <option value="es">🇪🇸 Español</option>
-                      </select>
-                    </div>
-                    <InputField
-                      label="Kniha"
-                      name="kniha"
-                      defaultValue={lectioSource.kniha || ""}
-                      required
-                      placeholder="Názov biblickej knihy..."
-                    />
-                    <InputField
-                      label="Kapitola"
-                      name="kapitola"
-                      defaultValue={lectioSource.kapitola || ""}
-                      required
-                      placeholder="Číslo kapitoly..."
-                    />
-                    <InputField
-                      label={t.suradnice_pismo || "Súradnice Písma"}
-                      name="suradnice_pismo"
-                      defaultValue={lectioSource.suradnice_pismo || ""}
-                      required
-                      placeholder="napr. Mt 5,1-12"
-                    />
+          {/* Hlavný obsah */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <span className="text-2xl mr-3">📖</span>
+              <h2 className="text-xl font-semibold text-gray-800">Hlavný obsah</h2>
+            </div>
+            
+            <div className="space-y-8">
+              <InputField
+                label={t.lectio_text || "Lectio – text"}
+                name="lectio_text"
+                type="textarea"
+                defaultValue={lectioSource.lectio_text || ""}
+                placeholder="Napíšte text pre Lectio..."
+                rows={12}
+              />
+              
+              <InputField
+                label={t.meditatio_text || "Meditatio – text"}
+                name="meditatio_text"
+                type="textarea"
+                defaultValue={lectioSource.meditatio_text || ""}
+                placeholder="Napíšte text pre Meditatio..."
+                rows={10}
+              />
+              
+              <InputField
+                label={t.oratio_text || "Oratio – text"}
+                name="oratio_text"
+                type="textarea"
+                defaultValue={lectioSource.oratio_text || ""}
+                placeholder="Napíšte text pre Oratio..."
+                rows={10}
+              />
+              
+              <InputField
+                label={t.contemplatio_text || "Contemplatio – text"}
+                name="contemplatio_text"
+                type="textarea"
+                defaultValue={lectioSource.contemplatio_text || ""}
+                placeholder="Napíšte text pre Contemplatio..."
+                rows={10}
+              />
+              
+              <InputField
+                label={t.actio_text || "Actio – text"}
+                name="actio_text"
+                type="textarea"
+                defaultValue={lectioSource.actio_text || ""}
+                placeholder="Napíšte text pre Actio..."
+                rows={10}
+              />
+
+              <InputField
+                label={t.modlitba_zaver || "Modlitba záver"}
+                name="modlitba_zaver"
+                type="textarea"
+                defaultValue={lectioSource.modlitba_zaver || ""}
+                placeholder="Záverečná modlitba..."
+                rows={4}
+              />
+            </div>
+          </div>
+
+          {/* Biblické texty */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <span className="text-2xl mr-3">✝️</span>
+              <h2 className="text-xl font-semibold text-gray-800">Biblické texty</h2>
+            </div>
+            
+            <div className="space-y-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                  <div className="flex items-center mb-4">
+                    <span className="text-2xl mr-3">📖</span>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {t[`biblia_${i}`] || `Biblický text ${i}`}
+                    </h3>
                   </div>
                   
-                  <InputField
-                    label={t.hlava || "Nadpis"}
-                    name="hlava"
-                    defaultValue={lectioSource.hlava || ""}
-                    required
-                    placeholder="Nadpis lectio..."
-                  />
-                </div>
-              )}
-
-              {/* Content Tab */}
-              {activeTab === "content" && (
-                <div className="space-y-8">
-                  <InputField
-                    label={t.lectio_text || "Lectio – text"}
-                    name="lectio_text"
-                    type="textarea"
-                    defaultValue={lectioSource.lectio_text || ""}
-                    placeholder="Napíšte text pre Lectio..."
-                    rows={12}
-                  />
-                  
-                  <InputField
-                    label={t.meditatio_text || "Meditatio – text"}
-                    name="meditatio_text"
-                    type="textarea"
-                    defaultValue={lectioSource.meditatio_text || ""}
-                    placeholder="Napíšte text pre Meditatio..."
-                    rows={10}
-                  />
-                  
-                  <InputField
-                    label={t.oratio_text || "Oratio – text"}
-                    name="oratio_text"
-                    type="textarea"
-                    defaultValue={lectioSource.oratio_text || ""}
-                    placeholder="Napíšte text pre Oratio..."
-                    rows={10}
-                  />
-                  
-                  <InputField
-                    label={t.contemplatio_text || "Contemplatio – text"}
-                    name="contemplatio_text"
-                    type="textarea"
-                    defaultValue={lectioSource.contemplatio_text || ""}
-                    placeholder="Napíšte text pre Contemplatio..."
-                    rows={10}
-                  />
-                  
-                  <InputField
-                    label={t.actio_text || "Actio – text"}
-                    name="actio_text"
-                    type="textarea"
-                    defaultValue={lectioSource.actio_text || ""}
-                    placeholder="Napíšte text pre Actio..."
-                    rows={10}
-                  />
-
-                  <InputField
-                    label={t.modlitba_zaver || "Modlitba záver"}
-                    name="modlitba_zaver"
-                    type="textarea"
-                    defaultValue={lectioSource.modlitba_zaver || ""}
-                    placeholder="Záverečná modlitba..."
-                    rows={4}
-                  />
-                </div>
-              )}
-
-              {/* Bible Tab */}
-              {activeTab === "bible" && (
-                <div className="space-y-8">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                      <div className="flex items-center mb-4">
-                        <span className="text-2xl mr-3">📖</span>
-                        <h3 className="text-lg font-semibold text-gray-800">
-                          {t[`biblia_${i}`] || `Biblický text ${i}`}
-                        </h3>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <InputField
-                          label={t[`nazov_biblia_${i}`] || "Názov"}
-                          name={`nazov_biblia_${i}`}
-                          defaultValue={String(lectioSource[`nazov_biblia_${i}` as keyof LectioSource] ?? "")}
-                          placeholder="Názov biblického textu..."
-                        />
-                        
-                        <InputField
-                          label={t[`biblia_${i}`] || "Text"}
-                          name={`biblia_${i}`}
-                          type="textarea"
-                          defaultValue={String(lectioSource[`biblia_${i}` as keyof LectioSource] ?? "")}
-                          placeholder="Biblický text..."
-                          rows={4}
-                        />
-                        
-                        <InputField
-                          label={t[`biblia_${i}_audio`] || "Audio (URL)"}
-                          name={`biblia_${i}_audio`}
-                          type="url"
-                          defaultValue={String(lectioSource[`biblia_${i}_audio` as keyof LectioSource] ?? "")}
-                          placeholder="https://example.com/audio.mp3"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Audio Tab */}
-              {activeTab === "audio" && (
-                <div className="space-y-6">
-                  <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-                    <div className="flex items-center mb-4">
-                      <span className="text-2xl mr-3">🎵</span>
-                      <h3 className="text-lg font-semibold text-gray-800">Audio súbory</h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <InputField
-                        label={t.lectio_audio || "Lectio audio (URL)"}
-                        name="lectio_audio"
-                        type="url"
-                        defaultValue={lectioSource.lectio_audio || ""}
-                        placeholder="https://example.com/lectio.mp3"
-                      />
-                      <InputField
-                        label={t.meditatio_audio || "Meditatio audio (URL)"}
-                        name="meditatio_audio"
-                        type="url"
-                        defaultValue={lectioSource.meditatio_audio || ""}
-                        placeholder="https://example.com/meditatio.mp3"
-                      />
-                      <InputField
-                        label={t.oratio_audio || "Oratio audio (URL)"}
-                        name="oratio_audio"
-                        type="url"
-                        defaultValue={lectioSource.oratio_audio || ""}
-                        placeholder="https://example.com/oratio.mp3"
-                      />
-                      <InputField
-                        label={t.contemplatio_audio || "Contemplatio audio (URL)"}
-                        name="contemplatio_audio"
-                        type="url"
-                        defaultValue={lectioSource.contemplatio_audio || ""}
-                        placeholder="https://example.com/contemplatio.mp3"
-                      />
-                      <InputField
-                        label={t.actio_audio || "Actio audio (URL)"}
-                        name="actio_audio"
-                        type="url"
-                        defaultValue={lectioSource.actio_audio || ""}
-                        placeholder="https://example.com/actio.mp3"
-                      />
-                      <InputField
-                        label={t.audio_5_min || "Audio 5 minút (URL)"}
-                        name="audio_5_min"
-                        type="url"
-                        defaultValue={lectioSource.audio_5_min || ""}
-                        placeholder="https://example.com/5min.mp3"
-                      />
-                    </div>
+                  <div className="space-y-4">
+                    <InputField
+                      label={t[`nazov_biblia_${i}`] || "Názov"}
+                      name={`nazov_biblia_${i}`}
+                      defaultValue={String(lectioSource[`nazov_biblia_${i}` as keyof LectioSource] ?? "")}
+                      placeholder="Názov biblického textu..."
+                    />
+                    
+                    <InputField
+                      label={t[`biblia_${i}`] || "Text"}
+                      name={`biblia_${i}`}
+                      type="textarea"
+                      defaultValue={String(lectioSource[`biblia_${i}` as keyof LectioSource] ?? "")}
+                      placeholder="Biblický text..."
+                      rows={4}
+                    />
+                    
+                    <InputField
+                      label={t[`biblia_${i}_audio`] || "Audio (URL)"}
+                      name={`biblia_${i}_audio`}
+                      type="url"
+                      defaultValue={String(lectioSource[`biblia_${i}_audio` as keyof LectioSource] ?? "")}
+                      placeholder="https://example.com/audio.mp3"
+                    />
                   </div>
                 </div>
-              )}
+              ))}
+            </div>
+          </div>
+
+          {/* Audio a médiá */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <span className="text-2xl mr-3">🎵</span>
+              <h2 className="text-xl font-semibold text-gray-800">Audio a médiá</h2>
+            </div>
+            
+            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+              <div className="flex items-center mb-4">
+                <span className="text-2xl mr-3">🎵</span>
+                <h3 className="text-lg font-semibold text-gray-800">Audio súbory</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField
+                  label={t.lectio_audio || "Lectio audio (URL)"}
+                  name="lectio_audio"
+                  type="url"
+                  defaultValue={lectioSource.lectio_audio || ""}
+                  placeholder="https://example.com/lectio.mp3"
+                />
+                <InputField
+                  label={t.meditatio_audio || "Meditatio audio (URL)"}
+                  name="meditatio_audio"
+                  type="url"
+                  defaultValue={lectioSource.meditatio_audio || ""}
+                  placeholder="https://example.com/meditatio.mp3"
+                />
+                <InputField
+                  label={t.oratio_audio || "Oratio audio (URL)"}
+                  name="oratio_audio"
+                  type="url"
+                  defaultValue={lectioSource.oratio_audio || ""}
+                  placeholder="https://example.com/oratio.mp3"
+                />
+                <InputField
+                  label={t.contemplatio_audio || "Contemplatio audio (URL)"}
+                  name="contemplatio_audio"
+                  type="url"
+                  defaultValue={lectioSource.contemplatio_audio || ""}
+                  placeholder="https://example.com/contemplatio.mp3"
+                />
+                <InputField
+                  label={t.actio_audio || "Actio audio (URL)"}
+                  name="actio_audio"
+                  type="url"
+                  defaultValue={lectioSource.actio_audio || ""}
+                  placeholder="https://example.com/actio.mp3"
+                />
+                <InputField
+                  label={t.audio_5_min || "Audio 5 minút (URL)"}
+                  name="audio_5_min"
+                  type="url"
+                  defaultValue={lectioSource.audio_5_min || ""}
+                  placeholder="https://example.com/5min.mp3"
+                />
+              </div>
             </div>
           </div>
 
