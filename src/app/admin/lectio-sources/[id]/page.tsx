@@ -6,17 +6,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 
-interface Lectio {
+interface LectioSource {
   id?: number;
-  datum: string;
   lang: string;
+  kniha: string;
+  kapitola: string;
   hlava: string;
   suradnice_pismo: string;
-  uvod: string;
-  uvod_audio: string;
-  video: string;
-  modlitba_uvod: string;
-  modlitba_audio: string;
   nazov_biblia_1: string;
   biblia_1: string;
   biblia_1_audio: string;
@@ -38,11 +34,9 @@ interface Lectio {
   actio_audio: string;
   modlitba_zaver: string;
   audio_5_min: string;
-  zaver: string;
-  pozehnanie: string;
 }
 
-export default function LectioEditPage() {
+export default function LectioSourceEditPage() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
@@ -54,19 +48,15 @@ export default function LectioEditPage() {
 
   // Použijeme refs namiesto controlled stavu pre textové polia
   const formRef = useRef<HTMLFormElement>(null);
-
-  const [lectio, setLectio] = useState<Lectio | null>(
+  
+  const [lectioSource, setLectioSource] = useState<LectioSource | null>(
     isNew
       ? {
-          datum: "",
           lang: appLang,
+          kniha: "",
+          kapitola: "",
           hlava: "",
           suradnice_pismo: "",
-          uvod: "",
-          uvod_audio: "",
-          video: "",
-          modlitba_uvod: "",
-          modlitba_audio: "",
           nazov_biblia_1: "",
           biblia_1: "",
           biblia_1_audio: "",
@@ -88,8 +78,6 @@ export default function LectioEditPage() {
           actio_audio: "",
           modlitba_zaver: "",
           audio_5_min: "",
-          zaver: "",
-          pozehnanie: "",
         }
       : null
   );
@@ -101,19 +89,19 @@ export default function LectioEditPage() {
 
   useEffect(() => {
     if (isNew) return;
-    const fetchLectio = async () => {
+    const fetchLectioSource = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from("lectio")
+        .from("lectio_sources")
         .select("*")
         .eq("id", id)
         .single();
       if (!error) {
-        setLectio(data);
+        setLectioSource(data);
       }
       setLoading(false);
     };
-    fetchLectio();
+    fetchLectioSource();
   }, [id, supabase, isNew]);
 
   // Získa aktuálne hodnoty z formulára
@@ -121,7 +109,7 @@ export default function LectioEditPage() {
     if (!formRef.current) return null;
     
     const formData = new FormData(formRef.current);
-    const data: Partial<Lectio> = {};
+    const data: Partial<LectioSource> = {};
     
     for (const [key, value] of formData.entries()) {
       (data as any)[key] = value;
@@ -146,7 +134,7 @@ export default function LectioEditPage() {
 
     if (isNew) {
       const { data, error } = await supabase
-        .from("lectio")
+        .from("lectio_sources")
         .insert([formData])
         .select("id")
         .single();
@@ -154,7 +142,7 @@ export default function LectioEditPage() {
       if (!error && data?.id) {
         setMessage(t.save_success || "Úspešne uložené");
         setMessageType("success");
-        router.replace(`/admin/lectio/${data.id}`);
+        router.replace(`/admin/lectio-sources/${data.id}`);
       } else {
         setMessage(
           (error?.message ? error.message + " " : "") +
@@ -164,7 +152,7 @@ export default function LectioEditPage() {
       }
     } else {
       const { error } = await supabase
-        .from("lectio")
+        .from("lectio_sources")
         .update(formData)
         .eq("id", id);
       setSaving(false);
@@ -188,7 +176,7 @@ export default function LectioEditPage() {
     );
   }
 
-  if (!lectio) {
+  if (!lectioSource) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-lg p-8 text-center">
@@ -263,13 +251,11 @@ export default function LectioEditPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
                 {isNew
-                  ? t.add_lectio_title || "Pridať nový Lectio záznam"
-                  : t.edit_lectio_title
-                  ? `${t.edit_lectio_title} ${lectio.hlava}`
-                  : `Upraviť Lectio: ${lectio.hlava}`}
+                  ? "Pridať nový Lectio zdroj"
+                  : `Upraviť Lectio zdroj: ${lectioSource.kniha} ${lectioSource.kapitola}`}
               </h1>
               <p className="text-gray-600">
-                {isNew ? "Vytvorte nový duchovný záznam" : "Upravte existujúci záznam"}
+                {isNew ? "Vytvorte nový zdrojový obsah" : "Upravte existujúci zdroj"}
               </p>
             </div>
             <div className="text-4xl">
@@ -322,34 +308,13 @@ export default function LectioEditPage() {
               {activeTab === "basic" && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputField
-                      label={t.hlava || "Nadpis"}
-                      name="hlava"
-                      defaultValue={lectio.hlava || ""}
-                      required
-                      placeholder="Zadajte nadpis lectio..."
-                    />
-                    <InputField
-                      label={t.suradnice_pismo || "Súradnice Písma"}
-                      name="suradnice_pismo"
-                      defaultValue={lectio.suradnice_pismo || ""}
-                      required
-                      placeholder="napr. Mt 5,1-12"
-                    />
-                    <InputField
-                      label={t.datum || "Dátum"}
-                      name="datum"
-                      type="date"
-                      defaultValue={lectio.datum?.slice(0, 10) || ""}
-                      required
-                    />
                     <div className="space-y-2">
                       <label className="block text-sm font-semibold text-gray-700">
                         {t.lang || "Jazyk"} <span className="text-red-500">*</span>
                       </label>
                       <select
                         name="lang"
-                        defaultValue={lectio.lang || appLang}
+                        defaultValue={lectioSource.lang || appLang}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
                         <option value="sk">🇸🇰 Slovenčina</option>
@@ -358,33 +323,36 @@ export default function LectioEditPage() {
                         <option value="es">🇪🇸 Español</option>
                       </select>
                     </div>
+                    <InputField
+                      label="Kniha"
+                      name="kniha"
+                      defaultValue={lectioSource.kniha || ""}
+                      required
+                      placeholder="Názov biblickej knihy..."
+                    />
+                    <InputField
+                      label="Kapitola"
+                      name="kapitola"
+                      defaultValue={lectioSource.kapitola || ""}
+                      required
+                      placeholder="Číslo kapitoly..."
+                    />
+                    <InputField
+                      label={t.suradnice_pismo || "Súradnice Písma"}
+                      name="suradnice_pismo"
+                      defaultValue={lectioSource.suradnice_pismo || ""}
+                      required
+                      placeholder="napr. Mt 5,1-12"
+                    />
                   </div>
                   
                   <InputField
-                    label={t.uvod || "Úvod"}
-                    name="uvod"
-                    type="textarea"
-                    defaultValue={lectio.uvod || ""}
-                    placeholder="Úvodný text pre lectio..."
-                    rows={4}
+                    label={t.hlava || "Nadpis"}
+                    name="hlava"
+                    defaultValue={lectioSource.hlava || ""}
+                    required
+                    placeholder="Nadpis lectio..."
                   />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputField
-                      label={t.uvod_audio || "Úvod - audio (URL)"}
-                      name="uvod_audio"
-                      type="url"
-                      defaultValue={lectio.uvod_audio || ""}
-                      placeholder="https://example.com/audio.mp3"
-                    />
-                    <InputField
-                      label={t.video || "Video (URL)"}
-                      name="video"
-                      type="url"
-                      defaultValue={lectio.video || ""}
-                      placeholder="https://youtube.com/watch?v=..."
-                    />
-                  </div>
                 </div>
               )}
 
@@ -395,7 +363,7 @@ export default function LectioEditPage() {
                     label={t.lectio_text || "Lectio – text"}
                     name="lectio_text"
                     type="textarea"
-                    defaultValue={lectio.lectio_text || ""}
+                    defaultValue={lectioSource.lectio_text || ""}
                     placeholder="Napíšte text pre Lectio..."
                     rows={12}
                   />
@@ -404,7 +372,7 @@ export default function LectioEditPage() {
                     label={t.meditatio_text || "Meditatio – text"}
                     name="meditatio_text"
                     type="textarea"
-                    defaultValue={lectio.meditatio_text || ""}
+                    defaultValue={lectioSource.meditatio_text || ""}
                     placeholder="Napíšte text pre Meditatio..."
                     rows={10}
                   />
@@ -413,7 +381,7 @@ export default function LectioEditPage() {
                     label={t.oratio_text || "Oratio – text"}
                     name="oratio_text"
                     type="textarea"
-                    defaultValue={lectio.oratio_text || ""}
+                    defaultValue={lectioSource.oratio_text || ""}
                     placeholder="Napíšte text pre Oratio..."
                     rows={10}
                   />
@@ -422,7 +390,7 @@ export default function LectioEditPage() {
                     label={t.contemplatio_text || "Contemplatio – text"}
                     name="contemplatio_text"
                     type="textarea"
-                    defaultValue={lectio.contemplatio_text || ""}
+                    defaultValue={lectioSource.contemplatio_text || ""}
                     placeholder="Napíšte text pre Contemplatio..."
                     rows={10}
                   />
@@ -431,9 +399,18 @@ export default function LectioEditPage() {
                     label={t.actio_text || "Actio – text"}
                     name="actio_text"
                     type="textarea"
-                    defaultValue={lectio.actio_text || ""}
+                    defaultValue={lectioSource.actio_text || ""}
                     placeholder="Napíšte text pre Actio..."
                     rows={10}
+                  />
+
+                  <InputField
+                    label={t.modlitba_zaver || "Modlitba záver"}
+                    name="modlitba_zaver"
+                    type="textarea"
+                    defaultValue={lectioSource.modlitba_zaver || ""}
+                    placeholder="Záverečná modlitba..."
+                    rows={4}
                   />
                 </div>
               )}
@@ -454,7 +431,7 @@ export default function LectioEditPage() {
                         <InputField
                           label={t[`nazov_biblia_${i}`] || "Názov"}
                           name={`nazov_biblia_${i}`}
-                          defaultValue={String(lectio[`nazov_biblia_${i}` as keyof Lectio] ?? "")}
+                          defaultValue={String(lectioSource[`nazov_biblia_${i}` as keyof LectioSource] ?? "")}
                           placeholder="Názov biblického textu..."
                         />
                         
@@ -462,7 +439,7 @@ export default function LectioEditPage() {
                           label={t[`biblia_${i}`] || "Text"}
                           name={`biblia_${i}`}
                           type="textarea"
-                          defaultValue={String(lectio[`biblia_${i}` as keyof Lectio] ?? "")}
+                          defaultValue={String(lectioSource[`biblia_${i}` as keyof LectioSource] ?? "")}
                           placeholder="Biblický text..."
                           rows={4}
                         />
@@ -471,7 +448,7 @@ export default function LectioEditPage() {
                           label={t[`biblia_${i}_audio`] || "Audio (URL)"}
                           name={`biblia_${i}_audio`}
                           type="url"
-                          defaultValue={String(lectio[`biblia_${i}_audio` as keyof Lectio] ?? "")}
+                          defaultValue={String(lectioSource[`biblia_${i}_audio` as keyof LectioSource] ?? "")}
                           placeholder="https://example.com/audio.mp3"
                         />
                       </div>
@@ -493,96 +470,43 @@ export default function LectioEditPage() {
                         label={t.lectio_audio || "Lectio audio (URL)"}
                         name="lectio_audio"
                         type="url"
-                        defaultValue={lectio.lectio_audio || ""}
+                        defaultValue={lectioSource.lectio_audio || ""}
                         placeholder="https://example.com/lectio.mp3"
                       />
                       <InputField
                         label={t.meditatio_audio || "Meditatio audio (URL)"}
                         name="meditatio_audio"
                         type="url"
-                        defaultValue={lectio.meditatio_audio || ""}
+                        defaultValue={lectioSource.meditatio_audio || ""}
                         placeholder="https://example.com/meditatio.mp3"
                       />
                       <InputField
                         label={t.oratio_audio || "Oratio audio (URL)"}
                         name="oratio_audio"
                         type="url"
-                        defaultValue={lectio.oratio_audio || ""}
+                        defaultValue={lectioSource.oratio_audio || ""}
                         placeholder="https://example.com/oratio.mp3"
                       />
                       <InputField
                         label={t.contemplatio_audio || "Contemplatio audio (URL)"}
                         name="contemplatio_audio"
                         type="url"
-                        defaultValue={lectio.contemplatio_audio || ""}
+                        defaultValue={lectioSource.contemplatio_audio || ""}
                         placeholder="https://example.com/contemplatio.mp3"
                       />
                       <InputField
                         label={t.actio_audio || "Actio audio (URL)"}
                         name="actio_audio"
                         type="url"
-                        defaultValue={lectio.actio_audio || ""}
+                        defaultValue={lectioSource.actio_audio || ""}
                         placeholder="https://example.com/actio.mp3"
                       />
                       <InputField
                         label={t.audio_5_min || "Audio 5 minút (URL)"}
                         name="audio_5_min"
                         type="url"
-                        defaultValue={lectio.audio_5_min || ""}
+                        defaultValue={lectioSource.audio_5_min || ""}
                         placeholder="https://example.com/5min.mp3"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-green-50 rounded-lg p-6 border border-green-200">
-                    <div className="flex items-center mb-4">
-                      <span className="text-2xl mr-3">🙏</span>
-                      <h3 className="text-lg font-semibold text-gray-800">Modlitby a záver</h3>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <InputField
-                          label={t.modlitba_uvod || "Modlitba úvod"}
-                          name="modlitba_uvod"
-                          type="textarea"
-                          defaultValue={lectio.modlitba_uvod || ""}
-                          placeholder="Úvodná modlitba..."
-                          rows={3}
-                        />
-                        <InputField
-                          label={t.modlitba_audio || "Modlitba audio (URL)"}
-                          name="modlitba_audio"
-                          type="url"
-                          defaultValue={lectio.modlitba_audio || ""}
-                          placeholder="https://example.com/modlitba.mp3"
-                        />
-                      </div>
-                      
-                      <InputField
-                        label={t.modlitba_zaver || "Modlitba záver"}
-                        name="modlitba_zaver"
-                        type="textarea"
-                        defaultValue={lectio.modlitba_zaver || ""}
-                        placeholder="Záverečná modlitba..."
-                        rows={3}
-                      />
-                      
-                      <InputField
-                        label={t.zaver || "Záver"}
-                        name="zaver"
-                        type="textarea"
-                        defaultValue={lectio.zaver || ""}
-                        placeholder="Záverečné slová..."
-                        rows={3}
-                      />
-                      
-                      <InputField
-                        label={t.pozehnanie || "Požehnanie"}
-                        name="pozehnanie"
-                        type="textarea"
-                        defaultValue={lectio.pozehnanie || ""}
-                        placeholder="Záverečné požehnanie..."
-                        rows={3}
                       />
                     </div>
                   </div>

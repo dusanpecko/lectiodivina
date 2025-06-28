@@ -18,7 +18,8 @@ import {
   Settings,
   ChevronLeft,
   Menu,
-  Kanban // Pridané pre tasks
+  Kanban,
+  Book // Pridané pre lectio-sources
 } from "lucide-react";
 
 const links = [
@@ -30,7 +31,8 @@ const links = [
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
   { href: "/admin/users", key: "users_id", icon: Users, color: "cyan" }, 
   { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" },
-  { href: "/admin/tasks", key: "tasks", icon: Kanban, color: "pink" }, // Pridané tasks
+  { href: "/admin/lectio-sources", key: "lectio_sources", icon: Book, color: "teal" }, // Pridané lectio-sources
+  { href: "/admin/tasks", key: "tasks", icon: Kanban, color: "pink" },
 ] as const;
 
 type SidebarKey = typeof links[number]["key"];
@@ -100,6 +102,15 @@ const colorVariants = {
     active: "bg-emerald-100 border-emerald-300 text-emerald-800",
     hover: "hover:bg-emerald-50 hover:border-emerald-200"
   },
+  // Pridané pre lectio-sources
+  teal: {
+    bg: "bg-teal-50",
+    border: "border-teal-200",
+    text: "text-teal-700", 
+    icon: "text-teal-600",
+    active: "bg-teal-100 border-teal-300 text-teal-800",
+    hover: "hover:bg-teal-50 hover:border-teal-200"
+  },
   // Pridané pre tasks
   pink: {
     bg: "bg-pink-50",
@@ -130,9 +141,10 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
   // Safe translations - wait for language to load
   const t = (mounted && isLoaded) ? translations[lang] as Record<SidebarKey, string> : {} as Record<SidebarKey, string>;
 
-  // Fallback pre tasks ak nie je v translations
+  // Fallback pre tasks a lectio_sources ak nie sú v translations
   const getTranslation = (key: SidebarKey) => {
-    if (key === 'tasks') return 'Úlohy'; // Fallback pre tasks
+    if (key === 'tasks') return 'Úlohy';
+    if (key === 'lectio_sources') return 'Lectio Zdroje';
     return t[key] || key;
   };
 
@@ -341,6 +353,13 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
             >
               <Newspaper size={16} />
               Nový článok
+            </Link>
+            <Link
+              href="/admin/lectio-sources/new"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <Book size={16} />
+              Nový Lectio zdroj
             </Link>
             <Link
               href="/admin/tasks"

@@ -49,3 +49,23 @@ body {
     }
   }
 }
+/* Zabráni autoscroll pri React re-renderoch */
+html {
+  scroll-behavior: auto !important;
+  overflow-anchor: none;
+}
+
+body {
+  overflow-anchor: none;
+}
+
+/* Zabráni scrollovaniu textarea pri focus */
+textarea:focus {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+/* Stabilný layout pre formuláre */
+form {
+  overflow-anchor: none;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
@@ -33,6 +33,9 @@ export default function NewsEditPage() {
 
   const isNew = id === "new";
 
+  // Použijeme refs namiesto controlled stavu pre základné polia
+  const formRef = useRef<HTMLFormElement>(null);
+  
   const [news, setNews] = useState<News | null>(
     isNew
       ? {
@@ -60,19 +63,35 @@ export default function NewsEditPage() {
         .select("*")
         .eq("id", id)
         .single();
-      if (!error) setNews(data);
+      if (!error) {
+        setNews(data);
+      }
       setLoading(false);
     };
     fetchNews();
   }, [id, supabase, isNew]);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    setNews((old) => ({ ...old!, [e.target.name]: e.target.value }));
+  // Získa aktuálne hodnoty z formulára
+  const getFormData = () => {
+    if (!formRef.current || !news) return null;
+    
+    const formData = new FormData(formRef.current);
+    const data: Partial<News> = {};
+    
+    for (const [key, value] of formData.entries()) {
+      (data as any)[key] = value;
+    }
+    
+    // Pridaj content z TinyMCE (nie je v FormData)
+    data.content = news.content;
+    
+    return data;
   };
+
+  // Debounced update pre TinyMCE
+  const handleContentChange = useCallback((value: string) => {
+    setNews((old) => ({ ...old!, content: value }));
+  }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +99,8 @@ export default function NewsEditPage() {
     setMessage(null);
     setMessageType(null);
     
-    if (!news) {
+    const formData = getFormData();
+    if (!formData) {
       setSaving(false);
       setMessage(t.save_error || "Chyba pri ukladaní");
       setMessageType("error");
@@ -90,7 +110,7 @@ export default function NewsEditPage() {
     if (isNew) {
       const { data, error } = await supabase
         .from("news")
-        .insert([news])
+        .insert([formData])
         .select("id")
         .single();
       setSaving(false);
@@ -108,14 +128,7 @@ export default function NewsEditPage() {
     } else {
       const { error } = await supabase
         .from("news")
-        .update({
-          title: news.title,
-          summary: news.summary,
-          image_url: news.image_url,
-          content: news.content,
-          published_at: news.published_at,
-          lang: news.lang,
-        })
+        .update(formData)
         .eq("id", id);
       setSaving(false);
       setMessage(
@@ -152,14 +165,14 @@ export default function NewsEditPage() {
     );
   }
 
+  // Uncontrolled input field
   const InputField = ({ 
     label, 
     name, 
     type = "text", 
     required = false, 
     placeholder = "", 
-    value,
-    onChange,
+    defaultValue = "",
     icon
   }: {
     label: string;
@@ -167,8 +180,7 @@ export default function NewsEditPage() {
     type?: string;
     required?: boolean;
     placeholder?: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    defaultValue?: string;
     icon?: string;
   }) => (
     <div className="space-y-2">
@@ -179,20 +191,19 @@ export default function NewsEditPage() {
       {type === "textarea" ? (
         <textarea
           name={name}
-          value={value}
-          onChange={onChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 resize-vertical"
+          defaultValue={defaultValue}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
           placeholder={placeholder}
           required={required}
           rows={3}
+          style={{ height: "4.5rem" }}
         />
       ) : (
         <input
           type={type}
           name={name}
-          value={value}
-          onChange={onChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+          defaultValue={defaultValue}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           placeholder={placeholder}
           required={required}
         />
@@ -307,7 +318,7 @@ export default function NewsEditPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form */}
           <div className="space-y-6">
-            <form onSubmit={handleSave} className="space-y-6">
+            <form ref={formRef} onSubmit={handleSave} className="space-y-6">
               {/* Basic Information */}
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -319,8 +330,7 @@ export default function NewsEditPage() {
                   <InputField
                     label={t.title || "Nadpis"}
                     name="title"
-                    value={news.title || ""}
-                    onChange={handleChange}
+                    defaultValue={news.title || ""}
                     required
                     placeholder="Zadajte výstižný nadpis článku..."
                     icon="📝"
@@ -330,8 +340,7 @@ export default function NewsEditPage() {
                     label={t.summary || "Súhrn"}
                     name="summary"
                     type="textarea"
-                    value={news.summary || ""}
-                    onChange={handleChange}
+                    defaultValue={news.summary || ""}
                     required
                     placeholder="Stručný popis obsahu článku..."
                     icon="📄"
@@ -342,8 +351,7 @@ export default function NewsEditPage() {
                       label={t.published_at || "Dátum publikovania"}
                       name="published_at"
                       type="date"
-                      value={news.published_at?.slice(0, 10) || ""}
-                      onChange={handleChange}
+                      defaultValue={news.published_at?.slice(0, 10) || ""}
                       icon="📅"
                     />
                     
@@ -354,9 +362,8 @@ export default function NewsEditPage() {
                       </label>
                       <select
                         name="lang"
-                        value={news.lang || appLang}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                        defaultValue={news.lang || appLang}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       >
                         <option value="sk">🇸🇰 Slovenčina</option>
                         <option value="cz">🇨🇿 Čeština</option>
@@ -379,8 +386,7 @@ export default function NewsEditPage() {
                   label={t.image_url || "URL obrázka"}
                   name="image_url"
                   type="url"
-                  value={news.image_url || ""}
-                  onChange={handleChange}
+                  defaultValue={news.image_url || ""}
                   placeholder="https://example.com/image.jpg"
                   icon="📸"
                 />
@@ -413,17 +419,26 @@ export default function NewsEditPage() {
                   </label>
                   <div className="border border-gray-300 rounded-lg overflow-hidden">
                     <Editor
+                      key={`editor-${id}`} // Stabilný kľúč
                       apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
                       init={{
                         height: 400,
-                        plugins: "link image lists code paste table emoticons media",
+                        plugins: "link image lists code table emoticons media wordcount autoresize",
                         toolbar: "undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | emoticons | code",
                         menubar: false,
                         paste_data_images: true,
+                        paste_as_text: false,
+                        paste_auto_cleanup_on_paste: true,
                         content_style: "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.6; }",
+                        // Nastavenia pre stabilité
+                        resize: false,
+                        statusbar: false,
+                        auto_focus: false,
+                        branding: false,
+                        promotion: false,
                       }}
                       value={news.content || ""}
-                      onEditorChange={(value) => setNews((old) => ({ ...old!, content: value }))}
+                      onEditorChange={handleContentChange}
                     />
                   </div>
                 </div>
