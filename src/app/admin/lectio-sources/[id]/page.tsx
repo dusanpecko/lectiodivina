@@ -338,11 +338,60 @@ export default function LectioSourceEditPage() {
             </div>
           </div>
 
+          {/* Biblické texty */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <span className="text-2xl mr-3">✝️</span>
+              <h2 className="text-xl font-semibold text-gray-800">Biblické texty</h2>
+              <span className="ml-3 text-sm text-gray-500">(základ pre lectio divina)</span>
+            </div>
+            
+            <div className="space-y-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                  <div className="flex items-center mb-4">
+                    <span className="text-2xl mr-3">📖</span>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {t[`biblia_${i}`] || `Biblický text ${i}`}
+                    </h3>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <InputField
+                      label={t[`nazov_biblia_${i}`] || "Názov"}
+                      name={`nazov_biblia_${i}`}
+                      defaultValue={String(lectioSource[`nazov_biblia_${i}` as keyof LectioSource] ?? "")}
+                      placeholder="Názov biblického textu..."
+                    />
+                    
+                    <InputField
+                      label={t[`biblia_${i}`] || "Text"}
+                      name={`biblia_${i}`}
+                      type="textarea"
+                      defaultValue={String(lectioSource[`biblia_${i}` as keyof LectioSource] ?? "")}
+                      placeholder="Biblický text..."
+                      rows={4}
+                    />
+                    
+                    <InputField
+                      label={t[`biblia_${i}_audio`] || "Audio (URL)"}
+                      name={`biblia_${i}_audio`}
+                      type="url"
+                      defaultValue={String(lectioSource[`biblia_${i}_audio` as keyof LectioSource] ?? "")}
+                      placeholder="https://example.com/audio.mp3"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Hlavný obsah */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center mb-6">
               <span className="text-2xl mr-3">📖</span>
-              <h2 className="text-xl font-semibold text-gray-800">Hlavný obsah</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Hlavný obsah lectio divina</h2>
+              <span className="ml-3 text-sm text-gray-500">(reflexia biblických textov)</span>
             </div>
             
             <div className="space-y-8">
@@ -399,53 +448,6 @@ export default function LectioSourceEditPage() {
                 placeholder="Záverečná modlitba..."
                 rows={4}
               />
-            </div>
-          </div>
-
-          {/* Biblické texty */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center mb-6">
-              <span className="text-2xl mr-3">✝️</span>
-              <h2 className="text-xl font-semibold text-gray-800">Biblické texty</h2>
-            </div>
-            
-            <div className="space-y-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                  <div className="flex items-center mb-4">
-                    <span className="text-2xl mr-3">📖</span>
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {t[`biblia_${i}`] || `Biblický text ${i}`}
-                    </h3>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <InputField
-                      label={t[`nazov_biblia_${i}`] || "Názov"}
-                      name={`nazov_biblia_${i}`}
-                      defaultValue={String(lectioSource[`nazov_biblia_${i}` as keyof LectioSource] ?? "")}
-                      placeholder="Názov biblického textu..."
-                    />
-                    
-                    <InputField
-                      label={t[`biblia_${i}`] || "Text"}
-                      name={`biblia_${i}`}
-                      type="textarea"
-                      defaultValue={String(lectioSource[`biblia_${i}` as keyof LectioSource] ?? "")}
-                      placeholder="Biblický text..."
-                      rows={4}
-                    />
-                    
-                    <InputField
-                      label={t[`biblia_${i}_audio`] || "Audio (URL)"}
-                      name={`biblia_${i}_audio`}
-                      type="url"
-                      defaultValue={String(lectioSource[`biblia_${i}_audio` as keyof LectioSource] ?? "")}
-                      placeholder="https://example.com/audio.mp3"
-                    />
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
