@@ -31,7 +31,8 @@ const links = [
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
   { href: "/admin/users", key: "users_id", icon: Users, color: "cyan" }, 
   { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" },
-  { href: "/admin/lectio-sources", key: "lectio_sources", icon: Book, color: "teal" }, // Pridané lectio-sources
+  { href: "/admin/lectio-sources", key: "lectio_sources", icon: Book, color: "teal" }, 
+  { href: "/admin/lectio-sources/new", key: "lectio_sources_news", icon: Book, color: "teal" },// Pridané lectio-sources
   { href: "/admin/tasks", key: "tasks", icon: Kanban, color: "pink" },
 ] as const;
 
@@ -145,6 +146,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
   const getTranslation = (key: SidebarKey) => {
     if (key === 'tasks') return 'Úlohy';
     if (key === 'lectio_sources') return 'Lectio Zdroje';
+    if (key === 'lectio_sources_news') return 'Nový Lectio zdroj';
     return t[key] || key;
   };
 
