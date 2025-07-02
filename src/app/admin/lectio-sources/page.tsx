@@ -164,7 +164,7 @@ export default function LectioSourcesAdminPage() {
     try {
       let dataQuery = supabase
         .from("lectio_sources")
-        .select("id, lang, kniha, kapitola, hlava, suradnice_pismo, lectio_text, meditatio_text, oratio_text, contemplatio_text, lectio_audio, created_at")
+        .select("id, lang, kniha, kapitola, hlava, suradnice_pismo, lectio_text, meditatio_text, oratio_text, contemplatio_text, lectio_audio, meditatio_audio, oratio_audio, contemplatio_audio, created_at")
         .eq("lang", filterLang);
 
       let countQuery = supabase
@@ -352,11 +352,8 @@ export default function LectioSourcesAdminPage() {
              lectio.oratio_audio || lectio.contemplatio_audio);
   }, []);
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
-      {/* Notifikácie */}
       {notification && (
         <Notification
           message={notification.message}
@@ -366,7 +363,6 @@ export default function LectioSourcesAdminPage() {
       )}
 
       <div className="max-w-7xl mx-auto p-6">
-        {/* Hlavička */}
         <header className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -381,7 +377,6 @@ export default function LectioSourcesAdminPage() {
               </div>
             </div>
             
-            {/* Štatistiky */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-emerald-600">{stats.total}</div>
@@ -405,9 +400,7 @@ export default function LectioSourcesAdminPage() {
           </div>
         </header>
 
-        {/* Ovládacie panely */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Výber jazyka */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-4">
               <Globe size={20} className="text-emerald-600" />
@@ -429,7 +422,6 @@ export default function LectioSourcesAdminPage() {
             </select>
           </div>
 
-          {/* Import/Export */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-4">
               <Download size={20} className="text-green-600" />
@@ -457,7 +449,6 @@ export default function LectioSourcesAdminPage() {
             </div>
           </div>
 
-          {/* Akcie */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-3 mb-4">
               <PlusCircle size={20} className="text-teal-600" />
@@ -473,7 +464,6 @@ export default function LectioSourcesAdminPage() {
           </div>
         </div>
 
-        {/* Vyhľadávanie a filtre */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -494,7 +484,6 @@ export default function LectioSourcesAdminPage() {
             </button>
           </div>
 
-          {/* Globálne vyhľadávanie */}
           <div className="mb-4">
             <div className="relative">
               <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -511,7 +500,6 @@ export default function LectioSourcesAdminPage() {
             </div>
           </div>
 
-          {/* Detailné filtre */}
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
@@ -585,7 +573,6 @@ export default function LectioSourcesAdminPage() {
             </div>
           )}
 
-          {/* Vyčistiť filtre */}
           {hasActiveFilters && (
             <div className="mt-4 flex justify-end">
               <button
@@ -599,7 +586,6 @@ export default function LectioSourcesAdminPage() {
           )}
         </div>
 
-        {/* Tabuľka */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -751,81 +737,183 @@ export default function LectioSourcesAdminPage() {
           </div>
         </div>
 
-        {/* Stránkovanie */}
-        {totalPages > 1 && (
+        {Math.ceil(total / PAGE_SIZE) > 1 && (
           <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                Zobrazujem <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
-                <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
-                <span className="font-medium">{total}</span> Lectio zdrojov
-              </div>
+            <div className="text-center text-sm text-gray-600 mb-4">
+              Zobrazujem <span className="font-bold">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
+              <span className="font-bold">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
+              <span className="font-bold">{total}</span> Lectio zdrojov
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft size={16} />
+                <span className="hidden sm:inline">Predchádzajúca</span>
+              </button>
               
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ArrowLeft size={16} />
-                  Predchádzajúca
-                </button>
-                
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const maxVisible = 5;
-                    
-                    if (totalPages <= maxVisible) {
-                      return Array.from({ length: totalPages }, (_, i) => {
-                        const pageNum = i + 1;
-                        return (
-                          <button
-                            key={`page-${pageNum}`}
-                            onClick={() => setPage(pageNum)}
-                            className={`w-10 h-10 rounded-lg transition ${
-                              page === pageNum
-                                ? "bg-emerald-600 text-white"
-                                : "border border-gray-300 hover:bg-gray-50"
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      });
-                    }
-                    
-                    const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
-                    const endPage = Math.min(totalPages, startPage + maxVisible - 1);
-                    
-                    const pages = [];
-                    for (let i = startPage; i <= endPage; i++) {
-                      pages.push(
+              <div className="hidden sm:flex items-center gap-2">
+                {(() => {
+                  const totalPages = Math.ceil(total / PAGE_SIZE);
+                  const maxVisible = 5;
+                  
+                  if (totalPages <= maxVisible) {
+                    return Array.from({ length: totalPages }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
                         <button
-                          key={`page-${i}`}
-                          onClick={() => setPage(i)}
+                          key={`page-${pageNum}`}
+                          onClick={() => setPage(pageNum)}
                           className={`w-10 h-10 rounded-lg transition ${
-                            page === i
+                            page === pageNum
                               ? "bg-emerald-600 text-white"
                               : "border border-gray-300 hover:bg-gray-50"
                           }`}
                         >
-                          {i}
+                          {pageNum}
                         </button>
                       );
+                    });
+                  }
+                  
+                  const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
+                  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                  
+                  const pages = [];
+                  
+                  if (startPage > 1) {
+                    pages.push(
+                      <button
+                        key="page-1"
+                        onClick={() => setPage(1)}
+                        className="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                      >
+                        1
+                      </button>
+                    );
+                    if (startPage > 2) {
+                      pages.push(
+                        <span key="dots-start" className="px-2 text-gray-400">
+                          ...
+                        </span>
+                      );
                     }
-                    
-                    return pages;
-                  })()}
-                </div>
-                
-                <button
-                  onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-                  disabled={page * PAGE_SIZE >= total}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  }
+                  
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={`page-${i}`}
+                        onClick={() => setPage(i)}
+                        className={`w-10 h-10 rounded-lg transition ${
+                          page === i
+                            ? "bg-emerald-600 text-white"
+                            : "border border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  
+                  if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                      pages.push(
+                        <span key="dots-end" className="px-2 text-gray-400">
+                          ...
+                        </span>
+                      );
+                    }
+                    pages.push(
+                      <button
+                        key={`page-${totalPages}`}
+                        onClick={() => setPage(totalPages)}
+                        className="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                      >
+                        {totalPages}
+                      </button>
+                    );
+                  }
+                  
+                  return pages;
+                })()}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 whitespace-nowrap">Stránka:</span>
+                <select
+                  value={page}
+                  onChange={(e) => setPage(Number(e.target.value))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition min-w-[80px]"
                 >
-                  Ďalšia
-                  <ArrowRight size={16} />
-                </button>
+                  {Array.from({ length: Math.ceil(total / PAGE_SIZE) }, (_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <option key={pageNum} value={pageNum}>
+                        {pageNum} / {Math.ceil(total / PAGE_SIZE)}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              
+              <div className="hidden lg:flex items-center gap-2">
+                <span className="text-sm text-gray-600 whitespace-nowrap">Ísť na:</span>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max={Math.ceil(total / PAGE_SIZE)}
+                    placeholder={String(page)}
+                    className="w-16 border border-gray-300 rounded-lg px-2 py-2 text-sm text-center focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const newPage = Number((e.target as HTMLInputElement).value);
+                        const maxPages = Math.ceil(total / PAGE_SIZE);
+                        if (newPage >= 1 && newPage <= maxPages) {
+                          setPage(newPage);
+                          (e.target as HTMLInputElement).value = '';
+                          (e.target as HTMLInputElement).blur();
+                        }
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const newPage = Number(e.target.value);
+                      const maxPages = Math.ceil(total / PAGE_SIZE);
+                      if (newPage >= 1 && newPage <= maxPages) {
+                        setPage(newPage);
+                      }
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                disabled={page * PAGE_SIZE >= total}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="hidden sm:inline">Ďalšia</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+            
+            <div className="sm:hidden mt-4 pt-4 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-500">
+                {Math.ceil(total / PAGE_SIZE) > 10 && (
+                  <p className="mb-2">
+                    Tip: Použite dropdown "Stránka" pre rýchly prechod na konkrétnu stránku
+                  </p>
+                )}
+                <div className="flex justify-center gap-4">
+                  <span>Stránka {page} z {Math.ceil(total / PAGE_SIZE)}</span>
+                  <span>•</span>
+                  <span>{Math.ceil(total / PAGE_SIZE)} celkom</span>
+                </div>
               </div>
             </div>
           </div>
