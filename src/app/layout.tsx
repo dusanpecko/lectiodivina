@@ -9,13 +9,6 @@ import { useMetadata } from '@/hooks/useMetadata'
 import { useLanguage } from './components/LanguageProvider'
 import './globals.css'
 
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  viewportFit: 'cover',
-  themeColor: '#4a5085',
-}
-
 // Komponenta pre dynamické metadata
 function DynamicMetadata() {
   const { lang } = useLanguage();
@@ -54,7 +47,9 @@ export default function RootLayout({
           }}
         />
         
-        {/* Mobile meta tagy */}
+        {/* Viewport a mobile meta tagy */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#4a5085" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
