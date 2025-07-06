@@ -9,20 +9,6 @@ import { useMetadata } from '@/hooks/useMetadata'
 import { useLanguage } from './components/LanguageProvider'
 import './globals.css'
 
-// Základné statické metadata (fallback)
-export const metadata = {
-  title: 'Lectio Divina - Duchovné čítanie a modlitby',
-  description: 'Denné duchovné čítania, modlitby a meditácie pre hlbší duchovný život.',
-  keywords: 'lectio divina, modlitby, duchovné čítanie, biblia, meditácie',
-  openGraph: {
-    title: 'Lectio Divina',
-    description: 'Duchovné čítanie a modlitby',
-    url: 'https://lectiodivina.org',
-    type: 'website',
-    siteName: 'Lectio Divina',
-  }
-}
-
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
