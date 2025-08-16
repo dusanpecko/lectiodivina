@@ -9,47 +9,20 @@ import DailyQuote from "./components/DailyQuote";
 import Logo from "./components/Logo";
 import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 import CommunitySection from "./components/CommunitySection";
-
+import { useSupabase } from "./components/SupabaseProvider";
+import { BookOpen, Brain, Users, Heart, Target, ArrowRight, Clock, CheckCircle, ChevronDown, ChevronRight, Menu, X, Mail, Flower, Calendar, User } from "lucide-react";
 
 type LectioStep = {
   title: string;
   desc: string;
 };
 
-const lectioIcons = [
-  
-  // LECTIO - Jednoduchá ikona
-  <div key="lectio" className="relative">
-    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-2xl blur-xl"></div>
-    <div className="relative w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-3 text-white text-3xl font-bold">
-      📖
-    </div>
-  </div>,
-  
-  // MEDITATIO - Jednoduchá ikona
-  <div key="meditatio" className="relative">
-    <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-2xl blur-xl"></div>
-    <div className="relative w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mb-3 text-white text-3xl font-bold">
-      🕐
-    </div>
-  </div>,
-  
-  // ORATIO - Jednoduchá ikona
-  <div key="oratio" className="relative">
-    <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-teal-500/20 rounded-2xl blur-xl"></div>
-    <div className="relative w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mb-3 text-white text-3xl font-bold">
-      🙏
-    </div>
-  </div>,
-  
-  // CONTEMPLATIO - Jednoduchá ikona
-  <div key="contemplatio" className="relative">
-    <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-2xl blur-xl"></div>
-    <div className="relative w-16 h-16 bg-orange-600 rounded-2xl flex items-center justify-center mb-3 text-white text-3xl font-bold">
-      ✨
-    </div>
-  </div>
-];
+interface GuideStep {
+  title: string;
+  subtitle: string;
+  description: string;
+  duration: string;
+}
 
 function getCountdown(target: Date) {
   const now = new Date();
@@ -63,386 +36,666 @@ function getCountdown(target: Date) {
   };
 }
 
+function LectioGuideSection({ t }: { t: any }) {
+  const guideSection = t.lectio_guide_section;
+  
+  const steps = (guideSection.steps as GuideStep[]).map((step: GuideStep, index: number) => ({
+    number: index + 1,
+    title: step.title,
+    subtitle: step.subtitle,
+    description: step.description,
+    icon: [BookOpen, Brain, Users, Heart, Target][index],
+    color: ['from-blue-500 to-indigo-600', 'from-green-500 to-emerald-600', 'from-amber-500 to-orange-600', 'from-red-500 to-pink-600', 'from-purple-500 to-violet-600'][index],
+    bgColor: ['bg-blue-50', 'bg-green-50', 'bg-amber-50', 'bg-red-50', 'bg-purple-50'][index],
+    borderColor: ['border-blue-200', 'border-green-200', 'border-amber-200', 'border-red-200', 'border-purple-200'][index],
+    textColor: ['text-blue-600', 'text-green-600', 'text-amber-600', 'text-red-600', 'text-purple-600'][index],
+    duration: step.duration,
+    href: ['/intro/lectio', '/intro/meditatio', '/intro/oratio', '/intro/contemplatio', '/intro/actio'][index]
+  }));
+
+  const fadeInUp = {
+    initial: { opacity: 0, y: 60 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 }
+  };
+
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  return (
+    <section className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+      <div className="absolute top-20 left-10 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl"></div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          className="text-center mb-16"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeInUp}
+        >
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm px-4 py-2 rounded-full mb-6">
+            <BookOpen className="w-4 h-4" />
+            <span>{guideSection.badge}</span>
+          </div>
+          
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
+            {guideSection.title}
+          </h2>
+          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            {guideSection.subtitle}
+          </p>
+          
+          <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
+            <div className="flex items-center space-x-2">
+              <Clock className="w-4 h-4" />
+              <span>{guideSection.total_duration}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="w-4 h-4" />
+              <span>{guideSection.steps_count}</span>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+        >
+          {steps.map((step: any) => {
+            const Icon = step.icon;
+            return (
+              <motion.div
+                key={step.number}
+                variants={fadeInUp}
+                className="group relative"
+                whileHover={{
+                  scale: 1.02,
+                  y: -5,
+                  transition: { duration: 0.2 }
+                }}
+              >
+                <a href={step.href} className="block">
+                  <div className={`relative ${step.bgColor} ${step.borderColor} border-2 rounded-2xl p-4 hover:shadow-xl transition-all duration-300 h-full`}>
+                    <div className="absolute -top-3 -left-3 w-8 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-sm font-bold text-gray-700">
+                      {step.number}
+                    </div>
+                    
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${step.color} p-3 mb-3 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    
+                    <div className="text-center mb-3">
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">
+                        {step.title}
+                      </h3>
+                      <p className="text-sm font-medium text-gray-600 mb-2">
+                        {step.subtitle}
+                      </p>
+                      <div className={`inline-flex items-center space-x-1 ${step.textColor} text-xs font-medium mb-2`}>
+                        <Clock className="w-3 h-3" />
+                        <span>{step.duration}</span>
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-700 text-xs leading-relaxed mb-3">
+                      {step.description}
+                    </p>
+                    
+                    <div className="text-center">
+                      <span className={`inline-flex items-center ${step.textColor} font-medium text-xs group-hover:text-gray-800 transition-colors duration-300`}>
+                        {guideSection.start_step}
+                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        <motion.div
+          className="text-center"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={fadeInUp}
+        >
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              {guideSection.cta.title}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {guideSection.cta.description}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="/intro"
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-colors duration-200"
+              >
+                <BookOpen className="w-5 h-5 mr-2" />
+                {guideSection.cta.start_with_intro}
+              </a>
+              <a
+                href="/intro/lectio"
+                className="inline-flex items-center justify-center px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl border-2 border-indigo-600 hover:bg-indigo-50 transition-colors duration-200"
+              >
+                {guideSection.cta.go_to_lectio}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      <section className="relative min-h-screen w-full overflow-hidden flex flex-col bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+        <div className="relative px-4 sm:px-8 pt-6 sm:pt-8 flex justify-between items-center">
+          <div className="h-12 w-32 bg-white/20 rounded-lg animate-pulse"></div>
+          <div className="h-12 w-48 bg-white/20 rounded-2xl animate-pulse"></div>
+        </div>
+        
+        <div className="relative flex flex-col justify-center min-h-[60vh] sm:h-[70vh] max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-16">
+          <div className="space-y-6">
+            <div className="h-8 w-32 bg-white/20 rounded-full animate-pulse"></div>
+            <div className="space-y-4">
+              <div className="h-16 w-3/4 bg-white/20 rounded-lg animate-pulse"></div>
+              <div className="h-12 w-1/2 bg-white/20 rounded-lg animate-pulse"></div>
+            </div>
+            <div className="h-6 w-2/3 bg-white/20 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { lang, changeLang } = useLanguage();
+  const { session } = useSupabase();
   const t = translations[lang];
   const router = useRouter();
 
-  // Fixed target date to prevent server/client mismatch
-  const targetDate = new Date('2026-01-01T00:00:00');
-  
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
   const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [lectioSubmenuOpen, setLectioSubmenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     
-    // Initialize countdown after mount
-    setCountdown(getCountdown(targetDate));
-    const timer = setInterval(() => setCountdown(getCountdown(targetDate)), 1000);
-    
     const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const dropdown = document.querySelector('.nav-dropdown');
+      if (dropdown && !dropdown.contains(event.target as Node)) {
+        setDropdownOpen(false);
+        setLectioSubmenuOpen(false);
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      document.addEventListener('mousedown', handleClickOutside);
+    }
     
     return () => {
-      clearInterval(timer);
-      window.removeEventListener('scroll', handleScroll);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', handleScroll);
+        document.removeEventListener('mousedown', handleClickOutside);
+      }
     };
   }, []);
 
-  // Show basic layout until mounted
+  // NOVÁ JEDNODUCHÁ LOGIKA - kontroluje iba či je session, ak nie, zobrazí modal
+  const checkAuthAndNavigate = (href: string) => {
+    if (session) {
+      // Ak je prihlásený, choď na stránku
+      router.push(href);
+    } else {
+      // Ak nie je prihlásený, zobraz modal
+      setShowLoginModal(true);
+    }
+    // Zatvor všetky menu
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+    setLectioSubmenuOpen(false);
+  };
+
+  const handleLectioClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLectioSubmenuOpen(!lectioSubmenuOpen);
+  };
+
+  const lectioSteps = [
+    { href: '/about', label: t.about_lectio_divina, color: 'blue' },
+    { href: '/intro/lectio', label: 'Lectio', color: 'green' },
+    { href: '/intro/meditatio', label: 'Meditatio', color: 'amber' },
+    { href: '/intro/oratio', label: 'Oratio', color: 'red' },
+    { href: '/intro/contemplatio', label: 'Contemplatio', color: 'purple' },
+    { href: '/intro/actio', label: 'Actio', color: 'indigo' }
+  ];
+
   if (!mounted) {
-    return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden">
-        {/* Basic hero section without dynamic content */}
-        <section className="relative z-20 min-h-screen w-full overflow-hidden flex flex-col">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=cover&w=1500&q=80"
-              alt="Pozadie"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/70 to-slate-900/60 z-10"></div>
-          
-          <div className="relative z-30 px-4 sm:px-8 pt-6 sm:pt-8 flex justify-between items-center">
-            <Logo className="h-12 w-auto pt-3 pl-3 drop-shadow-lg" />
-            <div className="flex items-center gap-4 sm:gap-6 bg-white/10 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20">
-              <button
-                onClick={() => router.push("/login")}
-                className="text-white font-medium hover:text-blue-300 transition-colors duration-300 flex items-center space-x-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{t.admin}</span>
-              </button>
-              <div className="w-px h-6 bg-white/30"></div>
-              <label htmlFor="lang-select" className="text-white mr-1 text-sm font-medium">{t.select_language}:</label>
-              <select
-                id="lang-select"
-                value={lang}
-                onChange={e => changeLang(e.target.value as Language)}
-                className="bg-white/20 backdrop-blur-sm text-white rounded-lg px-3 py-1 border border-white/30 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-              >
-                <option value="sk" className="text-black">🇸🇰 SK</option>
-                <option value="cz" className="text-black">🇨🇿 CZ</option>
-                <option value="en" className="text-black">🇬🇧 EN</option>
-                <option value="es" className="text-black">🇪🇸 ES</option>
-              </select>
-            </div>
-          </div>
-          
-          <div className="relative z-30 flex flex-col justify-center min-h-[60vh] sm:h-[70vh] max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-16">
-            <div className="space-y-6">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-                  {t.app_title}
-                </span>
-                <br />
-                <span className="font-light text-slate-300 text-3xl sm:text-4xl md:text-5xl">
-                  {t.app_subtitle}
-                </span>
-              </h1>
-              
-              <p className="text-xl sm:text-2xl text-slate-200 mb-8 max-w-3xl leading-relaxed">
-                {t.app_desc}
-              </p>
-              
-              {/* Static countdown placeholder */}
-              <div className="grid grid-cols-4 gap-4 sm:gap-8 mb-8 max-w-2xl">
-                {[
-                  { label: t.days },
-                  { label: t.hours },
-                  { label: t.minutes },
-                  { label: t.seconds }
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-6 text-center"
-                  >
-                    <div className="text-3xl sm:text-5xl font-bold text-white mb-2 font-mono">
-                      --
-                    </div>
-                    <div className="text-xs sm:text-sm text-slate-300 uppercase tracking-widest font-medium">
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Basic sections without dynamic content */}
-        <section className="relative z-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen flex flex-col justify-center py-24">
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-                {t.lectio_section_title}
-              </h2>
-            </div>
-          </div>
-        </section>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* ✅ ODSTRÁNENÉ - Debug komponenty */}
-      
-      {/* Background Elements */}
-      <div className="fixed inset-0 z-0">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-orange-400/5 to-pink-400/5 rounded-full blur-3xl animate-pulse animation-delay-4000"></div>
-      </div>
-
-      {/* Hero sekcia */}
-      <section className="relative z-20 min-h-screen w-full overflow-hidden flex flex-col">
-        {/* Parallax Background */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{ transform: `translateY(${scrollY * 0.5}px)` }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=cover&w=1500&q=80"
-            alt="Pozadie"
-            className="w-full h-[120%] object-cover"
-          />
+    <div className="min-h-screen flex flex-col relative">
+      {/* Hero sekcia s gradientom */}
+      <section className="relative min-h-screen w-full overflow-hidden flex flex-col bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+        {/* Animated background patterns */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-r from-green-400/20 to-blue-500/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-pink-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse animation-delay-4000"></div>
         </div>
-        
-        {/* Enhanced gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/70 to-slate-900/60 z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-15"></div>
-        
-        {/* Floating Navigation */}
-        <motion.div 
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative z-30 px-4 sm:px-8 pt-6 sm:pt-8 flex justify-between items-center"
-        >
-          <Logo className="h-12 w-auto pt-3 pl-3 drop-shadow-lg" />
-          <div className="flex items-center gap-4 sm:gap-6 bg-white/10 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20">
-            <button
-              onClick={() => router.push("/contact")}
-              className="text-white font-medium hover:text-blue-300 transition-colors duration-300 flex items-center space-x-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>{t.footer.contact}</span>
-            </button>
-            <div className="w-px h-6 bg-white/30"></div>
-            <label htmlFor="lang-select" className="text-white mr-1 text-sm font-medium">{t.select_language}:</label>
-            <select
-              id="lang-select"
-              value={lang}
-              onChange={e => changeLang(e.target.value as Language)}
-              className="bg-white/20 backdrop-blur-sm text-white rounded-lg px-3 py-1 border border-white/30 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all"
-            >
-              <option value="sk" className="text-black">🇸🇰 SK</option>
-              <option value="cz" className="text-black">🇨🇿 CZ</option>
-              <option value="en" className="text-black">🇬🇧 EN</option>
-              <option value="es" className="text-black">🇪🇸 ES</option>
-            </select>
+
+        {/* Fixed Navigation */}
+        <nav className="relative z-50 w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              {/* Logo */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Logo className="h-12 w-auto text-white drop-shadow-lg" />
+              </motion.div>
+
+              {/* Desktop Menu */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="hidden lg:flex items-center space-x-8"
+              >
+                {/* Prayer Main Dropdown */}
+                <div className="relative nav-dropdown">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center space-x-2 text-white hover:text-indigo-200 transition-colors duration-200 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span className="font-medium">{t.prayer}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Main Dropdown Content */}
+                  {dropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[9999]"
+                    >
+                      <div className="p-4">
+                        
+                        {/* LECTIO NA DNES - VŽDY VIDITEĽNÉ */}
+                        <div className="mb-4">
+                          <button
+                            onClick={() => checkAuthAndNavigate('/lectio')}
+                            className="w-full flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200 transition-all duration-200 group"
+                          >
+                            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                              <Calendar className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <span className="font-bold text-emerald-700 block">Lectio na dnes</span>
+                              <span className="text-xs text-emerald-600">
+                                {session ? 'Každodenná modlitba' : 'Prihlásenie potrebné'}
+                              </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors duration-200" />
+                          </button>
+                        </div>
+                        
+                        {/* Lectio Divina Section */}
+                        <div className="mb-4">
+                          <button
+                            onClick={handleLectioClick}
+                            className="w-full flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors duration-200 group"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                <BookOpen className="w-4 h-4 text-white" />
+                              </div>
+                              <span className="font-bold text-gray-900">Lectio Divina</span>
+                            </div>
+                            <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${lectioSubmenuOpen ? 'rotate-90' : ''}`} />
+                          </button>
+                          
+                          {/* Lectio Submenu */}
+                          {lectioSubmenuOpen && (
+                            <div className="ml-4 mt-2 space-y-1 border-l-2 border-indigo-100 pl-4">
+                              {lectioSteps.map((item, index) => (
+                                <a
+                                  key={index}
+                                  href={item.href}
+                                  onClick={() => {
+                                    setDropdownOpen(false);
+                                    setLectioSubmenuOpen(false);
+                                  }}
+                                  className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 group"
+                                >
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                                  <span className="text-gray-700 group-hover:text-gray-900 text-sm font-medium">
+                                    {item.label}
+                                  </span>
+                                </a>
+                              ))}
+                              
+                              {/* Lectio CTA */}
+                              <div className="mt-3 pt-3 border-t border-gray-100">
+                                <a
+                                  href="/intro"
+                                  onClick={() => {
+                                    setDropdownOpen(false);
+                                    setLectioSubmenuOpen(false);
+                                  }}
+                                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200"
+                                >
+                                  <span>{t.start_the_guide}</span>
+                                  <ArrowRight className="w-4 h-4" />
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* RUŽENEC - VŽDY VIDITEĽNÉ */}
+                        <div className="border-t border-gray-100 pt-4">
+                          <button
+                            onClick={() => checkAuthAndNavigate('/rosary')}
+                            className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-rose-50 transition-colors duration-200 group"
+                          >
+                            <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-600 rounded-lg flex items-center justify-center">
+                              <Flower className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <span className="font-bold text-gray-900 block">Ružienec</span>
+                              <span className="text-xs text-gray-500">
+                                {session ? 'Formou Lectio Divina' : 'Prihlásenie potrebné'}
+                              </span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-rose-600 transition-colors duration-200" />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Contact Button */}
+                <button
+                  onClick={() => router.push("/contact")}
+                  className="flex items-center space-x-2 text-white hover:text-indigo-200 transition-colors duration-200 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span className="font-medium">{t.footer.contact}</span>
+                </button>
+
+                {/* Language Selector */}
+                <select
+                  value={lang}
+                  onChange={e => changeLang(e.target.value as Language)}
+                  className="bg-white/10 backdrop-blur-md text-white rounded-lg px-3 py-2 border border-white/20 focus:ring-2 focus:ring-indigo-400 transition-all"
+                >
+                  <option value="sk" className="text-black">🇸🇰 SK</option>
+                  <option value="cz" className="text-black">🇨🇿 CZ</option>
+                  <option value="en" className="text-black">🇬🇧 EN</option>
+                  <option value="es" className="text-black">🇪🇸 ES</option>
+                </select>
+              </motion.div>
+
+              {/* Mobile Menu Button */}
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="lg:hidden flex items-center space-x-4"
+              >
+                <select
+                  value={lang}
+                  onChange={e => changeLang(e.target.value as Language)}
+                  className="bg-white/10 backdrop-blur-md text-white rounded-lg px-2 py-1 border border-white/20 text-sm"
+                >
+                  <option value="sk" className="text-black">🇸🇰</option>
+                  <option value="cz" className="text-black">🇨🇿</option>
+                  <option value="en" className="text-black">🇬🇧</option>
+                  <option value="es" className="text-black">🇪🇸</option>
+                </select>
+                
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="bg-white/10 backdrop-blur-md rounded-lg p-2 border border-white/20 text-white hover:bg-white/20 transition-colors duration-200"
+                >
+                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+              </motion.div>
+            </div>
+
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="lg:hidden bg-white/10 backdrop-blur-md rounded-2xl mt-4 p-4 border border-white/20"
+              >
+                <div className="space-y-3">
+                  
+                  {/* MOBILE LECTIO NA DNES - VŽDY VIDITEĽNÉ */}
+                  <div className="mb-3 pb-3 border-b border-white/20">
+                    <button
+                      onClick={() => checkAuthAndNavigate('/lectio')}
+                      className="w-full flex items-center space-x-3 bg-white/10 p-3 rounded-lg border border-white/20 transition-colors duration-200"
+                    >
+                      <Calendar className="w-4 h-4 text-white" />
+                      <div className="text-left">
+                        <span className="block font-bold text-white">Lectio na dnes</span>
+                        <span className="text-xs text-white/60">
+                          {session ? 'Každodenná modlitba' : 'Prihlásenie potrebné'}
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                  
+                  {/* Mobile Lectio Divina Section */}
+                  <div>
+                    <button
+                      onClick={() => setLectioSubmenuOpen(!lectioSubmenuOpen)}
+                      className="w-full flex items-center justify-between text-white font-bold border-b border-white/20 pb-2 mb-3"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <BookOpen className="w-4 h-4" />
+                        <span>Lectio Divina</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${lectioSubmenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    {lectioSubmenuOpen && (
+                      <div className="space-y-2 ml-4 mb-4">
+                        {lectioSteps.map((item, index) => (
+                          <a
+                            key={index}
+                            href={item.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block text-white/80 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                          >
+                            {item.label}
+                          </a>
+                        ))}
+                        
+                        <a
+                          href="/intro"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="w-full text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 mt-3 block"
+                        >
+                          {t.start_the_guide}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* MOBILE RUŽENEC - VŽDY VIDITEĽNÉ */}
+                  <div className="border-t border-white/20 pt-3">
+                    <button
+                      onClick={() => checkAuthAndNavigate('/rosary')}
+                      className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                    >
+                      <Flower className="w-4 h-4" />
+                      <div>
+                        <span className="block font-medium">Ružienec</span>
+                        <span className="text-xs text-white/60">
+                          {session ? 'Formou Lectio Divina' : 'Prihlásenie potrebné'}
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                  
+                  {/* Mobile Contact */}
+                  <div className="border-t border-white/20 pt-3">
+                    <button
+                      onClick={() => {
+                        router.push("/contact");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>{t.footer.contact}</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
-        </motion.div>
-        
+        </nav>
+
         {/* Hero Content */}
-        <div className="relative z-30 flex flex-col justify-center min-h-[60vh] sm:h-[70vh] max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 60 }}
+        <div className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-            className="space-y-6"
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="space-y-8"
           >
+            {/* Badge */}
             <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold tracking-widest text-sm px-4 py-2 rounded-full shadow-lg"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold tracking-widest text-sm px-6 py-3 rounded-full shadow-lg"
             >
               <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
               <span>{t.preparing}</span>
             </motion.div>
-            
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-                {t.app_title}
-              </span>
-              <br />
-              <span className="font-light text-slate-300 text-3xl sm:text-4xl md:text-5xl">
+
+            {/* Main Title */}
+            <div className="space-y-4">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-tight">
+                <span className="bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent">
+                  {t.app_title}
+                </span>
+              </h1>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-indigo-100">
                 {t.app_subtitle}
-              </span>
-            </h1>
-            
-            <p className="text-xl sm:text-2xl text-slate-200 mb-8 max-w-3xl leading-relaxed">
+              </h2>
+            </div>
+
+            {/* Description */}
+            <p className="text-xl sm:text-2xl text-indigo-100 max-w-4xl mx-auto leading-relaxed">
               {t.app_desc}
             </p>
             
-            {/* Enhanced Countdown */}
-            <div className="grid grid-cols-4 gap-4 sm:gap-8 mb-8 max-w-2xl">
-              {[
-                { value: countdown.days, label: t.days },
-                { value: countdown.hours, label: t.hours },
-                { value: countdown.minutes, label: t.minutes },
-                { value: countdown.seconds, label: t.seconds }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-6 text-center hover:bg-white/20 transition-all duration-300"
-                >
-                  <div className="text-3xl sm:text-5xl font-bold text-white mb-2 font-mono">
-                    {item.value.toString().padStart(2, '0')}
-                  </div>
-                  <div className="text-xs sm:text-sm text-slate-300 uppercase tracking-widest font-medium">
-                    {item.label}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.2 }}
-              className="flex flex-col sm:flex-row items-center gap-4"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8"
             >
               <a 
                 href="/about" 
-                className="group inline-flex items-center space-x-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transition-all duration-300"
+                className="group inline-flex items-center space-x-3 px-8 py-4 rounded-2xl bg-white text-indigo-900 font-bold text-lg shadow-2xl hover:shadow-white/25 hover:scale-105 transition-all duration-300"
               >
                 <span>{t.more}</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </a>
               
               <a 
                 href="https://dcza.24-pay.sk/darovat/lectio-divina" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center space-x-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg shadow-2xl hover:shadow-emerald-500/25 hover:scale-105 transition-all duration-300"
+                className="group inline-flex items-center space-x-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg shadow-2xl hover:shadow-emerald-500/25 hover:scale-105 transition-all duration-300"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+                <Heart className="w-5 h-5" />
                 <span>{t.support}</span>
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </a>
             </motion.div>
+
           </motion.div>
         </div>
       </section>
       
-      {/* Enhanced LECTIO sekcia */}
-      <section className="relative z-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen flex flex-col justify-center py-24">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 w-full">
+      {/* Daily Quote Section */}
+      <section className="relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 w-full">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            className="text-center mb-8"
           >
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
               {t.lectio_section_title}
             </h2>
-            <div className="w-24 h-1.5 mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6"></div>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Objavte duchovnú cestu cez štvor kroky Lectio Divina - starovekú kresťanskú prax meditácie
-            </p>
+            <div className="w-24 h-1.5 mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-8"></div>
           </motion.div>
           
-          {/* Enhanced Daily Quote */}
-          <div className="mb-16">
-            <DailyQuote />
-          </div>
-          
-          {/* Enhanced Lectio Steps */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-            {t.lectio_steps.map((step: LectioStep, idx: number) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 60, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ 
-                  duration: 0.7, 
-                  delay: idx * 0.15,
-                  ease: "easeOut"
-                }}
-                whileHover={{
-                  scale: 1.08,
-                  y: -10,
-                  transition: { duration: 0.3 }
-                }}
-                className="group relative"
-              >
-                {/* Card background with glass effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-3xl shadow-xl group-hover:shadow-2xl transition-all duration-300"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent rounded-3xl"></div>
-                
-                {/* Card content */}
-                <div className="relative p-8 sm:p-10 flex flex-col items-center text-center h-full">
-                  {/* Enhanced icon with glow effect */}
-                  <div className="mb-6 group-hover:scale-110 transition-transform duration-300">
-                    {lectioIcons[idx]}
-                  </div>
-                  
-                  {/* Step number */}
-                  <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-800 text-white text-sm font-bold rounded-full flex items-center justify-center">
-                    {idx + 1}
-                  </div>
-                  
-                  <h3 className="font-bold text-xl sm:text-2xl text-slate-800 mb-4 tracking-wide group-hover:text-blue-700 transition-colors duration-300">
-                    {step.title}
-                  </h3>
-                  
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
-                    {step.desc}
-                  </p>
-                  
-                  {/* Decorative bottom accent */}
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <DailyQuote />
         </div>
       </section>
+
+      {/* Lectio Guide Section */}
+      <LectioGuideSection t={t} />
       
-      {/* Enhanced News Section */}
-      <div className="relative z-20">
+      {/* News Section */}
+      <div className="relative">
         <HomeNewsSection /> 
       </div>
       
-      {/* Enhanced App Section */}
-      <section className="relative z-20 py-24 sm:py-32 bg-gradient-to-br from-white via-blue-50 to-slate-100 flex flex-col items-center justify-center w-full overflow-hidden">
-        {/* Background decorative elements */}
+      {/* App Section */}
+      <section className="relative py-24 sm:py-32 bg-gradient-to-br from-white via-blue-50 to-slate-100 flex flex-col items-center justify-center w-full overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-96 h-96 bg-blue-200/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-80 h-80 bg-purple-200/10 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16 px-4 sm:px-8">
+        <div className="relative max-w-7xl w-full mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16 px-4 sm:px-8">
           <motion.div 
             initial={{ opacity: 0, x: -60 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -472,7 +725,6 @@ export default function HomePage() {
               </p>
             </div>
             
-            {/* Enhanced App Store Badges */}
             <div className="flex items-center gap-6 sm:gap-8 mb-8 flex-wrap mt-8">
               <motion.a 
                 href="https://play.google.com/store/apps/details?id=sk.dpapp.app.android604688a88a394" 
@@ -515,9 +767,7 @@ export default function HomePage() {
               className="group inline-flex items-center space-x-2 text-blue-700 font-semibold text-lg hover:text-blue-800 transition-colors duration-300"
             >
               <span>{t.app_section.more}</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </motion.a>
           </motion.div>
           
@@ -529,12 +779,10 @@ export default function HomePage() {
             className="flex-1 flex justify-center w-full mt-8 lg:mt-0"
           >
             <div className="relative">
-              {/* Decorative background elements */}
               <div className="absolute -inset-8 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-3xl blur-2xl"></div>
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-20 blur-xl"></div>
               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full opacity-15 blur-xl"></div>
               
-              {/* Main image */}
               <motion.img
                 whileHover={{ scale: 1.02, rotate: 1 }}
                 transition={{ duration: 0.3 }}
@@ -543,7 +791,6 @@ export default function HomePage() {
                 className="relative rounded-3xl shadow-2xl w-full max-w-[450px] object-cover border-8 border-white/50 backdrop-blur-sm"
               />
               
-              {/* Floating elements */}
               <motion.div
                 animate={{ y: [-10, 10, -10] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -572,31 +819,67 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Enhanced Community Section */}
-      <div className="relative z-20">
+      {/* Community Section */}
+      <div className="relative">
         <CommunitySection translations={translations[lang]} />
       </div>
 
-      {/* Floating scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: scrollY > 500 ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className="fixed bottom-8 right-8 z-50"
-      >
-        <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+      {/* Scroll to Top Button */}
+      {typeof window !== 'undefined' && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: scrollY > 500 ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed bottom-8 right-8 z-50"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-          </svg>
-        </motion.button>
-      </motion.div>
+          <motion.button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+          </motion.button>
+        </motion.div>
+      )}
 
-      {/* Custom animations styles */}
+      {/* LOGIN MODAL */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Prihlásenie potrebné</h3>
+              <p className="text-gray-600 mb-6">
+                Pre prístup k tejto funkcii sa prosím prihláste do svojho účtu.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Zrušiť
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    router.push('/login');
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Prihlásiť sa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Styles */}
       <style jsx>{`
         .animation-delay-2000 {
           animation-delay: 2s;
@@ -604,18 +887,90 @@ export default function HomePage() {
         .animation-delay-4000 {
           animation-delay: 4s;
         }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        
+        .nav-dropdown {
+          position: relative;
+          z-index: 9999;
         }
-        .fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
+        
+        .backdrop-blur-md {
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+        
+        /* Ensure dropdown colors work */
+        .hover\\:bg-blue-50:hover {
+          background-color: rgb(239 246 255);
+        }
+        .hover\\:text-blue-700:hover {
+          color: rgb(29 78 216);
+        }
+        .hover\\:bg-green-50:hover {
+          background-color: rgb(240 253 244);
+        }
+        .hover\\:text-green-700:hover {
+          color: rgb(21 128 61);
+        }
+        .hover\\:bg-amber-50:hover {
+          background-color: rgb(255 251 235);
+        }
+        .hover\\:text-amber-700:hover {
+          color: rgb(180 83 9);
+        }
+        .hover\\:bg-red-50:hover {
+          background-color: rgb(254 242 242);
+        }
+        .hover\\:text-red-700:hover {
+          color: rgb(185 28 28);
+        }
+        .hover\\:bg-purple-50:hover {
+          background-color: rgb(250 245 255);
+        }
+        .hover\\:text-purple-700:hover {
+          color: rgb(126 34 206);
+        }
+        .hover\\:bg-indigo-50:hover {
+          background-color: rgb(238 242 255);
+        }
+        .hover\\:text-indigo-700:hover {
+          color: rgb(67 56 202);
+        }
+        .hover\\:bg-rose-50:hover {
+          background-color: rgb(255 241 242);
+        }
+        .hover\\:text-rose-700:hover {
+          color: rgb(190 18 60);
+        }
+        .hover\\:bg-gray-50:hover {
+          background-color: rgb(249 250 251);
+        }
+        .hover\\:text-gray-900:hover {
+          color: rgb(17 24 39);
+        }
+        
+        .bg-blue-400 {
+          background-color: rgb(96 165 250);
+        }
+        .bg-green-400 {
+          background-color: rgb(74 222 128);
+        }
+        .bg-amber-400 {
+          background-color: rgb(251 191 36);
+        }
+        .bg-red-400 {
+          background-color: rgb(248 113 113);
+        }
+        .bg-purple-400 {
+          background-color: rgb(196 181 253);
+        }
+        .bg-indigo-400 {
+          background-color: rgb(129 140 248);
+        }
+        .bg-rose-400 {
+          background-color: rgb(251 113 133);
+        }
+        .bg-gray-400 {
+          background-color: rgb(156 163 175);
         }
       `}</style>
     </div>

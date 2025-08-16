@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useLanguage } from "./LanguageProvider";
 import { useSupabase } from "./SupabaseProvider";
 import { motion } from "framer-motion";
+import { translations } from "@/app/i18n";
 
 interface News {
   id: number;
@@ -24,6 +25,8 @@ interface News {
 export function HomeNewsSection() {
   const { supabase } = useSupabase();
   const { lang: appLang } = useLanguage();
+  const t = translations[appLang as keyof typeof translations] ?? translations.sk;
+  
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,12 +62,12 @@ export function HomeNewsSection() {
       }
     } catch (err) {
       console.error("Fetch error:", err);
-      setError(err instanceof Error ? err.message : "Chyba pri načítavaní článkov");
+      setError(err instanceof Error ? err.message : t.homeNewsSection?.error_title || "Chyba pri načítavaní článkov");
       setNews([]);
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [supabase, t.homeNewsSection?.error_title]);
 
   useEffect(() => {
     // Fetch iba ak sa jazyk zmenil alebo je to prvé načítanie
@@ -97,7 +100,7 @@ export function HomeNewsSection() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-              Najnovšie články
+              {t.homeNewsSection?.title || "Najnovšie články"}
             </h2>
           </div>
           
@@ -129,7 +132,7 @@ export function HomeNewsSection() {
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"
               ></motion.div>
-              <span>Načítavam články pre jazyk: {appLang}...</span>
+              <span>{t.homeNewsSection?.loading || "Načítavam články pre jazyk:"} {appLang}...</span>
             </div>
           </div>
         </div>
@@ -157,18 +160,18 @@ export function HomeNewsSection() {
             </div>
             
             <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-red-800 via-orange-700 to-pink-800 bg-clip-text text-transparent mb-6">
-              Najnovšie články
+              {t.homeNewsSection?.title || "Najnovšie články"}
             </h2>
             
             <div className="bg-gradient-to-br from-white/90 via-red-50/80 to-orange-50/90 backdrop-blur-xl border border-red-200/50 rounded-3xl shadow-2xl p-12">
               <div className="text-2xl font-bold text-red-700 mb-4">
-                Chyba pri načítavaní článkov
+                {t.homeNewsSection?.error_title || "Chyba pri načítavaní článkov"}
               </div>
               <div className="text-red-600 mb-4 text-lg">
                 {error}
               </div>
               <div className="text-slate-600">
-                Skontrolujte Supabase databázu a údaje pre jazyk "{appLang}"
+                {t.homeNewsSection?.error_check || "Skontrolujte Supabase databázu a údaje pre jazyk"} "{appLang}"
               </div>
             </div>
           </motion.div>
@@ -197,15 +200,15 @@ export function HomeNewsSection() {
             </div>
             
             <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-              Najnovšie články
+              {t.homeNewsSection?.title || "Najnovšie články"}
             </h2>
             
             <div className="bg-gradient-to-br from-white/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-xl border border-blue-200/50 rounded-3xl shadow-2xl p-12">
               <div className="text-2xl font-bold text-slate-700 mb-4">
-                Zatiaľ žiadne články
+                {t.homeNewsSection?.no_articles_title || "Zatiaľ žiadne články"}
               </div>
               <div className="text-slate-600 text-lg">
-                Žiadne články pre jazyk "{appLang}" neboli nájdené.
+                {t.homeNewsSection?.no_articles_desc?.replace('{lang}', appLang) || `Žiadne články pre jazyk "${appLang}" neboli nájdené.`}
               </div>
             </div>
           </motion.div>
@@ -249,11 +252,11 @@ export function HomeNewsSection() {
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-sm px-6 py-3 rounded-full mb-8 shadow-lg"
           >
             <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-            <span>NAJNOVŠIE SPRÁVY</span>
+            <span>{t.homeNewsSection?.badge || "NAJNOVŠIE SPRÁVY"}</span>
           </motion.div>
           
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-8 leading-tight">
-            Najnovšie články
+            {t.homeNewsSection?.title || "Najnovšie články"}
           </h2>
           
           {/* Enhanced divider */}
@@ -266,7 +269,7 @@ export function HomeNewsSection() {
           </div>
           
           <p className="text-xl sm:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light">
-            Zostávajte informovaní o najnovších udalostiach a duchovných témach
+            {t.homeNewsSection?.subtitle || "Zostávajte informovaní o najnovších udalostiach a duchovných témach"}
           </p>
         </motion.div>
 
@@ -319,7 +322,7 @@ export function HomeNewsSection() {
                   
                   {/* Floating badge */}
                   <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                    NOVÝ
+                    {t.homeNewsSection?.new_badge || "NOVÝ"}
                   </div>
                 </div>
                 
@@ -345,7 +348,7 @@ export function HomeNewsSection() {
                     {/* Button glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover/btn:opacity-20 transition-opacity duration-300"></div>
                     
-                    <span className="relative z-10 mr-2">Zobraziť článok</span>
+                    <span className="relative z-10 mr-2">{t.homeNewsSection?.show_article || "Zobraziť článok"}</span>
                     <motion.svg 
                       className="relative z-10 w-4 h-4" 
                       fill="none" 
@@ -383,7 +386,7 @@ export function HomeNewsSection() {
             href="/news"
             className="group inline-flex items-center space-x-3 text-2xl font-bold bg-gradient-to-r from-blue-700 via-purple-700 to-indigo-700 bg-clip-text text-transparent hover:from-blue-800 hover:via-purple-800 hover:to-indigo-800 transition-all duration-300"
           >
-            <span>Zobraziť všetky články</span>
+            <span>{t.homeNewsSection?.show_all_articles || "Zobraziť všetky články"}</span>
             <motion.svg 
               className="w-6 h-6 text-blue-600" 
               fill="none" 

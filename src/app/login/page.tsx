@@ -374,34 +374,6 @@ export default function LoginPage() {
           </button>
         </p>
       </div>
-
-      {/* Demo Credentials */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="flex items-center space-x-2 mb-2">
-          <Shield size={16} className="text-blue-600" />
-          <span className="text-sm font-semibold text-blue-800">Demo prístup (iba admin)</span>
-        </div>
-        <div className="text-xs text-blue-700 space-y-1">
-          <p><strong>Email:</strong> admin@example.com</p>
-          <p><strong>Heslo:</strong> password123</p>
-          <p className="text-blue-600 font-medium mt-2">⚠️ Iba používatelia s rolou "admin" môžu pristupovať</p>
-        </div>
-      </div>
-
-      {/* Admin Access Warning */}
-      <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-        <div className="flex items-start space-x-2">
-          <AlertCircle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-xs text-amber-700">
-            <p className="font-medium mb-1">Obmedzený prístup</p>
-            <p>
-              Toto je administračné rozhranie. Prístup majú iba používatelia 
-              s admin rolou v databáze. Ak nemáte oprávnenie, kontaktujte 
-              správcu systému.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

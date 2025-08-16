@@ -28,7 +28,7 @@ export default function NewsDetailPage() {
   const router = useRouter();
   const { supabase } = useSupabase();
   const { lang } = useLanguage();
-  const t = translations[lang];
+  const t = translations[lang as keyof typeof translations] ?? translations.sk;
 
   const [news, setNews] = useState<News | null>(null);
   const [prev, setPrev] = useState<NewsLink | null>(null);
@@ -117,15 +117,11 @@ export default function NewsDetailPage() {
       </div>
 
       <main className="relative pt-6 pb-16">
+        {/* ZJEDNODUŠENÉ - NewsDetailArticle si načíta preklady sám */}
         <NewsDetailArticle
           news={news}
           prev={prev}
           next={next}
-          t={{
-            show_all_news: t.show_all_news,
-            previous_article: t.previous_article,
-            next_article: t.next_article,
-          }}
         />
       </main>
     </div>

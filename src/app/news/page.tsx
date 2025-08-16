@@ -24,7 +24,8 @@ interface News {
 export default function NewsListPage() {
   const { supabase } = useSupabase();
   const { lang: appLang } = useLanguage();
-  const t = translations[appLang];
+  const t = translations[appLang as keyof typeof translations] ?? translations.sk;
+  
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +63,10 @@ export default function NewsListPage() {
   }, [news, searchTerm, sortBy]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(appLang === 'sk' ? 'sk-SK' : 'en-US', {
+    return new Date(dateString).toLocaleDateString(
+      appLang === 'sk' ? 'sk-SK' : 
+      appLang === 'cz' ? 'cs-CZ' :
+      appLang === 'es' ? 'es-ES' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -134,10 +138,10 @@ export default function NewsListPage() {
           
           <div className="bg-gradient-to-br from-white/90 via-blue-50/80 to-indigo-50/90 backdrop-blur-xl border border-blue-200/50 rounded-3xl shadow-2xl p-12">
             <h2 className="text-3xl font-bold text-slate-800 mb-4">
-              Žiadne články
+              {t.newsListPage?.no_articles_title || "Žiadne články"}
             </h2>
             <p className="text-xl text-slate-600">
-              {t.no_articles || "Žiadne články neboli nájdené."}
+              {t.newsListPage?.no_articles_desc || t.no_articles || "Žiadne články neboli nájdené."}
             </p>
           </div>
         </motion.div>
@@ -161,11 +165,11 @@ export default function NewsListPage() {
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-sm px-6 py-3 rounded-full mb-8 shadow-lg"
           >
             <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-            <span>VŠETKY ČLÁNKY</span>
+            <span>{t.newsListPage?.all_articles_badge || "VŠETKY ČLÁNKY"}</span>
           </motion.div>
           
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-8 leading-tight">
-            {t.latest_news}
+            {t.newsListPage?.title || t.latest_news}
           </h1>
           
           <div className="flex items-center justify-center mb-8">
@@ -177,7 +181,7 @@ export default function NewsListPage() {
           </div>
           
           <p className="text-xl sm:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light">
-            Prečítajte si najnovšie články a duchovné úvahy
+            {t.newsListPage?.subtitle || "Prečítajte si najnovšie články a duchovné úvahy"}
           </p>
         </motion.div>
 
@@ -193,7 +197,7 @@ export default function NewsListPage() {
                 <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Hľadať články..."
+                  placeholder={t.newsListPage?.search_placeholder || "Hľadať články..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-12 pr-6 py-4 w-full bg-white/80 backdrop-blur-lg border border-white/30 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
@@ -207,8 +211,8 @@ export default function NewsListPage() {
                     onChange={(e) => setSortBy(e.target.value as 'date' | 'likes')}
                     className="appearance-none bg-white/90 border border-white/30 rounded-2xl px-6 py-4 pr-12 text-sm font-semibold focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-xl"
                   >
-                    <option value="date">Podľa dátumu</option>
-                    <option value="likes">Podľa obľúbenosti</option>
+                    <option value="date">{t.newsListPage?.sort_by_date || "Podľa dátumu"}</option>
+                    <option value="likes">{t.newsListPage?.sort_by_likes || "Podľa obľúbenosti"}</option>
                   </select>
                   <Filter size={16} className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500 pointer-events-none" />
                 </div>
@@ -244,8 +248,9 @@ export default function NewsListPage() {
             
             <div className="mt-6 text-center">
               <p className="text-slate-600 font-medium">
-                Zobrazuje sa {filteredNews.length} z {news.length} článkov
-                {searchTerm && ` pre "${searchTerm}"`}
+                {t.newsListPage?.showing_results?.replace('{count}', filteredNews.length.toString()).replace('{total}', news.length.toString()) || 
+                `Zobrazuje sa ${filteredNews.length} z ${news.length} článkov`}
+                {searchTerm && (t.newsListPage?.search_results_for?.replace('{searchTerm}', searchTerm) || ` pre "${searchTerm}"`)}
               </p>
             </div>
           </div>
@@ -305,7 +310,7 @@ export default function NewsListPage() {
                   
                   <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg backdrop-blur-xl">
-                      NOVÝ
+                      {t.newsListPage?.new_badge || "NOVÝ"}
                     </div>
                   </div>
                   
@@ -325,7 +330,7 @@ export default function NewsListPage() {
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock size={14} />
-                      <span>{getReadingTime(n.content)} min čítania</span>
+                      <span>{getReadingTime(n.content)} {t.newsListPage?.reading_time || "min čítania"}</span>
                     </div>
                   </div>
                   
@@ -385,16 +390,17 @@ export default function NewsListPage() {
                 🔍
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">
-                Žiadne výsledky
+                {t.newsListPage?.no_search_results_title || "Žiadne výsledky"}
               </h3>
               <p className="text-lg text-slate-600 mb-6">
-                Pre hľadaný výraz "{searchTerm}" sa nenašli žiadne články.
+                {t.newsListPage?.no_search_results_desc?.replace('{searchTerm}', searchTerm) || 
+                `Pre hľadaný výraz "${searchTerm}" sa nenašli žiadne články.`}
               </p>
               <button
                 onClick={() => setSearchTerm("")}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg"
               >
-                Vymazať vyhľadávanie
+                {t.newsListPage?.clear_search || "Vymazať vyhľadávanie"}
               </button>
             </div>
           </motion.div>

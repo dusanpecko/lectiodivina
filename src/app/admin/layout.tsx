@@ -34,10 +34,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
       
-      // Set sidebar state based on screen size - but only after mount
+      // OPRAVA: Na mobile vždy zavrieme sidebar pri resize
       if (mobile) {
         setSidebarOpen(false);
       } else {
+        // Na desktop môžeme nechať otvorený
         setSidebarOpen(true);
       }
     };
@@ -48,6 +49,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // NOVÉ: Funkcia na zatvorenie sidebaru (pre overlay a escape key)
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  // NOVÉ: Escape key handler pre zatvorenie sidebaru
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && sidebarOpen && isMobile) {
+        closeSidebar();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [sidebarOpen, isMobile]);
 
   if (loading) {
     return (
@@ -131,34 +149,51 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <div className="flex flex-1 relative">
-          {/* Sidebar */}
-          <AdminSidebar 
-            isCollapsed={!sidebarOpen}
-            onToggle={() => setSidebarOpen(!sidebarOpen)}
-            isMobile={isMobile}
-          />
+          {/* Sidebar - OPRAVA: Na mobile sa zobrazuje len keď je otvorený */}
+          {(!isMobile || sidebarOpen) && (
+            <div className={`
+              ${isMobile 
+                ? 'fixed inset-y-0 left-0 z-50 w-80 max-w-[80vw] overflow-y-auto overscroll-contain' 
+                : 'relative'
+              }
+            `}>
+              <AdminSidebar 
+                isCollapsed={isMobile ? false : !sidebarOpen}
+                onToggle={() => setSidebarOpen(!sidebarOpen)}
+                isMobile={isMobile}
+              />
+            </div>
+          )}
           
-          {/* Mobile overlay */}
+          {/* Mobile overlay - OPRAVA: Jednoduchší overlay */}
           {sidebarOpen && isMobile && (
             <div 
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+              onClick={closeSidebar}
+              aria-label="Close menu"
             />
           )}
           
-          {/* Main Content */}
+          {/* Main Content - OPRAVA: Na mobile vždy celá šírka */}
           <main className={`
             flex-1 min-w-0 transition-all duration-300 ease-in-out
-            ${sidebarOpen ? 'lg:ml-0' : 'lg:ml-0'}
+            ${isMobile 
+              ? 'w-full ml-0' // Na mobile vždy celá šírka bez margin
+              : (sidebarOpen ? 'lg:ml-0' : 'lg:ml-0') // Na desktop
+            }
           `}>
             {/* Content wrapper with proper spacing */}
             <div className="relative">
-              {/* Floating action elements container - len na mobile ak je sidebar zatvorený */}
-              {isMobile && !sidebarOpen && (
-                <div className="absolute top-4 right-4 z-20">
+              {/* Floating menu button - OPRAVA: Vždy viditeľný na mobile */}
+              {isMobile && (
+                <div className="fixed top-20 left-4 z-50">
                   <button
                     onClick={() => setSidebarOpen(true)}
-                    className="p-3 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 hover:bg-white/90 transition-all duration-200"
+                    className={`
+                      p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 
+                      hover:bg-white transition-all duration-200
+                      ${sidebarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}
+                    `}
                     aria-label="Open menu"
                   >
                     <svg

@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { useLanguage } from "./LanguageProvider"; // ← ZMENA: správny hook
+import { useLanguage } from "./LanguageProvider";
 import { translations } from "@/app/i18n";
 
 // Fallback SVG pre prípad, že dôjde k chybe v indexe
@@ -106,6 +106,18 @@ const icons = [
   >
     <path d="M40,16.025V11a7.008,7.008,0,0,0-7-7H15a7.008,7.008,0,0,0-7,7v5.025a5.5,5.5,0,0,0-3,9.716V35a5,5,0,0,0,3,4.576V42a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V40H34v2a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V39.576A5,5,0,0,0,43,35V25.741a5.5,5.5,0,0,0-3-9.716ZM15,6H33a5.006,5.006,0,0,1,5,5v5.213A5.506,5.506,0,0,0,34,21.5v6.309A64.945,64.945,0,0,0,24,27a64.945,64.945,0,0,0-10,.809V21.5a5.506,5.506,0,0,0-4-5.287V11A5.006,5.006,0,0,1,15,6ZM12,42H10V40h2Zm26,0H36V40h2Zm3.443-17.59a1,1,0,0,0-.443.83V35a3,3,0,0,1-3,3H10a3,3,0,0,1-3-3V25.24a1,1,0,0,0-.443-.83A3.5,3.5,0,1,1,12,21.5V29a1,1,0,0,0,.366.773.991.991,0,0,0,.83.207A62.407,62.407,0,0,1,24,29a62.407,62.407,0,0,1,10.8.98A1,1,0,0,0,36,29V21.5a3.5,3.5,0,1,1,5.443,2.91Z"/>
   </svg>,
+  // ACTIO
+  <svg
+    key="actio"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    className="w-14 h-14 text-indigo-400 mb-2"
+    fill="#4a5085"
+  >
+    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+    <path d="M19 19H5C4.45 19 4 19.45 4 20S4.45 21 5 21H19C19.55 21 20 20.55 20 20S19.55 19 19 19Z"/>
+    <path d="M7 15H17C17.55 15 18 14.55 18 14S17.55 13 17 13H7C6.45 13 6 13.45 6 14S6.45 15 7 15Z"/>
+  </svg>
 ];
 
 type LectioStep = {
@@ -114,26 +126,24 @@ type LectioStep = {
 };
 
 export default function LectioStepsSection() {
-  const { lang } = useLanguage(); // ← ZMENA: správny hook namiesto useLang
-  type LangKey = keyof typeof translations;
-  const safeLang: LangKey = (lang in translations ? lang : "sk") as LangKey;
-  const t = translations[safeLang];
-  const steps = Array.isArray(t.lectio_steps) ? t.lectio_steps : [];
+  const { lang } = useLanguage();
+  const t = translations[lang as keyof typeof translations] ?? translations.sk;
+  const steps = Array.isArray(t.lectio_steps_new) ? t.lectio_steps_new : [];
 
   return (
     <section className="relative z-20 bg-gray-100 py-16 min-h-screen flex items-center">
-      <div className="max-w-4xl mx-auto px-8 w-full">
+      <div className="max-w-6xl mx-auto px-8 w-full">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-            Lectio Divina - Štyri kroky
+            {t.lectioStepsSection.title}
           </h2>
           <div className="w-24 h-1.5 mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6"></div>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Objavte duchovnú cestu cez štvor kroky Lectio Divina - starovekú kresťanskú prax meditácie
+            {t.lectioStepsSection.subtitle}
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {steps.map((step: LectioStep, idx: number) => (
             <motion.div
               key={step.title || idx}

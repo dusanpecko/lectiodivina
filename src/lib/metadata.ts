@@ -47,10 +47,10 @@ export function getMetadata(locale: string = 'sk') {
       canonical: `https://lectiodivina.org${locale !== 'sk' ? `/${locale}` : ''}`,
       languages: {
         'sk': 'https://lectiodivina.org',
-        'en': 'https://lectiodivina.org/en',
-        'es': 'https://lectiodivina.org/es',
-        'cz': 'https://lectiodivina.org/cz',
-        'de': 'https://lectiodivina.org/de',
+        'en': 'https://lectiodivina.org',
+        'es': 'https://lectiodivina.org',
+        'cz': 'https://lectiodivina.org',
+        'de': 'https://lectiodivina.org',
       }
     }
   }

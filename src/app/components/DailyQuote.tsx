@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import { useSupabase } from "./SupabaseProvider";
 import { motion } from "framer-motion";
+import { translations } from "@/app/i18n";
 
 type DailyQuoteRow = {
   date: string;
@@ -18,6 +19,9 @@ export default function DailyQuote() {
   const [quote, setQuote] = useState<DailyQuoteRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+
+  // Get translations for current language
+  const t = translations[lang as keyof typeof translations] ?? translations.sk;
 
   // Mark as mounted
   useEffect(() => {
@@ -78,7 +82,7 @@ export default function DailyQuote() {
             
             {/* Loading text with gradient */}
             <p className="text-2xl font-bold bg-gradient-to-r from-blue-800 via-purple-700 to-indigo-800 bg-clip-text text-transparent mb-4">
-              Načítavam dnešný citát...
+              {t.dailyQuote.loading}
             </p>
             
             {/* Animated dots */}
@@ -125,11 +129,11 @@ export default function DailyQuote() {
             
             {/* Error message */}
             <p className="text-2xl font-bold bg-gradient-to-r from-orange-800 via-red-700 to-pink-800 bg-clip-text text-transparent mb-4">
-              Dnešný citát nebol nájdený
+              {t.dailyQuote.notFound}
             </p>
             
             <p className="text-lg text-slate-600 leading-relaxed">
-              Skúste to prosím neskôr alebo si prečítajte naše archívne citáty.
+              {t.dailyQuote.notFoundDescription}
             </p>
           </div>
         </div>
@@ -186,7 +190,7 @@ export default function DailyQuote() {
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-sm px-4 py-2 rounded-full mb-8 shadow-lg"
           >
             <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-            <span>DNEŠNÝ CITÁT</span>
+            <span>{t.dailyQuote.todayLabel}</span>
           </motion.div>
           
           {/* Quote with elegant typography */}

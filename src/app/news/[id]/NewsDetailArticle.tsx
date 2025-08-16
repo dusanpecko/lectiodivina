@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeftCircle, ArrowRightCircle, Calendar, Clock, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/app/components/LanguageProvider";
+import { translations } from "@/app/i18n";
 
 interface NewsDetailArticleProps {
   news: {
@@ -14,21 +16,20 @@ interface NewsDetailArticleProps {
   };
   prev: { id: number; title: string } | null;
   next: { id: number; title: string } | null;
-  t: {
-    show_all_news: string;
-    previous_article: string;
-    next_article: string;
-  };
 }
 
 export default function NewsDetailArticle({
   news,
   prev,
   next,
-  t,
 }: NewsDetailArticleProps) {
+  // Načítanie prekladov priamo v komponente
+  const { lang } = useLanguage();
+  const t = translations[lang as keyof typeof translations] ?? translations.sk;
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(news.lang === 'sk' ? 'sk-SK' : 'en-US', {
+    return new Date(dateString).toLocaleDateString(news.lang === 'sk' ? 'sk-SK' : 
+      news.lang === 'cz' ? 'cs-CZ' :
+      news.lang === 'es' ? 'es-ES' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -140,10 +141,10 @@ export default function NewsDetailArticle({
                 </motion.div>
               )}
 
-              {/* Article badge */}
+              {/* Article badge - NOW TRANSLATED */}
               <div className="absolute top-6 left-6">
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg backdrop-blur-xl">
-                  ČLÁNOK
+                  {t.newsDetail?.article_badge || "ČLÁNOK"}
                 </div>
               </div>
             </div>
@@ -163,7 +164,10 @@ export default function NewsDetailArticle({
                 </div>
                 <div className="flex items-center space-x-2">
                   <Clock size={18} />
-                  <span className="font-medium">{getReadingTime(news.content)} min čítania</span>
+                  {/* TRANSLATED reading time */}
+                  <span className="font-medium">
+                    {getReadingTime(news.content)} {t.newsDetail?.reading_time || "min čítania"}
+                  </span>
                 </div>
               </motion.div>
 

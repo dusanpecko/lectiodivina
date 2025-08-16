@@ -1,0 +1,981 @@
+"use client";
+
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSupabase } from '../components/SupabaseProvider';
+import { User } from '@supabase/supabase-js';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+
+// SVG Icons
+const ArrowLeftIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+);
+
+const CameraIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const EditIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+const CalendarIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  </svg>
+);
+
+const EyeIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+);
+
+const EyeOffIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+  </svg>
+);
+
+const LogOutIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+  </svg>
+);
+
+const SaveIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+  </svg>
+);
+
+const ChevronDownIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+const UploadIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+  </svg>
+);
+
+const Loader2Icon = () => (
+  <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24" />
+  </svg>
+);
+
+const AlertIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+  </svg>
+);
+
+interface UserProfile {
+  full_name: string;
+  avatar_url: string | null;
+  role: string;
+  created_at: string;
+}
+
+export default function ProfilePage() {
+  const { supabase, session } = useSupabase();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['profile-info', 'account-info']));
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!session && !isCheckingAuth) {
+      router.replace('/login');
+    } else if (session && !isCheckingAuth) {
+      fetchUser();
+    }
+  }, [session, isCheckingAuth, router]);
+
+  const fetchUser = async () => {
+    if (!session?.user) return;
+    
+    const user = session.user;
+    setUser(user);
+    setEmail(user.email || '');
+    await fetchProfile(user.id);
+  };
+
+  const fetchProfile = async (userId: string) => {
+    if (!supabase) return;
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('full_name, avatar_url, role, created_at')
+      .eq('id', userId)
+      .single();
+
+    if (data) {
+      setProfile(data);
+      setFullName(data.full_name || '');
+    }
+  };
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
+  };
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
+  };
+
+  const saveProfile = async () => {
+    if (!user || !fullName.trim()) {
+      showMessage('error', 'Meno je povinné');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ full_name: fullName.trim() })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      if (email !== user.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: email.trim()
+        });
+        if (emailError) throw emailError;
+      }
+
+      showMessage('success', 'Profil bol úspešne uložený');
+    } catch (error: any) {
+      showMessage('error', `Chyba pri ukladaní: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!user || !supabase) return;
+
+    setIsUploading(true);
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+
+      canvas.width = 400;
+      canvas.height = 400;
+      
+      const size = Math.min(img.width, img.height);
+      const x = (img.width - size) / 2;
+      const y = (img.height - size) / 2;
+      
+      ctx?.drawImage(img, x, y, size, size, 0, 0, 400, 400);
+      
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.75);
+      });
+
+      const fileExt = 'jpg';
+      const filePath = `avatars/${user.id}_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, blob, {
+          upsert: true,
+          contentType: 'image/jpeg'
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
+      showMessage('success', 'Avatar bol úspešne zmenený');
+    } catch (error: any) {
+      showMessage('error', `Chyba pri nahrávaní avatara: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      setShowAvatarPicker(false);
+    }
+  };
+
+  const changePassword = async () => {
+    if (!user?.email || !supabase) return;
+
+    if (newPassword.length < 6) {
+      setPasswordError('Nové heslo musí mať minimálne 6 znakov');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Heslá sa nezhodujú');
+      return;
+    }
+
+    if (newPassword === currentPassword) {
+      setPasswordError('Nové heslo nemôže byť rovnaké ako aktuálne');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    setPasswordError('');
+
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword
+      });
+
+      if (signInError) {
+        setPasswordError('Nesprávne aktuálne heslo');
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (updateError) throw updateError;
+
+      setShowPasswordDialog(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      showMessage('success', 'Heslo bolo úspešne zmenené');
+    } catch (error: any) {
+      setPasswordError(`Chyba: ${error.message}`);
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const deleteAccount = async () => {
+    if (!user || !supabase) return;
+
+    if (deleteConfirmText !== 'ODSTRÁNIŤ') {
+      showMessage('error', 'Potvrďte zmazanie zadaním textu "ODSTRÁNIŤ"');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      // Najprv odstráň používateľa z databázy
+      const { error: deleteUserError } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', user.id);
+
+      if (deleteUserError) throw deleteUserError;
+
+      // Odstráň avatar zo storage ak existuje
+      if (profile?.avatar_url) {
+        const fileName = profile.avatar_url.split('/').pop();
+        if (fileName) {
+          await supabase.storage
+            .from('avatars')
+            .remove([`avatars/${fileName}`]);
+        }
+      }
+
+      // Nakoniec zmaž auth účet
+      const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(user.id);
+      
+      if (deleteAuthError) {
+        // Ak admin API nefunguje, aspoň odhlás používateľa
+        await supabase.auth.signOut();
+      }
+
+      showMessage('success', 'Účet bol úspešne odstránený');
+      
+      // Presmeruj na hlavnú stránku
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
+
+    } catch (error: any) {
+      showMessage('error', `Chyba pri odstraňovaní účtu: ${error.message}`);
+    } finally {
+      setIsDeletingAccount(false);
+      setShowDeleteDialog(false);
+      setDeleteConfirmText('');
+    }
+  };
+
+  const signOut = async () => {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('sk-SK');
+  };
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl shadow-lg p-12 text-center max-w-md">
+          <div className="w-16 h-16 mx-auto mb-6 relative">
+            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Načítavam profil</h2>
+          <p className="text-gray-600 text-sm">Overujem prístup...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  const sections = [
+    {
+      id: "profile-info",
+      title: "Profilové informácie",
+      icon: <EditIcon />,
+      content: (
+        <div className="space-y-6">
+          {/* Avatar Section */}
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden ring-4 ring-white shadow-lg">
+                {profile?.avatar_url ? (
+                  <img 
+                    src={profile.avatar_url} 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <UserIcon />
+                )}
+              </div>
+              {isUploading && (
+                <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+                  <Loader2Icon />
+                </div>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setShowAvatarPicker(true)}
+              disabled={isUploading}
+              className="mt-4 inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50"
+            >
+              <CameraIcon />
+              <span>Zmeniť avatar</span>
+            </button>
+          </div>
+
+          {/* Full Name */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">
+              Celé meno
+            </label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Zadajte svoje meno"
+            />
+          </div>
+
+          {/* Save Button */}
+          <button
+            onClick={saveProfile}
+            disabled={isSaving}
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 font-medium"
+          >
+            {isSaving ? (
+              <div className="flex items-center justify-center space-x-2">
+                <Loader2Icon />
+                <span>Ukladá sa...</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center space-x-2">
+                <SaveIcon />
+                <span>Uložiť zmeny</span>
+              </div>
+            )}
+          </button>
+        </div>
+      )
+    },
+    {
+      id: "account-info",
+      title: "Informácie o účte",
+      icon: <UserIcon />,
+      content: (
+        <div className="space-y-4">
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div className="flex items-center space-x-3">
+              <div className="text-blue-600">
+                <MailIcon />
+              </div>
+              <div>
+                <div className="font-medium text-blue-900">Emailová adresa</div>
+                <div className="text-blue-700">{email}</div>
+              </div>
+            </div>
+          </div>
+
+          {profile?.created_at && (
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <div className="flex items-center space-x-3">
+                <div className="text-purple-600">
+                  <CalendarIcon />
+                </div>
+                <div>
+                  <div className="font-medium text-purple-900">Dátum registrácie</div>
+                  <div className="text-purple-700">{formatDate(profile.created_at)}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+            <div className="flex items-center space-x-3">
+              <div className="text-green-600">
+                <ShieldIcon />
+              </div>
+              <div>
+                <div className="font-medium text-green-900">Používateľská rola</div>
+                <div className="text-green-700">{profile?.role || 'Načítava sa...'}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "security",
+      title: "Bezpečnosť",
+      icon: <LockIcon />,
+      content: (
+        <div className="space-y-4">
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="text-yellow-600">
+                <LockIcon />
+              </div>
+              <h4 className="font-medium text-yellow-900">Zmena hesla</h4>
+            </div>
+            <p className="text-yellow-800 text-sm mb-4">
+              Pravidelne si meňte heslo pre lepšiu bezpečnosť vašeho účtu.
+            </p>
+            <button
+              onClick={() => setShowPasswordDialog(true)}
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+            >
+              <LockIcon />
+              <span>Zmeniť heslo</span>
+            </button>
+          </div>
+
+          <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="text-red-600">
+                <LogOutIcon />
+              </div>
+              <h4 className="font-medium text-red-900">Odhlásiť sa</h4>
+            </div>
+            <p className="text-red-800 text-sm mb-4">
+              Odhláste sa zo svojho účtu, ak používate zdieľané zariadenie.
+            </p>
+            <button
+              onClick={signOut}
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              <LogOutIcon />
+              <span>Odhlásiť sa</span>
+            </button>
+          </div>
+
+          <div className="bg-red-100 p-4 rounded-lg border border-red-300">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="text-red-700">
+                <TrashIcon />
+              </div>
+              <h4 className="font-medium text-red-900">Odstrániť účet</h4>
+            </div>
+            <p className="text-red-800 text-sm mb-4">
+              Trvale odstráni váš účet a všetky súvisiace údaje. Táto akcia je nezvratná.
+            </p>
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors"
+            >
+              <TrashIcon />
+              <span>Odstrániť účet</span>
+            </button>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <Link 
+            href="/admin" 
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+          >
+            <ArrowLeftIcon />
+            <span className="ml-2">Späť na Dashboard</span>
+          </Link>
+          
+          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <UserIcon />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Môj profil</h1>
+                <p className="text-gray-600">Spravujte svoje údaje a nastavenia</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Message */}
+        {message && (
+          <div className="mb-6">
+            <div className={`p-4 rounded-lg border ${
+              message.type === 'success' 
+                ? 'bg-green-50 text-green-800 border-green-200' 
+                : 'bg-red-50 text-red-800 border-red-200'
+            }`}>
+              <div className="flex items-center space-x-2">
+                {message.type === 'success' ? <CheckIcon /> : <AlertIcon />}
+                <span className="font-medium">{message.text}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sections */}
+        <div className="space-y-4">
+          {sections.map((section) => (
+            <div key={section.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+              <button
+                onClick={() => toggleSection(section.id)}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="text-blue-600">{section.icon}</div>
+                  <h2 className="text-xl font-semibold text-gray-900">{section.title}</h2>
+                </div>
+                <motion.div
+                  animate={{ rotate: expandedSections.has(section.id) ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDownIcon />
+                </motion.div>
+              </button>
+              
+              <motion.div
+                initial={false}
+                animate={{
+                  height: expandedSections.has(section.id) ? "auto" : 0,
+                  opacity: expandedSections.has(section.id) ? 1 : 0
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="px-6 pb-6 text-gray-700 leading-relaxed">
+                  {section.content}
+                </div>
+              </motion.div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-12 text-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <p className="text-gray-600 mb-4">
+              Potrebujete pomoc s nastavením profilu?
+            </p>
+            <Link 
+              href="/contact" 
+              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Kontaktujte nás
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Avatar Picker Modal */}
+      {showAvatarPicker && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Vyberte avatar</h3>
+              <button
+                onClick={() => setShowAvatarPicker(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <XIcon />
+              </button>
+            </div>
+            <div className="space-y-3">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full flex items-center space-x-3 p-4 hover:bg-gray-50 rounded-lg transition-all duration-200"
+              >
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <UploadIcon />
+                </div>
+                <span className="font-medium text-gray-700">Nahrať z galérie</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Account Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-red-900">Odstrániť účet</h3>
+              <button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setDeleteConfirmText('');
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <XIcon />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <TrashIcon />
+                  <span className="font-medium text-red-900">Varovanie!</span>
+                </div>
+                <p className="text-red-800 text-sm">
+                  Táto akcia je <strong>nezvratná</strong>. Váš účet a všetky súvisiace údaje budú trvale odstránené.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Pre potvrdenie napíšte: <span className="font-bold text-red-600">ODSTRÁNIŤ</span>
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                  placeholder="Napíšte ODSTRÁNIŤ"
+                />
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-gray-700 text-sm">
+                  <strong>Čo sa odstráni:</strong>
+                </p>
+                <ul className="text-gray-600 text-sm mt-2 space-y-1">
+                  <li>• Váš používateľský profil</li>
+                  <li>• Profilový obrázok</li>
+                  <li>• Všetky súvisiace údaje</li>
+                  <li>• Prístup k administrácii</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setDeleteConfirmText('');
+                }}
+                className="flex-1 px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+              >
+                Zrušiť
+              </button>
+              <button
+                onClick={deleteAccount}
+                disabled={isDeletingAccount || deleteConfirmText !== 'ODSTRÁNIŤ'}
+                className="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 disabled:opacity-50 font-medium"
+              >
+                {isDeletingAccount ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <Loader2Icon />
+                    <span>Odstraňuje sa...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2">
+                    <TrashIcon />
+                    <span>Odstrániť účet</span>
+                  </div>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showPasswordDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Zmeniť heslo</h3>
+              <button
+                onClick={() => {
+                  setShowPasswordDialog(false);
+                  setPasswordError('');
+                  setCurrentPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <XIcon />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Current Password */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Aktuálne heslo
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showCurrentPassword ? <EyeOffIcon /> : <EyeIcon />}
+                  </button>
+                </div>
+              </div>
+
+              {/* New Password */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Nové heslo
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showNewPassword ? <EyeOffIcon /> : <EyeIcon />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Potvrdiť nové heslo
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                  </button>
+                </div>
+              </div>
+
+              {passwordError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <AlertIcon />
+                    <span className="text-red-700 text-sm font-medium">{passwordError}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowPasswordDialog(false);
+                  setPasswordError('');
+                  setCurrentPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+                className="flex-1 px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+              >
+                Zrušiť
+              </button>
+              <button
+                onClick={changePassword}
+                disabled={isChangingPassword}
+                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 font-medium"
+              >
+                {isChangingPassword ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <Loader2Icon />
+                    <span>Mení sa...</span>
+                  </div>
+                ) : (
+                  'Zmeniť'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleAvatarUpload(file);
+        }}
+        className="hidden"
+      />
+    </div>
+  );
+}

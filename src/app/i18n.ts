@@ -22,6 +22,9 @@ export const supportedLangs: Language[] = ["sk", "cz", "en", "es"];
 export const translations: Record<Language, any> = {
 
   sk: {
+    prayer: "Modlitba",
+    start_the_guide:"Začať sprievodcu",
+    about_lectio_divina:"O Lectio Divina",
     support: "Podporiť projekt",
     welcome: "Vitajte na stránke Lectio Divina",
     home: "Domov",
@@ -118,6 +121,88 @@ export const translations: Record<Language, any> = {
       },
     ],
     lectio_section_title: "Lectio divina – Actio",
+    
+    // NOVÉ PREKLADY PRE SPRIEVODCU
+    lectio_guide_section: {
+      badge: "INTERAKTÍVNY SPRIEVODCA",
+      title: "Naučte sa Lectio Divina",
+      subtitle: "Krok za krokom vás prevedieme celým procesom modlitby Lectio Divina. Každý krok obsahuje praktické návody, príklady a cvičenia.",
+      total_duration: "30-60 minút celkovo",
+      steps_count: "5 interaktívnych krokov",
+      start_step: "Začať krok",
+      
+      steps: [
+        {
+          title: "Lectio",
+          subtitle: "Čítanie",
+          description: "Pozorné a pomalé čítanie Božieho slova s otvoreným srdcom",
+          duration: "5-10 min"
+        },
+        {
+          title: "Meditatio",
+          subtitle: "Rozjímanie",
+          description: "Hlboké premýšľanie nad textom, hľadanie osobného posolstva",
+          duration: "10-15 min"
+        },
+        {
+          title: "Oratio",
+          subtitle: "Modlitba",
+          description: "Otvorený rozhovor s Bohom, zdieľanie myšlienok a pocitov",
+          duration: "5-10 min"
+        },
+        {
+          title: "Contemplatio",
+          subtitle: "Kontemplácia",
+          description: "Tiché zostávanie v Božej prítomnosti, prijímanie jeho lásky",
+          duration: "10-20 min"
+        },
+        {
+          title: "Actio",
+          subtitle: "Žiť Božie slovo",
+          description: "Pretvorenie poznaného do praktického života a činov lásky",
+          duration: "Celý deň"
+        }
+      ],
+      
+      cta: {
+        title: "Pripravení začať svoju duchovnú cestu?",
+        description: "Začnite úvodom, ktorý vám vysvetlí základy Lectio Divina, alebo prejdite priamo na prvý krok - Lectio.",
+        start_with_intro: "Začať úvodom",
+        go_to_lectio: "Prejsť na Lectio"
+      }
+    },
+
+    // Navigácia pre sprievodcu
+    navigation: {
+      guide: "Sprievodca",
+      guide_dropdown: {
+        intro: {
+          label: "Úvod do Lectio Divina",
+          description: "Základy a prehľad všetkých krokov"
+        },
+        lectio: {
+          label: "1. Lectio - Čítanie",
+          description: "Pozorné čítanie Božieho slova"
+        },
+        meditatio: {
+          label: "2. Meditatio - Rozjímanie",
+          description: "Hlboké premýšľanie nad textom"
+        },
+        oratio: {
+          label: "3. Oratio - Modlitba",
+          description: "Rozhovor s Bohom"
+        },
+        contemplatio: {
+          label: "4. Contemplatio - Kontemplácia",
+          description: "Tiché zostávanie s Bohom"
+        },
+        actio: {
+          label: "5. Actio - Žiť Božie slovo",
+          description: "Pretvorenie do života"
+        }
+      }
+    },
+
     cookie_info: "Táto stránka používa cookies a localStorage pre lepší zážitok a uloženie jazykovej preferencie.",
     cookie_agree: "Súhlasím",
     cookie_decline: "Odmietam",
@@ -226,7 +311,9 @@ export const translations: Record<Language, any> = {
       manage_cookies: "Spravovať cookies",
       all_rights_reserved: "Všetky práva vyhradené",
       created_by: "vytvoril",
-      admin_tooltip: "Administrácia"
+      admin_tooltip: "Administrácia",
+      follow_us: "Sledujte nás"
+      
     },
   community_section: {
       headline: "Pridajte sa k nám",
@@ -289,8 +376,67 @@ export const translations: Record<Language, any> = {
       last_updated: "Posledná aktualizácia"
     },
     community: "Komunita",
+    dailyQuote: {
+      loading: "Načítavam dnešný citát...",
+      todayLabel: "DNEŠNÝ CITÁT",
+      notFound: "Dnešný citát nebol nájdený",
+      notFoundDescription: "Skúste to prosím neskôr alebo si prečítajte naše archívne citáty.",
+      error: "Chyba pri načítaní citátu"
+    },
+    // LectioStepsSection component
+    lectioStepsSection: {
+      title: "Lectio Divina - Päť krokov",
+      subtitle: "Objavte duchovnú cestu cez päť krokov Lectio Divina - starovekú kresťanskú prax meditácie"
+    },
+
+    // Lectio Divina steps
+    lectio_steps_new: [
+      {
+        title: "Lectio - Čítanie",
+        desc: "Pozorne čítanie Božieho slova s otvoreným srdcom a mysľou"
+      },
+      {
+        title: "Meditatio - Rozjímanie", 
+        desc: "Hlboké premýšľanie nad textom a hľadanie osobného posolstva"
+      },
+      {
+        title: "Oratio - Modlitba",
+        desc: "Rozhovor s Bohom o tom, čo ste v texte objavili"
+      },
+      {
+        title: "Contemplatio - Kontemplácia",
+        desc: "Tiché spočinutie v Božej prítomnosti a láske"
+      },
+      {
+        title: "Actio - Skutok",
+        desc: "Pretvorenie duchovnej skúsenosti do konkrétnych skutkov lásky"
+      }
+    ],
+    newsDetail: {
+      article_badge: "ČLÁNOK",
+      reading_time: "min čítania",
+      published_on: "Publikované"
+    },
+    homeNewsSection: {
+      title: "Najnovšie články",
+      badge: "NAJNOVŠIE SPRÁVY",
+      subtitle: "Zostávajte informovaní o najnovších udalostiach a duchovných témach",
+      loading: "Načítavam články pre jazyk:",
+      error_title: "Chyba pri načítavaní článkov",
+      error_check: "Skontrolujte Supabase databázu a údaje pre jazyk",
+      no_articles_title: "Zatiaľ žiadne články",
+      no_articles_desc: "Žiadne články pre jazyk \"{lang}\" neboli nájdené.",
+      new_badge: "NOVÝ",
+      show_article: "Zobraziť článok",
+      show_all_articles: "Zobraziť všetky články"
+    },
   },
+  
+    
   cz: {
+    prayer: "Modlitba",
+    start_the_guide:"Začít průvodce",
+    about_lectio_divina:"O Lectio Divina",
     support: "Podpořit projekt",
     welcome: "Vítejte na stránce Lectio Divina",
     home: "Domů",
@@ -387,6 +533,88 @@ export const translations: Record<Language, any> = {
       },
     ],
     lectio_section_title: "Lectio divina – Actio",
+
+    // NOVÉ PREKLADY PRE SPRIEVODCU - CZ
+    lectio_guide_section: {
+      badge: "INTERAKTIVNÍ PRŮVODCE",
+      title: "Naučte se Lectio Divina",
+      subtitle: "Krok za krokem vás provedeme celým procesem modlitby Lectio Divina. Každý krok obsahuje praktické návody, příklady a cvičení.",
+      total_duration: "30-60 minut celkově",
+      steps_count: "5 interaktivních kroků",
+      start_step: "Začít krok",
+      
+      steps: [
+        {
+          title: "Lectio",
+          subtitle: "Čtení",
+          description: "Pozorné a pomalé čtení Božího slova s otevřeným srdcem",
+          duration: "5-10 min"
+        },
+        {
+          title: "Meditatio",
+          subtitle: "Rozjímání",
+          description: "Hluboké přemýšlení nad textem, hledání osobního poselství",
+          duration: "10-15 min"
+        },
+        {
+          title: "Oratio",
+          subtitle: "Modlitba",
+          description: "Otevřený rozhovor s Bohem, sdílení myšlenek a pocitů",
+          duration: "5-10 min"
+        },
+        {
+          title: "Contemplatio",
+          subtitle: "Kontemplace",
+          description: "Tiché setrvávání v Boží přítomnosti, přijímání jeho lásky",
+          duration: "10-20 min"
+        },
+        {
+          title: "Actio",
+          subtitle: "Konání",
+          description: "Přetvoření poznaného do praktického života a činů lásky",
+          duration: "Celý den"
+        }
+      ],
+      
+      cta: {
+        title: "Připraveni začít svou duchovní cestu?",
+        description: "Začněte úvodem, který vám vysvětlí základy Lectio Divina, nebo přejděte přímo na první krok - Lectio.",
+        start_with_intro: "Začít úvodem",
+        go_to_lectio: "Přejít na Lectio"
+      }
+    },
+
+    // Navigácia pre sprievodcu - CZ
+    navigation: {
+      guide: "Průvodce",
+      guide_dropdown: {
+        intro: {
+          label: "Úvod do Lectio Divina",
+          description: "Základy a přehled všech kroků"
+        },
+        lectio: {
+          label: "1. Lectio - Čtení",
+          description: "Pozorné čtení Božího slova"
+        },
+        meditatio: {
+          label: "2. Meditatio - Rozjímání",
+          description: "Hluboké přemýšlení nad textem"
+        },
+        oratio: {
+          label: "3. Oratio - Modlitba",
+          description: "Rozhovor s Bohem"
+        },
+        contemplatio: {
+          label: "4. Contemplatio - Kontemplace",
+          description: "Tiché setrvávání s Bohem"
+        },
+        actio: {
+          label: "5. Actio - Konání",
+          description: "Přetvoření do života"
+        }
+      }
+    },
+
     cookie_info: "Tato stránka používá cookies a localStorage pro lepší zážitek a uložení jazykové preference.",
     cookie_agree: "Souhlasím",
     cookie_decline: "Odmítám",
@@ -437,7 +665,8 @@ export const translations: Record<Language, any> = {
       manage_cookies: "Spravovat cookies",
       all_rights_reserved: "Všechna práva vyhrazena",
       created_by: "vytvořil",
-      admin_tooltip: "Administrace"
+      admin_tooltip: "Administrace",
+      follow_us: "Sledujte nás"
     },
     community_section: {
       headline: "Připojte se k nám",
@@ -499,8 +728,63 @@ export const translations: Record<Language, any> = {
       last_updated: "Poslední aktualizace"
     },
     community: "Komunita",
+    dailyQuote: {
+      loading: "Načítám dnešní citát...",
+      todayLabel: "DNEŠNÍ CITÁT",
+      notFound: "Dnešní citát nebyl nalezen",
+      notFoundDescription: "Zkuste to prosím později nebo si přečtěte naše archivní citáty.",
+      error: "Chyba při načítání citátu"
+    },
+    lectioStepsSection: {
+  title: "Lectio Divina - Pět kroků",
+  subtitle: "Objevte duchovní cestu skrze pět kroků Lectio Divina - prastarou křesťanskou praxi meditace"
+},
+
+    lectio_steps_new: [
+      {
+        title: "Lectio - Čtení",
+        desc: "Pozorné čtení Božího slova s otevřeným srdcem a myslí"
+      },
+      {
+        title: "Meditatio - Rozjímání",
+        desc: "Hluboké přemýšlení nad textem a hledání osobního poselství"
+      },
+      {
+        title: "Oratio - Modlitba",
+        desc: "Rozhovor s Bohem o tom, co jste v textu objevili"
+      },
+      {
+        title: "Contemplatio - Kontemplace",
+        desc: "Tiché odpočinutí v Boží přítomnosti a lásce"
+      },
+      {
+        title: "Actio - Skutek",
+        desc: "Přetvoření duchovní zkušenosti do konkrétních skutků lásky"
+      }
+    ],
+    newsDetail: {
+      article_badge: "ČLÁNEK", 
+      reading_time: "min čtení",
+      published_on: "Publikováno"
+    },
+    homeNewsSection: {
+      title: "Nejnovější články",
+      badge: "NEJNOVĚJŠÍ ZPRÁVY",
+      subtitle: "Zůstaňte informováni o nejnovějších událostech a duchovních tématech",
+      loading: "Načítám články pro jazyk:",
+      error_title: "Chyba při načítání článků",
+      error_check: "Zkontrolujte Supabase databázi a údaje pro jazyk",
+      no_articles_title: "Zatím žádné články",
+      no_articles_desc: "Žádné články pro jazyk \"{lang}\" nebyly nalezeny.",
+      new_badge: "NOVÝ",
+      show_article: "Zobrazit článek",
+      show_all_articles: "Zobrazit všechny články"
+    },
   },
   en: {
+    prayer: "Prayer",
+    start_the_guide:"Start the guide",
+    about_lectio_divina:"About Lectio Divina",
     support: "Support Project",
     welcome: "Welcome to Lectio Divina website",
     home: "Home",
@@ -581,7 +865,7 @@ export const translations: Record<Language, any> = {
     lectio_steps: [
       {
         title: "LECTIO",
-        desc: "Begin by reading Scripture – read it again, slowly, and let it sink in. Take your time. There’s no need to rush.",
+        desc: "Begin by reading Scripture – read it again, slowly, and let it sink in. Take your time. There's no need to rush.",
       },
       {
         title: "MEDITATIO",
@@ -597,6 +881,88 @@ export const translations: Record<Language, any> = {
       },
     ],
     lectio_section_title: "Lectio divina – Actio",
+
+    // NOVÉ PREKLADY PRE SPRIEVODCU - EN
+    lectio_guide_section: {
+      badge: "INTERACTIVE GUIDE",
+      title: "Learn Lectio Divina",
+      subtitle: "Step by step we will guide you through the entire Lectio Divina prayer process. Each step contains practical instructions, examples and exercises.",
+      total_duration: "30-60 minutes total",
+      steps_count: "5 interactive steps",
+      start_step: "Start step",
+      
+      steps: [
+        {
+          title: "Lectio",
+          subtitle: "Reading",
+          description: "Attentive and slow reading of God's word with an open heart",
+          duration: "5-10 min"
+        },
+        {
+          title: "Meditatio",
+          subtitle: "Meditation",
+          description: "Deep reflection on the text, seeking personal message",
+          duration: "10-15 min"
+        },
+        {
+          title: "Oratio",
+          subtitle: "Prayer",
+          description: "Open conversation with God, sharing thoughts and feelings",
+          duration: "5-10 min"
+        },
+        {
+          title: "Contemplatio",
+          subtitle: "Contemplation",
+          description: "Silent abiding in God's presence, receiving his love",
+          duration: "10-20 min"
+        },
+        {
+          title: "Actio",
+          subtitle: "Action",
+          description: "Transformation of knowledge into practical life and acts of love",
+          duration: "All day"
+        }
+      ],
+      
+      cta: {
+        title: "Ready to begin your spiritual journey?",
+        description: "Start with the introduction that explains the basics of Lectio Divina, or go directly to the first step - Lectio.",
+        start_with_intro: "Start with Introduction",
+        go_to_lectio: "Go to Lectio"
+      }
+    },
+
+    // Navigácia pre sprievodcu - EN
+    navigation: {
+      guide: "Guide",
+      guide_dropdown: {
+        intro: {
+          label: "Introduction to Lectio Divina",
+          description: "Basics and overview of all steps"
+        },
+        lectio: {
+          label: "1. Lectio - Reading",
+          description: "Attentive reading of God's word"
+        },
+        meditatio: {
+          label: "2. Meditatio - Meditation",
+          description: "Deep reflection on the text"
+        },
+        oratio: {
+          label: "3. Oratio - Prayer",
+          description: "Conversation with God"
+        },
+        contemplatio: {
+          label: "4. Contemplatio - Contemplation",
+          description: "Silent abiding with God"
+        },
+        actio: {
+          label: "5. Actio - Action",
+          description: "Transformation into life"
+        }
+      }
+    },
+
     cookie_info: "This website uses cookies and localStorage for a better experience and to store language preferences.",
     cookie_agree: "I agree",
     cookie_decline: "Decline",
@@ -704,7 +1070,8 @@ export const translations: Record<Language, any> = {
       manage_cookies: "Manage cookies",
       all_rights_reserved: "All rights reserved",
       created_by: "created by",
-      admin_tooltip: "Administration"
+      admin_tooltip: "Administration",
+      follow_us: "Follow Us"
     },
     community_section: {
       headline: "Join Our Community",
@@ -766,8 +1133,63 @@ export const translations: Record<Language, any> = {
       last_updated: "Last Updated"
     },
     community: "Community", 
+    dailyQuote: {
+      loading: "Loading today's quote...",
+      todayLabel: "TODAY'S QUOTE",
+      notFound: "Today's quote was not found",
+      notFoundDescription: "Please try again later or read our archived quotes.",
+      error: "Error loading quote"
+    },
+    lectioStepsSection: {
+      title: "Lectio Divina - Five Steps",
+      subtitle: "Discover the spiritual journey through five steps of Lectio Divina - an ancient Christian practice of meditation"
+    },
+
+    lectio_steps_new: [
+      {
+        title: "Lectio - Reading",
+        desc: "Attentive reading of God's word with an open heart and mind"
+      },
+      {
+        title: "Meditatio - Meditation",
+        desc: "Deep reflection on the text and seeking personal message"
+      },
+      {
+        title: "Oratio - Prayer",
+        desc: "Conversation with God about what you discovered in the text"
+      },
+      {
+        title: "Contemplatio - Contemplation",
+        desc: "Silent resting in God's presence and love"
+      },
+      {
+        title: "Actio - Action",
+        desc: "Transforming spiritual experience into concrete acts of love"
+      }
+    ],
+    newsDetail: {
+      article_badge: "ARTICLE",
+      reading_time: "min read", 
+      published_on: "Published on"
+    },
+    homeNewsSection: {
+      title: "Latest Articles",
+      badge: "LATEST NEWS",
+      subtitle: "Stay informed about the latest events and spiritual topics",
+      loading: "Loading articles for language:",
+      error_title: "Error loading articles",
+      error_check: "Check Supabase database and data for language",
+      no_articles_title: "No articles yet",
+      no_articles_desc: "No articles for language \"{lang}\" were found.",
+      new_badge: "NEW",
+      show_article: "Show article",
+      show_all_articles: "Show all articles"
+    },
   },
   es: {
+    prayer: "Oración",
+    start_the_guide:"Iniciar la guía",
+    about_lectio_divina:"Acerca de la Lectio Divina",
     support: "Apoyar Proyecto",
     welcome: "Bienvenido a la página de Lectio Divina",
     home: "Inicio",
@@ -777,7 +1199,6 @@ export const translations: Record<Language, any> = {
     logout_success: "Cierre de sesión exitoso.",
     select_language: "Seleccione el idioma",
     calendar_admin_title: "Edición del calendario",
-    language: "Idioma",
     import_excel: "Importar Excel",
     add_item: "Agregar elemento",
     global_search: "Búsqueda global",
@@ -864,6 +1285,88 @@ export const translations: Record<Language, any> = {
       },
     ],
     lectio_section_title: "Lectio divina – Actio",
+
+    // NOVÉ PREKLADY PRE SPRIEVODCU - ES
+    lectio_guide_section: {
+      badge: "GUÍA INTERACTIVA",
+      title: "Aprende Lectio Divina",
+      subtitle: "Paso a paso te guiaremos a través de todo el proceso de oración de Lectio Divina. Cada paso contiene instrucciones prácticas, ejemplos y ejercicios.",
+      total_duration: "30-60 minutos en total",
+      steps_count: "5 pasos interactivos",
+      start_step: "Comenzar paso",
+      
+      steps: [
+        {
+          title: "Lectio",
+          subtitle: "Lectura",
+          description: "Lectura atenta y calmada de la palabra de Dios con corazón abierto",
+          duration: "5-10 min"
+        },
+        {
+          title: "Meditatio",
+          subtitle: "Meditación",
+          description: "Reflexión profunda sobre el texto, buscando mensaje personal",
+          duration: "10-15 min"
+        },
+        {
+          title: "Oratio",
+          subtitle: "Oración",
+          description: "Conversación abierta con Dios, compartiendo pensamientos y sentimientos",
+          duration: "5-10 min"
+        },
+        {
+          title: "Contemplatio",
+          subtitle: "Contemplación",
+          description: "Permanecer en silencio en la presencia de Dios, recibiendo su amor",
+          duration: "10-20 min"
+        },
+        {
+          title: "Actio",
+          subtitle: "Acción",
+          description: "Transformación de lo aprendido para practicarlo en la vida con actos de amor",
+          duration: "Todo el día"
+        }
+      ],
+      
+      cta: {
+        title: "¿Listo para comenzar tu viaje espiritual?",
+        description: "Comienza con la introducción que explica los fundamentos de la Lectio Divina, o ve directamente al primer paso - Lectio.",
+        start_with_intro: "Comenzar con Introducción",
+        go_to_lectio: "Ir a Lectio"
+      }
+    },
+
+    // Navigácia pre sprievodcu - ES
+    navigation: {
+      guide: "Guía",
+      guide_dropdown: {
+        intro: {
+          label: "Introducción a Lectio Divina",
+          description: "Fundamentos y resumen de todos los pasos"
+        },
+        lectio: {
+          label: "1. Lectio - Lectura",
+          description: "Lectura atenta de la palabra de Dios"
+        },
+        meditatio: {
+          label: "2. Meditatio - Meditación",
+          description: "Reflexión profunda sobre el texto"
+        },
+        oratio: {
+          label: "3. Oratio - Oración",
+          description: "Conversación con Dios"
+        },
+        contemplatio: {
+          label: "4. Contemplatio - Contemplación",
+          description: "Permanecer en silencio con Dios"
+        },
+        actio: {
+          label: "5. Actio - Acción",
+          description: "Transformación en la vida"
+        }
+      }
+    },
+
     cookie_info: "Este sitio web utiliza cookies y localStorage para una mejor experiencia y para guardar las preferencias de idioma.",
     cookie_agree: "Acepto",
     cookie_decline: "Rechazo",
@@ -885,7 +1388,7 @@ export const translations: Record<Language, any> = {
     app_section: {
       headline: "APLICACIÓN MÓVIL",
       lead: "¡Te invitamos a profundizar tu vida espiritual con la aplicación Lectio Divina!",
-      p1: "Lectio Divina es una forma antigua de oración practicada durante siglos por comunidades religiosas e individuos. ¡Ahora puedes integrar esta práctica enriquecedora en tu vida cotidiana!",
+      p1: "Lectio Divina es una forma antigua de oración practicada durante siglos por comunidades religiosas y personas individuales. ¡Ahora puedes integrar esta práctica enriquecedora en tu vida cotidiana!",
       p2: "Descarga nuestra nueva aplicación Lectio Divina y dale un espacio a la Palabra de Dios en tu corazón. Ya sea que elijas Lectio a solas, en familia o en un pequeño grupo, a través de la lectura de la Palabra de Dios tu vida con Él empezará a profundizarse y florecer.",
       p3: "¡Descarga la aplicación Lectio Divina hoy y comienza tu camino hacia una relación más profunda con Dios!",
       note: "La aplicación está disponible actualmente en eslovaco.",
@@ -915,13 +1418,14 @@ export const translations: Record<Language, any> = {
       all_rights_reserved: "Todos los derechos reservados",
       created_by: "creado por",
       admin_tooltip: "Administración",
+      follow_us: "Síguenos"
     },
     community_section: {
       headline: "Únete a Nuestra Comunidad",
       subtitle: "Forma parte de nuestra creciente comunidad de creyentes",
       description: "Buscamos entusiastas que nos ayuden a crear una mejor aplicación para la oración y el crecimiento espiritual. Ya sea que quieras probar, recibir noticias o compartir ideas, tenemos un lugar para ti.",
       tester_title: "Conviértete en Probador",
-      tester_desc: "Ayúdanos a probar nuevas características y mejoras antes de su lanzamiento oficial. Tus comentarios son invaluables para el desarrollo de la aplicación.",
+      tester_desc: "Ayúdanos a probar nuevas características y mejoras antes de su lanzamiento oficial. Tus comentarios son imprescincibles para el desarrollo de la aplicación.",
       newsletter_title: "Suscríbete al Newsletter",
       newsletter_desc: "Sé el primero en conocer nuevas características, artículos espirituales y actualizaciones importantes de la aplicación.",
       idea_title: "¿Tienes una Idea?",
@@ -976,5 +1480,58 @@ export const translations: Record<Language, any> = {
       last_updated: "Última Actualización"
     },
     community: "Comunidad",
+    dailyQuote: {
+      loading: "Cargando la cita de hoy...",
+      todayLabel: "CITA DE HOY",
+      notFound: "La cita de hoy no fue encontrada",
+      notFoundDescription: "Por favor, inténtelo más tarde o lea nuestras citas archivadas.",
+      error: "Error al cargar la cita"
+    },
+    lectioStepsSection: {
+      title: "Lectio Divina - Cinco Pasos",
+      subtitle: "Descubre el viaje espiritual a través de cinco pasos de Lectio Divina - una antigua práctica cristiana de meditación"
+    },
+
+    lectio_steps_new: [
+      {
+        title: "Lectio - Lectura",
+        desc: "Lectura atenta de la palabra de Dios con corazón y mente abiertos"
+      },
+      {
+        title: "Meditatio - Meditación",
+        desc: "Reflexión profunda sobre el texto y búsqueda del mensaje personal"
+      },
+      {
+        title: "Oratio - Oración",
+        desc: "Conversación con Dios sobre lo que descubriste en el texto"
+      },
+      {
+        title: "Contemplatio - Contemplación",
+        desc: "Descanso silencioso en la presencia y amor de Dios"
+      },
+      {
+        title: "Actio - Acción",
+        desc: "Transformación de la experiencia espiritual en actos concretos de amor"
+      }
+    ],
+    newsDetail: {
+      article_badge: "ARTÍCULO",
+      reading_time: "min de lectura",
+      published_on: "Publicado el"
+    },
+    homeNewsSection: {
+      title: "Últimos Artículos",
+      badge: "ÚLTIMAS NOTICIAS",
+      subtitle: "Manténgase informado sobre los últimos eventos y temas espirituales",
+      loading: "Cargando artículos para idioma:",
+      error_title: "Error al cargar artículos",
+      error_check: "Verifique la base de datos Supabase y los datos para el idioma",
+      no_articles_title: "Aún no hay artículos",
+      no_articles_desc: "No se encontraron artículos para el idioma \"{lang}\".",
+      new_badge: "NUEVO",
+      show_article: "Mostrar artículo",
+      show_all_articles: "Mostrar todos los artículos"
+    },
   },
+  
 }
