@@ -37,6 +37,7 @@ const links = [
   { href: "/admin/rosary", key: "rosary", icon: Crown, color: "violet" }, // Pridané ruženec
   { href: "/admin/tasks", key: "tasks", icon: Kanban, color: "pink" },
   { href: "/admin/programs", key: "programs", icon: Kanban, color: "pink" },
+  { href: "/admin/notifications/", key: "Notifikácie", icon: Kanban, color: "pink" },
 ] as const;
 
 type SidebarKey = typeof links[number]["key"];

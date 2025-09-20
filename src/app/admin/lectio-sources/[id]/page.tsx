@@ -93,7 +93,7 @@ function BibleImportModal({
 }) {
   const { supabase } = useSupabase();
   const [loading, setLoading] = useState(false);
-  const [translations, setTranslations] = useState<Translation[]>([]);
+  const [translationsList, setTranslationsList] = useState<Translation[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
   const [chapters, setChapters] = useState<number[]>([]);
   const [verses, setVerses] = useState<BibleVerse[]>([]);
@@ -103,6 +103,7 @@ function BibleImportModal({
   const [selectedChapter, setSelectedChapter] = useState<string>("");
   const [selectedVerseStart, setSelectedVerseStart] = useState<string>("");
   const [selectedVerseEnd, setSelectedVerseEnd] = useState<string>("");
+  const [multiVerseSpec, setMultiVerseSpec] = useState<string>(""); // nová voľba pre viac úsekov
   const [previewText, setPreviewText] = useState<string>("");
 
   // Load translations for current locale
@@ -132,7 +133,7 @@ function BibleImportModal({
 
   useEffect(() => {
     generatePreview();
-  }, [verses, selectedVerseStart, selectedVerseEnd]);
+  }, [verses, selectedVerseStart, selectedVerseEnd, multiVerseSpec]);
 
   const loadTranslations = async () => {
     try {
@@ -143,7 +144,7 @@ function BibleImportModal({
         .eq('is_active', true);
 
       if (!error && data) {
-        setTranslations(data);
+        setTranslationsList(data);
       }
     } catch (error) {
       console.error('Chyba pri načítaní prekladov:', error);
@@ -232,38 +233,106 @@ function BibleImportModal({
     setLoading(false);
   };
 
+  // ---- Helpers for multi-range parsing ----
+  type Range = [number, number];
+
+  const cleanSpec = (specRaw: string) => {
+    let spec = specRaw.trim();
+    const commaIdx = spec.indexOf(",");
+    if (commaIdx !== -1) {
+      const before = spec.slice(0, commaIdx);
+      if (/\d/.test(before)) {
+        spec = spec.slice(commaIdx + 1);
+      }
+    }
+    return spec;
+  };
+
+  const parseVerseSpec = (specRaw: string): Range[] => {
+    const spec = cleanSpec(specRaw)
+      .replace(/\s+/g, " ")
+      .replace(/\s*;\s*/g, ".")
+      .trim();
+
+    if (!spec) return [];
+
+    const parts = spec.split(".").map((p) => p.trim()).filter(Boolean);
+    const ranges: Range[] = [];
+
+    for (const part of parts) {
+      const m = part.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+      if (!m) continue;
+      let a = parseInt(m[1], 10);
+      let b = m[2] ? parseInt(m[2], 10) : a;
+      if (a > b) [a, b] = [b, a];
+      ranges.push([a, b]);
+    }
+    return ranges;
+  };
+
+  const normalizeSpec = (ranges: Range[]) => {
+    return ranges
+      .map(([a, b]) => (a === b ? `${a}` : `${a}-${b}`))
+      .join(". ");
+  };
+
   const generatePreview = () => {
-    if (!verses.length || !selectedVerseStart) return;
+    if (!verses.length) {
+      setPreviewText("");
+      return;
+    }
+
+    // multi-úseky majú prednosť
+    const specRanges = multiVerseSpec.trim() ? parseVerseSpec(multiVerseSpec) : [];
+    if (specRanges.length) {
+      const seen = new Set<number>();
+      const bucket: BibleVerse[] = [];
+      for (const [a, b] of specRanges) {
+        for (const v of verses) {
+          if (v.verse >= a && v.verse <= b && !seen.has(v.verse)) {
+            seen.add(v.verse);
+            bucket.push(v);
+          }
+        }
+      }
+      const text = bucket.map((v) => `${v.verse} ${v.text}`).join(" ");
+      setPreviewText(text);
+      return;
+    }
+
+    // fallback: jednoduchý rozsah
+    if (!selectedVerseStart) {
+      setPreviewText("");
+      return;
+    }
 
     const startVerse = parseInt(selectedVerseStart);
     const endVerse = selectedVerseEnd ? parseInt(selectedVerseEnd) : startVerse;
-    
-    const selectedVerses = verses.filter(v => 
-      v.verse >= startVerse && v.verse <= endVerse
-    );
-
-    const text = selectedVerses
-      .map(v => `${v.verse} ${v.text}`)
-      .join(' ');
-
+    const selectedVerses = verses.filter(v => v.verse >= startVerse && v.verse <= endVerse);
+    const text = selectedVerses.map(v => `${v.verse} ${v.text}`).join(' ');
     setPreviewText(text);
   };
 
   const handleImport = () => {
-    if (!previewText || !selectedBook || !selectedChapter || !selectedVerseStart) {
+    if (!previewText || !selectedBook || !selectedChapter) {
       return;
     }
 
     const book = books.find(b => b.id.toString() === selectedBook);
-    const translation = translations.find(t => t.id.toString() === selectedTranslation);
-    const startVerse = parseInt(selectedVerseStart);
-    const endVerse = selectedVerseEnd ? parseInt(selectedVerseEnd) : startVerse;
-    
+    const translation = translationsList.find(t => t.id.toString() === selectedTranslation);
+
     let reference = `${book?.code} ${selectedChapter}`;
-    if (startVerse === endVerse) {
-      reference += `,${startVerse}`;
-    } else {
-      reference += `,${startVerse}-${endVerse}`;
+    const specRanges = multiVerseSpec.trim() ? parseVerseSpec(multiVerseSpec) : [];
+    if (specRanges.length) {
+      reference += `, ${normalizeSpec(specRanges)}`;
+    } else if (selectedVerseStart) {
+      const startVerse = parseInt(selectedVerseStart);
+      const endVerse = selectedVerseEnd ? parseInt(selectedVerseEnd) : startVerse;
+      if (startVerse === endVerse) {
+        reference += `,${startVerse}`;
+      } else {
+        reference += `,${startVerse}-${endVerse}`;
+      }
     }
 
     // Pošleme názov prekladu namiesto názvu knihy
@@ -301,9 +370,10 @@ function BibleImportModal({
                 value={selectedTranslation}
                 onChange={(e) => setSelectedTranslation(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                disabled={!currentLocaleId}
               >
                 <option value="">-- Vyberte preklad --</option>
-                {translations.map(t => (
+                {translationsList.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.name} ({t.code})
                   </option>
@@ -390,6 +460,23 @@ function BibleImportModal({
                   ))}
               </select>
             </div>
+          </div>
+
+          {/* Multi-range input */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Viac úsekov v kapitole (voliteľné)
+            </label>
+            <input
+              type="text"
+              value={multiVerseSpec}
+              onChange={(e) => setMultiVerseSpec(e.target.value)}
+              placeholder='napr. 12-17. 23-25 alebo 57-66. 80 alebo 1. 7-11; môžete vložiť aj celý tvar „Mt 4, 12-17. 23-25“'
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              Oddelujte úseky <strong>bodkou</strong> alebo <strong>bodkočiarkou</strong>. Rozsah píšte pomocou <strong>pomlčky</strong>. Ak vyplníte toto pole, nastavenie „Od/Po verš“ sa ignoruje.
+            </p>
           </div>
 
           {previewText && (
@@ -493,6 +580,13 @@ export default function LectioSourceEditPage() {
     setHasUnsavedChanges(true);
   }, [DRAFT_KEY, locales]);
 
+  // Small helper to show transient messages
+  const showTempMessage = (text: string, type: "success" | "error" = "success", ms = 2500) => {
+    setMessage(text);
+    setMessageType(type);
+    setTimeout(() => { setMessage(null); setMessageType(null); }, ms);
+  };
+
   // Load data
   useEffect(() => {
     const loadData = async () => {
@@ -562,7 +656,7 @@ export default function LectioSourceEditPage() {
                 .single();
               
               if (localeData) {
-                data.locale_info = localeData;
+                (data as any).locale_info = localeData;
               }
             }
             
@@ -595,11 +689,33 @@ export default function LectioSourceEditPage() {
     if (currentBibleField === 1) {
       updateFormField('suradnice_pismo', reference);
     }
+
+    showTempMessage("Biblický text bol importovaný.", "success");
   };
 
   const openBibleImport = (fieldNumber: number) => {
     setCurrentBibleField(fieldNumber);
     setShowBibleImport(true);
+  };
+
+  // === Odstránenie čísiel veršov ===
+  const stripVerseNumbers = (text: string) => {
+    let out = text;
+    // Odstráni samostatné čísla veršov (1–3 cifry) na začiatkoch úsekov alebo po interpunkcii/medzere.
+    out = out.replace(/(^|[^\p{L}\p{N}])\s*\d{1,3}(?=\s)/gmu, (_m, p1) => (p1 || ""));
+    // Zlúči viacnásobné medzery
+    out = out.replace(/\s{2,}/g, " ");
+    // Opraví medzeru pred interpunkciou
+    out = out.replace(/\s+([,.;:!?])/g, "$1");
+    return out.trim();
+  };
+
+  const handleStripVerseNumbers = (fieldNumber: number) => {
+    const key = `biblia_${fieldNumber}` as keyof LectioSource;
+    const current = (formData[key] as string) || "";
+    const cleaned = stripVerseNumbers(current);
+    updateFormField(`biblia_${fieldNumber}`, cleaned);
+    showTempMessage("Čísla veršov boli odstránené.", "success");
   };
 
   // Save handler
@@ -617,21 +733,19 @@ export default function LectioSourceEditPage() {
     }
 
     try {
-      const saveData = { ...formData };
+      const saveData: any = { ...formData };
       
       // Odstráň locale_info ak existuje (nie je súčasť tabuľky)
-      delete (saveData as any).locale_info;
+      delete saveData.locale_info;
       
       // Nastav locale_id len ak je dostupný v schéme
       if (!saveData.locale_id && saveData.lang) {
         const locale = locales.find(l => l.code === saveData.lang);
         if (locale) {
-          // Skús nastaviť locale_id, ale ak zlyhá, pokračuj bez neho
           try {
             saveData.locale_id = locale.id;
           } catch {
-            // Ak tabuľka nemá locale_id stĺpec, ignoruj
-            delete (saveData as any).locale_id;
+            delete saveData.locale_id;
           }
         }
       }
@@ -888,15 +1002,26 @@ export default function LectioSourceEditPage() {
                         Biblický text {i}
                       </h3>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => openBibleImport(i)}
-                      disabled={!currentLocale?.id}
-                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="mr-2">📥</span>
-                      Importovať z Biblie
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openBibleImport(i)}
+                        disabled={!currentLocale?.id}
+                        className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="mr-2">📥</span>
+                        Importovať z Biblie
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleStripVerseNumbers(i)}
+                        className="inline-flex items-center px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        title="Odstráni čísla veršov (1, 7, 8, 9...)"
+                      >
+                        <span className="mr-2">🧹</span>
+                        Odstrániť čísla veršov
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="space-y-4">

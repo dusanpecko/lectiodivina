@@ -1,3 +1,4 @@
+//src/app/admin/articles/[id]/page.tsx
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
