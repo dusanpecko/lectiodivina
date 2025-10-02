@@ -1236,17 +1236,35 @@ export default function LectioEditPage() {
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {isNew
-                  ? t.add_lectio_title || "Pridať nový Lectio záznam"
-                  : t.edit_lectio_title
-                  ? `${t.edit_lectio_title} ${lectio.hlava}`
-                  : `Upraviť Lectio: ${lectio.hlava}`}
-              </h1>
-              <p className="text-gray-600">
-                {isNew ? "Vytvorte nový duchovný záznam" : "Upravte existujúci záznam"}
-              </p>
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={() => {
+                  const returnPage = localStorage.getItem('lectio_return_page');
+                  localStorage.removeItem('lectio_return_page');
+                  if (returnPage) {
+                    router.push(`/admin/lectio?page=${returnPage}`);
+                  } else {
+                    router.push('/admin/lectio');
+                  }
+                }}
+                className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
+              >
+                <span className="mr-2">←</span>
+                Späť
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                  {isNew
+                    ? t.add_lectio_title || "Pridať nový Lectio záznam"
+                    : t.edit_lectio_title
+                    ? `${t.edit_lectio_title} ${lectio.hlava}`
+                    : `Upraviť Lectio: ${lectio.hlava}`}
+                </h1>
+                <p className="text-gray-600">
+                  {isNew ? "Vytvorte nový duchovný záznam" : "Upravte existujúci záznam"}
+                </p>
+              </div>
             </div>
             <div className="text-4xl">
               {isNew ? "✨" : "📝"}

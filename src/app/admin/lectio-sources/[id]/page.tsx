@@ -5,6 +5,9 @@ import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
+import TranslateButton from "@/app/components/TranslateButton";
+import BulkTranslateSection from "@/app/components/BulkTranslateSection";
+import AudioGenerateButton from "@/app/components/AudioGenerateButton";
 
 // Interfaces
 interface Locale {
@@ -77,6 +80,7 @@ interface LectioSource {
   modlitba_zaver: string;
   audio_5_min: string;
   reference: string;
+  checked?: number; // 0 = nezaškrtnuté, 1 = zaškrtnuté
 }
 
 // Bible Import Modal Component
@@ -105,6 +109,56 @@ function BibleImportModal({
   const [selectedVerseEnd, setSelectedVerseEnd] = useState<string>("");
   const [multiVerseSpec, setMultiVerseSpec] = useState<string>(""); // nová voľba pre viac úsekov
   const [previewText, setPreviewText] = useState<string>("");
+
+  // RESET STATE ON OPEN
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedTranslation("");
+      setSelectedBook("");
+      setSelectedChapter("");
+      setSelectedVerseStart("");
+      setSelectedVerseEnd("");
+      setMultiVerseSpec("");
+      setPreviewText("");
+      setBooks([]);
+      setChapters([]);
+      setVerses([]);
+    }
+  }, [isOpen]);
+
+  // RESET CASCADE ON TRANSLATION CHANGE
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelectedBook("");
+    setSelectedChapter("");
+    setSelectedVerseStart("");
+    setSelectedVerseEnd("");
+    setMultiVerseSpec("");
+    setChapters([]);
+    setVerses([]);
+    setPreviewText("");
+  }, [selectedTranslation, isOpen]);
+
+  // RESET CASCADE ON BOOK CHANGE
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelectedChapter("");
+    setSelectedVerseStart("");
+    setSelectedVerseEnd("");
+    setMultiVerseSpec("");
+    setVerses([]);
+    setPreviewText("");
+  }, [selectedBook, isOpen]);
+
+  // RESET CASCADE ON CHAPTER CHANGE
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelectedVerseStart("");
+    setSelectedVerseEnd("");
+    setMultiVerseSpec("");
+    setVerses([]);
+    setPreviewText("");
+  }, [selectedChapter, isOpen]);
 
   // Load translations for current locale
   useEffect(() => {
@@ -587,6 +641,26 @@ export default function LectioSourceEditPage() {
     setTimeout(() => { setMessage(null); setMessageType(null); }, ms);
   };
 
+  // Translation handlers
+  const handleSingleFieldTranslation = useCallback((fieldName: string, translatedText: string) => {
+    updateFormField(fieldName, translatedText);
+    showTempMessage(`Text bol preložený: ${fieldName}`, "success");
+  }, [updateFormField]);
+
+  const handleBulkTranslation = useCallback((updates: Record<string, string>) => {
+    Object.entries(updates).forEach(([fieldName, translatedText]) => {
+      updateFormField(fieldName, translatedText);
+    });
+    const count = Object.keys(updates).length;
+    showTempMessage(`Preložených ${count} polí`, "success");
+  }, [updateFormField]);
+
+  // Audio generation handler
+  const handleAudioGenerated = useCallback((fieldName: string, audioUrl: string) => {
+    updateFormField(fieldName, audioUrl);
+    showTempMessage(`Audio bolo vygenerované: ${fieldName}`, "success");
+  }, [updateFormField]);
+
   // Load data
   useEffect(() => {
     const loadData = async () => {
@@ -631,6 +705,7 @@ export default function LectioSourceEditPage() {
               reference: "",
               modlitba_zaver: "",
               audio_5_min: "",
+              checked: 0,
             });
           }
         } catch (error) {
@@ -779,6 +854,17 @@ export default function LectioSourceEditPage() {
           setIsDraftAvailable(false);
           setMessage("Úspešne uložené");
           setMessageType("success");
+          
+          // Redirect späť na zoznam s povodnou strankovu ak existuje
+          setTimeout(() => {
+            const returnPage = localStorage.getItem('lectio_sources_return_page');
+            if (returnPage) {
+              router.push(`/admin/lectio-sources?page=${returnPage}`);
+              localStorage.removeItem('lectio_sources_return_page');
+            } else {
+              router.push('/admin/lectio-sources');
+            }
+          }, 1500); // Počkaj 1.5s na zobrazenie správy
         } else {
           throw error;
         }
@@ -809,31 +895,49 @@ export default function LectioSourceEditPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
-        {/* Header - same as before */}
+        {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {isNew
-                  ? "Pridať nový Lectio zdroj"
-                  : `Upraviť Lectio zdroj: ${formData.kniha} ${formData.kapitola}`}
-              </h1>
-              <p className="text-gray-600">
-                {isNew ? "Vytvorte nový zdrojový obsah" : "Upravte existujúci zdroj"}
-              </p>
-              <div className="flex items-center space-x-4 text-sm mt-2">
-                {hasUnsavedChanges && (
-                  <div className="flex items-center space-x-1 text-orange-600">
-                    <span>●</span>
-                    <span>Neuložené zmeny</span>
-                  </div>
-                )}
-                {isDraftAvailable && (
-                  <div className="flex items-center space-x-1 text-blue-600">
-                    <span>📝</span>
-                    <span>Draft načítaný</span>
-                  </div>
-                )}
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={() => {
+                  const returnPage = localStorage.getItem('lectio_sources_return_page');
+                  localStorage.removeItem('lectio_sources_return_page');
+                  if (returnPage) {
+                    router.push(`/admin/lectio-sources?page=${returnPage}`);
+                  } else {
+                    router.push('/admin/lectio-sources');
+                  }
+                }}
+                className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
+              >
+                <span className="mr-2">←</span>
+                Späť
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                  {isNew
+                    ? "Pridať nový Lectio zdroj"
+                    : `Upraviť Lectio zdroj: ${formData.kniha} ${formData.kapitola}`}
+                </h1>
+                <p className="text-gray-600">
+                  {isNew ? "Vytvorte nový zdrojový obsah" : "Upravte existujúci zdroj"}
+                </p>
+                <div className="flex items-center space-x-4 text-sm mt-2">
+                  {hasUnsavedChanges && (
+                    <div className="flex items-center space-x-1 text-orange-600">
+                      <span>●</span>
+                      <span>Neuložené zmeny</span>
+                    </div>
+                  )}
+                  {isDraftAvailable && (
+                    <div className="flex items-center space-x-1 text-blue-600">
+                      <span>📝</span>
+                      <span>Draft načítaný</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="text-4xl">
@@ -969,9 +1073,17 @@ export default function LectioSourceEditPage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Nadpis <span className="text-red-500">*</span>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Nadpis <span className="text-red-500">*</span>
+                  </label>
+                  <TranslateButton
+                    text={formData.hlava || ""}
+                    fieldType="hlava"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('hlava', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <input
                   type="text"
                   name="hlava"
@@ -981,6 +1093,29 @@ export default function LectioSourceEditPage() {
                   placeholder="Nadpis lectio..."
                   required
                 />
+              </div>
+
+              <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="checked"
+                    name="checked"
+                    checked={formData.checked === 1}
+                    onChange={(e) => updateFormField('checked', e.target.checked ? 1 : 0)}
+                    className="w-5 h-5 text-emerald-600 bg-gray-100 border-emerald-300 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label 
+                    htmlFor="checked" 
+                    className="ml-3 text-sm font-semibold text-emerald-800 cursor-pointer flex items-center"
+                  >
+                    <span className="mr-2">✅</span>
+                    Označiť ako skontrolované
+                  </label>
+                </div>
+                <p className="text-xs text-emerald-600 ml-8 mt-1">
+                  Označte keď je obsah skontrolovaný a pripravený na publikovanie
+                </p>
               </div>
             </div>
           </div>
@@ -1055,9 +1190,20 @@ export default function LectioSourceEditPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-gray-700">
-                        Audio (URL)
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="block text-sm font-semibold text-gray-700">
+                          Audio (URL)
+                        </label>
+                        <AudioGenerateButton
+                          text={formData[`biblia_${i}` as keyof LectioSource] as string || ""}
+                          language={formData.lang || "sk"}
+                          lectioId={id || "new"}
+                          fieldName={`biblia_${i}_audio`}
+                          currentAudioUrl={formData[`biblia_${i}_audio` as keyof LectioSource] as string || ""}
+                          onAudioGenerated={(audioUrl) => handleAudioGenerated(`biblia_${i}_audio`, audioUrl)}
+                          disabled={saving}
+                        />
+                      </div>
                       <input
                         type="url"
                         name={`biblia_${i}_audio`}
@@ -1073,7 +1219,14 @@ export default function LectioSourceEditPage() {
             </div>
           </div>
 
-          {/* Hlavný obsah - rovnaký ako predtým */}
+          {/* Hromadný preklad */}
+          <BulkTranslateSection
+            formData={formData}
+            onFieldsUpdated={handleBulkTranslation}
+            disabled={saving}
+          />
+
+          {/* Hlavný obsah lectio divina */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center mb-6">
               <span className="text-2xl mr-3">📖</span>
@@ -1082,9 +1235,17 @@ export default function LectioSourceEditPage() {
             
             <div className="space-y-8">
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Lectio – text
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Lectio – text
+                  </label>
+                  <TranslateButton
+                    text={formData.lectio_text || ""}
+                    fieldType="spiritual"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('lectio_text', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="lectio_text"
                   value={formData.lectio_text || ""}
@@ -1097,9 +1258,17 @@ export default function LectioSourceEditPage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Meditatio – text
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Meditatio – text
+                  </label>
+                  <TranslateButton
+                    text={formData.meditatio_text || ""}
+                    fieldType="spiritual"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('meditatio_text', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="meditatio_text"
                   value={formData.meditatio_text || ""}
@@ -1112,9 +1281,17 @@ export default function LectioSourceEditPage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Oratio – text
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Oratio – text
+                  </label>
+                  <TranslateButton
+                    text={formData.oratio_text || ""}
+                    fieldType="spiritual"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('oratio_text', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="oratio_text"
                   value={formData.oratio_text || ""}
@@ -1127,9 +1304,17 @@ export default function LectioSourceEditPage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Contemplatio – text
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Contemplatio – text
+                  </label>
+                  <TranslateButton
+                    text={formData.contemplatio_text || ""}
+                    fieldType="spiritual"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('contemplatio_text', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="contemplatio_text"
                   value={formData.contemplatio_text || ""}
@@ -1142,9 +1327,17 @@ export default function LectioSourceEditPage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Actio – text
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Actio – text
+                  </label>
+                  <TranslateButton
+                    text={formData.actio_text || ""}
+                    fieldType="spiritual"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('actio_text', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="actio_text"
                   value={formData.actio_text || ""}
@@ -1157,9 +1350,17 @@ export default function LectioSourceEditPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Reference
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Reference
+                  </label>
+                  <TranslateButton
+                    text={formData.reference || ""}
+                    fieldType="reference"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('reference', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="reference"
                   value={formData.reference || ""}
@@ -1172,9 +1373,17 @@ export default function LectioSourceEditPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Modlitba záver
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Modlitba záver
+                  </label>
+                  <TranslateButton
+                    text={formData.modlitba_zaver || ""}
+                    fieldType="prayer"
+                    onTranslated={(translatedText) => handleSingleFieldTranslation('modlitba_zaver', translatedText)}
+                    disabled={saving}
+                  />
+                </div>
                 <textarea
                   name="modlitba_zaver"
                   value={formData.modlitba_zaver || ""}
@@ -1202,9 +1411,20 @@ export default function LectioSourceEditPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Lectio audio (URL)
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Lectio audio (URL)
+                    </label>
+                    <AudioGenerateButton
+                      text={formData.lectio_text || ""}
+                      language={formData.lang || "sk"}
+                      lectioId={id || "new"}
+                      fieldName="lectio_audio"
+                      currentAudioUrl={formData.lectio_audio || ""}
+                      onAudioGenerated={(audioUrl) => handleAudioGenerated("lectio_audio", audioUrl)}
+                      disabled={saving}
+                    />
+                  </div>
                   <input
                     type="url"
                     name="lectio_audio"
@@ -1215,9 +1435,20 @@ export default function LectioSourceEditPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Meditatio audio (URL)
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Meditatio audio (URL)
+                    </label>
+                    <AudioGenerateButton
+                      text={formData.meditatio_text || ""}
+                      language={formData.lang || "sk"}
+                      lectioId={id || "new"}
+                      fieldName="meditatio_audio"
+                      currentAudioUrl={formData.meditatio_audio || ""}
+                      onAudioGenerated={(audioUrl) => handleAudioGenerated("meditatio_audio", audioUrl)}
+                      disabled={saving}
+                    />
+                  </div>
                   <input
                     type="url"
                     name="meditatio_audio"
@@ -1228,9 +1459,20 @@ export default function LectioSourceEditPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Oratio audio (URL)
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Oratio audio (URL)
+                    </label>
+                    <AudioGenerateButton
+                      text={formData.oratio_text || ""}
+                      language={formData.lang || "sk"}
+                      lectioId={id || "new"}
+                      fieldName="oratio_audio"
+                      currentAudioUrl={formData.oratio_audio || ""}
+                      onAudioGenerated={(audioUrl) => handleAudioGenerated("oratio_audio", audioUrl)}
+                      disabled={saving}
+                    />
+                  </div>
                   <input
                     type="url"
                     name="oratio_audio"
@@ -1241,9 +1483,20 @@ export default function LectioSourceEditPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Contemplatio audio (URL)
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Contemplatio audio (URL)
+                    </label>
+                    <AudioGenerateButton
+                      text={formData.contemplatio_text || ""}
+                      language={formData.lang || "sk"}
+                      lectioId={id || "new"}
+                      fieldName="contemplatio_audio"
+                      currentAudioUrl={formData.contemplatio_audio || ""}
+                      onAudioGenerated={(audioUrl) => handleAudioGenerated("contemplatio_audio", audioUrl)}
+                      disabled={saving}
+                    />
+                  </div>
                   <input
                     type="url"
                     name="contemplatio_audio"
@@ -1254,9 +1507,20 @@ export default function LectioSourceEditPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Actio audio (URL)
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Actio audio (URL)
+                    </label>
+                    <AudioGenerateButton
+                      text={formData.actio_text || ""}
+                      language={formData.lang || "sk"}
+                      lectioId={id || "new"}
+                      fieldName="actio_audio"
+                      currentAudioUrl={formData.actio_audio || ""}
+                      onAudioGenerated={(audioUrl) => handleAudioGenerated("actio_audio", audioUrl)}
+                      disabled={saving}
+                    />
+                  </div>
                   <input
                     type="url"
                     name="actio_audio"

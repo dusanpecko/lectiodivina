@@ -1,3 +1,4 @@
+//src/app/admin/lectio/page.tsx
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
@@ -6,12 +7,27 @@ import {
   BookOpen, Trash2, PlusCircle, Edit3, Download, Upload, 
   Filter, Search, ChevronDown, ChevronUp, Globe, Calendar, 
   Heart, Eye, Headphones, FileText, Scroll, ArrowLeft, ArrowRight,
-  X, CheckCircle, AlertCircle
+  X, CheckCircle, AlertCircle, RefreshCw
 } from "lucide-react";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as XLSX from "xlsx";
+
+interface DetailedStats {
+  total: number;
+  biblia1: number;
+  biblia2: number;
+  biblia3: number;
+  lectio: number;
+  meditatio: number;
+  oratio: number;
+  contemplatio: number;
+  actio: number;
+  audio: number;
+  complete: number;
+  completePercentage: number;
+}
 
 interface Lectio {
   id?: number;
@@ -126,10 +142,122 @@ const LoadingSpinner = ({ size = 6 }: { size?: number }) => (
   <div className={`w-${size} h-${size} border-2 border-emerald-600 border-t-transparent rounded-full animate-spin`} />
 );
 
+// Progress Bar komponenta
+const ProgressBar = ({ current, total, isActive }: { current: number; total: number; isActive: boolean }) => {
+  if (!isActive) return null;
+  
+  const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+  
+  return (
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg p-4 shadow-lg min-w-80">
+      <div className="flex items-center gap-3 mb-2">
+        <LoadingSpinner size={4} />
+        <span className="font-medium">Synchronizujem záznamy...</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2">
+        <div 
+          className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+      <div className="text-sm text-gray-600 mt-1">
+        {current} z {total} ({percentage}%)
+      </div>
+    </div>
+  );
+};
+
+// Results Modal komponenta
+const SyncResultsModal = ({ 
+  results, 
+  onClose 
+}: { 
+  results: {
+    success: number;
+    errors: number;
+    notFound: number;
+    details: { type: 'success' | 'error' | 'notFound'; message: string }[];
+  } | null;
+  onClose: () => void;
+}) => {
+  if (!results) return null;
+
+  const total = results.success + results.errors + results.notFound;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Výsledky synchronizácie
+            </h2>
+            <button 
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition"
+            >
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-green-800">{results.success}</div>
+              <div className="text-sm text-green-600">Úspešné</div>
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-yellow-800">{results.notFound}</div>
+              <div className="text-sm text-yellow-600">Nenájdené</div>
+            </div>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-red-800">{results.errors}</div>
+              <div className="text-sm text-red-600">Chyby</div>
+            </div>
+          </div>
+
+          {(results.notFound > 0 || results.errors > 0) && (
+            <div className="max-h-60 overflow-y-auto">
+              <h3 className="font-medium text-gray-900 mb-3">Detaily problémov:</h3>
+              <div className="space-y-2">
+                {results.details
+                  .filter(d => d.type !== 'success')
+                  .map((detail, index) => (
+                    <div 
+                      key={index}
+                      className={`p-3 rounded text-sm ${
+                        detail.type === 'notFound' 
+                          ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
+                          : 'bg-red-50 text-red-800 border border-red-200'
+                      }`}
+                    >
+                      {detail.message}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 border-t border-gray-200 bg-gray-50">
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+          >
+            Zavrieť
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function LectioAdminPage() {
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { supabase } = useSupabase();
 
   // State
@@ -146,6 +274,35 @@ export default function LectioAdminPage() {
   const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [detailedStats, setDetailedStats] = useState<DetailedStats | null>(null);
+  const [syncingId, setSyncingId] = useState<number | null>(null);
+  
+  // Progress tracking pre bulk sync
+  const [syncProgress, setSyncProgress] = useState<{
+    current: number;
+    total: number;
+    isActive: boolean;
+  }>({ current: 0, total: 0, isActive: false });
+  
+  // Results modal state
+  const [syncResults, setSyncResults] = useState<{
+    show: boolean;
+    success: number;
+    errors: number;
+    notFound: number;
+    details: { type: 'success' | 'error' | 'notFound'; message: string }[];
+  } | null>(null);
+
+  // Load page from URL on mount
+  useEffect(() => {
+    const pageParam = searchParams.get('page');
+    if (pageParam) {
+      const pageNum = parseInt(pageParam, 10);
+      if (pageNum > 0) {
+        setPage(pageNum);
+      }
+    }
+  }, [searchParams]);
   const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState<FilterState>({
     hlava: "",
@@ -154,6 +311,50 @@ export default function LectioAdminPage() {
     datumTo: "",
   });
   const [globalSearch, setGlobalSearch] = useState("");
+
+  // Load detailed statistics
+  const fetchDetailedStats = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("lectio")
+        .select("id, nazov_biblia_1, biblia_1, nazov_biblia_2, biblia_2, nazov_biblia_3, biblia_3, lectio_text, meditatio_text, oratio_text, contemplatio_text, actio_text, uvod_audio, lectio_audio, meditatio_audio, oratio_audio, contemplatio_audio, actio_audio, biblia_1_audio, biblia_2_audio, biblia_3_audio, audio_5_min")
+        .eq("lang", filterLang);
+
+      if (!error && data) {
+        const stats = {
+          total: data.length,
+          biblia1: data.filter((l: any) => l.biblia_1 || l.nazov_biblia_1).length,
+          biblia2: data.filter((l: any) => l.biblia_2 || l.nazov_biblia_2).length,
+          biblia3: data.filter((l: any) => l.biblia_3 || l.nazov_biblia_3).length,
+          lectio: data.filter((l: any) => l.lectio_text).length,
+          meditatio: data.filter((l: any) => l.meditatio_text).length,
+          oratio: data.filter((l: any) => l.oratio_text).length,
+          contemplatio: data.filter((l: any) => l.contemplatio_text).length,
+          actio: data.filter((l: any) => l.actio_text).length,
+          audio: data.filter((l: any) => l.uvod_audio || l.lectio_audio || l.meditatio_audio || l.oratio_audio || l.contemplatio_audio || l.actio_audio || l.biblia_1_audio || l.biblia_2_audio || l.biblia_3_audio || l.audio_5_min).length,
+          complete: data.filter((l: any) => {
+            const hasBiblia1 = l.biblia_1 || l.nazov_biblia_1;
+            const hasBiblia2 = l.biblia_2 || l.nazov_biblia_2;
+            const hasBiblia3 = l.biblia_3 || l.nazov_biblia_3;
+            const hasAudio = l.uvod_audio || l.lectio_audio || l.meditatio_audio || l.oratio_audio || l.contemplatio_audio || l.actio_audio || l.biblia_1_audio || l.biblia_2_audio || l.biblia_3_audio || l.audio_5_min;
+            return hasBiblia1 && hasBiblia2 && hasBiblia3 && l.lectio_text && l.meditatio_text && l.oratio_text && l.contemplatio_text && l.actio_text && hasAudio;
+          }).length,
+          completePercentage: 0
+        };
+        
+        stats.completePercentage = stats.total > 0 ? Math.round((stats.complete / stats.total) * 100) : 0;
+        
+        setDetailedStats(stats);
+      }
+    } catch (error) {
+      console.error('Chyba pri načítaní štatistík:', error);
+    }
+  }, [supabase, filterLang]);
+
+  // Effect to load detailed stats when language changes
+  useEffect(() => {
+    fetchDetailedStats();
+  }, [fetchDetailedStats]);
 
   // Notifikácie helper
   const showNotification = useCallback((message: string, type: NotificationType) => {
@@ -167,7 +368,7 @@ export default function LectioAdminPage() {
     try {
       let dataQuery = supabase
         .from("lectio")
-        .select("id, datum, lang, hlava, suradnice_pismo, uvod, lectio_text, meditatio_text, oratio_text, contemplatio_text, uvod_audio, lectio_audio")
+        .select("id, datum, lang, hlava, suradnice_pismo, uvod, lectio_text, meditatio_text, oratio_text, contemplatio_text, actio_text, nazov_biblia_1, biblia_1, nazov_biblia_2, biblia_2, nazov_biblia_3, biblia_3, uvod_audio, lectio_audio, meditatio_audio, oratio_audio, contemplatio_audio, actio_audio")
         .eq("lang", filterLang);
 
       let countQuery = supabase
@@ -259,6 +460,258 @@ export default function LectioAdminPage() {
       setDeletingId(null);
     }
   }, [supabase, lectios.length, page, fetchLectios, showNotification]);
+
+  // Synchronizácia dát z lectio-sources
+  const handleSyncFromSources = useCallback(async (lectioItem: Lectio) => {
+    if (!lectioItem.id) return;
+    
+    setSyncingId(lectioItem.id);
+    
+    try {
+      // Nájdi zodpovedajúci záznam v lectio-sources na základe hlava a jazyka
+      const { data: sourceData, error: sourceError } = await supabase
+        .from("lectio_sources")
+        .select("*")
+        .eq("hlava", lectioItem.hlava)
+        .eq("lang", lectioItem.lang)
+        .single();
+
+      if (sourceError) {
+        if (sourceError.code === 'PGRST116') {
+          throw new Error(`Nenašiel sa zodpovedajúci záznam v lectio-sources pre "${lectioItem.hlava}"`);
+        }
+        throw new Error(sourceError.message);
+      }
+
+      if (!sourceData) {
+        throw new Error(`Nenašiel sa záznam v lectio-sources pre "${lectioItem.hlava}"`);
+      }
+
+      // Priprav dáta na aktualizáciu - prekopíruj všetko okrem id a datum
+      const updateData = {
+        lang: sourceData.lang,
+        hlava: sourceData.hlava,
+        suradnice_pismo: sourceData.suradnice_pismo,
+        uvod: sourceData.uvod || "",
+        uvod_audio: sourceData.uvod_audio || "",
+        video: sourceData.video || "",
+        modlitba_uvod: sourceData.modlitba_uvod || "",
+        modlitba_audio: sourceData.modlitba_audio || "",
+        nazov_biblia_1: sourceData.nazov_biblia_1 || "",
+        biblia_1: sourceData.biblia_1 || "",
+        biblia_1_audio: sourceData.biblia_1_audio || "",
+        nazov_biblia_2: sourceData.nazov_biblia_2 || "",
+        biblia_2: sourceData.biblia_2 || "",
+        biblia_2_audio: sourceData.biblia_2_audio || "",
+        nazov_biblia_3: sourceData.nazov_biblia_3 || "",
+        biblia_3: sourceData.biblia_3 || "",
+        biblia_3_audio: sourceData.biblia_3_audio || "",
+        lectio_text: sourceData.lectio_text || "",
+        lectio_audio: sourceData.lectio_audio || "",
+        meditatio_text: sourceData.meditatio_text || "",
+        meditatio_audio: sourceData.meditatio_audio || "",
+        oratio_text: sourceData.oratio_text || "",
+        oratio_audio: sourceData.oratio_audio || "",
+        contemplatio_text: sourceData.contemplatio_text || "",
+        contemplatio_audio: sourceData.contemplatio_audio || "",
+        actio_text: sourceData.actio_text || "",
+        actio_audio: sourceData.actio_audio || "",
+        modlitba_zaver: sourceData.modlitba_zaver || "",
+        audio_5_min: sourceData.audio_5_min || "",
+        zaver: sourceData.zaver || "",
+        pozehnanie: sourceData.pozehnanie || ""
+        // datum sa necháva bez zmeny!
+      };
+
+      // Aktualizuj záznam v lectio
+      const { error: updateError } = await supabase
+        .from("lectio")
+        .update(updateData)
+        .eq("id", lectioItem.id);
+
+      if (updateError) {
+        throw new Error(updateError.message);
+      }
+
+      showNotification(
+        `Dáta pre "${lectioItem.hlava}" boli úspešne synchronizované z lectio-sources`, 
+        "success"
+      );
+      
+      // Obnoviť zoznam
+      fetchLectios();
+      
+    } catch (error) {
+      console.error('Sync error:', error);
+      showNotification(
+        `Chyba pri synchronizácii: ${error instanceof Error ? error.message : 'Neznáma chyba'}`, 
+        "error"
+      );
+    } finally {
+      setSyncingId(null);
+    }
+  }, [supabase, showNotification, fetchLectios]);
+
+  // Hromadná synchronizácia všetkých záznamov v databáze
+  const handleBulkSyncFromSources = useCallback(async () => {
+    if (!confirm(`Naozaj chcete synchronizovať VŠETKY záznamy v databáze lectio (jazyk: ${filterLang}) z lectio-sources? Táto akcia prepíše všetky údaje okrem dátumu.`)) {
+      return;
+    }
+
+    setSyncingId(-1); // Použijeme -1 pre bulk sync
+    let successCount = 0;
+    let errorCount = 0;
+    let notFoundCount = 0;
+    const details: { type: 'success' | 'error' | 'notFound'; message: string }[] = [];
+
+    try {
+      // Najprv získaj VŠETKY záznamy z lectio pre daný jazyk
+      const { data: allLectios, error: fetchError } = await supabase
+        .from("lectio")
+        .select("id, hlava, lang, datum")
+        .eq("lang", filterLang);
+
+      if (fetchError) {
+        throw new Error(`Chyba pri načítavaní záznamov: ${fetchError.message}`);
+      }
+
+      if (!allLectios || allLectios.length === 0) {
+        showNotification(`Nenašli sa žiadne záznamy pre jazyk ${filterLang}`, "info");
+        return;
+      }
+
+      // Inicializuj progress tracking
+      setSyncProgress({
+        current: 0,
+        total: allLectios.length,
+        isActive: true
+      });
+
+      showNotification(`Spúšťam synchronizáciu ${allLectios.length} záznamov...`, "info");
+
+      for (let i = 0; i < allLectios.length; i++) {
+        const lectioItem = allLectios[i];
+        
+        // Update progress
+        setSyncProgress(prev => ({
+          ...prev,
+          current: i + 1
+        }));
+
+        try {
+          // Nájdi zodpovedajúci záznam v lectio-sources
+          const { data: sourceData, error: sourceError } = await supabase
+            .from("lectio_sources")
+            .select("*")
+            .eq("hlava", lectioItem.hlava)
+            .eq("lang", lectioItem.lang)
+            .single();
+
+          if (sourceError) {
+            if (sourceError.code === 'PGRST116') {
+              notFoundCount++;
+              details.push({
+                type: 'notFound',
+                message: `"${lectioItem.hlava}": Nenašiel sa v lectio-sources`
+              });
+              continue;
+            }
+            throw new Error(sourceError.message);
+          }
+
+          if (!sourceData) {
+            notFoundCount++;
+            details.push({
+              type: 'notFound',
+              message: `"${lectioItem.hlava}": Nenašiel sa v lectio-sources`
+            });
+            continue;
+          }
+
+          // Priprav dáta na aktualizáciu (rovnaká logika ako v individual sync)
+          const updateData = {
+            lang: sourceData.lang,
+            hlava: sourceData.hlava,
+            suradnice_pismo: sourceData.suradnice_pismo,
+            uvod: sourceData.uvod || "",
+            uvod_audio: sourceData.uvod_audio || "",
+            video: sourceData.video || "",
+            modlitba_uvod: sourceData.modlitba_uvod || "",
+            modlitba_audio: sourceData.modlitba_audio || "",
+            nazov_biblia_1: sourceData.nazov_biblia_1 || "",
+            biblia_1: sourceData.biblia_1 || "",
+            biblia_1_audio: sourceData.biblia_1_audio || "",
+            nazov_biblia_2: sourceData.nazov_biblia_2 || "",
+            biblia_2: sourceData.biblia_2 || "",
+            biblia_2_audio: sourceData.biblia_2_audio || "",
+            nazov_biblia_3: sourceData.nazov_biblia_3 || "",
+            biblia_3: sourceData.biblia_3 || "",
+            biblia_3_audio: sourceData.biblia_3_audio || "",
+            lectio_text: sourceData.lectio_text || "",
+            lectio_audio: sourceData.lectio_audio || "",
+            meditatio_text: sourceData.meditatio_text || "",
+            meditatio_audio: sourceData.meditatio_audio || "",
+            oratio_text: sourceData.oratio_text || "",
+            oratio_audio: sourceData.oratio_audio || "",
+            contemplatio_text: sourceData.contemplatio_text || "",
+            contemplatio_audio: sourceData.contemplatio_audio || "",
+            actio_text: sourceData.actio_text || "",
+            actio_audio: sourceData.actio_audio || "",
+            modlitba_zaver: sourceData.modlitba_zaver || "",
+            audio_5_min: sourceData.audio_5_min || "",
+            zaver: sourceData.zaver || "",
+            pozehnanie: sourceData.pozehnanie || ""
+          };
+
+          // Aktualizuj záznam
+          const { error: updateError } = await supabase
+            .from("lectio")
+            .update(updateData)
+            .eq("id", lectioItem.id);
+
+          if (updateError) {
+            errorCount++;
+            details.push({
+              type: 'error',
+              message: `"${lectioItem.hlava}": ${updateError.message}`
+            });
+          } else {
+            successCount++;
+            details.push({
+              type: 'success',
+              message: `"${lectioItem.hlava}": Úspešne synchronizované`
+            });
+          }
+
+        } catch (error) {
+          errorCount++;
+          details.push({
+            type: 'error',
+            message: `"${lectioItem.hlava}": ${error instanceof Error ? error.message : 'Neznáma chyba'}`
+          });
+        }
+      }
+
+      // Zobraziť výsledky v modal okne
+      setSyncResults({
+        show: true,
+        success: successCount,
+        errors: errorCount,
+        notFound: notFoundCount,
+        details: details
+      });
+
+      // Obnoviť zoznam
+      fetchLectios();
+
+    } catch (error) {
+      console.error('Bulk sync error:', error);
+      showNotification("Chyba pri hromadnej synchronizácii", "error");
+    } finally {
+      setSyncingId(null);
+      setSyncProgress(prev => ({ ...prev, isActive: false }));
+    }
+  }, [supabase, filterLang, showNotification, fetchLectios]);
 
   const clearFilters = useCallback(() => {
     setFilter({ hlava: "", suradnice_pismo: "", datumFrom: "", datumTo: "" });
@@ -385,26 +838,98 @@ export default function LectioAdminPage() {
             </div>
             
             {/* Štatistiky */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-600">{stats.total}</div>
-                <div className="text-sm text-gray-500">Celkom</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{stats.withAudio}</div>
-                <div className="text-sm text-gray-500">S audio</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{stats.thisMonth}</div>
-                <div className="text-sm text-gray-500">Tento mesiac</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">
-                  {LANGUAGE_OPTIONS.find(l => l.value === filterLang)?.flag}
+            {detailedStats && (
+              <div className="space-y-4">
+                {/* Hlavné štatistiky */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-emerald-600">{detailedStats.total}</div>
+                    <div className="text-sm text-gray-500">Celkom</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{detailedStats.complete}</div>
+                    <div className="text-sm text-gray-500">Kompletné</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">{detailedStats.completePercentage}%</div>
+                    <div className="text-sm text-gray-500">Dokončené</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{detailedStats.audio}</div>
+                    <div className="text-sm text-gray-500">Audio 🎧</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-600">
+                      {LANGUAGE_OPTIONS.find(l => l.value === filterLang)?.flag}
+                    </div>
+                    <div className="text-sm text-gray-500">Jazyk</div>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-500">Jazyk</div>
+                
+                {/* Detailné štatistiky obsahu */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-700 mb-3">Detailný prehľad obsahu</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-cyan-800 text-xs">📖</span>
+                      </div>
+                      <div className="font-bold text-cyan-800">{detailedStats.biblia1}</div>
+                      <div className="text-xs text-gray-500">Biblia 1</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-teal-800 text-xs">📖</span>
+                      </div>
+                      <div className="font-bold text-teal-800">{detailedStats.biblia2}</div>
+                      <div className="text-xs text-gray-500">Biblia 2</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-lime-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-lime-800 text-xs">📖</span>
+                      </div>
+                      <div className="font-bold text-lime-800">{detailedStats.biblia3}</div>
+                      <div className="text-xs text-gray-500">Biblia 3</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-purple-800 text-xs">📖</span>
+                      </div>
+                      <div className="font-bold text-purple-800">{detailedStats.lectio}</div>
+                      <div className="text-xs text-gray-500">Lectio</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-green-800 text-xs">👁️</span>
+                      </div>
+                      <div className="font-bold text-green-800">{detailedStats.meditatio}</div>
+                      <div className="text-xs text-gray-500">Meditatio</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-orange-800 text-xs">❤️</span>
+                      </div>
+                      <div className="font-bold text-orange-800">{detailedStats.oratio}</div>
+                      <div className="text-xs text-gray-500">Oratio</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-indigo-800 text-xs">👁️</span>
+                      </div>
+                      <div className="font-bold text-indigo-800">{detailedStats.contemplatio}</div>
+                      <div className="text-xs text-gray-500">Contemplatio</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <span className="text-pink-800 text-xs">❤️</span>
+                      </div>
+                      <div className="font-bold text-pink-800">{detailedStats.actio}</div>
+                      <div className="text-xs text-gray-500">Actio</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </header>
 
@@ -466,13 +991,23 @@ export default function LectioAdminPage() {
               <PlusCircle size={20} className="text-teal-600" />
               <h3 className="font-semibold text-gray-800">Akcie</h3>
             </div>
-            <button
-              onClick={() => router.push("/admin/lectio/new")}
-              className="w-full bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center justify-center gap-2"
-            >
-              <PlusCircle size={16} />
-              Pridať Lectio
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={() => router.push("/admin/lectio/new")}
+                className="w-full bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center justify-center gap-2"
+              >
+                <PlusCircle size={16} />
+                Pridať Lectio
+              </button>
+              <button
+                onClick={handleBulkSyncFromSources}
+                disabled={syncingId !== null}
+                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {syncingId !== null ? <LoadingSpinner size={4} /> : <RefreshCw size={16} />}
+                Sync všetko z lectio-sources
+              </button>
+            </div>
           </div>
         </div>
 
@@ -687,10 +1222,22 @@ export default function LectioAdminPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 flex-wrap">
-                          {hasAudioContent(l) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                              <Headphones size={12} />
-                              Audio
+                          {(l.biblia_1 || l.nazov_biblia_1) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-cyan-100 text-cyan-800 text-xs rounded-full">
+                              <BookOpen size={12} />
+                              Biblia 1
+                            </span>
+                          )}
+                          {(l.biblia_2 || l.nazov_biblia_2) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">
+                              <BookOpen size={12} />
+                              Biblia 2
+                            </span>
+                          )}
+                          {(l.biblia_3 || l.nazov_biblia_3) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-lime-100 text-lime-800 text-xs rounded-full">
+                              <BookOpen size={12} />
+                              Biblia 3
                             </span>
                           )}
                           {l.lectio_text && (
@@ -711,6 +1258,24 @@ export default function LectioAdminPage() {
                               Oratio
                             </span>
                           )}
+                          {l.contemplatio_text && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">
+                              <Eye size={12} />
+                              Contemplatio
+                            </span>
+                          )}
+                          {l.actio_text && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-pink-100 text-pink-800 text-xs rounded-full">
+                              <Heart size={12} />
+                              Actio
+                            </span>
+                          )}
+                          {hasAudioContent(l) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                              <Headphones size={12} />
+                              Audio
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -718,9 +1283,24 @@ export default function LectioAdminPage() {
                           <button
                             className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
                             title="Upraviť"
-                            onClick={() => router.push(`/admin/lectio/${l.id}`)}
+                            onClick={() => {
+                              localStorage.setItem('lectio_return_page', page.toString());
+                              router.push(`/admin/lectio/${l.id}`);
+                            }}
                           >
                             <Edit3 size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleSyncFromSources(l)}
+                            disabled={syncingId === l.id}
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition disabled:opacity-50"
+                            title="Synchronizovať z lectio-sources"
+                          >
+                            {syncingId === l.id ? (
+                              <LoadingSpinner size={4} />
+                            ) : (
+                              <RefreshCw size={18} />
+                            )}
                           </button>
                           <button
                             onClick={() => handleDelete(l.id!)}
@@ -747,83 +1327,198 @@ export default function LectioAdminPage() {
         {/* Stránkovanie */}
         {totalPages > 1 && (
           <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                Zobrazujem <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
-                <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
-                <span className="font-medium">{total}</span> Lectio Divina
-              </div>
+            <div className="text-center text-sm text-gray-600 mb-4">
+              Zobrazujem <span className="font-bold">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
+              <span className="font-bold">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
+              <span className="font-bold">{total}</span> Lectio Divina
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft size={16} />
+                <span className="hidden sm:inline">Predchádzajúca</span>
+              </button>
               
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ArrowLeft size={16} />
-                  Predchádzajúca
-                </button>
-                
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const maxVisible = 5;
-                    
-                    if (totalPages <= maxVisible) {
-                      return Array.from({ length: totalPages }, (_, i) => {
-                        const pageNum = i + 1;
-                        return (
-                          <button
-                            key={`page-${pageNum}`}
-                            onClick={() => setPage(pageNum)}
-                            className={`w-10 h-10 rounded-lg transition ${
-                              page === pageNum
-                                ? "bg-emerald-600 text-white"
-                                : "border border-gray-300 hover:bg-gray-50"
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      });
-                    }
-                    
-                    const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
-                    const endPage = Math.min(totalPages, startPage + maxVisible - 1);
-                    
-                    const pages = [];
-                    for (let i = startPage; i <= endPage; i++) {
-                      pages.push(
+              <div className="hidden sm:flex items-center gap-2">
+                {(() => {
+                  const maxVisible = 5;
+                  
+                  if (totalPages <= maxVisible) {
+                    return Array.from({ length: totalPages }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
                         <button
-                          key={`page-${i}`}
-                          onClick={() => setPage(i)}
+                          key={`page-${pageNum}`}
+                          onClick={() => setPage(pageNum)}
                           className={`w-10 h-10 rounded-lg transition ${
-                            page === i
+                            page === pageNum
                               ? "bg-emerald-600 text-white"
                               : "border border-gray-300 hover:bg-gray-50"
                           }`}
                         >
-                          {i}
+                          {pageNum}
                         </button>
                       );
+                    });
+                  }
+                  
+                  const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
+                  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                  
+                  const pages = [];
+                  
+                  if (startPage > 1) {
+                    pages.push(
+                      <button
+                        key="page-1"
+                        onClick={() => setPage(1)}
+                        className="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                      >
+                        1
+                      </button>
+                    );
+                    if (startPage > 2) {
+                      pages.push(
+                        <span key="dots-start" className="px-2 text-gray-400">
+                          ...
+                        </span>
+                      );
                     }
-                    
-                    return pages;
-                  })()}
-                </div>
-                
-                <button
-                  onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-                  disabled={page * PAGE_SIZE >= total}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  }
+                  
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={`page-${i}`}
+                        onClick={() => setPage(i)}
+                        className={`w-10 h-10 rounded-lg transition ${
+                          page === i
+                            ? "bg-emerald-600 text-white"
+                            : "border border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  
+                  if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                      pages.push(
+                        <span key="dots-end" className="px-2 text-gray-400">
+                          ...
+                        </span>
+                      );
+                    }
+                    pages.push(
+                      <button
+                        key={`page-${totalPages}`}
+                        onClick={() => setPage(totalPages)}
+                        className="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                      >
+                        {totalPages}
+                      </button>
+                    );
+                  }
+                  
+                  return pages;
+                })()}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 whitespace-nowrap">Stránka:</span>
+                <select
+                  value={page}
+                  onChange={(e) => setPage(Number(e.target.value))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition min-w-[80px]"
                 >
-                  Ďalšia
-                  <ArrowRight size={16} />
-                </button>
+                  {Array.from({ length: Math.ceil(total / PAGE_SIZE) }, (_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <option key={pageNum} value={pageNum}>
+                        {pageNum} / {Math.ceil(total / PAGE_SIZE)}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              
+              <div className="hidden lg:flex items-center gap-2">
+                <span className="text-sm text-gray-600 whitespace-nowrap">Ísť na:</span>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max={Math.ceil(total / PAGE_SIZE)}
+                    placeholder={String(page)}
+                    className="w-16 border border-gray-300 rounded-lg px-2 py-2 text-sm text-center focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const newPage = Number((e.target as HTMLInputElement).value);
+                        const maxPages = Math.ceil(total / PAGE_SIZE);
+                        if (newPage >= 1 && newPage <= maxPages) {
+                          setPage(newPage);
+                          (e.target as HTMLInputElement).value = '';
+                          (e.target as HTMLInputElement).blur();
+                        }
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const newPage = Number(e.target.value);
+                      const maxPages = Math.ceil(total / PAGE_SIZE);
+                      if (newPage >= 1 && newPage <= maxPages) {
+                        setPage(newPage);
+                      }
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                disabled={page * PAGE_SIZE >= total}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="hidden sm:inline">Ďalšia</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+            
+            <div className="sm:hidden mt-4 pt-4 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-500">
+                {Math.ceil(total / PAGE_SIZE) > 10 && (
+                  <p className="mb-2">
+                    Tip: Použite dropdown "Stránka" pre rýchly prechod na konkrétnu stránku
+                  </p>
+                )}
+                <div className="flex justify-center gap-4">
+                  <span>Stránka {page} z {Math.ceil(total / PAGE_SIZE)}</span>
+                  <span>•</span>
+                  <span>{Math.ceil(total / PAGE_SIZE)} celkom</span>
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Progress Bar */}
+      <ProgressBar 
+        current={syncProgress.current}
+        total={syncProgress.total}
+        isActive={syncProgress.isActive}
+      />
+
+      {/* Results Modal */}
+      <SyncResultsModal
+        results={syncResults}
+        onClose={() => setSyncResults(null)}
+      />
     </div>
   );
 }

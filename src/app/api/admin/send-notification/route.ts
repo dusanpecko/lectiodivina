@@ -74,15 +74,23 @@ interface SendResponse {
 // Initialize Firebase Admin SDK (if not already initialized)
 // Kontrola, či admin.apps.length existuje, aby sa predišlo chybe pri prvom spustení v App Routeri
 if (typeof window === 'undefined' && !admin.apps.length) {
-  const serviceAccount = {
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  };
+  // Skip Firebase initialization during build time if env vars are missing
+  const requiredVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY'];
+  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.warn(`Skipping Firebase initialization - missing environment variables: ${missingVars.join(', ')}`);
+  } else {
+    const serviceAccount = {
+      project_id: process.env.FIREBASE_PROJECT_ID!,
+      client_email: process.env.FIREBASE_CLIENT_EMAIL!,
+      private_key: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+    };
 
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  });
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    });
+  }
 }
 
 // Initialize Supabase client (server-only key)
@@ -92,6 +100,19 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
+  // Check if Firebase is properly initialized
+  if (!admin.apps.length) {
+    return NextResponse.json({
+      success: false,
+      error: 'Firebase Admin SDK is not initialized. Check environment variables.',
+      details: {
+        hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+        hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+        hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+      }
+    }, { status: 500 });
+  }
+
   const reqId = randomUUID();
   const url = new URL(request.url);
   const debugEnabled =
