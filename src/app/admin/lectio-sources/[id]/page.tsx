@@ -224,19 +224,52 @@ function BibleImportModal({
 
   const loadChapters = async () => {
     try {
+      console.log(`Načítavam kapitoly pre knihu ${selectedBook}, preklad ${selectedTranslation}`);
+      
+      // Použijeme Supabase funkciu pre získanie DISTINCT kapitol bez limitu
+      // Toto je najefektívnejší spôsob - získame len unikátne kapitoly
       const { data, error } = await supabase
-        .from('bible_verses')
-        .select('chapter')
-        .eq('book_id', selectedBook)
-        .eq('translation_id', selectedTranslation)
-        .eq('is_active', true);
+        .rpc('get_distinct_chapters', {
+          p_book_id: parseInt(selectedBook),
+          p_translation_id: parseInt(selectedTranslation),
+          p_is_active: true
+        });
 
-      if (!error && data) {
-        const uniqueChapters = [...new Set(data.map(v => v.chapter))].sort((a, b) => a - b);
-        setChapters(uniqueChapters);
+      if (error) {
+        console.log('RPC funkcia nedostupná, používam štandardný dotaz bez limitu...');
+        
+        // Fallback: štandardný dotaz BEZ limitu (načíta všetky verše)
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('bible_verses')
+          .select('chapter')
+          .eq('book_id', selectedBook)
+          .eq('translation_id', selectedTranslation)
+          .eq('is_active', true)
+          .order('chapter');
+
+        if (fallbackError) {
+          console.error('Chyba pri načítaní kapitol:', fallbackError);
+          return;
+        }
+
+        if (fallbackData && fallbackData.length > 0) {
+          const uniqueChapters = [...new Set(fallbackData.map(v => v.chapter))].sort((a, b) => a - b);
+          console.log(`Načítané kapitoly (${fallbackData.length} veršov):`, uniqueChapters);
+          console.log(`Počet kapitol: ${uniqueChapters.length}, od ${uniqueChapters[0]} do ${uniqueChapters[uniqueChapters.length - 1]}`);
+          setChapters(uniqueChapters);
+        } else {
+          console.log('Žiadne kapitoly neboli nájdené');
+          setChapters([]);
+        }
+      } else if (data) {
+        // RPC funkcia vrátila výsledky
+        const chapters = data.map((item: any) => item.chapter).sort((a: number, b: number) => a - b);
+        console.log(`Načítané kapitoly cez RPC (${chapters.length} kapitol):`, chapters);
+        setChapters(chapters);
       }
     } catch (error) {
       console.error('Chyba pri načítaní kapitol:', error);
+      setChapters([]);
     }
   };
 

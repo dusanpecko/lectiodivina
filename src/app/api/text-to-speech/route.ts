@@ -119,6 +119,36 @@ function detectLanguage(text: string, providedLang?: string): string {
   return 'sk'; // Default fallback
 }
 
+// Text chunking for long texts - split by sentences at reasonable points
+function splitTextIntoChunks(text: string, maxChunkSize: number = 1500): string[] {
+  if (text.length <= maxChunkSize) {
+    return [text];
+  }
+
+  const chunks: string[] = [];
+  let currentChunk = '';
+  
+  // Split by sentences (. ! ?)
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  
+  for (const sentence of sentences) {
+    // If adding this sentence would exceed limit, save current chunk and start new one
+    if (currentChunk.length + sentence.length > maxChunkSize && currentChunk.length > 0) {
+      chunks.push(currentChunk.trim());
+      currentChunk = sentence;
+    } else {
+      currentChunk += (currentChunk ? ' ' : '') + sentence;
+    }
+  }
+  
+  // Don't forget the last chunk
+  if (currentChunk.trim()) {
+    chunks.push(currentChunk.trim());
+  }
+  
+  return chunks;
+}
+
 // Generate unique filename
 function generateAudioFilename(lectioId: string, fieldName: string, language: string): string {
   const timestamp = Date.now();
@@ -163,36 +193,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate audio using ElevenLabs v3 API
-    console.log(`Generating audio for language: ${detectedLang} with voice: ${voiceConfig.voice_id}`);
+    // Split text into chunks if too long (helps with timeouts and ElevenLabs limits)
+    const textChunks = splitTextIntoChunks(text.trim(), 1500);
+    console.log(`Generating audio for language: ${detectedLang} with voice: ${voiceConfig.voice_id}, chunks: ${textChunks.length}`);
     
-    const ttsResponse = await fetch(`${ELEVENLABS_API_URL}/text-to-speech/${voiceConfig.voice_id}`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'audio/mpeg',
-        'Content-Type': 'application/json',
-        'xi-api-key': process.env.ELEVENLABS_API_KEY!,
-      },
-      body: JSON.stringify({
-        text: text.trim(),
-        model_id: voiceConfig.model,
-        voice_settings: {
-          stability: voiceConfig.stability,
-          similarity_boost: voiceConfig.similarity_boost,
-          style: voiceConfig.style || 0,
-          use_speaker_boost: true
-        }
-      })
-    });
+    const audioBuffers: Buffer[] = [];
+    
+    // Generate audio for each chunk
+    for (let i = 0; i < textChunks.length; i++) {
+      const chunk = textChunks[i];
+      console.log(`Processing chunk ${i + 1}/${textChunks.length}, length: ${chunk.length} chars`);
+      
+      const ttsResponse = await fetch(`${ELEVENLABS_API_URL}/text-to-speech/${voiceConfig.voice_id}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': process.env.ELEVENLABS_API_KEY!,
+        },
+        body: JSON.stringify({
+          text: chunk,
+          model_id: voiceConfig.model,
+          voice_settings: {
+            stability: voiceConfig.stability,
+            similarity_boost: voiceConfig.similarity_boost,
+            style: voiceConfig.style || 0,
+            use_speaker_boost: true
+          }
+        })
+      });
 
-    if (!ttsResponse.ok) {
-      const errorData = await ttsResponse.text();
-      console.error("ElevenLabs API error:", errorData);
-      throw new Error(`ElevenLabs API error: ${ttsResponse.status} - ${errorData}`);
+      if (!ttsResponse.ok) {
+        const errorData = await ttsResponse.text();
+        console.error("ElevenLabs API error:", errorData);
+        throw new Error(`ElevenLabs API error: ${ttsResponse.status} - ${errorData}`);
+      }
+
+      // Convert response to buffer and store
+      const chunkBuffer = Buffer.from(await ttsResponse.arrayBuffer());
+      audioBuffers.push(chunkBuffer);
+      
+      // Small delay between chunks to avoid rate limiting
+      if (i < textChunks.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
 
-    // Convert response to buffer
-    const audioBuffer = Buffer.from(await ttsResponse.arrayBuffer());
+    // Combine all audio buffers into one
+    const audioBuffer = Buffer.concat(audioBuffers);
     
     if (!audioBuffer || audioBuffer.length === 0) {
       return NextResponse.json(
@@ -242,6 +290,7 @@ export async function POST(request: NextRequest) {
       model: voiceConfig.model,
       fileSize: audioBuffer.length,
       textLength: text.length,
+      chunksProcessed: textChunks.length,
       storagePath: uploadData.path
     });
 
