@@ -87,7 +87,7 @@ export default function RootLayout({
         
         {/* Umami Analytics */}
         <Script
-          src="https://analytics.lectiodivina.org/script.js"
+          src="https://analytics.lectio.one/script.js"
           data-website-id="c7311d25-b9b7-4c15-9d15-333962066cdb"
           strategy="afterInteractive"
         />
