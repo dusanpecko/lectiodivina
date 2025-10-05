@@ -48,22 +48,25 @@ export default function ActioStep() {
   };
 
   const tipColors = [
-    ['bg-purple-50 border-purple-200', 'text-purple-600'],
-    ['bg-pink-50 border-pink-200', 'text-pink-600'], 
-    ['bg-blue-50 border-blue-200', 'text-blue-600'],
-    ['bg-green-50 border-green-200', 'text-green-600'],
-    ['bg-amber-50 border-amber-200', 'text-amber-600']
+    ['bg-gray-50 border-gray-200', 'text-slate-600'],
+    ['bg-gray-50 border-gray-200', 'text-slate-600'], 
+    ['bg-gray-50 border-gray-200', 'text-slate-600'],
+    ['bg-gray-50 border-gray-200', 'text-slate-600'],
+    ['bg-gray-50 border-gray-200', 'text-slate-600']
   ];
 
   return (
     <div className="relative">
       {/* Hero sekcia */}
-      <section className="relative py-16 lg:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-violet-900 to-indigo-900"></div>
-        <div className="absolute inset-0 bg-black/40"></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+          style={{ backgroundImage: 'url(/about-background.webp)' }}
+        />
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(64, 70, 123, 0.8)' }} />
         
-        <div className="absolute top-20 left-10 w-32 h-32 bg-purple-400/20 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-violet-400/20 rounded-full blur-xl"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-white/5 rounded-full blur-xl"></div>
         
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -79,12 +82,12 @@ export default function ActioStep() {
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
-                <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#40467b' }}></div>
                 <span className="text-white font-medium">{t.stepIndicator}</span>
               </div>
             </div>
 
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-violet-600 rounded-2xl p-5 mx-auto mb-6">
+            <div className="w-20 h-20 rounded-2xl p-5 mx-auto mb-6" style={{ backgroundColor: '#40467b' }}>
               <Target className="w-10 h-10 text-white" />
             </div>
             
@@ -93,8 +96,8 @@ export default function ActioStep() {
             </h1>
             
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 max-w-4xl mx-auto mb-8">
-              <Quote className="w-8 h-8 text-yellow-300 mx-auto mb-4" />
-              <p className="text-xl sm:text-2xl text-yellow-200 italic mb-2">
+              <Quote className="w-8 h-8 text-blue-100 mx-auto mb-4" />
+              <p className="text-xl sm:text-2xl text-blue-100 italic mb-2">
                 {t.quoteText}
               </p>
               <p className="text-gray-300">{t.quoteReference}</p>
@@ -120,22 +123,22 @@ export default function ActioStep() {
             variants={fadeInUp}
           >
             <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl p-3 mr-4">
-                <Lightbulb className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-gray-100 rounded-xl p-3 mr-4">
+                <Lightbulb className="w-6 h-6" style={{ color: '#40467b' }} />
               </div>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
                 {t.whatIsTitle}
               </h2>
             </div>
-            <div className="bg-gradient-to-r from-purple-50 to-violet-50 p-8 rounded-2xl">
+            <div className="bg-gray-50 p-8 rounded-2xl">
               <p className="text-lg text-gray-700 leading-relaxed mb-4">
                 {t.whatIsContent}
               </p>
-              <div className="bg-white/60 p-4 rounded-lg">
-                <p className="text-purple-800 font-medium mb-2">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <p className="text-gray-800 font-medium mb-2">
                   {t.whatIsQuote1}
                 </p>
-                <p className="text-purple-700 italic">
+                <p className="text-gray-700 italic">
                   {t.whatIsQuote2}
                 </p>
               </div>
@@ -166,8 +169,8 @@ export default function ActioStep() {
                 </div>
               ))}
             </div>
-            <div className="bg-violet-50 p-6 rounded-xl mt-8">
-              <p className="text-violet-800 italic text-center">
+            <div className="bg-gray-50 p-6 rounded-xl mt-8 border border-gray-200">
+              <p className="text-gray-800 italic text-center">
                 <em>{t.dailyLifeQuote}</em>
               </p>
             </div>
@@ -206,7 +209,7 @@ export default function ActioStep() {
                     <ul className="space-y-3">
                       {category.items.map((item, itemIndex) => (
                         <li key={itemIndex} className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: '#40467b' }}></div>
                           <span className="text-gray-700">{item}</span>
                         </li>
                       ))}
@@ -215,8 +218,8 @@ export default function ActioStep() {
                 );
               })}
             </motion.div>
-            <div className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl text-center">
-              <p className="text-blue-800 font-medium">
+            <div className="mt-8 bg-gray-50 p-6 rounded-xl text-center border border-gray-200">
+              <p className="text-gray-800 font-medium">
                 {t.concreteActionsQuote}
               </p>
             </div>
@@ -233,20 +236,20 @@ export default function ActioStep() {
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8">
               {t.silentActionsTitle}
             </h2>
-            <div className="bg-gradient-to-r from-gray-50 to-purple-50 p-8 rounded-2xl">
+            <div className="bg-gray-50 p-8 rounded-2xl">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
                 {t.silentActionsIntro}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {t.silentActions.map((action, index) => (
-                  <div key={index} className="flex items-center space-x-3 bg-white/60 p-4 rounded-lg">
-                    <CheckCircle className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                  <div key={index} className="flex items-center space-x-3 bg-white p-4 rounded-lg border border-gray-200">
+                    <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#40467b' }} />
                     <span className="text-gray-700">{action}</span>
                   </div>
                 ))}
               </div>
-              <div className="bg-white/60 p-4 rounded-lg">
-                <p className="italic text-purple-800">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <p className="italic text-gray-800">
                   <em>{t.silentActionsQuote}</em>
                 </p>
               </div>
@@ -314,21 +317,21 @@ export default function ActioStep() {
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8">
               {t.exampleTitle}
             </h2>
-            <div className="bg-gradient-to-r from-purple-50 to-violet-50 p-8 rounded-2xl">
+            <div className="bg-gray-50 p-8 rounded-2xl">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">
                 {t.exampleIntro}
               </h3>
               
               <div className="space-y-6">
                 {t.exampleActions.map((action, index) => (
-                  <div key={index} className="bg-white/70 p-6 rounded-lg">
-                    <h4 className="font-semibold text-purple-800 mb-3">{action.title}</h4>
+                  <div key={index} className="bg-white p-6 rounded-lg border border-gray-200">
+                    <h4 className="font-semibold text-gray-800 mb-3">{action.title}</h4>
                     <p className="text-gray-700">{action.content}</p>
                   </div>
                 ))}
                 
-                <div className="bg-violet-100 p-6 rounded-lg border-l-4 border-violet-500">
-                  <p className="text-violet-800 font-medium text-lg">
+                <div className="p-6 rounded-lg border-l-4 text-white" style={{ backgroundColor: '#40467b', borderColor: '#40467b' }}>
+                  <p className="font-medium text-lg">
                     {t.exampleConclusion}
                   </p>
                 </div>
@@ -338,7 +341,8 @@ export default function ActioStep() {
 
           {/* Záver kroku */}
           <motion.div 
-            className="mb-16 bg-gradient-to-r from-purple-600 to-violet-600 p-8 rounded-2xl text-white"
+            className="mb-16 p-8 rounded-2xl text-white shadow-xl"
+            style={{ backgroundColor: '#40467b' }}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
@@ -349,7 +353,7 @@ export default function ActioStep() {
               {t.closingText}
             </p>
             <div className="bg-white/10 p-4 rounded-lg">
-              <p className="italic text-purple-100">
+              <p className="italic text-blue-100">
                 {t.closingQuote}
               </p>
             </div>
@@ -365,7 +369,7 @@ export default function ActioStep() {
           >
             <Link href="/intro/contemplatio">
               <motion.button
-                className="flex items-center px-6 py-3 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 transition-colors duration-200"
+                className="flex items-center px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200 shadow-sm"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -377,7 +381,10 @@ export default function ActioStep() {
             <div className="text-center">
               <Link href="/intro">
                 <motion.button
-                  className="flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-bold rounded-xl hover:from-purple-700 hover:to-violet-700 transition-colors duration-200"
+                  className="flex items-center px-8 py-4 text-white font-bold rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+                  style={{ backgroundColor: '#40467b' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#353a66'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#40467b'}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

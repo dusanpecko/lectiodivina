@@ -3,7 +3,7 @@
 echo "🚀 Starting Lectio Divina deployment..."
 
 # Configuration
-PROJECT_DIR="/www/wwwroot/lectiodivina.org"
+PROJECT_DIR="/www/wwwroot/lectio.one"
 APP_NAME="lectio"
 DOMAIN="lectiodivina.sk"  # ✅ OPRAVENÉ: .sk namiesto .org
 

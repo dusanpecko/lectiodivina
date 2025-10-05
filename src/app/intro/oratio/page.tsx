@@ -43,22 +43,25 @@ export default function OratioStep() {
   };
 
   const tipColors = [
-    ['bg-amber-50 border-amber-200', 'text-amber-600'],
-    ['bg-red-50 border-red-200', 'text-red-600'], 
-    ['bg-purple-50 border-purple-200', 'text-purple-600'],
-    ['bg-blue-50 border-blue-200', 'text-blue-600'],
-    ['bg-green-50 border-green-200', 'text-green-600']
+    ['bg-gray-50 border-gray-200', 'text-slate-600'],
+    ['bg-gray-50 border-gray-200', 'text-slate-600'], 
+    ['bg-gray-50 border-gray-200', 'text-slate-600'],
+    ['bg-gray-50 border-gray-200', 'text-slate-600'],
+    ['bg-gray-50 border-gray-200', 'text-slate-600']
   ];
 
   return (
     <div className="relative">
       {/* Hero sekcia */}
-      <section className="relative py-16 lg:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-orange-900 to-red-900"></div>
-        <div className="absolute inset-0 bg-black/40"></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+          style={{ backgroundImage: 'url(/about-background.webp)' }}
+        />
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(64, 70, 123, 0.8)' }} />
         
-        <div className="absolute top-20 left-10 w-32 h-32 bg-amber-400/20 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-orange-400/20 rounded-full blur-xl"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-white/5 rounded-full blur-xl"></div>
         
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -73,13 +76,13 @@ export default function OratioStep() {
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
-                <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#40467b' }}></div>
                 <span className="text-white font-medium">{t.stepIndicator}</span>
                 <div className="w-3 h-3 bg-white/30 rounded-full"></div>
               </div>
             </div>
 
-            <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-5 mx-auto mb-6">
+            <div className="w-20 h-20 rounded-2xl p-5 mx-auto mb-6" style={{ backgroundColor: '#40467b' }}>
               <Heart className="w-10 h-10 text-white" />
             </div>
             
@@ -88,8 +91,8 @@ export default function OratioStep() {
             </h1>
             
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 max-w-4xl mx-auto mb-8">
-              <Quote className="w-8 h-8 text-yellow-300 mx-auto mb-4" />
-              <p className="text-xl sm:text-2xl text-yellow-200 italic mb-2">
+              <Quote className="w-8 h-8 text-blue-100 mx-auto mb-4" />
+              <p className="text-xl sm:text-2xl text-blue-100 italic mb-2">
                 {t.quoteText}
               </p>
               <p className="text-gray-300">{t.quoteReference}</p>
@@ -115,19 +118,19 @@ export default function OratioStep() {
             variants={fadeInUp}
           >
             <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-amber-100 rounded-xl p-3 mr-4">
-                <Lightbulb className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 bg-gray-100 rounded-xl p-3 mr-4">
+                <Lightbulb className="w-6 h-6" style={{ color: '#40467b' }} />
               </div>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
                 {t.whatIsTitle}
               </h2>
             </div>
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-8 rounded-2xl">
+            <div className="bg-gray-50 p-8 rounded-2xl">
               <p className="text-lg text-gray-700 leading-relaxed mb-4">
                 {t.whatIsContent}
               </p>
-              <div className="bg-white/60 p-4 rounded-lg">
-                <p className="italic text-amber-800">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <p className="italic text-gray-800">
                   <em>{t.whatIsQuote}</em>
                 </p>
               </div>
@@ -149,14 +152,14 @@ export default function OratioStep() {
               <div className="space-y-8">
                 {t.howToPraySteps.map((step, index) => (
                   <div key={index} className="flex items-start space-x-4">
-                    <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 rounded-full text-sm font-medium text-white" style={{ backgroundColor: '#40467b' }}>
                       {index + 1}.
                     </span>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">{step.title}</h3>
                       <ul className="space-y-2 text-gray-700">
                         {step.items.map((item, i) => (
-                          <li key={i}>• {item}</li>
+                          <li key={i}><span style={{ color: '#40467b' }}>•</span> {item}</li>
                         ))}
                       </ul>
                     </div>
@@ -185,7 +188,7 @@ export default function OratioStep() {
               viewport={{ once: true }}
             >
               {t.prayerForms.map((form, index) => {
-                const colors = ['bg-blue-50 border-blue-200', 'bg-green-50 border-green-200', 'bg-purple-50 border-purple-200', 'bg-red-50 border-red-200', 'bg-amber-50 border-amber-200'];
+                const colors = ['bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200'];
                 
                 return (
                   <motion.div 
@@ -222,7 +225,7 @@ export default function OratioStep() {
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8">
               {t.manyFacesTitle}
             </h2>
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 p-8 rounded-2xl">
+            <div className="bg-gray-50 p-8 rounded-2xl">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
                 {t.manyFacesContent}
               </p>
@@ -244,8 +247,8 @@ export default function OratioStep() {
                   ))}
                 </ul>
               </div>
-              <div className="bg-white/60 p-4 rounded-lg mt-6">
-                <p className="italic text-orange-800">
+              <div className="bg-white p-4 rounded-lg mt-6 border border-gray-200">
+                <p className="italic text-gray-800">
                   <em>{t.manyFacesQuote}</em>
                 </p>
               </div>
@@ -313,20 +316,20 @@ export default function OratioStep() {
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8">
               {t.exampleTitle}
             </h2>
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-8 rounded-2xl">
+            <div className="bg-gray-50 p-8 rounded-2xl">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">
                 {t.exampleVerse}
               </h3>
               
-              <div className="bg-white/70 p-6 rounded-lg">
-                <h4 className="font-semibold text-amber-800 mb-4">{t.examplePrayerTitle}</h4>
+              <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <h4 className="font-semibold text-gray-800 mb-4">{t.examplePrayerTitle}</h4>
                 <div className="space-y-4 text-gray-700 leading-relaxed">
                   {t.examplePrayer.map((prayer, index) => (
                     <p key={index}>{prayer}</p>
                   ))}
                 </div>
-                <div className="mt-6 p-4 bg-amber-100 rounded-lg">
-                  <p className="text-amber-800 italic">
+                <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
+                  <p className="italic" style={{ color: '#40467b' }}>
                     {t.exampleSilence}
                   </p>
                 </div>
@@ -336,7 +339,8 @@ export default function OratioStep() {
 
           {/* Záver kroku */}
           <motion.div 
-            className="mb-16 bg-gradient-to-r from-amber-600 to-orange-600 p-8 rounded-2xl text-white"
+            className="mb-16 p-8 rounded-2xl text-white shadow-xl"
+            style={{ backgroundColor: '#40467b' }}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
@@ -347,7 +351,7 @@ export default function OratioStep() {
               {t.closingText}
             </p>
             <div className="bg-white/10 p-4 rounded-lg">
-              <p className="italic text-amber-100">
+              <p className="italic text-blue-100">
                 <em>{t.closingQuote}</em>
               </p>
             </div>
@@ -363,7 +367,7 @@ export default function OratioStep() {
           >
             <Link href="/intro/meditatio">
               <motion.button
-                className="flex items-center px-6 py-3 bg-green-100 text-green-700 font-medium rounded-lg hover:bg-green-200 transition-colors duration-200"
+                className="flex items-center px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200 shadow-sm"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -375,7 +379,10 @@ export default function OratioStep() {
             <div className="text-center">
               <Link href="/intro/contemplatio">
                 <motion.button
-                  className="flex items-center px-8 py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors duration-200"
+                  className="flex items-center px-8 py-4 text-white font-bold rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+                  style={{ backgroundColor: '#40467b' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#353a66'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#40467b'}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

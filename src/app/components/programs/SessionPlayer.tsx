@@ -432,7 +432,7 @@ const NotesSection = ({
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Vaše poznámky</h3>
         <Link 
-          href={`/notes/new?title=${encodeURIComponent(`Poznámka k lekcii: ${session.title}`)}&program=${encodeURIComponent(program.title)}`}
+          href="/notes"
           className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
         >
           <Plus size={16} />
@@ -475,7 +475,7 @@ const NotesSection = ({
                 <div className="flex items-start justify-between mb-2">
                   <h5 className="font-medium text-gray-900 text-sm">{note.title}</h5>
                   <Link 
-                    href={`/notes/${note.id}`}
+                    href="/notes"
                     className="text-blue-600 hover:text-blue-700 transition"
                   >
                     <ExternalLink size={14} />
@@ -513,7 +513,7 @@ const NotesSection = ({
             <FileText size={32} className="mx-auto text-gray-300 mb-2" />
             <p className="text-gray-500 text-sm">Zatiaľ nemáte žiadne poznámky k tejto lekcii</p>
             <Link 
-              href={`/notes/new?title=${encodeURIComponent(`Poznámka k lekcii: ${session.title}`)}`}
+              href="/notes"
               className="inline-flex items-center gap-2 mt-3 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
             >
               <Edit3 size={14} />

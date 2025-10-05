@@ -4,11 +4,13 @@
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useUserRole } from "../../hooks/useUserRole";
 import NavBar from "../components/NavBar";
 import AdminSidebar from "../components/AdminSidebar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { session } = useSupabase();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Default closed to prevent mismatch
@@ -16,14 +18,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // session === undefined na začiatku -> čakáme na načítanie
-    if (session !== undefined) {
+    // Čakáme na načítanie session a roly
+    if (session !== undefined && !roleLoading) {
       setLoading(false);
+      
       if (session === null) {
         router.replace("/login");
+        return;
       }
+      
+      // Kontrola admin roly - error screen sa zobrazí automaticky ak nie je admin
     }
-  }, [session, router]);
+  }, [session, router, isAdmin, roleLoading]);
 
   // Handle mobile detection and sidebar state - ONLY after mount
   useEffect(() => {
@@ -67,6 +73,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => document.removeEventListener('keydown', handleEscape);
   }, [sidebarOpen, isMobile]);
 
+  // Ak má session ale nie je admin, zobraz error
+  if (session && !roleLoading && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-pink-50 flex items-center justify-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-12 text-center max-w-md">
+          <div className="mb-6">
+            <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Prístup zamietnutý
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Nemáte oprávnenie na prístup do administračného rozhrania. Iba administrátori môžu pristupovať k tejto sekcii.
+            </p>
+            <button
+              onClick={() => router.replace("/")}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              Späť na hlavnú stránku
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
@@ -103,17 +138,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // CRITICAL: Show consistent static layout until mounted (prevents hydration mismatch)
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="absolute inset-0 opacity-50" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+      <div className="h-screen bg-white overflow-hidden">
+        {/* Background pattern - removed for clean white background */}
         
-        <div className="relative z-10 flex flex-col min-h-screen">
-          <div className="sticky top-0 z-50">
+        <div className="relative z-10 h-screen flex flex-col">
+          <div className="fixed top-0 left-0 right-0 z-50">
             <NavBar />
           </div>
           
-          <div className="flex flex-1 relative">
+          <div className="flex flex-1 pt-16">
             {/* Static sidebar - always show consistent state */}
             <AdminSidebar 
               isCollapsed={true}  // Always collapsed during SSR/hydration
@@ -121,7 +154,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               isMobile={false}    // Consistent default
             />
             
-            <main className="flex-1 min-w-0">
+            <main className="flex-1 min-w-0 overflow-y-auto">
               <div className="p-4 lg:p-8">
                 <div className="max-w-none">
                   {children}
@@ -136,25 +169,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // After mount - fully interactive version
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-50" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-      }}></div>
+    <div className="min-h-screen bg-white">
+      {/* Background pattern - removed for clean white background */}
       
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Top Navigation */}
-        <div className="sticky top-0 z-50">
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Top Navigation - Fixed */}
+        <div className="fixed top-0 left-0 right-0 z-50">
           <NavBar />
         </div>
         
-        <div className="flex flex-1 relative">
+        {/* Main content with padding for fixed navbar */}
+        <div className="flex flex-1 pt-16">
           {/* Sidebar - OPRAVA: Na mobile sa zobrazuje len keď je otvorený */}
           {(!isMobile || sidebarOpen) && (
             <div className={`
               ${isMobile 
-                ? 'fixed inset-y-0 left-0 z-50 w-80 max-w-[80vw] overflow-y-auto overscroll-contain' 
-                : 'relative'
+                ? 'fixed top-16 bottom-0 left-0 z-40 w-64 max-w-[80vw] overflow-y-auto overscroll-contain' 
+                : 'sticky top-16 h-[calc(100vh-4rem)] flex-shrink-0'
               }
             `}>
               <AdminSidebar 
@@ -186,7 +217,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="relative">
               {/* Floating menu button - OPRAVA: Vždy viditeľný na mobile */}
               {isMobile && (
-                <div className="fixed top-20 left-4 z-50">
+                <div className="fixed top-20 left-4 z-40">
                   <button
                     onClick={() => setSidebarOpen(true)}
                     className={`

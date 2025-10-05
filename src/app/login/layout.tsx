@@ -3,47 +3,76 @@ import NavBar from "../components/NavBar";
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        {/* Gradient orbs */}
-        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse [animation-delay:2s]"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-pink-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse [animation-delay:4s]"></div>
-        
-        {/* Pattern */}
-        <div 
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}
-        />
-        
-        {/* Floating shapes */}
-        <div className="absolute top-32 right-32 w-4 h-4 bg-blue-400/40 rounded-full animate-bounce [animation-delay:1s]"></div>
-        <div className="absolute bottom-32 left-32 w-6 h-6 bg-purple-400/40 rounded-full animate-bounce [animation-delay:3s]"></div>
-        <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-pink-400/40 rounded-full animate-bounce [animation-delay:5s]"></div>
-      </div>
+    <div 
+      className="min-h-screen relative"
+      style={{ backgroundColor: '#40467b' }}
+    >
+      {/* Background decorative pattern */}
+      <div 
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.15) 1px, transparent 0)`,
+          backgroundSize: '32px 32px'
+        }}
+      />
 
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col min-h-full">
-        {/* Navigation */}
-        <div className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <NavBar />
+      {/* Navigation */}
+      <NavBar />
+
+      {/* Login content */}
+      <main className="relative z-10 flex items-center justify-center px-4 py-8 min-h-[calc(100vh-64px)]">
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Welcome message */}
+          <div className="hidden lg:block space-y-6 text-white">
+            <h1 className="text-5xl font-bold leading-tight">
+              Vitajte späť v <span className="text-white/90">Lectio Divina</span>
+            </h1>
+            <p className="text-xl text-white/80 leading-relaxed">
+              Pokračujte vo svojej duchovnej ceste s dennými čítaniami, modlitbami a meditáciami.
+            </p>
+            <div className="space-y-4 pt-8">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>
+                  <span className="text-2xl">📖</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Denné čítania</h3>
+                  <p className="text-white/70">Prístup k liturgickým čítaniam každý deň</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>
+                  <span className="text-2xl">🙏</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Osobné poznámky</h3>
+                  <p className="text-white/70">Zaznamenávajte si svoje duchovné úvahy</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>
+                  <span className="text-2xl">✨</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Sprievodca modlitbou</h3>
+                  <p className="text-white/70">Kroky Lectio Divina a ruženec</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Login content */}
-        <main className="flex-1 flex items-center justify-center px-4 py-12">
-          <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Ľavá strana – info a testimonial (nezmenené) */}
-            {/* Pravá strana – formulár (nezmenené) */}
-            {/* (obsah nechávam podľa tvojho kódu, iba zmeny okolo rozloženia/scrollu) */}
+          {/* Right side - Login form */}
+          <div 
+            className="backdrop-blur-md rounded-2xl shadow-2xl p-6 border"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              borderColor: 'rgba(255, 255, 255, 0.2)'
+            }}
+          >
             {children}
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

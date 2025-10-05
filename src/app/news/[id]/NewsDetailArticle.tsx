@@ -44,7 +44,7 @@ export default function NewsDetailArticle({
 
   return (
     <div className="py-12">
-      <div className="max-w-5xl mx-auto px-4 sm:px-8">
+      <div className="w-[88%] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back to News Button */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -60,9 +60,12 @@ export default function NewsDetailArticle({
               whileHover={{ x: -4 }}
               transition={{ duration: 0.2 }}
             >
-              <ArrowLeft size={20} className="text-blue-600" />
+              <ArrowLeft size={20} style={{ color: '#40467b' }} />
             </motion.div>
-            <span className="font-semibold text-slate-700 group-hover:text-blue-700 transition-colors duration-300">
+            <span className="font-semibold text-slate-700 transition-colors duration-300"
+              onMouseEnter={(e) => (e.target as HTMLSpanElement).style.color = '#40467b'}
+              onMouseLeave={(e) => (e.target as HTMLSpanElement).style.color = ''}
+            >
               {t.show_all_news}
             </span>
           </Link>
@@ -73,157 +76,107 @@ export default function NewsDetailArticle({
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative"
+          className="relative w-full"
         >
-          {/* Main content card */}
-          <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden">
-            {/* Hero Image Section */}
-            <div className="relative w-full h-80 sm:h-96 lg:h-[500px] overflow-hidden">
-              <motion.img
-                src={news.image_url}
-                alt={news.title}
-                className="object-cover w-full h-full"
-                loading="lazy"
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-              
-              {/* Image overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
-              
-              {/* Navigation arrows */}
-              {prev && (
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.8 }}
-                  className="absolute top-1/2 left-6 -translate-y-1/2 z-20"
-                >
-                  <Link
-                    href={`/news/${prev.id}`}
-                    className="group relative flex items-center justify-center w-14 h-14 bg-white/90 backdrop-blur-xl rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white"
-                    title={`${t.previous_article}: ${prev.title}`}
-                    aria-label={t.previous_article}
-                  >
-                    <ChevronLeft size={24} className="text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
-                    
-                    {/* Tooltip */}
-                    <div className="absolute left-full ml-4 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap max-w-xs">
-                      <div className="truncate">{prev.title}</div>
-                      <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
-                    </div>
-                  </Link>
-                </motion.div>
-              )}
-              
-              {next && (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.8 }}
-                  className="absolute top-1/2 right-6 -translate-y-1/2 z-20"
-                >
-                  <Link
-                    href={`/news/${next.id}`}
-                    className="group relative flex items-center justify-center w-14 h-14 bg-white/90 backdrop-blur-xl rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white"
-                    title={`${t.next_article}: ${next.title}`}
-                    aria-label={t.next_article}
-                  >
-                    <ChevronRight size={24} className="text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
-                    
-                    {/* Tooltip */}
-                    <div className="absolute right-full mr-4 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap max-w-xs">
-                      <div className="truncate">{next.title}</div>
-                      <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
-                    </div>
-                  </Link>
-                </motion.div>
-              )}
 
-              {/* Article badge - NOW TRANSLATED */}
-              <div className="absolute top-6 left-6">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg backdrop-blur-xl">
-                  {t.newsDetail?.article_badge || "ČLÁNOK"}
+
+          {/* Two Column Layout */}
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+              
+              {/* Left Column - Image */}
+              <div className="relative lg:w-2/5">
+                {/* Article Title above image */}
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-4"
+                  style={{ color: '#40467b' }}
+                >
+                  {news.title}
+                </motion.h1>
+
+                {/* Article Meta in one line */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="flex items-center space-x-6 mb-6 text-slate-600 text-sm"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Calendar size={16} />
+                    <span className="font-medium">{formatDate(news.published_at)}</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Clock size={16} />
+                    <span className="font-medium">
+                      {getReadingTime(news.content)} {t.newsDetail?.reading_time || "min čítania"}
+                    </span>
+                  </div>
+                </motion.div>
+
+                {/* Hero Image Section - 16:9 aspect ratio */}
+                <div className="relative w-full aspect-video overflow-hidden rounded-2xl shadow-xl mb-6">
+                  <motion.img
+                    src={news.image_url}
+                    alt={news.title}
+                    className="object-cover w-full h-full"
+                    loading="lazy"
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                  />
+                  
+                  {/* Article badge */}
+                  <div className="absolute top-4 left-4">
+                    <div className="text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg backdrop-blur-xl" style={{ backgroundColor: '#40467b' }}>
+                      {t.newsDetail?.article_badge || "ČLÁNOK"}
+                    </div>
+                  </div>
                 </div>
+
+                {/* Summary below image */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.0 }}
+                  className="text-lg text-slate-600 leading-relaxed font-light italic border-l-4 pl-4 bg-slate-50/50 py-4 rounded-r-xl"
+                  style={{
+                    borderLeftColor: '#40467b'
+                  }}
+                >
+                  {news.summary}
+                </motion.div>
+              </div>
+              
+              {/* Right Column - Content */}
+              <div className="relative flex-1">
+
+                {/* Main Content */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.2 }}
+                  className="prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-p:text-slate-700 prose-p:leading-relaxed prose-a:no-underline prose-strong:text-slate-800"
+                  style={{
+                    '--tw-prose-headings': '#40467b',
+                    '--tw-prose-links': '#40467b',
+                    '--tw-prose-blockquote-borders': '#40467b',
+                  } as any}
+                  dangerouslySetInnerHTML={{ __html: news.content }}
+                />
+
+                {/* Bottom decorative accent */}
+                <motion.div
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  animate={{ opacity: 1, scaleX: 1 }}
+                  transition={{ duration: 1, delay: 1.4 }}
+                  className="mt-12 mb-6 h-1 rounded-full"
+                  style={{ backgroundColor: '#40467b' }}
+                />
               </div>
             </div>
-
-            {/* Content Section */}
-            <div className="relative px-8 sm:px-12 lg:px-16 py-12">
-              {/* Article meta */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex items-center space-x-6 mb-8 text-slate-500"
-              >
-                <div className="flex items-center space-x-2">
-                  <Calendar size={18} />
-                  <span className="font-medium">{formatDate(news.published_at)}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Clock size={18} />
-                  {/* TRANSLATED reading time */}
-                  <span className="font-medium">
-                    {getReadingTime(news.content)} {t.newsDetail?.reading_time || "min čítania"}
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* Title */}
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-800 leading-tight mb-8"
-              >
-                {news.title}
-              </motion.h1>
-
-              {/* Divider */}
-              <motion.div
-                initial={{ opacity: 0, scaleX: 0 }}
-                animate={{ opacity: 1, scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="flex items-center justify-center mb-8"
-              >
-                <div className="w-16 h-px bg-gradient-to-r from-transparent to-blue-600"></div>
-                <div className="w-3 h-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-4"></div>
-                <div className="w-16 h-px bg-gradient-to-l from-transparent to-purple-600"></div>
-              </motion.div>
-
-              {/* Summary */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.0 }}
-                className="text-xl sm:text-2xl text-slate-600 leading-relaxed font-light mb-12 italic border-l-4 border-gradient-to-b from-blue-500 to-purple-500 pl-6"
-                style={{
-                  borderImage: 'linear-gradient(to bottom, #3b82f6, #8b5cf6) 1'
-                }}
-              >
-                {news.summary}
-              </motion.div>
-
-              {/* Main Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-                className="prose prose-lg sm:prose-xl max-w-none prose-slate prose-headings:text-slate-800 prose-headings:font-bold prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:no-underline hover:prose-a:text-blue-700 prose-strong:text-slate-800 prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:rounded-r-lg prose-blockquote:py-4"
-                dangerouslySetInnerHTML={{ __html: news.content }}
-              />
-
-              {/* Bottom decorative accent */}
-              <motion.div
-                initial={{ opacity: 0, scaleX: 0 }}
-                animate={{ opacity: 1, scaleX: 1 }}
-                transition={{ duration: 1, delay: 1.4 }}
-                className="mt-16 mb-8 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full"
-              />
-            </div>
-          </div>
         </motion.article>
 
         {/* Enhanced Navigation Section */}
@@ -240,22 +193,26 @@ export default function NewsDetailArticle({
                 href={`/news/${prev.id}`}
                 className="group relative bg-white border border-gray-200 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
               >
-                <div className="absolute -inset-4 bg-gradient-to-br from-blue-200/20 via-purple-200/10 to-blue-200/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute -inset-4 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}></div>
                 
                 <div className="relative flex items-center space-x-4">
                   <motion.div
                     whileHover={{ x: -4 }}
                     transition={{ duration: 0.2 }}
-                    className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg"
+                    className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                    style={{ backgroundColor: '#40467b' }}
                   >
                     <ChevronLeft size={24} className="text-white" />
                   </motion.div>
                   
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-blue-600 mb-1 uppercase tracking-wide">
+                    <p className="text-sm font-semibold mb-1 uppercase tracking-wide" style={{ color: '#40467b' }}>
                       {t.previous_article}
                     </p>
-                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2">
+                    <h3 className="text-lg font-bold text-slate-800 transition-colors duration-300 line-clamp-2"
+                      onMouseEnter={(e) => (e.target as HTMLHeadingElement).style.color = '#40467b'}
+                      onMouseLeave={(e) => (e.target as HTMLHeadingElement).style.color = ''}
+                    >
                       {prev.title}
                     </h3>
                   </div>
@@ -269,22 +226,26 @@ export default function NewsDetailArticle({
                 href={`/news/${next.id}`}
                 className="group relative bg-white border border-gray-200 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden md:text-right"
               >
-                <div className="absolute -inset-4 bg-gradient-to-br from-purple-200/20 via-pink-200/10 to-purple-200/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute -inset-4 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}></div>
                 
                 <div className="relative flex items-center space-x-4 md:flex-row-reverse md:space-x-reverse">
                   <motion.div
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.2 }}
-                    className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg"
+                    className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                    style={{ backgroundColor: '#40467b' }}
                   >
                     <ChevronRight size={24} className="text-white" />
                   </motion.div>
                   
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-purple-600 mb-1 uppercase tracking-wide">
+                    <p className="text-sm font-semibold mb-1 uppercase tracking-wide" style={{ color: '#40467b' }}>
                       {t.next_article}
                     </p>
-                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-purple-700 transition-colors duration-300 line-clamp-2">
+                    <h3 className="text-lg font-bold text-slate-800 transition-colors duration-300 line-clamp-2"
+                      onMouseEnter={(e) => (e.target as HTMLHeadingElement).style.color = '#40467b'}
+                      onMouseLeave={(e) => (e.target as HTMLHeadingElement).style.color = ''}
+                    >
                       {next.title}
                     </h3>
                   </div>

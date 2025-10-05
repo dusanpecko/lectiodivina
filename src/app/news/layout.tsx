@@ -24,7 +24,7 @@ export default function NewsLayout({ children }: { children: React.ReactNode }) 
           <NavBar />
         </div>
         
-        <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+        <main className="flex-1 w-full px-2 sm:px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gradient-to-r from-slate-300 to-slate-200 rounded-full w-64 mx-auto mb-8"></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -95,7 +95,7 @@ export default function NewsLayout({ children }: { children: React.ReactNode }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8"
+          className="w-full px-2 sm:px-4 lg:px-6"
         >
           {/* Content container with enhanced styling */}
           <div className="relative">

@@ -91,9 +91,15 @@ const Notification = ({
   }, [onClose]);
 
   const bgColor = {
-    success: 'bg-green-50 border-green-200 text-green-800',
+    success: 'bg-gray-50 border-gray-200',
     error: 'bg-red-50 border-red-200 text-red-800',
-    info: 'bg-blue-50 border-blue-200 text-blue-800'
+    info: 'bg-gray-50 border-gray-200'
+  }[type];
+  
+  const textColor = {
+    success: { color: '#40467b' },
+    error: {},
+    info: { color: '#40467b' }
   }[type];
 
   const Icon = {
@@ -103,7 +109,7 @@ const Notification = ({
   }[type];
 
   return (
-    <div className={`fixed top-4 right-4 z-50 border rounded-lg p-4 shadow-lg ${bgColor} max-w-md`}>
+    <div className={`fixed top-4 right-4 z-50 border rounded-lg p-4 shadow-lg ${bgColor} max-w-md`} style={textColor}>
       <div className="flex items-start gap-3">
         <Icon size={20} />
         <div className="flex-1">
@@ -155,7 +161,7 @@ const CopyDialog = ({
       <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 relative">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <Copy size={20} className="text-emerald-600" />
+            <Copy size={20} style={{ color: '#40467b' }} />
             Kopírovať do jazyka
           </h3>
           <button 
@@ -208,7 +214,8 @@ const CopyDialog = ({
               }
             }}
             disabled={!selectedLang}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-2"
+            className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-2"
+            style={{ backgroundColor: '#40467b' }}
           >
             <Copy size={16} />
             Kopírovať
@@ -221,7 +228,8 @@ const CopyDialog = ({
               }
             }}
             disabled={!selectedLang}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-3"
+            className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-3"
+            style={{ backgroundColor: '#40467b' }}
           >
             <Copy size={16} />
             <Edit3 size={16} />
@@ -236,7 +244,7 @@ const CopyDialog = ({
 
 // Loading komponenta
 const LoadingSpinner = ({ size = 6 }: { size?: number }) => (
-  <div className={`w-${size} h-${size} border-2 border-emerald-600 border-t-transparent rounded-full animate-spin`} />
+  <div className={`w-${size} h-${size} border-2 border-t-transparent rounded-full animate-spin`} style={{ borderColor: '#40467b', borderTopColor: 'transparent' }} />
 );
 
 export default function LectioSourcesAdminPage() {
@@ -681,7 +689,7 @@ export default function LectioSourcesAdminPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+    <div className="min-h-screen">
       {notification && (
         <Notification
           message={notification.message}
@@ -703,7 +711,7 @@ export default function LectioSourcesAdminPage() {
         <header className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#40467b' }}>
                 <Book size={24} className="text-white" />
               </div>
               <div>
@@ -719,23 +727,23 @@ export default function LectioSourcesAdminPage() {
                 {/* Hlavné štatistiky */}
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-emerald-600">{detailedStats.total}</div>
+                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.total}</div>
                     <div className="text-sm text-gray-500">Celkom</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{detailedStats.complete}</div>
+                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.complete}</div>
                     <div className="text-sm text-gray-500">Kompletné</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">{detailedStats.completePercentage}%</div>
+                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.completePercentage}%</div>
                     <div className="text-sm text-gray-500">Dokončené</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-rose-600">{detailedStats.checkedPercentage}%</div>
+                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.checkedPercentage}%</div>
                     <div className="text-sm text-gray-500">Skontrolované ✓</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{detailedStats.audio}</div>
+                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.audio}</div>
                     <div className="text-sm text-gray-500">Audio 🎧</div>
                   </div>
                   <div className="text-center">
@@ -825,7 +833,8 @@ export default function LectioSourcesAdminPage() {
                 setFilterLang(e.target.value as any); 
                 updatePage(1); 
               }}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:border-transparent transition"
+              style={{'--tw-ring-color': '#40467b'} as any}
             >
               {LANGUAGE_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
@@ -841,7 +850,7 @@ export default function LectioSourcesAdminPage() {
               <h3 className="font-semibold text-gray-800">Import / Export</h3>
             </div>
             <div className="flex gap-2">
-              <label className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2">
+              <label className="flex-1 text-white px-4 py-2 rounded-lg hover:opacity-90 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2" style={{ backgroundColor: '#40467b' }}>
                 {importing ? <LoadingSpinner size={4} /> : <Upload size={16} />}
                 {importing ? "Importujem..." : "Import"}
                 <input
@@ -911,7 +920,8 @@ export default function LectioSourcesAdminPage() {
                     setFilter(f => ({ ...f, hlava: e.target.value })); 
                     updatePage(1); 
                   }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent transition"
+                  style={{'--tw-ring-color': '#40467b'} as any}
                   placeholder="Filtrovať nadpisy..."
                 />
               </div>
@@ -927,7 +937,8 @@ export default function LectioSourcesAdminPage() {
                     setFilter(f => ({ ...f, suradnice_pismo: e.target.value })); 
                     updatePage(1); 
                   }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent transition"
+                  style={{'--tw-ring-color': '#40467b'} as any}
                   placeholder="Mt 5,1-12..."
                 />
               </div>
@@ -942,7 +953,8 @@ export default function LectioSourcesAdminPage() {
                     setFilter(f => ({ ...f, checked: e.target.value })); 
                     updatePage(1); 
                   }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent transition"
+                  style={{'--tw-ring-color': '#40467b'} as any}
                 >
                   <option value="">Všetky</option>
                   <option value="0">Neskontrolované</option>
@@ -961,7 +973,8 @@ export default function LectioSourcesAdminPage() {
                     setFilter(f => ({ ...f, created_at: e.target.value })); 
                     updatePage(1); 
                   }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent transition"
+                  style={{'--tw-ring-color': '#40467b'} as any}
                 />
               </div>
             </div>
@@ -1107,7 +1120,7 @@ export default function LectioSourcesAdminPage() {
                             </span>
                           )}
                           {hasAudioContent(l) && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-xs rounded-full" style={{ color: '#40467b' }}>
                               <Headphones size={12} />
                               Audio
                             </span>
@@ -1120,7 +1133,8 @@ export default function LectioSourcesAdminPage() {
                             type="checkbox"
                             checked={l.checked === 1}
                             onChange={() => handleCheckboxChange(l.id!, l.checked || 0)}
-                            className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
+                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded focus:ring-2 cursor-pointer"
+                            style={{'--tw-ring-color': '#40467b', color: '#40467b'} as any}
                             title={l.checked === 1 ? "Skontrolované" : "Neskontrolované"}
                           />
                         </div>
@@ -1138,7 +1152,8 @@ export default function LectioSourcesAdminPage() {
                             <Edit3 size={18} />
                           </button>
                           <button
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                            className="p-2 hover:bg-gray-100 rounded-lg transition"
+                            style={{ color: '#40467b' }}
                             title="Kopírovať do iného jazyka"
                             onClick={() => setCopyDialog({ isOpen: true, lectioSource: l })}
                           >
@@ -1189,7 +1204,8 @@ export default function LectioSourcesAdminPage() {
                 <select
                   value={page}
                   onChange={(e) => updatePage(Number(e.target.value))}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition min-w-[80px]"
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent transition min-w-[80px]"
+                  style={{'--tw-ring-color': '#40467b'} as any}
                 >
                   {Array.from({ length: Math.ceil(total / PAGE_SIZE) }, (_, i) => {
                     const pageNum = i + 1;

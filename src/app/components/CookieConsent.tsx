@@ -172,7 +172,8 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300"
+      className="fixed inset-0 z-[9999] flex items-center justify-center transition-all duration-300"
+      style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)' }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="cookie-consent-title"
@@ -182,27 +183,43 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
     >
       <div 
         ref={dialogRef}
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 text-center relative animate-fade-in border transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto"
+        className="rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 text-center relative animate-fade-in transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto"
+        style={{ 
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.3)'
+        }}
       >
         {/* Close button */}
         <button
           onClick={onClose}
           disabled={isProcessing}
           aria-label="Zavrieť"
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className="absolute top-4 right-4 text-gray-400 text-xl w-8 h-8 flex items-center justify-center rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+          style={{ background: 'rgba(64, 70, 123, 0.1)' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)';
+            e.currentTarget.style.color = '#40467b';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(64, 70, 123, 0.1)';
+            e.currentTarget.style.color = '#9ca3af';
+          }}
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
         
         {/* Cookie icon */}
-        <div className="mb-4">
-          <span className="text-4xl" role="img" aria-label="Cookie">🍪</span>
+        <div className="mb-6 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'rgba(64, 70, 123, 0.15)' }}>
+            <span className="text-4xl" role="img" aria-label="Cookie">🍪</span>
+          </div>
         </div>
         
         {/* Title */}
-        <h3 id="cookie-consent-title" className="text-xl font-bold mb-3 text-gray-900">
+        <h3 id="cookie-consent-title" className="text-2xl font-bold mb-4" style={{ color: '#40467b' }}>
           {isLoaded && t.cookie_title ? t.cookie_title : "Súhlas s cookies"}
         </h3>
         
@@ -214,20 +231,20 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         
         {/* Rozšírená informácia */}
         <details className="mb-6 text-left">
-          <summary className="cursor-pointer text-sm text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-1 py-1">
+          <summary className="cursor-pointer text-sm font-medium focus:outline-none rounded px-2 py-2 transition-colors" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
             {isLoaded && t.cookie_details ? t.cookie_details : "Viac informácií o cookies"}
           </summary>
-          <div className="mt-3 text-xs text-gray-500 space-y-2 pl-4 border-l-2 border-gray-200">
+          <div className="mt-3 text-xs text-gray-600 space-y-3 pl-4" style={{ borderLeft: '2px solid rgba(64, 70, 123, 0.3)' }}>
             <div>
-              <strong className="text-gray-700">Funkčné cookies:</strong>
+              <strong style={{ color: '#40467b' }}>Funkčné cookies:</strong>
               <p className="mt-1">Potrebné pre základné fungovanie stránky (navigácia, autentifikácia)</p>
             </div>
             <div>
-              <strong className="text-gray-700">Analytické cookies:</strong>
+              <strong style={{ color: '#40467b' }}>Analytické cookies:</strong>
               <p className="mt-1">Pomáhajú nám pochopiť, ako návštevníci používajú stránku (Google Analytics)</p>
             </div>
             <div>
-              <strong className="text-gray-700">Marketing cookies:</strong>
+              <strong style={{ color: '#40467b' }}>Marketing cookies:</strong>
               <p className="mt-1">Používané na zobrazovanie relevantných reklám a meranie ich účinnosti</p>
             </div>
           </div>
@@ -239,7 +256,10 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
             ref={acceptRef}
             onClick={acceptCookies}
             disabled={isProcessing}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-200 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[3rem]"
+            className="text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:shadow-xl focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[3rem]"
+            style={{ background: '#40467b' }}
+            onMouseEnter={(e) => !isProcessing && (e.currentTarget.style.background = '#686ea3')}
+            onMouseLeave={(e) => !isProcessing && (e.currentTarget.style.background = '#40467b')}
           >
             {isProcessing ? (
               <div className="flex items-center space-x-2">
@@ -254,7 +274,10 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
           <button
             onClick={declineCookies}
             disabled={isProcessing}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-full font-semibold shadow transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[3rem]"
+            className="text-gray-700 px-6 py-3 rounded-xl font-semibold shadow transition-all duration-200 hover:shadow-md focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[3rem]"
+            style={{ background: 'rgba(64, 70, 123, 0.1)' }}
+            onMouseEnter={(e) => !isProcessing && (e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)')}
+            onMouseLeave={(e) => !isProcessing && (e.currentTarget.style.background = 'rgba(64, 70, 123, 0.1)')}
           >
             {isProcessing ? (
               <div className="flex items-center space-x-2">
@@ -268,11 +291,14 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         </div>
         
         {/* Privacy policy link */}
-        <p className="text-xs text-gray-400 mt-4">
+        <p className="text-xs text-gray-500 mt-6">
           {isLoaded && t.cookie_policy_link ? t.cookie_policy_link : "Viac informácií nájdete v našich"}{" "}
           <a 
             href="/privacy-policy" 
-            className="text-indigo-600 hover:text-indigo-800 underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded"
+            className="underline focus:outline-none rounded transition-colors"
+            style={{ color: '#40467b' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}
             target="_blank"
             rel="noopener noreferrer"
           >

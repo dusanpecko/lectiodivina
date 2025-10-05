@@ -114,78 +114,93 @@ export default function CommunitySection({ translations }: CommunitySectionProps
   // HYDRATION SAFE: Show static version until mounted
   if (!mounted) {
     return (
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-amber-50 to-orange-100 relative overflow-hidden">
-        {/* Static background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-20 h-20">
-            <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
-              <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
-            </svg>
-          </div>
-          <div className="absolute top-32 right-20 w-16 h-16">
-            <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
-              <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
-            </svg>
-          </div>
+      <section className="py-12 lg:py-16 relative overflow-hidden min-h-screen snap-start flex items-center w-full" style={{ backgroundColor: '#f8f9fa' }}>
+        {/* Simplified background */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-purple-200/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-200/10 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 w-full">
           {/* Static header */}
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#4a5085] mb-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#40467b' }}>
               {t.headline}
             </h2>
-            <div className="w-20 h-1 bg-amber-500 mx-auto mb-6 rounded-full" />
-            <p className="text-lg sm:text-xl text-amber-800 mb-4 max-w-3xl mx-auto font-medium">
+            <p className="text-lg text-gray-600 mb-3 max-w-3xl mx-auto">
               {t.subtitle}
             </p>
-            <p className="text-base sm:text-lg text-amber-700 max-w-4xl mx-auto">
+            <p className="text-base text-gray-600 max-w-3xl mx-auto">
               {t.description}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Static cards */}
-            <div className="space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="space-y-6">
+              <div className="rounded-xl p-5 shadow-md"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
+                }}
+              >
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#40467b' }}>
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.tester_title}</h3>
+                  <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#40467b' }}>{t.tester_title}</h3>
                 </div>
-                <p className="text-gray-700">{t.tester_desc}</p>
+                <p className="text-gray-600 text-sm">{t.tester_desc}</p>
               </div>
 
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="rounded-xl p-5 shadow-md"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
+                }}
+              >
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#40467b' }}>
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.newsletter_title}</h3>
+                  <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#40467b' }}>{t.newsletter_title}</h3>
                 </div>
-                <p className="text-gray-700">{t.newsletter_desc}</p>
+                <p className="text-gray-600 text-sm">{t.newsletter_desc}</p>
               </div>
 
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="rounded-xl p-5 shadow-md"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
+                }}
+              >
+                <div className="flex items-center mb-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#40467b' }}>
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.idea_title}</h3>
+                  <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#40467b' }}>{t.idea_title}</h3>
                 </div>
-                <p className="text-gray-700">{t.idea_desc}</p>
+                <p className="text-gray-600 text-sm">{t.idea_desc}</p>
               </div>
             </div>
 
             {/* Static form */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl border border-amber-200">
+            <div className="rounded-xl p-6 shadow-md"
+              style={{
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
+            >
               <div className="space-y-6">
                 <div className="text-center text-gray-500">
                   Načítavam formulár...
@@ -200,72 +215,58 @@ export default function CommunitySection({ translations }: CommunitySectionProps
 
   // Full interactive version after mount
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-br from-amber-50 to-orange-100 relative overflow-hidden">
-      {/* Medové pozadie s hexagónmi */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-20 h-20">
-          <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
-            <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
-          </svg>
-        </div>
-        <div className="absolute top-32 right-20 w-16 h-16">
-          <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
-            <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
-          </svg>
-        </div>
-        <div className="absolute bottom-20 left-1/4 w-12 h-12">
-          <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
-            <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
-          </svg>
-        </div>
-        <div className="absolute bottom-40 right-1/3 w-24 h-24">
-          <svg viewBox="0 0 100 100" className="w-full h-full fill-amber-600">
-            <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
-          </svg>
-        </div>
+    <section className="py-12 lg:py-16 relative overflow-hidden min-h-screen snap-start flex items-center w-full" style={{ backgroundColor: '#f8f9fa' }}>
+      {/* Simplified background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-purple-200/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-200/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10">
-        {/* Hlavička sekcie */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 w-full">
+        {/* Compact header section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#4a5085] mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#40467b' }}>
             {t.headline}
           </h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mb-6 rounded-full" />
-          <p className="text-lg sm:text-xl text-amber-800 mb-4 max-w-3xl mx-auto font-medium">
+          <p className="text-lg text-gray-600 mb-3 max-w-3xl mx-auto">
             {t.subtitle}
           </p>
-          <p className="text-base sm:text-lg text-amber-700 max-w-4xl mx-auto">
+          <p className="text-base text-gray-600 max-w-3xl mx-auto">
             {t.description}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           {/* Karty možností */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <motion.div
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200"
+              className="rounded-xl p-5 shadow-md"
+              style={{
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
             >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#40467b' }}>
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.tester_title}</h3>
+                <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#40467b' }}>{t.tester_title}</h3>
               </div>
-              <p className="text-gray-700">{t.tester_desc}</p>
+              <p className="text-gray-600 text-sm">{t.tester_desc}</p>
             </motion.div>
 
             <motion.div
@@ -274,17 +275,22 @@ export default function CommunitySection({ translations }: CommunitySectionProps
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200"
+              className="rounded-xl p-5 shadow-md"
+              style={{
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
             >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#40467b' }}>
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.newsletter_title}</h3>
+                <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#40467b' }}>{t.newsletter_title}</h3>
               </div>
-              <p className="text-gray-700">{t.newsletter_desc}</p>
+              <p className="text-gray-600 text-sm">{t.newsletter_desc}</p>
             </motion.div>
 
             <motion.div
@@ -293,17 +299,22 @@ export default function CommunitySection({ translations }: CommunitySectionProps
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl border border-amber-200"
+              className="rounded-xl p-5 shadow-md"
+              style={{
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
             >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#40467b' }}>
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#4a5085]">{t.idea_title}</h3>
+                <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#40467b' }}>{t.idea_title}</h3>
               </div>
-              <p className="text-gray-700">{t.idea_desc}</p>
+              <p className="text-gray-600 text-sm">{t.idea_desc}</p>
             </motion.div>
           </div>
 
@@ -314,7 +325,12 @@ export default function CommunitySection({ translations }: CommunitySectionProps
             whileInView="visible"
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-2xl border border-amber-200"
+            className="rounded-xl p-6 shadow-md"
+            style={{
+              background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -326,7 +342,10 @@ export default function CommunitySection({ translations }: CommunitySectionProps
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg transition text-sm"
+                  style={{ outline: 'none' }}
+                  onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                   required
                 />
               </div>
@@ -340,7 +359,10 @@ export default function CommunitySection({ translations }: CommunitySectionProps
                   id="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg transition text-sm"
+                  style={{ outline: 'none' }}
+                  onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                   required
                 />
               </div>
@@ -349,33 +371,36 @@ export default function CommunitySection({ translations }: CommunitySectionProps
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   {t.form_interests} <span className="text-red-500">*</span>
                 </label>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.interests.includes('tester')}
                       onChange={() => handleInterestChange('tester')}
-                      className="w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-500"
+                      className="w-4 h-4 border-gray-300 rounded"
+                      style={{ accentColor: '#40467b' }}
                     />
-                    <span className="ml-3 text-gray-700">{t.interest_tester}</span>
+                    <span className="ml-3 text-gray-700 text-sm">{t.interest_tester}</span>
                   </label>
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.interests.includes('newsletter')}
                       onChange={() => handleInterestChange('newsletter')}
-                      className="w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-500"
+                      className="w-4 h-4 border-gray-300 rounded"
+                      style={{ accentColor: '#40467b' }}
                     />
-                    <span className="ml-3 text-gray-700">{t.interest_newsletter}</span>
+                    <span className="ml-3 text-gray-700 text-sm">{t.interest_newsletter}</span>
                   </label>
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.interests.includes('idea')}
                       onChange={() => handleInterestChange('idea')}
-                      className="w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-500"
+                      className="w-4 h-4 border-gray-300 rounded"
+                      style={{ accentColor: '#40467b' }}
                     />
-                    <span className="ml-3 text-gray-700">{t.interest_idea}</span>
+                    <span className="ml-3 text-gray-700 text-sm">{t.interest_idea}</span>
                   </label>
                 </div>
               </div>
@@ -388,8 +413,11 @@ export default function CommunitySection({ translations }: CommunitySectionProps
                   id="message"
                   value={formData.message}
                   onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition resize-none"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg transition resize-none text-sm"
+                  style={{ outline: 'none' }}
+                  onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                   placeholder="Vaša správa alebo nápad..."
                 />
               </div>
@@ -409,7 +437,8 @@ export default function CommunitySection({ translations }: CommunitySectionProps
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-4 px-6 rounded-lg hover:from-amber-600 hover:to-orange-600 transition duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: '#40467b' }}
               >
                 {isSubmitting ? '...' : t.submit_btn}
               </button>

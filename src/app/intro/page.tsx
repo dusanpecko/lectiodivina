@@ -49,11 +49,11 @@ export default function IntroPage() {
   };
 
   const stepColors: Record<string, string> = {
-    lectio: "from-blue-500 to-indigo-600",
-    meditatio: "from-green-500 to-emerald-600",
-    oratio: "from-amber-500 to-orange-600",
-    contemplatio: "from-red-500 to-pink-600",
-    actio: "from-purple-500 to-violet-600"
+    lectio: "from-slate-600 to-slate-700",
+    meditatio: "from-slate-600 to-slate-700", 
+    oratio: "from-slate-600 to-slate-700",
+    contemplatio: "from-slate-600 to-slate-700",
+    actio: "from-slate-600 to-slate-700"
   };
 
   const steps = t.steps.map((step) => ({
@@ -75,11 +75,14 @@ export default function IntroPage() {
   return (
     <div className="relative">
       {/* Hero sekcia */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-xl" />
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-blue-400/20 rounded-full blur-xl" />
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+          style={{ backgroundImage: 'url(/about-background.webp)' }}
+        />
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(64, 70, 123, 0.8)' }} />
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl" />
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-white/5 rounded-full blur-xl" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -90,7 +93,7 @@ export default function IntroPage() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               {t.heroTitle}
             </h1>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-yellow-300 mb-8">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-blue-100 mb-8">
               {t.heroSubtitle}
             </h2>
             <p className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-4xl mx-auto">
@@ -98,7 +101,7 @@ export default function IntroPage() {
             </p>
             <Link href="/intro/lectio">
               <motion.button
-                className="inline-flex items-center px-8 py-4 bg-yellow-500 text-gray-900 font-bold rounded-xl hover:bg-yellow-400 transition-colors duration-200 text-lg"
+                className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-colors duration-200 text-lg shadow-lg"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -121,7 +124,7 @@ export default function IntroPage() {
             variants={fadeInUp}
           >
             <div className="flex items-center justify-center mb-8">
-              <BookOpen className="w-12 h-12 text-purple-600 mr-4" />
+              <BookOpen className="w-12 h-12 mr-4" style={{ color: '#40467b' }} />
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
                 {t.whatIs}
               </h2>
@@ -139,7 +142,7 @@ export default function IntroPage() {
       </section>
 
       {/* Päť krokov */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <section className="py-16 lg:py-24 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-16"
@@ -191,7 +194,7 @@ export default function IntroPage() {
                         {step.description}
                       </p>
                       <div className="mt-6 text-center">
-                        <span className="inline-flex items-center text-sm font-medium text-indigo-600 group-hover:text-indigo-800">
+                        <span className="inline-flex items-center text-sm font-medium group-hover:text-gray-800" style={{ color: '#40467b' }}>
                           {t.startStep}
                           <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                         </span>
@@ -232,8 +235,8 @@ export default function IntroPage() {
           >
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
-              const colors = ['bg-blue-50 border-blue-200', 'bg-green-50 border-green-200', 'bg-purple-50 border-purple-200', 'bg-orange-50 border-orange-200'];
-              const iconColors = ['text-blue-600', 'text-green-600', 'text-purple-600', 'text-orange-600'];
+              const colors = ['bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200', 'bg-gray-50 border-gray-200'];
+              const iconColors = ['text-slate-600', 'text-slate-600', 'text-slate-600', 'text-slate-600'];
 
               return (
                 <motion.div
@@ -258,7 +261,7 @@ export default function IntroPage() {
       </section>
 
       {/* Ako začať */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50">
+      <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-16"
@@ -292,7 +295,7 @@ export default function IntroPage() {
                   variants={fadeInUp}
                 >
                   <div className="flex items-start space-x-4">
-                    <Icon className="w-8 h-8 text-indigo-600" />
+                    <Icon className="w-8 h-8" style={{ color: '#40467b' }} />
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         {guide.title}
@@ -316,7 +319,10 @@ export default function IntroPage() {
           >
             <Link href="/intro/lectio">
               <motion.button
-                className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors duration-200 text-lg"
+                className="inline-flex items-center px-8 py-4 text-white font-bold rounded-xl transition-colors duration-200 text-lg shadow-lg hover:shadow-xl"
+                style={{ backgroundColor: '#40467b' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#353a66'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#40467b'}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -332,13 +338,14 @@ export default function IntroPage() {
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 p-8 rounded-2xl text-white"
+            className="text-center p-8 rounded-2xl text-white shadow-xl"
+            style={{ backgroundColor: '#40467b' }}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
             variants={fadeInUp}
           >
-            <BookOpen className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
+            <BookOpen className="w-16 h-16 mx-auto mb-6 text-blue-100" />
             <p className="text-xl mb-6 leading-relaxed italic">
               {t.closingQuote}
             </p>

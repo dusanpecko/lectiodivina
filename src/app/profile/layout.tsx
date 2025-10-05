@@ -39,14 +39,14 @@ export default function ProfileLayout({
   children: React.ReactNode 
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col">
-      {/* Sticky navbar pre admin rozhranie */}
-      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-white/20">
+    <div className="min-h-screen bg-gray-50">
+      {/* Fixed navbar pre admin rozhranie */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b border-gray-200">
         <NavBar />
       </div>
       
-      {/* Main content wrapper */}
-      <main className="flex-1 w-full">
+      {/* Main content wrapper s padding pre navbar */}
+      <main className="pt-16 min-h-screen w-full">
         {children}
       </main>
       

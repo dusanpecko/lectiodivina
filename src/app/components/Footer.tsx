@@ -29,21 +29,27 @@ export default function Footer() {
   const safeConsentStatus = mounted ? consentStatus : null;
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-gray-100 relative z-20">
+    <footer className="relative z-20" style={{ background: 'linear-gradient(to bottom right, #1f2937, #111827, #1f2937)' }}>
+      {/* Subtle background decoration */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-10 w-64 h-64 rounded-full blur-3xl" style={{ backgroundColor: '#40467b' }}></div>
+        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full blur-3xl" style={{ backgroundColor: '#686ea3' }}></div>
+      </div>
+      
       {/* Hlavný obsah footera */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
           {/* Kontaktné informácie */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h4 className="text-xl font-bold text-white mb-4 relative">
+              <h4 className="text-lg font-bold text-white mb-3 relative inline-block">
                 {t.footer?.contact || "Kontakt"}
-                <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-yellow-400 rounded-full"></div>
+                <div className="absolute bottom-0 left-0 w-full h-0.5 rounded-full" style={{ backgroundColor: '#40467b' }}></div>
               </h4>
-              <div className="space-y-3 text-gray-300">
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 mt-0.5 text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <div className="space-y-2 text-gray-300 text-sm">
+                <div className="flex items-start space-x-2">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#40467b' }} fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
                   <div>
@@ -53,21 +59,21 @@ export default function Footer() {
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#40467b' }} fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
-                  <a href="tel:+421903982982" className="hover:text-yellow-400 transition-colors duration-200">
+                  <a href="tel:+421903982982" className="transition-colors duration-200" style={{ color: '#9ca3af' }} onMouseEnter={(e) => e.currentTarget.style.color = '#40467b'} onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}>
                     +421 903 982 982
                   </a>
                 </div>
                 
-                <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-4 h-4 flex-shrink-0" style={{ color: '#40467b' }} fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
-                  <a href="mailto:mojkrok@dcza.sk" className="hover:text-yellow-400 transition-colors duration-200">
+                  <a href="mailto:mojkrok@dcza.sk" className="transition-colors duration-200" style={{ color: '#9ca3af' }} onMouseEnter={(e) => e.currentTarget.style.color = '#40467b'} onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}>
                     mojkrok@dcza.sk
                   </a>
                 </div>
@@ -76,18 +82,18 @@ export default function Footer() {
           </div>
 
           {/* Právne informácie */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h4 className="text-xl font-bold text-white mb-4 relative">
+              <h4 className="text-lg font-bold text-white mb-3 relative inline-block">
                 {t.footer?.legal_info || "Právne informácie"}
-                <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-yellow-400 rounded-full"></div>
+                <div className="absolute bottom-0 left-0 w-full h-0.5 rounded-full" style={{ backgroundColor: '#40467b' }}></div>
               </h4>
-              <div className="space-y-2 text-gray-300">
+              <div className="space-y-2 text-gray-300 text-sm">
                 <div><span className="font-medium text-white">IČO:</span> 52 60 18 97</div>
                 <div><span className="font-medium text-white">DIČ:</span> 21 21 13 90 42</div>
                 <div>
                   <span className="font-medium text-white">IBAN:</span><br />
-                  <span className="select-all font-mono text-sm bg-gray-800 px-2 py-1 rounded mt-1 inline-block">
+                  <span className="select-all font-mono text-xs px-2 py-1 rounded mt-1 inline-block" style={{ background: 'rgba(64, 70, 123, 0.2)' }}>
                     SK04 8330 0000 0029 0168 8673
                   </span>
                 </div>
@@ -96,29 +102,29 @@ export default function Footer() {
           </div>
 
           {/* Odkazy a súkromie */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h4 className="text-xl font-bold text-white mb-4 relative">
+              <h4 className="text-lg font-bold text-white mb-3 relative inline-block">
                 {t.footer?.links || "Odkazy"}
-                <div className="absolute bottom-0 left-0 w-12 h-0.5 bg-yellow-400 rounded-full"></div>
+                <div className="absolute bottom-0 left-0 w-full h-0.5 rounded-full" style={{ backgroundColor: '#40467b' }}></div>
               </h4>
-              <div className="space-y-3">
-                <div className="flex flex-col space-y-2">
-                  <Link href="/terms" className="text-gray-300 hover:text-yellow-400 transition-colors duration-200 inline-flex items-center group">
-                    <svg className="w-4 h-4 mr-2 text-yellow-400 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+              <div className="space-y-2">
+                <div className="flex flex-col space-y-2 text-sm">
+                  <Link href="/terms" className="text-gray-300 transition-colors duration-200 inline-flex items-center group" onMouseEnter={(e) => e.currentTarget.style.color = '#40467b'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                    <svg className="w-3 h-3 mr-2 opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: '#40467b' }} fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
                     </svg>
                     {t.footer?.terms || "Všeobecné obchodné podmienky"}
                   </Link>
                   
-                  <Link href="/privacy" className="text-gray-300 hover:text-yellow-400 transition-colors duration-200 inline-flex items-center group">
-                    <svg className="w-4 h-4 mr-2 text-yellow-400 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                  <Link href="/privacy" className="text-gray-300 transition-colors duration-200 inline-flex items-center group" onMouseEnter={(e) => e.currentTarget.style.color = '#40467b'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                    <svg className="w-3 h-3 mr-2 opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: '#40467b' }} fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     {t.footer?.privacy || "Ochrana osobných údajov"}
                   </Link>
-                  <Link href="/privacy-policy" className="text-gray-300 hover:text-yellow-400 transition-colors duration-200 inline-flex items-center group">
-                    <svg className="w-4 h-4 mr-2 text-yellow-400 opacity-60 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                  <Link href="/privacy-policy" className="text-gray-300 transition-colors duration-200 inline-flex items-center group" onMouseEnter={(e) => e.currentTarget.style.color = '#40467b'} onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}>
+                    <svg className="w-3 h-3 mr-2 opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: '#40467b' }} fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     {t.footer?.privacy_policy || "Ochrana osobných údajov"}
@@ -129,20 +135,18 @@ export default function Footer() {
                     onClick={open}
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
-                    className="text-gray-300 hover:text-yellow-400 transition-all duration-300 inline-flex items-center group text-left relative"
+                    className="text-gray-300 transition-all duration-300 inline-flex items-center group text-left relative text-sm"
+                    style={{ color: isHovered ? '#40467b' : '#d1d5db' }}
                     title={getCookieStatusText()}
                   >
                     <div className="relative mr-2">
                       <svg 
-                        className="w-4 h-4 text-yellow-400 opacity-60 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110" 
+                        className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110" 
+                        style={{ color: isHovered ? '#40467b' : '#6b7280' }}
                         fill="currentColor" 
-                        viewBox="0 0 24 24"
+                        viewBox="0 0 20 20"
                       >
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                        <circle cx="8" cy="10" r="0.8" opacity="0.7"/>
-                        <circle cx="12" cy="8" r="0.6" opacity="0.7"/>
-                        <circle cx="10" cy="13" r="0.7" opacity="0.7"/>
-                        <circle cx="15" cy="11" r="0.5" opacity="0.7"/>
+                        <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                       </svg>
                       
                       {mounted && (
@@ -178,7 +182,8 @@ export default function Footer() {
                     </span>
                     
                     <svg 
-                      className="w-3 h-3 ml-auto text-gray-500 group-hover:text-yellow-400 group-hover:rotate-90 transition-all duration-300" 
+                      className="w-3 h-3 ml-auto text-gray-500 group-hover:rotate-90 transition-all duration-300" 
+                      style={{ color: isHovered ? '#40467b' : '#6b7280' }}
                       fill="currentColor" 
                       viewBox="0 0 20 20"
                     >
@@ -188,21 +193,24 @@ export default function Footer() {
                 </div>
                 
                 {/* NOVÁ SEKCIA - Sociálne siete */}
-                <div className="pt-4 mt-4 border-t border-gray-700">
-                  <h5 className="text-sm font-semibold text-white mb-3">
+                <div className="pt-3 mt-3 border-t" style={{ borderColor: 'rgba(64, 70, 123, 0.3)' }}>
+                  <h5 className="text-xs font-semibold text-white mb-2">
                     {t.footer?.follow_us || "Sledujte nás"}
                   </h5>
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-2">
                     {/* Facebook */}
                     <a
                       href="https://www.facebook.com/lectiodivinaorg"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative p-2.5 bg-gray-800 hover:bg-blue-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25"
+                      className="group relative p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                      style={{ background: 'rgba(64, 70, 123, 0.2)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#1877f2'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)'}
                       title="Facebook"
                     >
                       <svg 
-                        className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" 
+                        className="w-4 h-4 text-gray-300 group-hover:text-white transition-colors duration-300" 
                         fill="currentColor" 
                         viewBox="0 0 24 24"
                       >
@@ -216,11 +224,14 @@ export default function Footer() {
                       href="https://www.instagram.com/lectiodivinaorg"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative p-2.5 bg-gray-800 hover:bg-gradient-to-br hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/25"
+                      className="group relative p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                      style={{ background: 'rgba(64, 70, 123, 0.2)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom right, #833ab4, #fd1d1d, #fcb045)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)'}
                       title="Instagram"
                     >
                       <svg 
-                        className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" 
+                        className="w-4 h-4 text-gray-300 group-hover:text-white transition-colors duration-300" 
                         fill="currentColor" 
                         viewBox="0 0 24 24"
                       >
@@ -235,11 +246,12 @@ export default function Footer() {
                     <a
                       href="#"
                       onClick={(e) => e.preventDefault()}
-                      className="group relative p-2.5 bg-gray-800 hover:bg-red-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-500/25 opacity-50 cursor-not-allowed"
+                      className="group relative p-2 rounded-lg transition-all duration-300 opacity-50 cursor-not-allowed"
+                      style={{ background: 'rgba(64, 70, 123, 0.2)' }}
                       title="YouTube (coming soon)"
                     >
                       <svg 
-                        className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" 
+                        className="w-4 h-4 text-gray-300 transition-colors duration-300" 
                         fill="currentColor" 
                         viewBox="0 0 24 24"
                       >
@@ -253,11 +265,14 @@ export default function Footer() {
                       href="https://wa.me/421903982982"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative p-2.5 bg-gray-800 hover:bg-green-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-green-500/25"
+                      className="group relative p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                      style={{ background: 'rgba(64, 70, 123, 0.2)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#25D366'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)'}
                       title="WhatsApp"
                     >
                       <svg 
-                        className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" 
+                        className="w-4 h-4 text-gray-300 group-hover:text-white transition-colors duration-300" 
                         fill="currentColor" 
                         viewBox="0 0 24 24"
                       >
@@ -274,21 +289,21 @@ export default function Footer() {
       </div>
 
       {/* Spodná časť s copyright a admin */}
-      <div className="border-t border-gray-800 bg-black/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <div className="text-sm text-gray-400 text-center sm:text-left">
+      <div className="border-t relative z-10" style={{ borderColor: 'rgba(64, 70, 123, 0.3)', background: 'rgba(0, 0, 0, 0.5)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+            <div className="text-xs text-gray-400 text-center sm:text-left">
               © 2022 - 2025 Dušan Pecko | Pastoračný fond Žilinskej diecézy (
-              <a href="https://mojkrok.sk" target="_blank" rel="noopener" className="text-yellow-400 hover:text-yellow-300 transition-colors">
+              <a href="https://mojkrok.sk" target="_blank" rel="noopener" className="transition-colors" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
                 mojkrok.sk
               </a>
               ) | {t.footer?.all_rights_reserved || "Všetky práva vyhradené"}
             </div>
             
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-400">
+            <div className="flex items-center space-x-3">
+              <span className="text-xs text-gray-400">
                 {t.footer?.created_by || "vytvoril"}{" "}
-                <a href="https://myprofile.sk" target="_blank" rel="noopener" className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium">
+                <a href="https://myprofile.sk" target="_blank" rel="noopener" className="transition-colors font-medium" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
                   MYPROFILE
                 </a>
               </span>
@@ -296,27 +311,37 @@ export default function Footer() {
               {/* Cookie Status Floating Button */}
               <button
                 onClick={open}
-                className={`p-2 rounded-full transition-all duration-300 group relative ${
-                  mounted && safeConsentStatus === 'accepted' 
-                    ? 'bg-green-800/30 hover:bg-green-700/50 text-green-400' 
+                className={`p-1.5 rounded-lg transition-all duration-300 group relative hover:scale-110`}
+                style={{
+                  background: mounted && safeConsentStatus === 'accepted'
+                    ? 'rgba(34, 197, 94, 0.2)'
                     : mounted && safeConsentStatus === 'declined'
-                    ? 'bg-red-800/30 hover:bg-red-700/50 text-red-400'
-                    : 'bg-gray-800 hover:bg-gray-700 text-gray-400'
-                } hover:text-yellow-400 hover:scale-110`}
+                    ? 'rgba(239, 68, 68, 0.2)'
+                    : 'rgba(64, 70, 123, 0.2)'
+                }}
                 title={getCookieStatusText()}
               >
-                <span className="text-lg" role="img" aria-label="Cookie">🍪</span>
+                <span className="text-base" role="img" aria-label="Cookie">🍪</span>
                 
                 {/* Pulse animation pro nenastavené cookies - only show after mount */}
                 {mounted && !safeConsentStatus && (
-                  <div className="absolute inset-0 rounded-full bg-yellow-400/20 animate-ping"></div>
+                  <div className="absolute inset-0 rounded-lg animate-ping" style={{ background: 'rgba(64, 70, 123, 0.3)' }}></div>
                 )}
               </button>
               
               {/* Admin Button */}
               <Link 
                 href="/admin" 
-                className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-yellow-400 transition-all duration-200 group hover:scale-110" 
+                className="p-1.5 rounded-lg text-gray-400 transition-all duration-200 group hover:scale-110" 
+                style={{ background: 'rgba(64, 70, 123, 0.2)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(64, 70, 123, 0.4)';
+                  e.currentTarget.style.color = '#40467b';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)';
+                  e.currentTarget.style.color = '#9ca3af';
+                }}
                 title={t.footer?.admin_tooltip || t.admin || "Administrácia"}
               >
                 <svg 

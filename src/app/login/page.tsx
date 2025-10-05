@@ -28,6 +28,10 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loginType, setLoginType] = useState<'email' | 'social'>('email');
   const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [isRegister, setIsRegister] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     // Počkaj na načítanie session
@@ -39,10 +43,26 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (session && !isCheckingSession) {
-      router.replace("/admin");
-    }
-  }, [session, router, isCheckingSession]);
+    const checkSessionAndRedirect = async () => {
+      if (session && !isCheckingSession && supabase) {
+        // Skontroluj rolu používateľa
+        const { data: userData } = await supabase
+          .from("users")
+          .select("role")
+          .eq("email", session.user.email)
+          .maybeSingle();
+
+        if (userData?.role === "admin") {
+          router.replace("/admin");
+        } else {
+          // Bežný používateľ ide na hlavnú stránku
+          router.replace("/");
+        }
+      }
+    };
+
+    checkSessionAndRedirect();
+  }, [session, router, isCheckingSession, supabase]);
 
   // Loading screen počas kontroly session
   if (isCheckingSession) {
@@ -70,9 +90,99 @@ export default function LoginPage() {
     return null;
   }
 
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMessage(null);
+    setLoading(true);
+
+    // Validácia
+    if (password !== confirmPassword) {
+      setError("Heslá sa nezhodujú");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Heslo musí mať minimálne 6 znakov");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      if (!supabase) {
+        throw new Error("Supabase client nie je dostupný");
+      }
+
+      // Registrácia používateľa
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+      });
+
+      if (authError) {
+        setLoading(false);
+        setError(authError.message);
+        return;
+      }
+
+      if (authData?.user) {
+        // Skontrolujeme, či používateľ už existuje v users tabuľke
+        const { data: existingUser } = await supabase
+          .from("users")
+          .select("id")
+          .eq("id", authData.user.id)
+          .maybeSingle();
+
+        // Vytvoríme záznam len ak neexistuje
+        if (!existingUser) {
+          const { error: userError } = await supabase
+            .from("users")
+            .insert([{
+              id: authData.user.id,
+              email: authData.user.email,
+              full_name: fullName,
+              role: "user" // Nový používateľ má defaultne rolu "user"
+            }]);
+
+          if (userError) {
+            console.error("Error creating user record:", userError);
+          }
+        }
+
+        // Odhlásiме používateľa aby sa automaticky neprihlásil
+        await supabase.auth.signOut();
+        
+        setLoading(false);
+        setError(null);
+        setSuccessMessage("Registrácia bola úspešná! Skontrolujte si email pre overenie účtu.");
+        
+        // Po 3 sekundách prepneme na prihlásenie
+        setTimeout(() => {
+          setIsRegister(false);
+          setSuccessMessage(null);
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          setFullName("");
+        }, 3000);
+      }
+    } catch (err) {
+      console.error("Register error:", err);
+      setLoading(false);
+      setError(err instanceof Error ? err.message : "Neznáma chyba");
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage(null);
     setLoading(true);
 
     try {
@@ -95,7 +205,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Kontrola role v databáze
+      // Kontrola role v databáze a presmerovanie
       if (authData?.user?.email) {
         console.log("Checking user role for:", authData.user.email);
         
@@ -103,27 +213,28 @@ export default function LoginPage() {
           .from("users")
           .select("role")
           .eq("email", authData.user.email)
-          .single();
+          .maybeSingle();
 
         console.log("User role response:", { userData, userError });
 
         setLoading(false);
 
         if (userError) {
-          setError("Chyba pri kontrole oprávnení. Kontaktujte administrátora.");
-          await supabase.auth.signOut();
+          console.error("Error fetching user role:", userError);
+          // Ak je chyba pri načítaní role, predpokladáme že je to bežný používateľ
+          router.push("/");
           return;
         }
 
-        if (!userData || userData.role !== "admin") {
-          setError("Nemáte oprávnenie na prístup do administrácie. Iba admin užívatelia môžu pristupovať.");
-          await supabase.auth.signOut();
-          return;
+        // Presmerovanie podľa role
+        if (userData?.role === "admin") {
+          console.log("Login successful, redirecting to admin");
+          router.push("/admin");
+        } else {
+          // Bežný používateľ alebo neexistujúci záznam v users tabuľke
+          console.log("Login successful, redirecting to homepage");
+          router.push("/");
         }
-
-        // Úspešné prihlásenie s admin rolou
-        console.log("Login successful, redirecting to admin");
-        router.push("/admin");
       } else {
         setLoading(false);
         setError("Nepodarilo sa overiť používateľa.");
@@ -165,74 +276,101 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Debug info - odstráňte v produkcii */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
-          <p>Supabase client: {supabase ? '✅ Dostupný' : '❌ Nedostupný'}</p>
-          <p>Session: {session ? '✅ Prihlásený' : '❌ Neprihlásený'}</p>
-        </div>
-      )}
-
+    <div className="w-full">
       {/* Hlavička */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg mb-4">
-          <Shield size={32} className="text-white" />
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg shadow-lg mb-2" style={{ backgroundColor: '#686ea3' }}>
+          <Shield size={24} className="text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Vitajte späť! 👋
+        <h1 className="text-xl font-bold text-white mb-0.5">
+          {isRegister ? "Vytvorte si účet" : "Vitajte späť"}
         </h1>
-        <p className="text-gray-600">
-          Prihláste sa do administračného rozhrania
+        <p className="text-white/70 text-xs">
+          {isRegister ? "Zaregistrujte sa a začnite svoju duchovnú cestu" : "Prihláste sa do vášho účtu"}
         </p>
       </div>
 
       {/* Login Type Selector */}
-      <div className="bg-gray-100 rounded-xl p-1 mb-6">
-        <div className="grid grid-cols-2 gap-1">
+      <div className="rounded-lg p-0.5 mb-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
+        <div className="grid grid-cols-2 gap-0.5">
           <button
             onClick={() => setLoginType('email')}
-            className={`py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+            className={`py-1.5 px-3 text-sm rounded-md font-medium transition-all duration-200 ${
               loginType === 'email'
                 ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                : 'text-white/80 hover:text-white'
             }`}
           >
-            <Mail size={16} className="inline mr-2" />
+            <Mail size={14} className="inline mr-1.5" />
             Email
           </button>
           <button
             onClick={() => setLoginType('social')}
-            className={`py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+            className={`py-1.5 px-3 text-sm rounded-md font-medium transition-all duration-200 ${
               loginType === 'social'
                 ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                : 'text-white/80 hover:text-white'
             }`}
           >
-            <Chrome size={16} className="inline mr-2" />
+            <Chrome size={14} className="inline mr-1.5" />
             Sociálne siete
           </button>
         </div>
       </div>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <CheckCircle2 size={18} className="text-green-600" />
+            <span className="text-green-800 font-medium text-sm">Úspech!</span>
+          </div>
+          <p className="text-green-700 text-xs mt-1">{successMessage}</p>
+        </div>
+      )}
+
       {/* Error Message */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center space-x-2">
-            <AlertCircle size={20} className="text-red-600" />
-            <span className="text-red-800 font-medium">Chyba prihlásenia</span>
+            <AlertCircle size={18} className="text-red-600" />
+            <span className="text-red-800 font-medium text-sm">Chyba prihlásenia</span>
           </div>
-          <p className="text-red-700 text-sm mt-1">{error}</p>
+          <p className="text-red-700 text-xs mt-1">{error}</p>
         </div>
       )}
 
       {loginType === 'email' ? (
-        /* Email Login Form */
-        <form onSubmit={handleLogin} className="space-y-6">
+        /* Email Login/Register Form */
+        <form onSubmit={isRegister ? handleRegister : handleLogin} className="space-y-3">
+          {/* Meno (len pri registrácii) */}
+          {isRegister && (
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-white flex items-center">
+                <Shield size={14} className="mr-1.5" />
+                Celé meno
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  placeholder="Ján Novák"
+                  value={fullName}
+                  onChange={e => setFullName(e.target.value)}
+                  className="w-full px-3 py-2 pl-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
+                  style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
+                  disabled={loading}
+                />
+                <Shield size={16} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-white/50" />
+              </div>
+            </div>
+          )}
+
+
           {/* Email Input */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center">
-              <Mail size={16} className="mr-2" />
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-white flex items-center">
+              <Mail size={14} className="mr-1.5" />
               Emailová adresa
             </label>
             <div className="relative">
@@ -242,17 +380,18 @@ export default function LoginPage() {
                 placeholder="admin@example.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-4 py-3 pl-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                className="w-full px-3 py-2 pl-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
+                style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
                 disabled={loading}
               />
-              <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Mail size={16} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-white/50" />
             </div>
           </div>
 
           {/* Password Input */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center">
-              <Lock size={16} className="mr-2" />
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-white flex items-center">
+              <Lock size={14} className="mr-1.5" />
               Heslo
             </label>
             <div className="relative">
@@ -262,114 +401,170 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-3 pl-11 pr-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                className="w-full px-3 py-2 pl-9 pr-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
+                style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
                 disabled={loading}
               />
-              <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Lock size={16} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-white/50" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute right-2.5 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
 
-          {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center space-x-2 cursor-pointer">
+          {/* Potvrdenie hesla (len pri registrácii) */}
+          {isRegister && (
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-white flex items-center">
+                <Lock size={14} className="mr-1.5" />
+                Potvrďte heslo
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-2 pl-9 pr-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
+                  style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
+                  disabled={loading}
+                />
+                <Lock size={16} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-white/50" />
+              </div>
+            </div>
+          )}
+
+          {/* Remember Me & Forgot Password (len pri prihlásení) */}
+          {!isRegister && (
+          <div className="flex items-center justify-between text-xs">
+            <label className="flex items-center space-x-1.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={e => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-3.5 h-3.5 text-white border-white/30 rounded focus:ring-white/50 bg-white/10"
               />
-              <span className="text-sm text-gray-700">Zapamätať si ma</span>
+              <span className="text-white">Zapamätať si ma</span>
             </label>
             <Link
               href="/auth/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              className="text-white hover:text-white/80 font-medium transition-colors"
             >
               Zabudli ste heslo?
             </Link>
           </div>
+          )}
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={loading || !supabase}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            className="w-full text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:opacity-90 focus:ring-4 focus:ring-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            style={{ backgroundColor: '#686ea3' }}
           >
             {loading ? (
               <div className="flex items-center justify-center space-x-2">
                 <Loader2 size={18} className="animate-spin" />
-                <span>Prihlasovanie...</span>
+                <span>{isRegister ? "Registrácia..." : "Prihlasovanie..."}</span>
               </div>
             ) : (
               <div className="flex items-center justify-center space-x-2">
                 <LogIn size={18} />
-                <span>Prihlásiť sa</span>
+                <span>{isRegister ? "Registrovať sa" : "Prihlásiť sa"}</span>
               </div>
             )}
           </button>
+
+          {/* Toggle medzi prihlásením a registráciou */}
+          <div className="text-center text-xs text-white/70">
+            {isRegister ? (
+              <>
+                Už máte účet?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegister(false);
+                    setError(null);
+                    setSuccessMessage(null);
+                    setConfirmPassword("");
+                    setFullName("");
+                  }}
+                  className="text-white font-semibold hover:text-white/80 underline"
+                >
+                  Prihláste sa
+                </button>
+              </>
+            ) : (
+              <>
+                Nemáte účet?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegister(true);
+                    setError(null);
+                    setSuccessMessage(null);
+                  }}
+                  className="text-white font-semibold hover:text-white/80 underline"
+                >
+                  Zaregistrujte sa
+                </button>
+              </>
+            )}
+          </div>
         </form>
       ) : (
-        /* Social Login Options */
+        /* Social Login Options - len Google */
         <div className="space-y-4">
           <button
             onClick={() => handleSocialLogin('google')}
             disabled={loading || !supabase}
-            className="w-full flex items-center justify-center space-x-3 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition-all duration-200 disabled:opacity-50"
+            className="w-full flex items-center justify-center space-x-3 py-2.5 px-4 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-white/20 transition-all duration-200 disabled:opacity-50 shadow-md"
           >
-            <Chrome size={20} className="text-red-500" />
-            <span className="font-medium text-gray-700">Pokračovať s Google</span>
+            <Chrome size={18} className="text-red-500" />
+            <span className="font-medium">Pokračovať s Google</span>
           </button>
 
-          <button
-            onClick={() => handleSocialLogin('github')}
-            disabled={loading || !supabase}
-            className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 transition-all duration-200 disabled:opacity-50"
-          >
-            <Github size={20} />
-            <span className="font-medium">Pokračovať s GitHub</span>
-          </button>
-
-          <div className="relative my-6">
+          <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">alebo</span>
+              <span className="px-2 text-white/70 text-xs" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>alebo</span>
             </div>
           </div>
 
           <button
             onClick={() => setLoginType('email')}
-            className="w-full py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition-all duration-200"
+            className="w-full py-2.5 px-4 border rounded-lg text-sm hover:bg-white/10 focus:ring-4 focus:ring-white/20 transition-all duration-200"
+            style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
           >
             <div className="flex items-center justify-center space-x-2">
-              <Mail size={18} className="text-gray-600" />
-              <span className="font-medium text-gray-700">Prihlásiť sa emailom</span>
+              <Mail size={16} className="text-white/80" />
+              <span className="font-medium text-white">Použiť email</span>
             </div>
           </button>
         </div>
       )}
 
       {/* Footer Info */}
-      <div className="mt-8 text-center">
-        <div className="flex items-center justify-center space-x-2 mb-4">
-          <CheckCircle2 size={16} className="text-green-500" />
-          <span className="text-sm text-gray-600">Zabezpečené SSL pripojenie</span>
+      <div className="mt-4 text-center">
+        <div className="flex items-center justify-center space-x-1.5 mb-2">
+          <CheckCircle2 size={14} className="text-green-400" />
+          <span className="text-xs text-white/80">Zabezpečené SSL pripojenie</span>
         </div>
         
-        <p className="text-xs text-gray-500">
+        <p className="text-[10px] text-white/60 leading-tight">
           Prihlásením súhlasíte s našimi{" "}
-          <button className="text-blue-600 hover:text-blue-800 underline">
+          <button className="text-white hover:text-white/80 underline">
             podmienkami používania
           </button>{" "}
           a{" "}
-          <button className="text-blue-600 hover:text-blue-800 underline">
+          <button className="text-white hover:text-white/80 underline">
             ochranou osobných údajov
           </button>
         </p>

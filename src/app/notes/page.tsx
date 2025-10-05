@@ -4,19 +4,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabase } from '../components/SupabaseProvider';
-import Link from 'next/link';
 import { formatDate } from '../utils/dateUtils';
 import { 
   Search, 
   Plus, 
-  Edit, 
   Trash2, 
   BookOpen, 
   Calendar,
   FileText,
   Quote,
-  Loader2,
-  AlertCircle
+  Save,
+  X,
+  Sparkles
 } from 'lucide-react';
 
 interface Note {
@@ -27,13 +26,29 @@ interface Note {
   bible_quote?: string;
   created_at: string;
   updated_at: string;
+  user_id: string;
 }
+
+type EditorMode = 'empty' | 'new' | 'edit';
 
 export default function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [editorMode, setEditorMode] = useState<EditorMode>('empty');
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Editor state
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [editBibleRef, setEditBibleRef] = useState('');
+  const [editBibleQuote, setEditBibleQuote] = useState('');
+  
+  // Mobile tab state
+  const [mobileTab, setMobileTab] = useState<'list' | 'editor'>('list');
+  
   const { supabase, session, isLoading: authLoading } = useSupabase();
   const router = useRouter();
 
@@ -71,24 +86,6 @@ export default function NotesPage() {
     }
   };
 
-  const deleteNote = async (noteId: string) => {
-    if (!supabase) return;
-    
-    try {
-      const { error } = await supabase
-        .from('notes')
-        .delete()
-        .eq('id', noteId);
-
-      if (error) throw error;
-      
-      await fetchNotes();
-    } catch (error) {
-      console.error('Error deleting note:', error);
-      alert('Failed to delete note');
-    }
-  };
-
   const filterNotes = (query: string) => {
     if (!query.trim()) {
       setFilteredNotes(notes);
@@ -114,23 +111,129 @@ export default function NotesPage() {
     setFilteredNotes(filtered);
   };
 
-  const handleDelete = async (noteId: string) => {
-    if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
-      await deleteNote(noteId);
+  const handleNewNote = () => {
+    setEditorMode('new');
+    setSelectedNote(null);
+    setEditTitle('');
+    setEditContent('');
+    setEditBibleRef('');
+    setEditBibleQuote('');
+    // Switch to editor tab on mobile
+    setMobileTab('editor');
+  };
+
+  const handleSelectNote = (note: Note) => {
+    setEditorMode('edit');
+    setSelectedNote(note);
+    setEditTitle(note.title);
+    setEditContent(note.content);
+    setEditBibleRef(note.bible_reference || '');
+    setEditBibleQuote(note.bible_quote || '');
+    // Switch to editor tab on mobile
+    setMobileTab('editor');
+  };
+
+  const handleSaveNote = async () => {
+    if (!supabase || !session) return;
+    if (!editTitle.trim() || !editContent.trim()) {
+      alert('Názov a obsah poznámky sú povinné');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (editorMode === 'new') {
+        const { data, error } = await supabase
+          .from('notes')
+          .insert([{
+            user_id: session.user.id,
+            title: editTitle.trim(),
+            content: editContent.trim(),
+            bible_reference: editBibleRef.trim() || null,
+            bible_quote: editBibleQuote.trim() || null
+          }])
+          .select()
+          .single();
+
+        if (error) throw error;
+        
+        await fetchNotes();
+        setSelectedNote(data);
+        setEditorMode('edit');
+      } else if (editorMode === 'edit' && selectedNote) {
+        const { error } = await supabase
+          .from('notes')
+          .update({
+            title: editTitle.trim(),
+            content: editContent.trim(),
+            bible_reference: editBibleRef.trim() || null,
+            bible_quote: editBibleQuote.trim() || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', selectedNote.id);
+
+        if (error) throw error;
+        
+        await fetchNotes();
+      }
+    } catch (error) {
+      console.error('Error saving note:', error);
+      alert('Chyba pri ukladaní poznámky');
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  // Ak sa ešte načítava autentifikácia alebo nie je session
+  const handleDeleteNote = async (noteId: string) => {
+    if (!supabase) return;
+    if (!confirm('Naozaj chcete odstrániť túto poznámku? Táto akcia sa nedá vrátiť späť.')) {
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('notes')
+        .delete()
+        .eq('id', noteId);
+
+      if (error) throw error;
+      
+      if (selectedNote?.id === noteId) {
+        setEditorMode('empty');
+        setSelectedNote(null);
+      }
+      
+      await fetchNotes();
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      alert('Chyba pri odstraňovaní poznámky');
+    }
+  };
+
+  const handleCloseEditor = () => {
+    if (editorMode === 'new' && (editTitle || editContent)) {
+      if (!confirm('Máte neuloženú poznámku. Naozaj chcete zavrieť editor?')) {
+        return;
+      }
+    }
+    setEditorMode('empty');
+    setSelectedNote(null);
+    setEditTitle('');
+    setEditContent('');
+    setEditBibleRef('');
+    setEditBibleQuote('');
+  };
+
   if (authLoading || !session) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="h-screen flex items-center justify-center pt-16">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-12 text-center">
           <div className="w-16 h-16 mx-auto mb-6 relative">
-            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-purple-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
           </div>
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {authLoading ? 'Loading...' : 'Redirecting to login...'}
+          <h2 className="text-xl font-bold" style={{ color: '#40467b' }}>
+            {authLoading ? 'Načítavam...' : 'Presmerovávam na prihlásenie...'}
           </h2>
         </div>
       </div>
@@ -138,148 +241,327 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 mb-8">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
-              <BookOpen size={24} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                My Notes
-              </h1>
-              <p className="text-gray-600 mt-1">
-                {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
-              </p>
-            </div>
-          </div>
-          
-          <Link href="/notes/new">
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 shadow-lg hover:shadow-xl">
-              <div className="flex items-center space-x-2">
-                <Plus size={20} />
-                <span>New Note</span>
-              </div>
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8">
-        <div className="relative">
-          <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search notes..."
-            value={searchQuery}
-            onChange={(e) => filterNotes(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-          />
-          {searchQuery && (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20 pb-8 px-4">
+      <div className="max-w-[1800px] mx-auto">
+        
+        {/* Mobile Tab Navigation */}
+        <div className="lg:hidden mb-4">
+          <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-lg p-1 flex">
             <button
-              onClick={() => filterNotes('')}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={() => setMobileTab('list')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                mobileTab === 'list'
+                  ? 'text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+              style={{ backgroundColor: mobileTab === 'list' ? '#40467b' : 'transparent' }}
             >
-              ×
+              <BookOpen size={16} />
+              Zoznam poznámok
             </button>
-          )}
-        </div>
-      </div>
-
-      {/* Notes List */}
-      {isLoading ? (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-12 text-center">
-          <div className="w-16 h-16 mx-auto mb-6 relative">
-            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
+            <button
+              onClick={() => setMobileTab('editor')}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                mobileTab === 'editor'
+                  ? 'text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+              style={{ backgroundColor: mobileTab === 'editor' ? '#40467b' : 'transparent' }}
+            >
+              <FileText size={16} />
+              Editor
+            </button>
           </div>
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Loading notes...
-          </h2>
         </div>
-      ) : filteredNotes.length === 0 ? (
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-12 text-center">
-          <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl flex items-center justify-center">
-            <FileText size={32} className="text-white" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            {searchQuery ? 'No notes found' : 'No notes yet'}
-          </h2>
-          <p className="text-gray-600 mb-6">
-            {searchQuery 
-              ? 'Try adjusting your search terms' 
-              : 'Create your first note to get started'
-            }
-          </p>
-          {!searchQuery && (
-            <Link href="/notes/new">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 shadow-lg hover:shadow-xl">
-                <div className="flex items-center space-x-2">
-                  <Plus size={20} />
-                  <span>Create your first note</span>
-                </div>
-              </button>
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="grid gap-6">
-          {filteredNotes.map((note) => (
-            <div key={note.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all duration-300 group">
-              <div className="flex justify-between items-start mb-4">
-                <Link href={`/notes/${note.id}`}>
-                  <h3 className="text-xl font-bold text-gray-900 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:bg-clip-text hover:text-transparent cursor-pointer transition-all duration-200">
-                    {note.title}
-                  </h3>
-                </Link>
-                <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <Link href={`/notes/${note.id}`}>
-                    <button className="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200">
-                      <Edit size={16} />
-                    </button>
-                  </Link>
+        
+        {/* Two-column layout */}
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 min-h-[calc(100vh-120px)] lg:h-[calc(100vh-120px)]">
+            
+            {/* LEFT COLUMN - Notes List */}
+            <div className={`flex-1 lg:col-span-4 xl:col-span-3 ${mobileTab === 'list' ? 'block' : 'hidden'} lg:block`}>
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl flex flex-col overflow-hidden h-[calc(100vh-160px)] lg:h-[calc(100vh-120px)]">
+                
+                {/* Header */}
+                <div className="p-6 border-b border-gray-200 flex-shrink-0">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div 
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg"
+                      style={{ backgroundColor: '#40467b' }}
+                    >
+                      <BookOpen size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <h1 className="text-xl font-bold" style={{ color: '#40467b' }}>
+                        Moje poznámky
+                      </h1>
+                      <p className="text-xs text-gray-600">
+                        {filteredNotes.length} {filteredNotes.length === 1 ? 'poznámka' : 'poznámok'}
+                      </p>
+                    </div>
+                  </div>
+                  
                   <button
-                    onClick={() => handleDelete(note.id)}
-                    className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all duration-200"
+                    onClick={handleNewNote}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white transition-all hover:opacity-90 shadow-md"
+                    style={{ backgroundColor: '#40467b' }}
                   >
-                    <Trash2 size={16} />
+                    <Plus size={18} />
+                    <span className="font-medium">Nová poznámka</span>
                   </button>
                 </div>
-              </div>
-              
-              <p className="text-gray-600 mb-4 line-clamp-2">
-                {note.content.length > 120 ? `${note.content.substring(0, 120)}...` : note.content}
-              </p>
-              
-              {note.bible_reference && (
-                <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-400 rounded-r-lg">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Quote size={16} className="text-green-600" />
-                    <span className="text-green-800 font-semibold">{note.bible_reference}</span>
+
+                {/* Search */}
+                <div className="p-4 border-b border-gray-200 flex-shrink-0">
+                  <div className="relative">
+                    <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Hľadať poznámky..."
+                      value={searchQuery}
+                      onChange={(e) => filterNotes(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => filterNotes('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
                   </div>
-                  {note.bible_quote && (
-                    <p className="text-green-700 italic text-sm">"{note.bible_quote}"</p>
+                </div>
+
+                {/* Notes List - scrollable */}
+                <div className="flex-1 overflow-y-auto">
+                  {isLoading ? (
+                    <div className="p-8 text-center">
+                      <div className="w-12 h-12 mx-auto mb-4 relative">
+                        <div className="absolute inset-0 rounded-full border-4 border-purple-200"></div>
+                        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
+                      </div>
+                      <p className="text-sm text-gray-600">Načítavam poznámky...</p>
+                    </div>
+                  ) : filteredNotes.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <FileText size={32} className="mx-auto mb-4 text-gray-400" />
+                      <p className="text-sm text-gray-600 mb-2">
+                        {searchQuery ? 'Žiadne výsledky' : 'Zatiaľ nemáte žiadne poznámky'}
+                      </p>
+                      {!searchQuery && (
+                        <p className="text-xs text-gray-500">
+                          Kliknite na "Nová poznámka"
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-1 p-2">
+                      {filteredNotes.map((note) => (
+                        <button
+                          key={note.id}
+                          onClick={() => handleSelectNote(note)}
+                          className={`w-full text-left p-3 rounded-lg transition-all ${
+                            selectedNote?.id === note.id
+                              ? 'bg-purple-50 border-l-4 shadow-sm'
+                              : 'hover:bg-gray-50 border-l-4 border-transparent'
+                          }`}
+                          style={{
+                            borderLeftColor: selectedNote?.id === note.id ? '#40467b' : 'transparent'
+                          }}
+                        >
+                          <h3 
+                            className="font-semibold text-sm mb-1 truncate"
+                            style={{ color: selectedNote?.id === note.id ? '#40467b' : '#1f2937' }}
+                          >
+                            {note.title}
+                          </h3>
+                          <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                            {note.content}
+                          </p>
+                          {note.bible_reference && (
+                            <div className="flex items-center gap-1 text-xs text-green-700 mb-1">
+                              <Quote size={12} />
+                              <span>{note.bible_reference}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <Calendar size={10} />
+                            <span>{formatDate(note.updated_at)}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
-              )}
-              
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Calendar size={14} />
-                <span>Created: {formatDate(note.created_at)}</span>
-                {note.updated_at !== note.created_at && (
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN - Editor */}
+            <div className={`flex-1 lg:col-span-8 xl:col-span-9 ${mobileTab === 'editor' ? 'block' : 'hidden'} lg:block`}>
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl flex flex-col overflow-hidden h-[calc(100vh-160px)] lg:h-[calc(100vh-120px)]">
+                
+                {editorMode === 'empty' ? (
+                  <div className="flex-1 flex items-center justify-center p-12">
+                    <div className="text-center max-w-md">
+                      <div 
+                        className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                        style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}
+                      >
+                        <Sparkles size={40} style={{ color: '#40467b' }} />
+                      </div>
+                      <h2 className="text-2xl font-bold mb-3" style={{ color: '#40467b' }}>
+                        Vyberte poznámku
+                      </h2>
+                      <p className="text-gray-600 mb-6">
+                        Kliknite na poznámku v zozname vľavo alebo vytvorte novú poznámku
+                      </p>
+                      <button
+                        onClick={handleNewNote}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white transition-all hover:opacity-90 shadow-lg"
+                        style={{ backgroundColor: '#40467b' }}
+                      >
+                        <Plus size={20} />
+                        <span className="font-medium">Vytvoriť novú poznámku</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                   <>
-                    <span>•</span>
-                    <span>Updated: {formatDate(note.updated_at)}</span>
+                    {/* Editor Header */}
+                    <div className="p-6 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                          style={{ backgroundColor: '#40467b' }}
+                        >
+                          {editorMode === 'new' ? <Plus size={16} /> : <FileText size={16} />}
+                        </div>
+                        <h2 className="font-semibold" style={{ color: '#40467b' }}>
+                          {editorMode === 'new' ? 'Nová poznámka' : 'Upraviť poznámku'}
+                        </h2>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {editorMode === 'edit' && selectedNote && (
+                          <button
+                            onClick={() => handleDeleteNote(selectedNote.id)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm font-medium"
+                          >
+                            <Trash2 size={16} />
+                            Odstrániť
+                          </button>
+                        )}
+                        <button
+                          onClick={handleSaveNote}
+                          disabled={isSaving}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white transition-all hover:opacity-90 shadow-md text-sm font-medium disabled:opacity-50"
+                          style={{ backgroundColor: '#40467b' }}
+                        >
+                          <Save size={16} />
+                          {isSaving ? 'Ukladám...' : 'Uložiť'}
+                        </button>
+                        <button
+                          onClick={handleCloseEditor}
+                          className="p-2 rounded-lg hover:bg-gray-100 transition-all"
+                          style={{ color: '#40467b' }}
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Editor Content - scrollable */}
+                    <div className="flex-1 overflow-y-auto p-6">
+                      <div className="max-w-4xl mx-auto space-y-6">
+                        {/* Title */}
+                        <div>
+                          <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
+                            Názov poznámky *
+                          </label>
+                          <input
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            placeholder="Zadajte názov..."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-lg font-semibold"
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div>
+                          <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
+                            Obsah poznámky *
+                          </label>
+                          <textarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            placeholder="Začnite písať svoje myšlienky..."
+                            rows={12}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
+                          />
+                        </div>
+
+                        {/* Bible Reference Section */}
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-400 rounded-r-lg p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Quote size={20} className="text-green-600" />
+                            <h3 className="font-semibold text-green-800">Biblický odkaz</h3>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-green-800 mb-2">
+                                Odkaz (napr. Ján 3:16)
+                              </label>
+                              <input
+                                type="text"
+                                value={editBibleRef}
+                                onChange={(e) => setEditBibleRef(e.target.value)}
+                                placeholder="Ján 3:16"
+                                className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-white"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-green-800 mb-2">
+                                Citát z Biblie
+                              </label>
+                              <textarea
+                                value={editBibleQuote}
+                                onChange={(e) => setEditBibleQuote(e.target.value)}
+                                placeholder="Vložte text z Biblie..."
+                                rows={4}
+                                className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all resize-none bg-white"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Metadata */}
+                        {editorMode === 'edit' && selectedNote && (
+                          <div className="text-sm text-gray-500 pt-4 border-t border-gray-200">
+                            <div className="flex flex-wrap gap-4">
+                              <div className="flex items-center gap-2">
+                                <Calendar size={14} />
+                                <span>Vytvorené: {formatDate(selectedNote.created_at)}</span>
+                              </div>
+                              {selectedNote.updated_at !== selectedNote.created_at && (
+                                <div className="flex items-center gap-2">
+                                  <Calendar size={14} />
+                                  <span>Upravené: {formatDate(selectedNote.updated_at)}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </>
                 )}
               </div>
             </div>
-          ))}
+
+          </div>
         </div>
-      )}
-    </div>
+      </div>
   );
 }

@@ -73,22 +73,22 @@ export default function MobilePrivacyPage() {
       icon: <SmartphoneIcon />,
       content: (
         <div className="space-y-4">
-          <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
-            <h4 className="font-bold text-blue-900 mb-3">📱 Lectio Divina Mobile App</h4>
-            <p className="text-blue-800 mb-3">{t.sections.intro.content.description}</p>
-            <p className="text-blue-800 mb-3">{t.sections.intro.content.purpose}</p>
-            <p className="text-blue-800">{t.sections.intro.content.commitment}</p>
+          <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+            <h4 className="font-bold mb-3 text-lg" style={{ color: '#40467b' }}>📱 Lectio Divina Mobile App</h4>
+            <p className="text-gray-700 mb-3 leading-relaxed">{t.sections.intro.content.description}</p>
+            <p className="text-gray-700 mb-3 leading-relaxed">{t.sections.intro.content.purpose}</p>
+            <p className="text-gray-700 leading-relaxed">{t.sections.intro.content.commitment}</p>
           </div>
           
           {/* App Download Links */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg">
-            <h5 className="font-semibold text-gray-900 mb-4">📲 Stiahnuť aplikáciu:</h5>
+          <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>📲 Stiahnuť aplikáciu:</h5>
             <div className="flex flex-col sm:flex-row gap-4">
               <a 
                 href="https://apps.apple.com/sk/app/lectio-divina/id6443882687"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-3 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center space-x-3 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-all hover:scale-105 shadow-lg"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -103,7 +103,7 @@ export default function MobilePrivacyPage() {
                 href="https://play.google.com/store/apps/details?id=sk.dpapp.app.android604688a88a394"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-3 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                className="inline-flex items-center space-x-3 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-all hover:scale-105 shadow-lg"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
@@ -126,25 +126,34 @@ export default function MobilePrivacyPage() {
         <div className="space-y-4">
           <p>{t.sections.tokenData.content.description}</p>
           
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h5 className="font-semibold text-gray-900 mb-2">🔑 Príklad registration token:</h5>
-            <code className="text-xs bg-gray-800 text-green-400 p-3 rounded block overflow-x-auto break-all">
+          <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+            <h5 className="font-semibold mb-3" style={{ color: '#40467b' }}>🔑 Príklad registration token:</h5>
+            <code className="text-sm bg-gray-800 text-green-400 p-4 rounded-xl block overflow-x-auto break-all shadow-inner">
               {t.sections.tokenData.content.example.split(': ')[1]}
             </code>
           </div>
           
           <div className="space-y-3">
             <div className="flex items-start space-x-3">
-              <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-              <span>{t.sections.tokenData.content.nature}</span>
+              <div 
+                className="w-3 h-3 rounded-full mt-2 flex-shrink-0"
+                style={{ backgroundColor: '#40467b' }}
+              ></div>
+              <span className="text-gray-700">{t.sections.tokenData.content.nature}</span>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-              <span>{t.sections.tokenData.content.generator}</span>
+              <div 
+                className="w-3 h-3 rounded-full mt-2 flex-shrink-0"
+                style={{ backgroundColor: '#40467b' }}
+              ></div>
+              <span className="text-gray-700">{t.sections.tokenData.content.generator}</span>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
-              <span>{t.sections.tokenData.content.approach}</span>
+              <div 
+                className="w-3 h-3 rounded-full mt-2 flex-shrink-0"
+                style={{ backgroundColor: '#40467b' }}
+              ></div>
+              <span className="text-gray-700">{t.sections.tokenData.content.approach}</span>
             </div>
           </div>
           
@@ -167,13 +176,16 @@ export default function MobilePrivacyPage() {
         <div className="space-y-6">
           <p>{t.sections.personalData.content.intro}</p>
           
-          <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
-            <h5 className="font-semibold text-blue-900 mb-3">{t.sections.personalData.content.dataTypes.title}</h5>
-            <ul className="text-blue-800 space-y-1">
+          <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>{t.sections.personalData.content.dataTypes.title}</h5>
+            <ul className="space-y-2">
               {t.sections.personalData.content.dataTypes.items.map((item: string, index: number) => (
-                <li key={index} className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                  <span>{item}</span>
+                <li key={index} className="flex items-center space-x-3">
+                  <span 
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: '#40467b' }}
+                  ></span>
+                  <span className="text-gray-700">{item}</span>
                 </li>
               ))}
             </ul>
@@ -184,24 +196,24 @@ export default function MobilePrivacyPage() {
           <div>
             <h5 className="font-semibold mb-4">{t.sections.personalData.content.additionalData.title}</h5>
             <div className="grid gap-4">
-              <div className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                <h6 className="font-medium text-purple-900 mb-2">📍 {t.sections.personalData.content.additionalData.location.title}</h6>
-                <p className="text-gray-700 text-sm">{t.sections.personalData.content.additionalData.location.purpose}</p>
+              <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30 hover:shadow-xl transition-all hover:scale-105">
+                <h6 className="font-semibold mb-2" style={{ color: '#40467b' }}>📍 {t.sections.personalData.content.additionalData.location.title}</h6>
+                <p className="text-gray-700 text-sm leading-relaxed">{t.sections.personalData.content.additionalData.location.purpose}</p>
               </div>
               
-              <div className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                <h6 className="font-medium text-green-900 mb-2">📷 {t.sections.personalData.content.additionalData.photos.title}</h6>
-                <p className="text-gray-700 text-sm">{t.sections.personalData.content.additionalData.photos.purpose}</p>
+              <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30 hover:shadow-xl transition-all hover:scale-105">
+                <h6 className="font-semibold mb-2" style={{ color: '#40467b' }}>📷 {t.sections.personalData.content.additionalData.photos.title}</h6>
+                <p className="text-gray-700 text-sm leading-relaxed">{t.sections.personalData.content.additionalData.photos.purpose}</p>
               </div>
               
-              <div className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                <h6 className="font-medium text-orange-900 mb-2">📊 {t.sections.personalData.content.additionalData.appInfo.title}</h6>
-                <p className="text-gray-700 text-sm">{t.sections.personalData.content.additionalData.appInfo.purpose}</p>
+              <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30 hover:shadow-xl transition-all hover:scale-105">
+                <h6 className="font-semibold mb-2" style={{ color: '#40467b' }}>📊 {t.sections.personalData.content.additionalData.appInfo.title}</h6>
+                <p className="text-gray-700 text-sm leading-relaxed">{t.sections.personalData.content.additionalData.appInfo.purpose}</p>
               </div>
               
-              <div className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                <h6 className="font-medium text-blue-900 mb-2">🔗 {t.sections.personalData.content.additionalData.identifiers.title}</h6>
-                <p className="text-gray-700 text-sm">{t.sections.personalData.content.additionalData.identifiers.purpose}</p>
+              <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30 hover:shadow-xl transition-all hover:scale-105">
+                <h6 className="font-semibold mb-2" style={{ color: '#40467b' }}>🔗 {t.sections.personalData.content.additionalData.identifiers.title}</h6>
+                <p className="text-gray-700 text-sm leading-relaxed">{t.sections.personalData.content.additionalData.identifiers.purpose}</p>
               </div>
             </div>
           </div>
@@ -214,10 +226,10 @@ export default function MobilePrivacyPage() {
       icon: <CookieIcon />,
       content: (
         <div className="space-y-6">
-          <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
-            <h5 className="font-semibold text-amber-900 mb-3">🍪 Čo sú Cookies?</h5>
-            <p className="text-amber-800 mb-3">{t.sections.cookies.content.definition}</p>
-            <p className="text-amber-800">{t.sections.cookies.content.purpose}</p>
+          <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>🍪 Čo sú Cookies?</h5>
+            <p className="text-gray-700 mb-3 leading-relaxed">{t.sections.cookies.content.definition}</p>
+            <p className="text-gray-700 leading-relaxed">{t.sections.cookies.content.purpose}</p>
           </div>
           
           <div className="space-y-4">
@@ -227,23 +239,23 @@ export default function MobilePrivacyPage() {
             <p>{t.sections.cookies.content.settings}</p>
           </div>
           
-          <div className="bg-purple-50 p-6 rounded-lg">
-            <h5 className="font-semibold text-purple-900 mb-3">📈 Google Analytics</h5>
-            <div className="text-purple-800 space-y-2 text-sm">
-              <p>{t.sections.cookies.content.analytics.intro}</p>
-              <p>{t.sections.cookies.content.analytics.description}</p>
-              <p>{t.sections.cookies.content.analytics.anonymity}</p>
-              <p>{t.sections.cookies.content.analytics.settings}</p>
-              <p className="font-medium">{t.sections.cookies.content.analytics.consent}</p>
+          <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>📈 Google Analytics</h5>
+            <div className="space-y-3 text-sm text-gray-700">
+              <p className="leading-relaxed">{t.sections.cookies.content.analytics.intro}</p>
+              <p className="leading-relaxed">{t.sections.cookies.content.analytics.description}</p>
+              <p className="leading-relaxed">{t.sections.cookies.content.analytics.anonymity}</p>
+              <p className="leading-relaxed">{t.sections.cookies.content.analytics.settings}</p>
+              <p className="font-semibold leading-relaxed" style={{ color: '#40467b' }}>{t.sections.cookies.content.analytics.consent}</p>
             </div>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-gray-700 text-sm">{t.sections.cookies.content.directive}</p>
+          <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30">
+            <p className="text-gray-700 text-sm leading-relaxed">{t.sections.cookies.content.directive}</p>
           </div>
           
-          <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
-            <p className="text-green-800 font-medium">
+          <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30">
+            <p className="font-semibold" style={{ color: '#40467b' }}>
               ✅ {t.sections.cookies.content.appNote}
             </p>
           </div>
@@ -259,60 +271,72 @@ export default function MobilePrivacyPage() {
           <p>{t.sections.terms.content.intro}</p>
           
           <div className="space-y-6">
-            <div className="bg-slate-50 p-6 rounded-lg">
-              <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <span className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">💻</span>
+            <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+              <h5 className="font-semibold mb-4 flex items-center" style={{ color: '#40467b' }}>
+                <span 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-white shadow-lg"
+                  style={{ backgroundColor: '#40467b' }}
+                >💻</span>
                 {t.sections.terms.content.software.title}
               </h5>
-              <div className="space-y-3 text-sm text-gray-700">
-                <p><strong>Vlastníctvo:</strong> {t.sections.terms.content.software.ownership}</p>
-                <p><strong>Licencia:</strong> {t.sections.terms.content.software.license}</p>
-                <p><strong>Obmedzenia:</strong> {t.sections.terms.content.software.restrictions}</p>
-                <div className="bg-red-50 p-3 rounded border-l-4 border-red-400">
-                  <p className="text-red-700 font-medium">{t.sections.terms.content.software.violations}</p>
+              <div className="space-y-4 text-sm text-gray-700">
+                <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Vlastníctvo:</strong> {t.sections.terms.content.software.ownership}</p>
+                <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Licencia:</strong> {t.sections.terms.content.software.license}</p>
+                <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Obmedzenia:</strong> {t.sections.terms.content.software.restrictions}</p>
+                <div className="bg-red-50/80 backdrop-blur-sm p-4 rounded-xl border border-red-200">
+                  <p className="text-red-700 font-semibold leading-relaxed">{t.sections.terms.content.software.violations}</p>
                 </div>
-                <p className="italic text-gray-600">{t.sections.terms.content.software.liability}</p>
+                <p className="italic text-gray-600 leading-relaxed">{t.sections.terms.content.software.liability}</p>
               </div>
             </div>
             
-            <div className="bg-slate-50 p-6 rounded-lg">
-              <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <span className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">📄</span>
+            <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+              <h5 className="font-semibold mb-4 flex items-center" style={{ color: '#40467b' }}>
+                <span 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-white shadow-lg"
+                  style={{ backgroundColor: '#40467b' }}
+                >📄</span>
                 {t.sections.terms.content.documents.title}
               </h5>
-              <p className="text-sm text-gray-700 mb-4">{t.sections.terms.content.documents.intro}</p>
-              <div className="bg-white p-4 rounded-lg mb-4">
-                <h6 className="font-medium text-gray-800 mb-2">Podmienky použitia:</h6>
-                <ul className="space-y-2">
+              <p className="text-sm text-gray-700 mb-6 leading-relaxed">{t.sections.terms.content.documents.intro}</p>
+              <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl border border-white/30 mb-6">
+                <h6 className="font-semibold mb-3" style={{ color: '#40467b' }}>Podmienky použitia:</h6>
+                <ul className="space-y-3">
                   {t.sections.terms.content.documents.conditions.map((condition: string, index: number) => (
-                    <li key={index} className="flex items-start space-x-2 text-sm text-gray-600">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
-                      <span>{condition}</span>
+                    <li key={index} className="flex items-start space-x-3 text-sm text-gray-700">
+                      <span 
+                        className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                        style={{ backgroundColor: '#40467b' }}
+                      ></span>
+                      <span className="leading-relaxed">{condition}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="space-y-2 text-sm">
-                <div className="bg-red-50 p-3 rounded border-l-4 border-red-400">
-                  <p className="text-red-700 font-medium mb-1">Zakázané použitie:</p>
-                  <p className="text-red-600">{t.sections.terms.content.documents.restrictions}</p>
-                  <p className="text-red-600">{t.sections.terms.content.documents.violations}</p>
+              <div className="space-y-4 text-sm">
+                <div className="bg-red-50/80 backdrop-blur-sm p-4 rounded-xl border border-red-200">
+                  <p className="font-semibold mb-2" style={{ color: '#40467b' }}>Zakázané použitie:</p>
+                  <p className="text-red-600 mb-2 leading-relaxed">{t.sections.terms.content.documents.restrictions}</p>
+                  <p className="text-red-600 leading-relaxed">{t.sections.terms.content.documents.violations}</p>
                 </div>
-                <p className="italic text-gray-600">{t.sections.terms.content.documents.designProtection}</p>
+                <p className="italic text-gray-600 leading-relaxed">{t.sections.terms.content.documents.designProtection}</p>
               </div>
             </div>
             
-            <div className="bg-slate-50 p-6 rounded-lg">
-              <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <span className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">⚠️</span>
+            <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
+              <h5 className="font-semibold mb-4 flex items-center" style={{ color: '#40467b' }}>
+                <span 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-white shadow-lg"
+                  style={{ backgroundColor: '#40467b' }}
+                >⚠️</span>
                 {t.sections.terms.content.disclaimer.title}
               </h5>
-              <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
-                <div className="space-y-3 text-sm text-red-800">
-                  <p><strong>Záruka:</strong> {t.sections.terms.content.disclaimer.warranty}</p>
-                  <p><strong>Zodpovednosť:</strong> {t.sections.terms.content.disclaimer.liability}</p>
-                  <p><strong>Presnosť:</strong> {t.sections.terms.content.disclaimer.accuracy}</p>
-                  <p><strong>Zmeny:</strong> {t.sections.terms.content.disclaimer.changes}</p>
+              <div className="bg-orange-50/80 backdrop-blur-sm p-5 rounded-xl border border-orange-200">
+                <div className="space-y-4 text-sm text-gray-700">
+                  <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Záruka:</strong> {t.sections.terms.content.disclaimer.warranty}</p>
+                  <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Zodpovednosť:</strong> {t.sections.terms.content.disclaimer.liability}</p>
+                  <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Presnosť:</strong> {t.sections.terms.content.disclaimer.accuracy}</p>
+                  <p className="leading-relaxed"><strong style={{ color: '#40467b' }}>Zmeny:</strong> {t.sections.terms.content.disclaimer.changes}</p>
                 </div>
               </div>
             </div>
@@ -323,46 +347,62 @@ export default function MobilePrivacyPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20 pb-8">
+      <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <Link 
-            href="/privacy" 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
-          >
-            <ArrowLeftIcon />
-            <span className="ml-2">Späť na Privacy Policy</span>
-          </Link>
-          
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
+            <div className="flex items-center justify-between mb-6">
+              <Link 
+                href="/" 
+                className="inline-flex items-center text-white hover:text-gray-100 transition-colors px-4 py-2 rounded-lg"
+                style={{ backgroundColor: '#40467b' }}
+              >
+                <ArrowLeftIcon />
+                <span className="ml-2 font-medium">Späť na hlavnú stránku</span>
+              </Link>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div 
+                className="w-16 h-16 rounded-xl flex items-center justify-center text-white shadow-lg"
+                style={{ backgroundColor: '#40467b' }}
+              >
                 <SmartphoneIcon />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Mobile Privacy Policy</h1>
-                <p className="text-gray-600">Lectio Divina Mobile App</p>
+                <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#40467b' }}>
+                  Mobile Privacy Policy
+                </h1>
+                <p className="text-lg text-gray-600">Lectio Divina Mobile App</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Sections */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {sections.map((section) => (
-            <div key={section.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            <div key={section.id} className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 overflow-hidden">
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-8 py-6 flex items-center justify-between hover:bg-white/50 transition-colors"
               >
-                <div className="flex items-center space-x-3">
-                  <div className="text-blue-600">{section.icon}</div>
-                  <h2 className="text-xl font-semibold text-gray-900">{section.title}</h2>
+                <div className="flex items-center space-x-4">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg"
+                    style={{ backgroundColor: '#40467b' }}
+                  >
+                    {section.icon}
+                  </div>
+                  <h2 className="text-xl font-semibold" style={{ color: '#40467b' }}>
+                    {section.title}
+                  </h2>
                 </div>
                 <motion.div
                   animate={{ rotate: expandedSections.has(section.id) ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
+                  style={{ color: '#40467b' }}
                 >
                   <ChevronDownIcon />
                 </motion.div>
@@ -377,7 +417,7 @@ export default function MobilePrivacyPage() {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <div className="px-6 pb-6 text-gray-700 leading-relaxed">
+                <div className="px-8 pb-8 text-gray-700 leading-relaxed">
                   {section.content}
                 </div>
               </motion.div>
@@ -387,13 +427,14 @@ export default function MobilePrivacyPage() {
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
+            <p className="text-gray-700 mb-6 text-lg">
               Máte otázky ohľadom ochrany osobných údajov v našej mobilnej aplikácii?
             </p>
             <Link 
               href="/contact" 
-              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center text-white px-8 py-4 rounded-xl font-medium transition-all hover:scale-105 shadow-lg"
+              style={{ backgroundColor: '#40467b' }}
             >
               Kontaktujte nás
             </Link>

@@ -162,22 +162,32 @@ export default function NewsListPage() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-sm px-6 py-3 rounded-full mb-8 shadow-lg"
+            className="inline-flex items-center space-x-2 text-white font-bold text-sm px-6 py-3 rounded-full mb-8 shadow-lg"
+            style={{ backgroundColor: '#40467b' }}
           >
             <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
             <span>{t.newsListPage?.all_articles_badge || "VŠETKY ČLÁNKY"}</span>
           </motion.div>
           
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-8 leading-tight">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-8 leading-tight" style={{ color: '#40467b' }}>
             {t.newsListPage?.title || t.latest_news}
           </h1>
           
           <div className="flex items-center justify-center mb-8">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent to-blue-600"></div>
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-4 flex items-center justify-center">
+            <div 
+              className="w-8 h-px mx-2"
+              style={{ background: `linear-gradient(to right, transparent, #40467b)` }}
+            ></div>
+            <div 
+              className="w-6 h-6 rounded-full mx-4 flex items-center justify-center"
+              style={{ backgroundColor: '#40467b' }}
+            >
               <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
-            <div className="w-8 h-px bg-gradient-to-l from-transparent to-purple-600"></div>
+            <div 
+              className="w-8 h-px mx-2"
+              style={{ background: `linear-gradient(to left, transparent, #40467b)` }}
+            ></div>
           </div>
           
           <p className="text-xl sm:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light">
@@ -200,7 +210,10 @@ export default function NewsListPage() {
                   placeholder={t.newsListPage?.search_placeholder || "Hľadať články..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-6 py-4 w-full bg-white/80 backdrop-blur-lg border border-white/30 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="pl-12 pr-6 py-4 w-full bg-white/80 backdrop-blur-lg border border-white/30 rounded-2xl focus:ring-2 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
+                  style={{ '--tw-ring-color': '#40467b', 'borderColor': 'var(--tw-ring-color)' } as any}
+                  onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                  onBlur={(e) => e.target.style.borderColor = ''}
                 />
               </div>
               
@@ -209,7 +222,10 @@ export default function NewsListPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'date' | 'likes')}
-                    className="appearance-none bg-white/90 border border-white/30 rounded-2xl px-6 py-4 pr-12 text-sm font-semibold focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-xl"
+                    className="appearance-none bg-white/90 border border-white/30 rounded-2xl px-6 py-4 pr-12 text-sm font-semibold focus:ring-2 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-xl"
+                    style={{ '--tw-ring-color': '#40467b' } as any}
+                    onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                    onBlur={(e) => e.target.style.borderColor = ''}
                   >
                     <option value="date">{t.newsListPage?.sort_by_date || "Podľa dátumu"}</option>
                     <option value="likes">{t.newsListPage?.sort_by_likes || "Podľa obľúbenosti"}</option>
@@ -224,9 +240,10 @@ export default function NewsListPage() {
                     whileTap={{ scale: 0.95 }}
                     className={`p-3 rounded-xl transition-all duration-300 ${
                       viewMode === 'grid' 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                        : 'text-slate-600 hover:text-blue-600'
+                        ? 'text-white shadow-lg' 
+                        : 'text-slate-600'
                     }`}
+                    style={viewMode === 'grid' ? { backgroundColor: '#40467b' } : {}}
                   >
                     <Grid size={18} />
                   </motion.button>
@@ -236,9 +253,10 @@ export default function NewsListPage() {
                     whileTap={{ scale: 0.95 }}
                     className={`p-3 rounded-xl transition-all duration-300 ${
                       viewMode === 'list' 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                        : 'text-slate-600 hover:text-blue-600'
+                        ? 'text-white shadow-lg' 
+                        : 'text-slate-600'
                     }`}
+                    style={viewMode === 'list' ? { backgroundColor: '#40467b' } : {}}
                   >
                     <List size={18} />
                   </motion.button>
@@ -309,7 +327,7 @@ export default function NewsListPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
                   <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg backdrop-blur-xl">
+                    <div className="text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg backdrop-blur-xl" style={{ backgroundColor: '#40467b' }}>
                       {t.newsListPage?.new_badge || "NOVÝ"}
                     </div>
                   </div>
@@ -352,9 +370,10 @@ export default function NewsListPage() {
                   
                   <Link
                     href={`/news/${n.id}`}
-                    className="group/btn relative inline-flex items-center justify-center mt-auto bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                    className="group/btn relative inline-flex items-center justify-center mt-auto text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                    style={{ backgroundColor: '#40467b' }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover/btn:opacity-20 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-10 transition-opacity duration-300"></div>
                     
                     <span className="relative z-10 mr-2">{t.show_article}</span>
                     <motion.div
@@ -367,7 +386,8 @@ export default function NewsListPage() {
                   </Link>
                   
                   <motion.div 
-                    className="absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500"
+                    className="absolute bottom-0 left-8 right-8 h-1 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500"
+                    style={{ backgroundColor: '#40467b' }}
                     initial={{ width: 0 }}
                     whileHover={{ width: "calc(100% - 4rem)" }}
                     transition={{ duration: 0.5 }}
@@ -398,7 +418,8 @@ export default function NewsListPage() {
               </p>
               <button
                 onClick={() => setSearchTerm("")}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg"
+                className="text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:opacity-90"
+                style={{ backgroundColor: '#40467b' }}
               >
                 {t.newsListPage?.clear_search || "Vymazať vyhľadávanie"}
               </button>

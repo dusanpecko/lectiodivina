@@ -38,19 +38,19 @@ export function getMetadata(locale: string = 'sk') {
     openGraph: {
       title: meta.title,
       description: meta.description,
-      url: `https://lectiodivina.org${locale !== 'sk' ? `/${locale}` : ''}`,
+      url: `https://lectio.one${locale !== 'sk' ? `/${locale}` : ''}`,
       siteName: 'Lectio Divina',
       locale: getOpenGraphLocale(locale),
       type: 'website',
     },
     alternates: {
-      canonical: `https://lectiodivina.org${locale !== 'sk' ? `/${locale}` : ''}`,
+      canonical: `https://lectio.one${locale !== 'sk' ? `/${locale}` : ''}`,
       languages: {
-        'sk': 'https://lectiodivina.org',
-        'en': 'https://lectiodivina.org',
-        'es': 'https://lectiodivina.org',
-        'cz': 'https://lectiodivina.org',
-        'de': 'https://lectiodivina.org',
+        'sk': 'https://lectio.one',
+        'en': 'https://lectio.one',
+        'es': 'https://lectio.one',
+        'cz': 'https://lectio.one',
+        'de': 'https://lectio.one',
       }
     }
   }

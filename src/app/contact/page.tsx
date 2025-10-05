@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { contactTranslations } from "./translations";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 // Icons
 const PhoneIcon = () => (
@@ -131,9 +132,6 @@ export default function ContactPage() {
     setSubmitStatus('idle');
     
     try {
-      // TODO: Implement reCAPTCHA verification
-      // const recaptchaToken = await executeRecaptcha('contact_form');
-      
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -141,7 +139,6 @@ export default function ContactPage() {
         },
         body: JSON.stringify({
           ...formData,
-          // recaptchaToken,
           language: lang,
           userAgent: navigator.userAgent,
           timestamp: new Date().toISOString()
@@ -179,7 +176,6 @@ export default function ContactPage() {
     setExpandedFaq(expandedFaq === index ? null : index);
   };
 
-  // Sample supporters data - replace with your actual supporters
   const supporters = [
     { name: "Žilinská diecéza", logo: "/logos/partner1.webp", url: "https://dcza.sk/" },
     { name: "Slovenská biblická spoločnosť", logo: "/logos/partner2.webp", url: "https://biblia.sk/" },
@@ -188,7 +184,7 @@ export default function ContactPage() {
     { name: "KROK – Pastoračný fond Žilinskej diecézy", logo: "/logos/partner5.webp", url: "https://mojkrok.sk" },
     { name: "Vydavateľstvo Dobrá kniha", logo: "/logos/partner6.webp", url: "https://www.dobrakniha.sk/" },
     { name: "SSV", logo: "/logos/partner7.webp", url: "https://www.ssv.sk/" },
-    { name: "4IGV", logo: "/logos/partner8.webp", url: "https://www.4igv.cz/ttps://partner8.com" },
+    { name: "4IGV", logo: "/logos/partner8.webp", url: "https://www.4igv.cz/" },
     { name: "Inštitút Communio", logo: "/logos/partner9.webp", url: "https://icommunio.sk/" },
     { name: "MYPROFILE", logo: "/logos/partner10.webp", url: "https://mypro.one/" },
     { name: "Časopis Naša Žilinská diecéza", logo: "/logos/partner11.webp", url: "https://www.nasadieceza.sk/" },
@@ -202,399 +198,524 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t.header.title}</h1>
-          <p className="text-xl text-blue-600 mb-4">{t.header.subtitle}</p>
-          <p className="text-gray-600 max-w-3xl mx-auto">{t.header.description}</p>
+    <div className="min-h-screen" style={{ backgroundColor: '#40467b' }}>
+      {/* Hero Section with Background */}
+      <div className="relative py-20 px-4">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
+
+        {/* Header Content */}
+        <div className="relative max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              {t.header.title}
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-4">
+              {t.header.subtitle}
+            </p>
+            <p className="text-lg text-white/80 max-w-2xl mx-auto">
+              {t.header.description}
+            </p>
+          </motion.div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Left Column - Contact Info */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Organization Info */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">{t.organization.title}</h2>
-            <p className="text-gray-600 text-sm mb-4">{t.organization.mission}</p>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="font-semibold text-blue-900">{t.organization.project}</p>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 pb-16">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Contact Info */}
+          <motion.div 
+            className="lg:col-span-1 space-y-6"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Organization Info */}
+            <div 
+              className="rounded-xl shadow-lg p-6 border backdrop-blur-md"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <h2 className="text-xl font-bold text-white mb-4">{t.organization.title}</h2>
+              <p className="text-white/80 text-sm mb-4">{t.organization.mission}</p>
+              <div 
+                className="p-4 rounded-lg backdrop-blur-sm"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+              >
+                <p className="font-semibold text-white">{t.organization.project}</p>
+              </div>
             </div>
-          </div>
 
-          {/* Contact Details */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">{t.contact.title}</h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <LocationIcon />
-                <div>
-                  <p className="font-medium text-gray-900">{t.contact.address}</p>
-                  <p className="text-sm text-gray-600">
-                    KROK – Pastoračný fond Žilinskej diecézy<br/>
-                    Lectio divina<br/>
-                    Jána Kalinčiaka 1,<br/>
-                    010 01 Žilina
+            {/* Contact Details */}
+            <div 
+              className="rounded-xl shadow-lg p-6 border backdrop-blur-md"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <h3 className="text-lg font-bold text-white mb-4">{t.contact.title}</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3 text-white">
+                  <LocationIcon />
+                  <div>
+                    <p className="font-medium">{t.contact.address}</p>
+                    <p className="text-sm text-white/80">
+                      KROK – Pastoračný fond Žilinskej diecézy<br/>
+                      Lectio divina<br/>
+                      Jána Kalinčiaka 1,<br/>
+                      010 01 Žilina
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 text-white">
+                  <PhoneIcon />
+                  <div>
+                    <p className="font-medium">{t.contact.phone}</p>
+                    <a href="tel:+421903982982" className="text-white/90 hover:text-white">
+                      +421 903 982 982
+                    </a>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 text-white">
+                  <MailIcon />
+                  <div>
+                    <p className="font-medium">{t.contact.email}</p>
+                    <a href="mailto:mojkrok@dcza.sk" className="text-white/90 hover:text-white">
+                      mojkrok@dcza.sk
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-white/20">
+                <div className="grid grid-cols-2 gap-4 text-sm text-white">
+                  <div>
+                    <p className="font-medium">{t.contact.ico}</p>
+                    <p className="text-white/80">52 60 18 97</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">{t.contact.dic}</p>
+                    <p className="text-white/80">21 21 13 90 42</p>
+                  </div>
+                </div>
+                <div className="mt-2 text-white">
+                  <p className="font-medium">{t.contact.iban}</p>
+                  <p className="text-white/80 break-all text-sm">SK04 8330 0000 0029 0168 8673</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Contact Options */}
+            <div 
+              className="rounded-xl shadow-lg p-6 border backdrop-blur-md"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <h3 className="text-lg font-bold text-white mb-4">{t.quickContact.title}</h3>
+              
+              <div className="space-y-3">
+                <div 
+                  className="flex items-start space-x-3 p-3 rounded-lg backdrop-blur-sm"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                >
+                  <div className="text-white"><HeadphonesIcon /></div>
+                  <div>
+                    <p className="font-medium text-white">{t.quickContact.technical.title}</p>
+                    <p className="text-sm text-white/80">{t.quickContact.technical.description}</p>
+                  </div>
+                </div>
+                
+                <div 
+                  className="flex items-start space-x-3 p-3 rounded-lg backdrop-blur-sm"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                >
+                  <div className="text-white"><HeartIcon /></div>
+                  <div>
+                    <p className="font-medium text-white">{t.quickContact.spiritual.title}</p>
+                    <p className="text-sm text-white/80">{t.quickContact.spiritual.description}</p>
+                  </div>
+                </div>
+                
+                <div 
+                  className="flex items-start space-x-3 p-3 rounded-lg backdrop-blur-sm"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                >
+                  <div className="text-white"><UsersIcon /></div>
+                  <div>
+                    <p className="font-medium text-white">{t.quickContact.partnership.title}</p>
+                    <p className="text-sm text-white/80">{t.quickContact.partnership.description}</p>
+                  </div>
+                </div>
+                
+                <div 
+                  className="flex items-start space-x-3 p-3 rounded-lg backdrop-blur-sm"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                >
+                  <div className="text-white"><ChatIcon /></div>
+                  <div>
+                    <p className="font-medium text-white">{t.quickContact.feedback.title}</p>
+                    <p className="text-sm text-white/80">{t.quickContact.feedback.description}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Social & Apps */}
+            <div 
+              className="rounded-xl shadow-lg p-6 border backdrop-blur-md"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <h3 className="text-lg font-bold text-white mb-4">{t.social.title}</h3>
+              <div className="flex space-x-4 mb-6">
+                <a 
+                  href="https://www.facebook.com/SKLectioDivina"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                  <span>Facebook</span>
+                </a>
+                
+                <a 
+                  href="https://www.instagram.com/sklectiodivina/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.897 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.897-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
+                  </svg>
+                  <span>Instagram</span>
+                </a>
+              </div>
+              
+              <h4 className="font-semibold text-white mb-3">{t.apps.title}</h4>
+              <div className="space-y-3">
+                <a 
+                  href="https://apps.apple.com/sk/app/lectio-divina/id6443882687"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                  <div>
+                    <div className="text-xs">Download on the</div>
+                    <div className="text-sm font-semibold">App Store</div>
+                  </div>
+                </a>
+                
+                <a 
+                  href="https://play.google.com/store/apps/details?id=sk.dpapp.app.android604688a88a394"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                  </svg>
+                  <div>
+                    <div className="text-xs">Get it on</div>
+                    <div className="text-sm font-semibold">Google Play</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column - Contact Form & FAQ */}
+          <motion.div 
+            className="lg:col-span-2 space-y-8"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {/* Contact Form */}
+            <div 
+              className="rounded-xl shadow-lg p-8 border backdrop-blur-md"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">{t.form.title}</h2>
+                <p className="text-white/80">{t.form.subtitle}</p>
+              </div>
+
+              {submitStatus !== 'idle' && (
+                <div className={`mb-6 p-4 rounded-lg backdrop-blur-sm ${
+                  submitStatus === 'success' 
+                    ? 'border border-green-300'
+                    : 'border border-red-300'
+                }`}
+                style={{
+                  backgroundColor: submitStatus === 'success' 
+                    ? 'rgba(134, 239, 172, 0.2)' 
+                    : 'rgba(252, 165, 165, 0.2)'
+                }}
+                >
+                  <p className={submitStatus === 'success' ? 'text-green-100' : 'text-red-100'}>
+                    {submitStatus === 'success' ? t.form.success : t.form.error}
                   </p>
                 </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <PhoneIcon />
-                <div>
-                  <p className="font-medium text-gray-900">{t.contact.phone}</p>
-                  <a href="tel:+421903982982" className="text-blue-600 hover:text-blue-800">
-                    +421 903 982 982
-                  </a>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <MailIcon />
-                <div>
-                  <p className="font-medium text-gray-900">{t.contact.email}</p>
-                  <a href="mailto:mojkrok@dcza.sk" className="text-blue-600 hover:text-blue-800">
-                    mojkrok@dcza.sk
-                  </a>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="font-medium text-gray-900">{t.contact.ico}</p>
-                  <p className="text-gray-600">52 60 18 97</p>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">{t.contact.dic}</p>
-                  <p className="text-gray-600">21 21 13 90 42</p>
-                </div>
-              </div>
-              <div className="mt-2">
-                <p className="font-medium text-gray-900">{t.contact.iban}</p>
-                <p className="text-gray-600 break-all">SK04 8330 0000 0029 0168 8673</p>
-              </div>
-            </div>
-          </div>
+              )}
 
-          {/* Quick Contact Options */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">{t.quickContact.title}</h3>
-            
-            <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
-                <HeadphonesIcon />
-                <div>
-                  <p className="font-medium text-blue-900">{t.quickContact.technical.title}</p>
-                  <p className="text-sm text-blue-700">{t.quickContact.technical.description}</p>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      {t.form.firstName} *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border backdrop-blur-sm ${
+                        errors.firstName 
+                          ? 'border-red-300' 
+                          : 'border-white/30'
+                      } focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50`}
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                      placeholder={t.form.firstName}
+                    />
+                    {errors.firstName && (
+                      <p className="mt-1 text-sm text-red-200">{errors.firstName}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      {t.form.lastName} *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      className={`w-full px-4 py-3 rounded-lg border backdrop-blur-sm ${
+                        errors.lastName 
+                          ? 'border-red-300' 
+                          : 'border-white/30'
+                      } focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50`}
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                      placeholder={t.form.lastName}
+                    />
+                    {errors.lastName && (
+                      <p className="mt-1 text-sm text-red-200">{errors.lastName}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
-                <HeartIcon />
+                
                 <div>
-                  <p className="font-medium text-purple-900">{t.quickContact.spiritual.title}</p>
-                  <p className="text-sm text-purple-700">{t.quickContact.spiritual.description}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition-colors">
-                <UsersIcon />
-                <div>
-                  <p className="font-medium text-green-900">{t.quickContact.partnership.title}</p>
-                  <p className="text-sm text-green-700">{t.quickContact.partnership.description}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors">
-                <ChatIcon />
-                <div>
-                  <p className="font-medium text-orange-900">{t.quickContact.feedback.title}</p>
-                  <p className="text-sm text-orange-700">{t.quickContact.feedback.description}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Social & Apps */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">{t.social.title}</h3>
-            <div className="flex space-x-4 mb-6">
-              <a 
-                href="https://www.facebook.com/SKLectioDivina"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                <span>Facebook</span>
-              </a>
-              
-              <a 
-                href="https://www.instagram.com/sklectiodivina/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.621 5.367 11.988 11.988 11.988s11.987-5.367 11.987-11.988C24.014 5.367 18.648.001 12.017.001zM8.449 16.988c-2.458 0-4.467-2.01-4.467-4.468s2.009-4.467 4.467-4.467c2.459 0 4.468 2.009 4.468 4.467s-2.009 4.468-4.468 4.468zm7.519 0c-2.458 0-4.467-2.01-4.467-4.468s2.009-4.467 4.467-4.467c2.459 0 4.468 2.009 4.468 4.467s-2.009 4.468-4.468 4.468z"/>
-                </svg>
-                <span>Instagram</span>
-              </a>
-            </div>
-            
-            <h4 className="font-semibold text-gray-900 mb-3">{t.apps.title}</h4>
-            <div className="space-y-3">
-              <a 
-                href="https://apps.apple.com/sk/app/lectio-divina/id6443882687"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-3 bg-black text-white px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-                <div>
-                  <div className="text-xs">Download on the</div>
-                  <div className="text-sm font-semibold">App Store</div>
-                </div>
-              </a>
-              
-              <a 
-                href="https://play.google.com/store/apps/details?id=sk.dpapp.app.android604688a88a394"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-3 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
-                </svg>
-                <div>
-                  <div className="text-xs">Get it on</div>
-                  <div className="text-sm font-semibold">Google Play</div>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Contact Form & FAQ */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Contact Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.form.title}</h2>
-              <p className="text-gray-600">{t.form.subtitle}</p>
-            </div>
-
-            {submitStatus !== 'idle' && (
-              <div className={`mb-6 p-4 rounded-lg ${
-                submitStatus === 'success' 
-                  ? 'bg-green-50 border border-green-200' 
-                  : 'bg-red-50 border border-red-200'
-              }`}>
-                <p className={submitStatus === 'success' ? 'text-green-800' : 'text-red-800'}>
-                  {submitStatus === 'success' ? t.form.success : t.form.error}
-                </p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t.form.firstName} *
+                  <label className="block text-sm font-medium text-white mb-2">
+                    {t.form.email} *
                   </label>
                   <input
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      errors.firstName 
-                        ? 'border-red-300 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-200`}
-                    placeholder={t.form.firstName}
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className={`w-full px-4 py-3 rounded-lg border backdrop-blur-sm ${
+                      errors.email 
+                        ? 'border-red-300' 
+                        : 'border-white/30'
+                    } focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50`}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                    placeholder={t.form.email}
                   />
-                  {errors.firstName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-200">{errors.email}</p>
                   )}
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t.form.lastName} *
+                  <label className="block text-sm font-medium text-white mb-2">
+                    {t.form.message} *
                   </label>
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      errors.lastName 
-                        ? 'border-red-300 focus:border-red-500' 
-                        : 'border-gray-300 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-200`}
-                    placeholder={t.form.lastName}
+                  <textarea
+                    value={formData.message}
+                    onChange={(e) => handleInputChange('message', e.target.value)}
+                    rows={6}
+                    className={`w-full px-4 py-3 rounded-lg border backdrop-blur-sm ${
+                      errors.message 
+                        ? 'border-red-300' 
+                        : 'border-white/30'
+                    } focus:outline-none focus:ring-2 focus:ring-white/50 resize-vertical text-white placeholder-white/50`}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                    placeholder={t.form.message}
                   />
-                  {errors.lastName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+                  {errors.message && (
+                    <p className="mt-1 text-sm text-red-200">{errors.message}</p>
                   )}
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t.form.email} *
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.email 
-                      ? 'border-red-300 focus:border-red-500' 
-                      : 'border-gray-300 focus:border-blue-500'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-200`}
-                  placeholder={t.form.email}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t.form.message} *
-                </label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) => handleInputChange('message', e.target.value)}
-                  rows={6}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.message 
-                      ? 'border-red-300 focus:border-red-500' 
-                      : 'border-gray-300 focus:border-blue-500'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-200 resize-vertical`}
-                  placeholder={t.form.message}
-                />
-                {errors.message && (
-                  <p className="mt-1 text-sm text-red-600">{errors.message}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="flex items-start space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={formData.privacyConsent}
-                    onChange={(e) => handleInputChange('privacyConsent', e.target.checked)}
-                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    {t.form.privacyConsent}{' '}
-                    <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-800 underline">
-                      {t.form.privacyLink}
-                    </Link>
-                    *
-                  </span>
-                </label>
-                {errors.privacyConsent && (
-                  <p className="mt-1 text-sm text-red-600">{errors.privacyConsent}</p>
-                )}
-              </div>
-              
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isSubmitting ? t.form.submitting : t.form.submit}
-              </button>
-            </form>
-          </div>
+                
+                <div>
+                  <label className="flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={formData.privacyConsent}
+                      onChange={(e) => handleInputChange('privacyConsent', e.target.checked)}
+                      className="mt-1 w-4 h-4 rounded focus:ring-white/50"
+                    />
+                    <span className="text-sm text-white/90">
+                      {t.form.privacyConsent}{' '}
+                      <Link href="/privacy-policy" className="text-white hover:text-white/80 underline">
+                        {t.form.privacyLink}
+                      </Link>
+                      *
+                    </span>
+                  </label>
+                  {errors.privacyConsent && (
+                    <p className="mt-1 text-sm text-red-200">{errors.privacyConsent}</p>
+                  )}
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all backdrop-blur-sm"
+                  style={{ 
+                    backgroundColor: '#686ea3',
+                    borderColor: 'rgba(255, 255, 255, 0.2)'
+                  }}
+                >
+                  {isSubmitting ? t.form.submitting : t.form.submit}
+                </button>
+              </form>
+            </div>
 
-          {/* FAQ Section */}
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t.faq.title}</h2>
-            
-            <div className="space-y-4">
-              {t.faq.items.map((item, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => toggleFaq(index)}
-                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+            {/* FAQ Section */}
+            <div 
+              className="rounded-xl shadow-lg p-8 border backdrop-blur-md"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              }}
+            >
+              <h2 className="text-2xl font-bold text-white mb-6">{t.faq.title}</h2>
+              
+              <div className="space-y-4">
+                {t.faq.items.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="border rounded-lg backdrop-blur-sm"
+                    style={{ 
+                      borderColor: 'rgba(255, 255, 255, 0.2)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                    }}
                   >
-                    <h3 className="font-semibold text-gray-900">{item.question}</h3>
-                    <ChevronDownIcon isOpen={expandedFaq === index} />
-                  </button>
-                  
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      expandedFaq === index 
-                        ? 'max-h-96 opacity-100' 
-                        : 'max-h-0 opacity-0'
-                    }`}
-                  >
-                    <div className="px-6 pb-4 text-gray-700">
-                      <p>{item.answer}</p>
+                    <button
+                      onClick={() => toggleFaq(index)}
+                      className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-white/10 transition-colors rounded-lg"
+                    >
+                      <h3 className="font-semibold text-white">{item.question}</h3>
+                      <div className="text-white">
+                        <ChevronDownIcon isOpen={expandedFaq === index} />
+                      </div>
+                    </button>
+                    
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        expandedFaq === index 
+                          ? 'max-h-96 opacity-100' 
+                          : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="px-6 pb-4 text-white/80">
+                        <p>{item.answer}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Supporters Section */}
+        <motion.div 
+          className="mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <div 
+            className="rounded-xl shadow-lg p-8 border backdrop-blur-md"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              borderColor: 'rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2">{t.supporters.title}</h2>
+              <p className="text-white/80">{t.supporters.subtitle}</p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {supporters.map((supporter, index) => (
+                <a
+                  key={index}
+                  href={supporter.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center p-4 rounded-lg hover:bg-white/10 transition-colors group border backdrop-blur-sm"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <div className="w-full h-16 flex items-center justify-center relative">
+                    <img 
+                      src={supporter.logo} 
+                      alt={supporter.name}
+                      className="max-w-full max-h-full object-contain"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) {
+                          fallback.style.display = 'flex';
+                        }
+                      }}
+                    />
+                    <div 
+                      className="hidden w-full h-full rounded items-center justify-center absolute inset-0"
+                      style={{
+                        display: 'none',
+                        backgroundColor: 'rgba(0, 0, 0, 0.05)'
+                      }}
+                    >
+                      <span className="text-xs text-gray-600 text-center px-2">{supporter.name}</span>
+                    </div>
+                  </div>
+                </a>
               ))}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Supporters Section */}
-      <div className="mt-12">
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.supporters.title}</h2>
-            <p className="text-gray-600">{t.supporters.subtitle}</p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {supporters.map((supporter, index) => (
-              <a
-                key={index}
-                href={supporter.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors group border border-gray-200 hover:shadow-md"
-              >
-                <div className="w-full h-16 flex items-center justify-center relative">
-                  <img 
-                    src={supporter.logo} 
-                    alt={supporter.name}
-                    className="max-w-full max-h-full object-contain"
-                    onError={(e) => {
-                      // Fallback ak sa obrázok nenačíta
-                      const target = e.currentTarget as HTMLImageElement;
-                      target.style.display = 'none';
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) {
-                        fallback.style.display = 'flex';
-                      }
-                    }}
-                  />
-                  <div 
-                    className="hidden w-full h-full bg-gray-200 rounded items-center justify-center absolute inset-0"
-                    style={{display: 'none'}}
-                  >
-                    <span className="text-xs text-gray-500">{supporter.name}</span>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -47,39 +47,26 @@ export default function AuthCallbackPage() {
               throw new Error("Chyba pri vytváraní používateľského záznamu");
             }
 
-            // Nový používateľ nemá admin prístup
-            setStatus('error');
-            setMessage('Váš účet bol vytvorený, ale nemáte oprávnenie na prístup do administrácie. Kontaktujte správcu systému pre pridelenie admin role.');
-            
-            // Odhlásiť používateľa
-            await supabase.auth.signOut();
+            // Nový používateľ s user rolou - presmeruj na hlavnú stránku
+            setStatus('success');
+            setMessage('Váš účet bol úspešne vytvorený! Presmerovávame vás na hlavnú stránku.');
             
             setTimeout(() => {
-              router.push('/login');
-            }, 5000);
+              router.push('/');
+            }, 2000);
             return;
           }
 
-          // Kontrola admin role
-          if (userData.role !== 'admin') {
-            setStatus('error');
-            setMessage('Nemáte oprávnenie na prístup do administrácie. Iba admin používatelia môžu pristupovať.');
-            
-            // Odhlásiť používateľa
-            await supabase.auth.signOut();
-            
-            setTimeout(() => {
-              router.push('/login');
-            }, 3000);
-            return;
-          }
-
-          // Úspešné prihlásenie
+          // Úspešné prihlásenie - presmeruj podľa roly
           setStatus('success');
-          setMessage(`Vitajte späť, ${userData.full_name || 'Admin'}! Presmerovávame vás...`);
+          setMessage(`Vitajte späť, ${userData.full_name || userData.role}! Presmerovávame vás...`);
           
           setTimeout(() => {
-            router.push('/admin');
+            if (userData.role === 'admin') {
+              router.push('/admin');
+            } else {
+              router.push('/');
+            }
           }, 2000);
 
         } else {

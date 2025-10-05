@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         '/utils/',
       ],
     },
-    sitemap: 'https://lectiodivina.org/sitemap.xml',
+    sitemap: 'https://lectio.one/sitemap.xml',
   }
 }

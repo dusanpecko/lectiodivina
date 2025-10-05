@@ -6,6 +6,7 @@ import { useSupabase } from '../components/SupabaseProvider';
 import { User } from '@supabase/supabase-js';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -148,6 +149,7 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['profile-info', 'account-info']));
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Password change state
@@ -413,7 +415,12 @@ export default function ProfilePage() {
   const signOut = async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
+    setShowLogoutDialog(false);
     router.push('/login');
+  };
+
+  const handleSignOutClick = () => {
+    setShowLogoutDialog(true);
   };
 
   const formatDate = (dateString: string) => {
@@ -422,12 +429,12 @@ export default function ProfilePage() {
   };
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-xl shadow-lg p-12 text-center max-w-md">
           <div className="w-16 h-16 mx-auto mb-6 relative">
-            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
-            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
+            <div className="absolute inset-2 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Načítavam profil</h2>
           <p className="text-gray-600 text-sm">Overujem prístup...</p>
@@ -450,7 +457,7 @@ export default function ProfilePage() {
           {/* Avatar Section */}
           <div className="flex flex-col items-center">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden ring-4 ring-white shadow-lg">
+              <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden ring-4 ring-white shadow-lg">
                 {profile?.avatar_url ? (
                   <img 
                     src={profile.avatar_url} 
@@ -471,7 +478,8 @@ export default function ProfilePage() {
             <button
               onClick={() => setShowAvatarPicker(true)}
               disabled={isUploading}
-              className="mt-4 inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50"
+              className="mt-4 inline-flex items-center space-x-2 px-4 py-2 text-white rounded-lg hover:opacity-90 focus:ring-4 focus:ring-opacity-30 transition-all duration-200 disabled:opacity-50"
+              style={{ backgroundColor: '#40467b' }}
             >
               <CameraIcon />
               <span>Zmeniť avatar</span>
@@ -487,7 +495,10 @@ export default function ProfilePage() {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-opacity-50 transition-all duration-200"
+              style={{ '--tw-ring-color': '#40467b', '--tw-border-opacity': '1' } as any}
+              onFocus={(e) => e.target.style.borderColor = '#40467b'}
+              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               placeholder="Zadajte svoje meno"
             />
           </div>
@@ -496,7 +507,8 @@ export default function ProfilePage() {
           <button
             onClick={saveProfile}
             disabled={isSaving}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 font-medium"
+            className="w-full text-white py-3 px-4 rounded-lg hover:opacity-90 focus:ring-4 focus:ring-opacity-30 transition-all duration-200 disabled:opacity-50 font-medium"
+            style={{ backgroundColor: '#40467b' }}
           >
             {isSaving ? (
               <div className="flex items-center justify-center space-x-2">
@@ -519,27 +531,27 @@ export default function ProfilePage() {
       icon: <UserIcon />,
       content: (
         <div className="space-y-4">
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="flex items-center space-x-3">
-              <div className="text-blue-600">
+              <div style={{ color: '#40467b' }}>
                 <MailIcon />
               </div>
               <div>
-                <div className="font-medium text-blue-900">Emailová adresa</div>
-                <div className="text-blue-700">{email}</div>
+                <div className="font-medium" style={{ color: '#40467b' }}>Emailová adresa</div>
+                <div className="text-gray-700">{email}</div>
               </div>
             </div>
           </div>
 
           {profile?.created_at && (
-            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
               <div className="flex items-center space-x-3">
-                <div className="text-purple-600">
+                <div style={{ color: '#40467b' }}>
                   <CalendarIcon />
                 </div>
                 <div>
-                  <div className="font-medium text-purple-900">Dátum registrácie</div>
-                  <div className="text-purple-700">{formatDate(profile.created_at)}</div>
+                  <div className="font-medium" style={{ color: '#40467b' }}>Dátum registrácie</div>
+                  <div className="text-gray-700">{formatDate(profile.created_at)}</div>
                 </div>
               </div>
             </div>
@@ -595,7 +607,7 @@ export default function ProfilePage() {
               Odhláste sa zo svojho účtu, ak používate zdieľané zariadenie.
             </p>
             <button
-              onClick={signOut}
+              onClick={handleSignOutClick}
               className="inline-flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               <LogOutIcon />
@@ -627,13 +639,14 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="w-full">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <Link 
             href="/admin" 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+            className="inline-flex items-center hover:text-gray-600 mb-4 transition-colors"
+            style={{ color: '#40467b' }}
           >
             <ArrowLeftIcon />
             <span className="ml-2">Späť na Dashboard</span>
@@ -641,7 +654,7 @@ export default function ProfilePage() {
           
           <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                 <UserIcon />
               </div>
               <div>
@@ -677,7 +690,7 @@ export default function ProfilePage() {
                 className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="text-blue-600">{section.icon}</div>
+                  <div style={{ color: '#40467b' }}>{section.icon}</div>
                   <h2 className="text-xl font-semibold text-gray-900">{section.title}</h2>
                 </div>
                 <motion.div
@@ -713,7 +726,8 @@ export default function ProfilePage() {
             </p>
             <Link 
               href="/contact" 
-              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center text-white px-6 py-3 rounded-lg hover:opacity-90 transition-colors"
+              style={{ backgroundColor: '#40467b' }}
             >
               Kontaktujte nás
             </Link>
@@ -739,7 +753,7 @@ export default function ProfilePage() {
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full flex items-center space-x-3 p-4 hover:bg-gray-50 rounded-lg transition-all duration-200"
               >
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                   <UploadIcon />
                 </div>
                 <span className="font-medium text-gray-700">Nahrať z galérie</span>
@@ -864,7 +878,10 @@ export default function ProfilePage() {
                     type={showCurrentPassword ? "text" : "password"}
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 transition-all duration-200"
+                    style={{'--tw-ring-color': '#40467b'} as any}
+                    onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                     placeholder="••••••••"
                   />
                   <button
@@ -887,7 +904,10 @@ export default function ProfilePage() {
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 transition-all duration-200"
+                    style={{'--tw-ring-color': '#40467b'} as any}
+                    onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                     placeholder="••••••••"
                   />
                   <button
@@ -910,7 +930,10 @@ export default function ProfilePage() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 transition-all duration-200"
+                    style={{'--tw-ring-color': '#40467b'} as any}
+                    onFocus={(e) => e.target.style.borderColor = '#40467b'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                     placeholder="••••••••"
                   />
                   <button
@@ -949,7 +972,8 @@ export default function ProfilePage() {
               <button
                 onClick={changePassword}
                 disabled={isChangingPassword}
-                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 font-medium"
+                className="flex-1 text-white py-3 px-4 rounded-lg hover:opacity-90 focus:ring-4 focus:ring-opacity-30 transition-all duration-200 disabled:opacity-50 font-medium"
+                style={{ backgroundColor: '#40467b' }}
               >
                 {isChangingPassword ? (
                   <div className="flex items-center justify-center space-x-2">
@@ -975,6 +999,18 @@ export default function ProfilePage() {
           if (file) handleAvatarUpload(file);
         }}
         className="hidden"
+      />
+
+      {/* Logout Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showLogoutDialog}
+        title="Odhlásiť sa"
+        message="Naozaj sa chcete odhlásiť zo svojho účtu?"
+        confirmText="Odhlásiť sa"
+        cancelText="Zrušiť"
+        onConfirm={signOut}
+        onCancel={() => setShowLogoutDialog(false)}
+        type="warning"
       />
     </div>
   );

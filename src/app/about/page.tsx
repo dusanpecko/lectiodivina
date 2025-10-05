@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useLanguage } from "../components/LanguageProvider";
 import { aboutTranslations } from "./i18n";
 import { motion } from "framer-motion";
@@ -21,6 +22,7 @@ import {
 export default function AboutPage() {
   const { lang } = useLanguage();
   const t = aboutTranslations[lang];
+  const [selectedMember, setSelectedMember] = useState<number | null>(null);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -36,233 +38,503 @@ export default function AboutPage() {
     }
   };
 
+  const teamMembers = [
+    {
+      id: 1,
+      name: "Martin Novák",
+      role: "Zakladateľ a vedúci projektu",
+      image: "/profile_1.webp",
+      bio: "Martin je senior pastor a duchovný vedúci s 15-ročnou praxou. Jeho vášňou je pomáhať ľuďom objavovať hlbší vzťah s Bohom cez Božie slovo. Je autorom viacerých kníh o duchovnom živote a pravidelne vedie retreaty zamerané na Lectio Divina."
+    },
+    {
+      id: 2,
+      name: "Jana Kováčová",
+      role: "Hlavná vývojárka a dizajnérka",
+      image: "/profile_2.webp",
+      bio: "Jana spája svoju lásku k technológiám s duchovno-náboženským pozadím. Vyštudovala informatiku a teológiu, čo jej umožňuje vytvárať nástroje, ktoré majú skutočný duchovný dopad. Jej dizajnérske riešenia pomáhajú tisíckam používateľov denne."
+    },
+    {
+      id: 3,
+      name: "Peter Horváth",
+      role: "Obsahový kurátor a teológ",
+      image: "/profile_3.webp",
+      bio: "Peter je biblickým odborníkom a učiteľom s doktorátom z teológie. Venuje sa výberu a príprave denných čítaní tak, aby boli relevantné a duchovne prínosné. Jeho práca zabezpečuje, že obsah aplikácie je teologicky presný a duchovne životodarný."
+    },
+    {
+      id: 4,
+      name: "Lucia Bartošová",
+      role: "Komunitná manažérka",
+      image: "/profile_4.webp",
+      bio: "Lucia sa stará o našu rastúcu komunitu používateľov. Jej srdce bije pre budovanie vzťahov a podporu ľudí na ich duchovnej ceste. Organizuje online stretnutia, reaguje na spätnú väzbu a zabezpečuje, že sa každý používateľ cíti byť súčasťou našej rodiny."
+    },
+    {
+      id: 5,
+      name: "Tomáš Varga",
+      role: "Technický vedúci",
+      image: "/profile_5.webp",
+      bio: "Tomáš je skúsený softvérový inžinier, ktorý sa postará o to, aby aplikácia bežala hladko a bezpečne. Jeho technické zručnosti a pozornosť k detailom zabezpečujú, že naša platforma je spoľahlivá, rýchla a dostupná pre všetkých používateľov kedykoľvek potrebujú."
+    }
+  ];
+
   return (
     <div className="relative">
-      {/* Hero sekcia */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
-        {/* Pozadie s gradientom */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900"></div>
-        <div className="absolute inset-0 bg-black/40"></div>
-        
-        {/* Dekoratívne prvky */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-blue-400/20 rounded-full blur-xl"></div>
-        
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Hero sekcia - O projekte Lectio Divina */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Pozadie obrázok */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/about-background.webp)',
+          }}
+        >
+          {/* Tmavý overlay */}
+          <div className="absolute inset-0 bg-black/40"></div>
+        </div>
+
+        {/* Obsah */}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="backdrop-blur-md rounded-3xl p-12 border"
+            style={{
+              backgroundColor: 'rgba(64, 70, 123, 0.75)',
+              borderColor: 'rgba(255, 255, 255, 0.2)'
+            }}
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               {t.title}
             </h1>
-            <p className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-4xl mx-auto">
+            <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-4xl mx-auto">
               {t.subtitle}
             </p>
             <div className="flex justify-center">
-              <BookOpen className="w-16 h-16 text-yellow-400" />
+              <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
+                <BookOpen className="w-12 h-12 text-white" />
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Obsah stránky */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Ako sa to začalo */}
+      {/* Sekcia: Ako sa to všetko začalo - Text vľavo, obrázok vpravo */}
+      <section 
+        className="py-16 lg:py-24 relative"
+        style={{ 
+          background: 'linear-gradient(135deg, #40467b 0%, #5a6191 50%, #40467b 100%)'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
-            className="mb-16"
+            className="grid lg:grid-cols-2 gap-12 items-center"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
             variants={fadeInUp}
           >
-            <div className="flex items-center mb-6">
-              <Heart className="w-8 h-8 text-red-500 mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-                {t.origin.title}
-              </h2>
+            {/* Text vľavo */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }}>
+                  <Heart className="w-8 h-8 text-red-200" />
+                </div>
+                <h2 className="text-3xl lg:text-5xl font-bold text-white">
+                  {t.origin.title}
+                </h2>
+              </div>
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                {t.origin.text}
+              </p>
             </div>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              {t.origin.text}
-            </p>
-          </motion.div>
 
-          {/* Naša vízia */}
-          <motion.div 
-            className="mb-16"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeInUp}
-          >
-            <div className="flex items-center mb-6">
-              <Users className="w-8 h-8 text-blue-600 mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-                {t.vision.title}
-              </h2>
-            </div>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              {t.vision.text}
-            </p>
+            {/* Obrázok vpravo */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative"
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
+                <img 
+                  src="/home_intro.jpg" 
+                  alt="Ako sa to začalo"
+                  className="w-full h-auto object-cover"
+                />
+                {/* Glassmorphism overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </div>
+            </motion.div>
           </motion.div>
+        </div>
+      </section>
 
-          {/* Čo je Lectio Divina */}
+      {/* Sekcia: Naša vízia - Obrázok vľavo, text vpravo, biele pozadie */}
+      <section 
+        className="py-16 lg:py-24 relative bg-white"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
-            className="mb-16 bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl"
+            className="grid lg:grid-cols-2 gap-12 items-center"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
             variants={fadeInUp}
           >
-            <div className="flex items-center mb-6">
-              <BookOpen className="w-8 h-8 text-purple-600 mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-                {t.what_is.title}
-              </h2>
+            {/* Obrázok vľavo */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative order-2 lg:order-1"
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
+                <img 
+                  src="/home_intro.jpg" 
+                  alt="Naša vízia"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </motion.div>
+
+            {/* Text vpravo */}
+            <div className="space-y-6 order-1 lg:order-2">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
+                  <Users className="w-8 h-8" style={{ color: '#40467b' }} />
+                </div>
+                <h2 className="text-3xl lg:text-5xl font-bold" style={{ color: '#40467b' }}>
+                  {t.vision.title}
+                </h2>
+              </div>
+              <p className="text-lg lg:text-xl text-gray-700 leading-relaxed">
+                {t.vision.text}
+              </p>
             </div>
-            <p className="text-lg text-gray-700 leading-relaxed">
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Sekcia: Čo je to Lectio Divina - Hero štýl s pozadím */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Pozadie obrázok */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/hero-background.webp)',
+          }}
+        >
+          {/* Tmavý overlay */}
+          <div className="absolute inset-0 bg-black/40"></div>
+        </div>
+
+        {/* Obsah */}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="backdrop-blur-md rounded-3xl p-12 border"
+            style={{
+              backgroundColor: 'rgba(64, 70, 123, 0.75)',
+              borderColor: 'rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(168, 85, 247, 0.3)' }}>
+                <BookOpen className="w-12 h-12 text-white" />
+              </div>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight">
+              {t.what_is.title}
+            </h2>
+            <p className="text-lg sm:text-xl lg:text-2xl text-white/95 leading-relaxed max-w-4xl mx-auto">
               {t.what_is.text}
             </p>
           </motion.div>
+        </div>
+      </section>
 
-          {/* Osvedčený projekt */}
+      {/* Sekcia: Osvedčený projekt s víziou do budúcnosti - Text vľavo, štatistiky vpravo */}
+      <section 
+        className="py-16 lg:py-24 relative"
+        style={{ 
+          backgroundColor: '#40467b'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
-            className="mb-16"
+            className="grid lg:grid-cols-2 gap-12 items-center"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.3 }}
             variants={fadeInUp}
           >
-            <div className="flex items-center mb-6">
-              <Smartphone className="w-8 h-8 text-green-600 mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-                {t.proven_project.title}
-              </h2>
+            {/* Text vľavo */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)' }}>
+                  <Smartphone className="w-8 h-8 text-green-200" />
+                </div>
+                <h2 className="text-3xl lg:text-5xl font-bold text-white">
+                  {t.proven_project.title}
+                </h2>
+              </div>
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                {t.proven_project.text}
+              </p>
             </div>
-            <p className="text-lg text-gray-700 leading-relaxed mb-8">
-              {t.proven_project.text}
-            </p>
-            
-            {/* Štatistiky */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-                <div className="text-3xl font-bold text-indigo-600 mb-2">5000+</div>
-                <div className="text-gray-600">Stiahnutí za prvý mesiac</div>
+
+            {/* Štatistiky vpravo */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="grid grid-cols-1 gap-6"
+            >
+              <div className="text-center p-8 backdrop-blur-sm rounded-2xl border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}>
+                <div className="text-5xl font-bold text-white mb-3">5000+</div>
+                <div className="text-lg text-white/90">Stiahnutí za prvý mesiac</div>
               </div>
-              <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-                <div className="text-3xl font-bold text-green-600 mb-2">100%</div>
-                <div className="text-gray-600">Pozitívna spätná väzba</div>
+              <div className="text-center p-8 backdrop-blur-sm rounded-2xl border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}>
+                <div className="text-5xl font-bold text-white mb-3">100%</div>
+                <div className="text-lg text-white/90">Pozitívna spätná väzba</div>
               </div>
-              <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-                <div className="text-3xl font-bold text-purple-600 mb-2">∞</div>
-                <div className="text-gray-600">Duchovné ovocie</div>
+              <div className="text-center p-8 backdrop-blur-sm rounded-2xl border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}>
+                <div className="text-5xl font-bold text-white mb-3">∞</div>
+                <div className="text-lg text-white/90">Duchovné ovocie</div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
+        </div>
+      </section>
 
-          {/* Nová verzia */}
+      {/* Sekcia: Náš tím - Biele pozadie */}
+      <section className="py-16 lg:py-24 relative bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Nadpis */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#40467b' }}>
+              Náš tím
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Spoznajte ľudí, ktorí stoja za projektom Lectio Divina a každý deň pracujú na tom, aby ste mohli prežívať hlbší vzťah s Bohom.
+            </p>
+          </div>
+
+          {/* Tímové fotky - Grid */}
           <motion.div 
-            className="mb-16 bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-2xl"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeInUp}
+            viewport={{ once: true }}
+            variants={staggerContainer}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8 text-center">
-              {t.new_version.title}
+            {teamMembers.map((member, index) => (
+              <motion.div
+                key={member.id}
+                variants={fadeInUp}
+                className="flex flex-col items-center"
+              >
+                <div 
+                  className="relative w-32 h-32 sm:w-40 sm:h-40 mb-4 rounded-full overflow-hidden border-4 border-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl cursor-pointer"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${index % 3 === 0 ? '#40467b' : index % 3 === 1 ? '#686ea3' : '#9ca3af'} 0%, rgba(255,255,255,0.2) 100%)`
+                  }}
+                  onClick={() => setSelectedMember(member.id)}
+                >
+                  <img 
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 text-center mb-1">
+                  {member.name}
+                </h3>
+                <p className="text-sm text-center mb-3" style={{ color: '#40467b' }}>
+                  {member.role}
+                </p>
+                <button
+                  onClick={() => setSelectedMember(member.id)}
+                  className="px-4 py-2 rounded-lg text-white font-medium text-sm transition-all duration-200 hover:opacity-80"
+                  style={{ backgroundColor: '#40467b' }}
+                >
+                  Zobraziť bio
+                </button>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Modal pre bio */}
+      {selectedMember && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedMember(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl max-w-2xl w-full p-8 relative shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(() => {
+              const member = teamMembers.find(m => m.id === selectedMember);
+              if (!member) return null;
+              
+              return (
+                <>
+                  <button
+                    onClick={() => setSelectedMember(null)}
+                    className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-2xl text-gray-500">&times;</span>
+                  </button>
+
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 mb-6">
+                      <img 
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <h3 className="text-3xl font-bold mb-2" style={{ color: '#40467b' }}>
+                      {member.name}
+                    </h3>
+                    
+                    <p className="text-lg mb-6" style={{ color: '#686ea3' }}>
+                      {member.role}
+                    </p>
+
+                    <p className="text-gray-700 leading-relaxed mb-8 text-left">
+                      {member.bio}
+                    </p>
+
+                    <a
+                      href="https://myprofile.sk/lectio-divina"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-lg font-medium hover:underline"
+                      style={{ color: '#40467b' }}
+                    >
+                      Môj kontakt →
+                    </a>
+                  </div>
+                </>
+              );
+            })()}
+          </motion.div>
+        </div>
+      )}
+
+      {/* Záverečná CTA sekcia: Staňte sa súčasťou našej misie - Výrazný dizajn */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        {/* Pozadie gradient */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(135deg, #40467b 0%, #2d3154 50%, #40467b 100%)'
+          }}
+        >
+          {/* Dekoratívne kruhy */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hlavný obsah */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            {/* Ikona */}
+            <div className="flex justify-center mb-8">
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center shadow-2xl"
+                style={{ 
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                  backdropFilter: 'blur(10px)',
+                  border: '2px solid rgba(255, 255, 255, 0.3)'
+                }}
+              >
+                <Heart className="w-14 h-14 text-white" />
+              </div>
+            </div>
+
+            {/* Nadpis */}
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              {t.support.title}
             </h2>
             
-            {/* Už hotové */}
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-green-700 mb-4 flex items-center">
-                <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
-                {t.new_version.completed}
-              </h3>
-              <p className="text-gray-700 ml-6">
-                {t.new_version.completed_text}
-              </p>
-            </div>
+            {/* Podnadpis */}
+            <p className="text-2xl sm:text-3xl text-white/90 mb-8 font-semibold">
+              {t.support.subtitle}
+            </p>
 
-            {/* Na čom pracujeme */}
-            <div>
-              <h3 className="text-xl font-semibold text-blue-700 mb-4 flex items-center">
-                <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
-                {t.new_version.working_on}
-              </h3>
-              <motion.div 
-                className="space-y-4 ml-6"
-                variants={staggerContainer}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-              >
-                {t.new_version.features.map((feature, index) => {
-                  const icons = [Bell, Monitor, Globe, Palette];
-                  const Icon = icons[index] || Bell;
-                  return (
-                    <motion.div 
-                      key={index}
-                      className="flex items-start space-x-3"
-                      variants={fadeInUp}
-                    >
-                      <Icon className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-gray-700">{feature}</p>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+            {/* Popis */}
+            <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed mb-12">
+              {t.support.intro}
+            </p>
+
+            {/* Poďakovanie */}
+            <div 
+              className="inline-block px-8 py-4 rounded-2xl mb-16"
+              style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 255, 255, 0.25)'
+              }}
+            >
+              <p className="text-2xl font-bold text-white flex items-center gap-3">
+                <BookOpen className="w-8 h-8" />
+                {t.conclusion.thanks || "Ďakujeme, že ste súčasťou našej komunity!"}
+              </p>
             </div>
           </motion.div>
 
-          {/* Podpora projektu */}
+          {/* Spôsoby podpory - 3 hlavné karty */}
           <motion.div 
-            className="mb-16"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+            variants={staggerContainer}
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeInUp}
+            viewport={{ once: true }}
           >
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                {t.support.title}
-              </h2>
-              <h3 className="text-2xl text-gray-700 mb-6">
-                {t.support.subtitle}
-              </h3>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                {t.support.intro}
-              </p>
-            </div>
-
-            {/* Spôsoby podpory */}
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-            >
-              {t.support.ways.map((way, index) => {
-                const icons = [HandHeart, MessageCircle, Building2, Lightbulb, Heart];
-                const Icon = icons[index] || HandHeart;
-                const colors = ['border-green-200 bg-green-50', 'border-blue-200 bg-blue-50', 'border-purple-200 bg-purple-50', 'border-yellow-200 bg-yellow-50', 'border-red-200 bg-red-50'];
-                
-                return (
-                  <motion.div 
-                    key={index}
-                    className={`p-6 rounded-xl border-2 ${colors[index]} hover:shadow-lg transition-shadow duration-300`}
-                    variants={fadeInUp}
-                  >
-                    <div className="flex items-center mb-4">
-                      <Icon className="w-8 h-8 text-gray-700 mr-3" />
-                      <h4 className="text-xl font-semibold text-gray-900">
-                        {way.title}
-                      </h4>
+            {t.support.ways.slice(0, 3).map((way, index) => {
+              const icons = [HandHeart, MessageCircle, Building2];
+              const Icon = icons[index] || HandHeart;
+              
+              return (
+                <motion.div 
+                  key={index}
+                  className="backdrop-blur-md rounded-2xl p-8 border transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                  variants={fadeInUp}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
+                      <Icon className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-gray-700 mb-4">
+                    <h4 className="text-2xl font-bold text-white mb-4">
+                      {way.title}
+                    </h4>
+                    <p className="text-white/90 mb-6 leading-relaxed">
                       {way.text}
                     </p>
                     {way.link && way.button && (
@@ -270,35 +542,44 @@ export default function AboutPage() {
                         href={way.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                        className="inline-flex items-center px-8 py-4 text-white font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-2xl hover:scale-105 border-2"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%)',
+                          borderColor: 'rgba(255, 255, 255, 0.4)'
+                        }}
                       >
                         {way.button}
-                        <ExternalLink className="w-4 h-4 ml-2" />
+                        <ExternalLink className="w-5 h-5 ml-2" />
                       </a>
                     )}
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
-          {/* Záver */}
-          <motion.div 
-            className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 p-8 rounded-2xl text-white"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeInUp}
+          {/* Záverečný citát */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-center"
           >
-            <BookOpen className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
-            <p className="text-xl mb-6 leading-relaxed">
-              {t.conclusion.text}
-            </p>
-            <p className="text-lg font-semibold">
-              {t.conclusion.thanks}
-            </p>
+            <div 
+              className="inline-block px-12 py-8 rounded-3xl max-w-4xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                backdropFilter: 'blur(20px)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+              }}
+            >
+              <p className="text-2xl lg:text-3xl text-white leading-relaxed font-medium italic">
+                "{t.conclusion.text}"
+              </p>
+            </div>
           </motion.div>
-
         </div>
       </section>
     </div>

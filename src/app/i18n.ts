@@ -22,7 +22,12 @@ export const supportedLangs: Language[] = ["sk", "cz", "en", "es"];
 export const translations: Record<Language, any> = {
 
   sk: {
+    give: "Podporiť",
+    the_app:"Aplikácia",
+    explore:"Preskúmať",
+    today_lectio: "Dnešné Lectio",
     prayer: "Modlitba",
+    rosary: "Ruženec",
     start_the_guide:"Začať sprievodcu",
     about_lectio_divina:"O Lectio Divina",
     support: "Podporiť projekt",
@@ -434,7 +439,12 @@ export const translations: Record<Language, any> = {
   
     
   cz: {
+    give: "Podpořit",
+    the_app:"Aplikace",
+    explore:"Prozkoumat",
     prayer: "Modlitba",
+    rosary: "Růženec",
+    today_lectio: "Dnešní Lectio",
     start_the_guide:"Začít průvodce",
     about_lectio_divina:"O Lectio Divina",
     support: "Podpořit projekt",
@@ -445,6 +455,16 @@ export const translations: Record<Language, any> = {
     logout: "Odhlásit se",
     logout_success: "Úspěšně odhlášen.",
     select_language: "Vyberte jazyk",
+    
+    // Hero sekcia na hlavnej stránce
+    hero: {
+      badge: "INTERAKTIVNÍ PRŮVODCE",
+      title: "Naučte se Lectio Divina",
+      subtitle: "Krok za krokem vás provedeme celým procesem modlitby Lectio Divina",
+      cta_primary: "Začít průvodce",
+      cta_secondary: "O Lectio Divina", 
+      scroll_hint: "Prozkoumat více"
+    },
     calendar_admin_title: "Úprava kalendáře",
     language: "Jazyk",
     import_excel: "Importovat Excel",
@@ -782,7 +802,12 @@ export const translations: Record<Language, any> = {
     },
   },
   en: {
+    give: "Give",
+    the_app:"The App",
+    explore:"Explore",
     prayer: "Prayer",
+    rosary: "Rosary",
+    today_lectio: "Today's Lectio",
     start_the_guide:"Start the guide",
     about_lectio_divina:"About Lectio Divina",
     support: "Support Project",
@@ -793,6 +818,7 @@ export const translations: Record<Language, any> = {
     logout: "Logout",
     logout_success: "Successfully logged out.",
     select_language: "Select language",
+
     calendar_admin_title: "Calendar Edit",
     language: "Language",
     import_excel: "Import Excel",
@@ -1187,7 +1213,12 @@ export const translations: Record<Language, any> = {
     },
   },
   es: {
+    give: "Donar",
+    the_app:"La App",
+    explore: "Explorar",
     prayer: "Oración",
+    rosary: "Rosario",
+    today_lectio: "Lectio de hoy",
     start_the_guide:"Iniciar la guía",
     about_lectio_divina:"Acerca de la Lectio Divina",
     support: "Apoyar Proyecto",
@@ -1198,6 +1229,7 @@ export const translations: Record<Language, any> = {
     logout: "Cerrar sesión",
     logout_success: "Cierre de sesión exitoso.",
     select_language: "Seleccione el idioma",
+
     calendar_admin_title: "Edición del calendario",
     import_excel: "Importar Excel",
     add_item: "Agregar elemento",
