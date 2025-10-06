@@ -293,7 +293,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
             <div className="text-xs text-gray-400 text-center sm:text-left">
-              © 2022 - 2025 Dušan Pecko | Pastoračný fond Žilinskej diecézy (
+              © 2022 - {new Date().getFullYear()} Dušan Pecko | Pastoračný fond Žilinskej diecézy (
               <a href="https://mojkrok.sk" target="_blank" rel="noopener" className="transition-colors" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
                 mojkrok.sk
               </a>

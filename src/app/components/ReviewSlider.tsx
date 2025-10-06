@@ -3,32 +3,32 @@ import { motion } from "framer-motion";
 
 const reviews = [
   {
-    author: "David Brown",
-    text: "This app is simply wonderful. From the devotionals themselves, to the relaxing and friendly voices of those who speak them. Thank you to the team for sharing this with us!",
+    author: "Jana H.",
+    text: "Úžasná aplikácia, každé ráno sa teším na čítanie a konečne aj rozumiem, čo Boh ku mne hovorí a cítim radosť a pokoj. Vďaka Otec Dušan",
     rating: 5,
     platform: "Google Play"
   },
   {
-    author: "Anna K.",
-    text: "Skvelá aplikácia, pomáha mi každý deň nájsť pokoj a sústrediť sa na modlitbu.",
+    author: "Jkb982",
+    text: "Úplne odporúčam! Na každý deň úseky z písma, nad ktorými môžem rozjímať. Presne toto som hľadal.",
     rating: 5,
     platform: "App Store"
   },
   {
-    author: "Peter S.",
-    text: "Jednoduché ovládanie, krásny dizajn a hlboký obsah. Odporúčam všetkým!",
+    author: "Štefan J.",
+    text: "Výborná pomôcka k duchovnému zreniu. Apka vyhotovená prehľadne a obsahuje moderné prvky. Vďaka za službu :)",
     rating: 5,
     platform: "Google Play"
   },
   {
-    author: "Lucia M.",
-    text: "Lectio 365 mi pomohlo zlepšiť moju duchovnú disciplínu. Super!",
+    author: "Ummarti",
+    text: "Skvelá práca. Aplikáciu používam denne. Oceňujem možnosť texty si vypočuť a dokonca v rôznych prekladoch👍 Krátke zamyslenia sú tak trefné a často mi otvoria nový pohľad na \"známy text\" Sv Písma. Ďakujem aj za \"Advent\" všetky zamyslenia a najmä vysvetľujúce komentáre. Vďaka za Váš čas a námahu.🙏",
     rating: 5,
-    platform: "App Store"
+    platform: "Google Play"
   },
   {
-    author: "Martin D.",
-    text: "Každé ráno začínam s touto aplikáciou. Veľmi inšpirujúce.",
+    author: "Vladislav H.",
+    text: "Texty na meditáciu, viacero prekladov na jednom mieste, ako aj zamyslenia ako inšpirácia. Pre mňa skvelý pomocník pre rast v duchovnom živote",
     rating: 5,
     platform: "Google Play"
   }

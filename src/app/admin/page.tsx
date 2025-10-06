@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import Link from "next/link";
+import TasksDashboardWidget from "./tasks/TasksDashboardWidget";
 import {
   Users,
   Newspaper,
@@ -215,6 +216,9 @@ export default function AdminPage() {
           </div>
         </Link>
       </div>
+
+      {/* Tasks Dashboard - Moje úlohy a upozornenia */}
+      <TasksDashboardWidget />
 
       {/* Error Reports - Samostatná sekcia s upozornením */}
       <ErrorReportsSection />

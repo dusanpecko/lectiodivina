@@ -1,6 +1,7 @@
 "use client";
 import { AlertCircle, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -23,6 +24,12 @@ export default function ConfirmDialog({
   onCancel,
   type = 'warning'
 }: ConfirmDialogProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -34,7 +41,7 @@ export default function ConfirmDialog({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!mounted || !isOpen) return null;
 
   const getColors = () => {
     switch (type) {
@@ -64,7 +71,7 @@ export default function ConfirmDialog({
 
   const colors = getColors();
 
-  return (
+  const dialogContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
@@ -146,4 +153,6 @@ export default function ConfirmDialog({
       </div>
     </div>
   );
+
+  return createPortal(dialogContent, document.body);
 }

@@ -104,39 +104,6 @@ export default function NewsLayout({ children }: { children: React.ReactNode }) 
         </motion.div>
       </main>
       
-      {/* Floating Scroll to Top Button */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ 
-          opacity: scrollY > 500 ? 1 : 0,
-          scale: scrollY > 500 ? 1 : 0
-        }}
-        transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        whileHover={{ scale: 1.1, y: -2 }}
-        whileTap={{ scale: 0.9 }}
-        className="fixed bottom-8 right-8 z-50 group"
-      >
-        <div className="relative">
-          {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-          
-          {/* Button */}
-          <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4 rounded-full shadow-2xl">
-            <motion.svg 
-              className="w-6 h-6" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              animate={{ y: [-2, 2, -2] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </motion.svg>
-          </div>
-        </div>
-      </motion.button>
-      
       {/* Custom animations styles */}
       <style jsx>{`
         @keyframes float {

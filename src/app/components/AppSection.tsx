@@ -41,7 +41,7 @@ export default function AppSection({ t }: { t: any }) {
         <div className="flex-1 flex justify-center w-full mt-8 lg:mt-0">
           <div className="relative w-full max-w-xl">
             <img
-              src="/home_intro.jpg"
+              src="/home_intro_1.webp"
               alt="Lectio app preview"
               className="rounded-3xl shadow-2xl w-full object-cover"
               style={{ minHeight: 440, maxHeight: 540 }}

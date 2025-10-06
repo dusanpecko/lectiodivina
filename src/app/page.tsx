@@ -12,8 +12,9 @@ import Logo from "./components/Logo";
 import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 import CommunitySection from "./components/CommunitySection";
 import { useSupabase } from "./components/SupabaseProvider";
+import { useUserRole } from "../hooks/useUserRole";
 import ConfirmDialog from "./components/ConfirmDialog";
-import { BookOpen, Brain, Users, Heart, Target, ArrowRight, Clock, CheckCircle, ChevronDown, ChevronRight, Menu, X, Mail, Flower, Calendar, User, Globe, LogOut, FileText } from "lucide-react";
+import { BookOpen, Brain, Users, Heart, Target, ArrowRight, Clock, CheckCircle, ChevronDown, ChevronRight, Menu, X, Mail, Flower, Calendar, User, Globe, LogOut, FileText, Settings } from "lucide-react";
 
 type LectioStep = {
   title: string;
@@ -54,6 +55,7 @@ function LoadingSpinner() {
 export default function HomePage() {
   const { lang, changeLang } = useLanguage();
   const { supabase, session } = useSupabase();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const t = translations[lang];
   const router = useRouter();
 
@@ -446,6 +448,19 @@ export default function HomePage() {
                               <span>Poznámky</span>
                             </button>
                             
+                            {isAdmin && !roleLoading && (
+                              <button
+                                onClick={() => {
+                                  router.push('/admin');
+                                  setProfileDropdownOpen(false);
+                                }}
+                                className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors w-full text-left"
+                              >
+                                <Settings size={16} />
+                                <span>Administrácia</span>
+                              </button>
+                            )}
+                            
                             <hr className="my-2" />
                             
                             <button
@@ -527,18 +542,6 @@ export default function HomePage() {
                       className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
                     >
                       {t.start_the_guide}
-                    </button>
-                    <button
-                      onClick={() => { setMobileMenuOpen(false); router.push('/privacy'); }}
-                      className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
-                    >
-                      {t.footer?.privacy}
-                    </button>
-                    <button
-                      onClick={() => { setMobileMenuOpen(false); router.push('/privacy-policy'); }}
-                      className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
-                    >
-                      {t.footer?.privacy_policy}
                     </button>
                   </div>
 
@@ -641,6 +644,19 @@ export default function HomePage() {
                           <FileText size={18} />
                           <span>Poznámky</span>
                         </button>
+
+                        {isAdmin && !roleLoading && (
+                          <button
+                            onClick={() => {
+                              router.push('/admin');
+                              setMobileMenuOpen(false);
+                            }}
+                            className="flex items-center space-x-3 px-3 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
+                          >
+                            <Settings size={18} />
+                            <span>Administrácia</span>
+                          </button>
+                        )}
 
                         <button
                           onClick={() => {
@@ -756,27 +772,6 @@ export default function HomePage() {
       
       {/* Community Section */}
       <CommunitySection translations={translations[lang]} />
-
-      {/* Scroll to Top Button */}
-      {typeof window !== 'undefined' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: scrollY > 500 ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed bottom-8 right-8 z-50"
-        >
-          <motion.button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-          </motion.button>
-        </motion.div>
-      )}
 
       {/* OVERLAY PRE ZATVORENIE DROPDOWN MENU */}
       {(profileDropdownOpen || mobileMenuOpen) && (

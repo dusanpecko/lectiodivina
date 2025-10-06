@@ -91,10 +91,10 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
         {/* Meet Your Hosts Section */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3" style={{ color: '#40467b' }}>
-            {t.meet_your_hosts || "Meet your hosts"}
+            {t.meet_your_hosts || "Zoznámte sa s nami"}
           </h2>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            {t.hosts_description || "Daily devotionals are written and hosted by leaders and friends of the 24-7 Prayer movement around the world."}
+            {t.hosts_description || "Sme tím ľudí, ktorí s vierou a nadšením spájajú slovo, umenie a technológiu v projekte Lectio Divina."}
           </p>
         </div>
 
@@ -135,7 +135,7 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
             className="px-6 py-3 rounded-xl text-white font-semibold text-base shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
             style={{ background: '#40467b' }}
           >
-            {t.discover_more || "Discover more"}
+            {t.discover_more || "Spoznajte náš tím"}
           </button>
         </div>
 
@@ -154,7 +154,7 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
                 <Target className="w-7 h-7" style={{ color: '#40467b' }} />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#40467b' }}>
-                {t.daily_actio || "Daily Actio"}
+                {t.daily_actio || "Ži Božie slovo (ACTIO)"}
               </h3>
             </div>
 

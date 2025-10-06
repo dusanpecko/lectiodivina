@@ -4,6 +4,7 @@ import SupabaseProvider from './components/SupabaseProvider'
 import { LanguageProvider } from './components/LanguageProvider'
 import { CookieConsentProvider } from './components/CookieConsentContext'
 import Footer from './components/Footer'
+import ScrollToTopButton from './components/ScrollToTopButton'
 import Script from 'next/script'
 import { useMetadata } from '@/hooks/useMetadata'
 import { useLanguage } from './components/LanguageProvider'
@@ -112,6 +113,7 @@ export default function RootLayout({
               <DynamicMetadata />
               {children}
               {!isAdminZone && <Footer />}
+              <ScrollToTopButton />
             </LanguageProvider>
           </SupabaseProvider>
         </CookieConsentProvider>

@@ -41,38 +41,38 @@ export default function AboutPage() {
   const teamMembers = [
     {
       id: 1,
-      name: "Martin Novák",
+      name: "o Dušan Pecko",
       role: "Zakladateľ a vedúci projektu",
       image: "/profile_1.webp",
-      bio: "Martin je senior pastor a duchovný vedúci s 15-ročnou praxou. Jeho vášňou je pomáhať ľuďom objavovať hlbší vzťah s Bohom cez Božie slovo. Je autorom viacerých kníh o duchovnom živote a pravidelne vedie retreaty zamerané na Lectio Divina."
+      bio: "o. Dušan je kňaz Žilinskej diecézy a zakladateľ projektu Lectio Divina. Jeho vášňou je pomáhať ľuďom objavovať hlbší vzťah s Bohom cez Božie slovo. Pôsobí ako výkonný riaditeľ diecézneho pastoračného fondu KROK, ktorý podporuje pastoráciu a duchovné iniciatívy v Žilinskej diecéze."
     },
     {
       id: 2,
-      name: "Jana Kováčová",
-      role: "Hlavná vývojárka a dizajnérka",
+      name: "Adam Čižmárik",
+      role: "Prekladateľ a člen tímu pre rozvoj projektu",
       image: "/profile_2.webp",
-      bio: "Jana spája svoju lásku k technológiám s duchovno-náboženským pozadím. Vyštudovala informatiku a teológiu, čo jej umožňuje vytvárať nástroje, ktoré majú skutočný duchovný dopad. Jej dizajnérske riešenia pomáhajú tisíckam používateľov denne."
+      bio: "Adam je členom projektu od jeho začiatkov. Pracuje na prekladoch do angličtiny a popri tom študuje právo, kde je v druhom ročníku. Usiluje sa žiť podľa princípov Lectio Divina a prenášať ich do každodenného života. Je autorom projektu mypro.one, ktorý sa venuje digitálnym vizitkám a moderným formám online identity."
     },
     {
       id: 3,
-      name: "Peter Horváth",
-      role: "Obsahový kurátor a teológ",
+      name: "Kristínka Krchová",
+      role: "Koordinátorka obsahu a srdce projektu",
       image: "/profile_3.webp",
-      bio: "Peter je biblickým odborníkom a učiteľom s doktorátom z teológie. Venuje sa výberu a príprave denných čítaní tak, aby boli relevantné a duchovne prínosné. Jeho práca zabezpečuje, že obsah aplikácie je teologicky presný a duchovne životodarný."
+      bio: "Kristínka je súčasťou projektu od jeho začiatkov a stála pri budovaní jeho základov. Vďaka jej trpezlivej práci boli do databázy zapracované všetky údaje, pričom venovala projektu nespočetné hodiny. Je srdcom tímu Lectio Divina a aj počas materskej zostáva jeho neoddeliteľnou súčasťou."
     },
     {
       id: 4,
-      name: "Lucia Bartošová",
-      role: "Komunitná manažérka",
+      name: "sr. Mary Carmen",
+      role: "Koordinátorka španielskeho prekladu",
       image: "/profile_4.webp",
-      bio: "Lucia sa stará o našu rastúcu komunitu používateľov. Jej srdce bije pre budovanie vzťahov a podporu ľudí na ich duchovnej ceste. Organizuje online stretnutia, reaguje na spätnú väzbu a zabezpečuje, že sa každý používateľ cíti byť súčasťou našej rodiny."
+      bio: "Sr. Mary Carmen pochádza zo Španielska a je rehoľnou sestrou Kongregácie Sestier Panny Márie Útechy. Spolu so svojimi spolusestrami má na starosti preklad projektu Lectio Divina do španielčiny a tvorí modlitbové zázemie, ktoré sprevádza celý projekt s duchovnou podporou a modlitbou."
     },
     {
       id: 5,
-      name: "Tomáš Varga",
-      role: "Technický vedúci",
+      name: "Matúš Sedliak",
+      role: "Grafický a audio tvorca projektu",
       image: "/profile_5.webp",
-      bio: "Tomáš je skúsený softvérový inžinier, ktorý sa postará o to, aby aplikácia bežala hladko a bezpečne. Jeho technické zručnosti a pozornosť k detailom zabezpečujú, že naša platforma je spoľahlivá, rýchla a dostupná pre všetkých používateľov kedykoľvek potrebujú."
+      bio: "Matúš je najmladším členom tímu – má len 16 rokov a svoju prax začal v pastoračnom fonde KROK. Myšlienka projektu Lectio Divina ho nadchla natoľko, že sa stal jeho aktívnou súčasťou. Zodpovedá za grafické prvky projektu a stará sa aj o generovanie zvuku prostredníctvom ElevenLabs. Sme vďační, že je súčasťou tímu – prináša tvorivosť, nadšenie a svieži pohľad. Je skúsený softvérový inžinier, ktorý sa postará o to, aby aplikácia bežala hladko a bezpečne. Jeho technické zručnosti a pozornosť k detailom zabezpečujú, že naša platforma je spoľahlivá, rýchla a dostupná pre všetkých používateľov kedykoľvek potrebujú."
     }
   ];
 
@@ -158,7 +158,7 @@ export default function AboutPage() {
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
                 <img 
-                  src="/home_intro.jpg" 
+                  src="/about-start.webp" 
                   alt="Ako sa to začalo"
                   className="w-full h-auto object-cover"
                 />
@@ -192,7 +192,7 @@ export default function AboutPage() {
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
                 <img 
-                  src="/home_intro.jpg" 
+                  src="/about-vision.webp" 
                   alt="Naša vízia"
                   className="w-full h-auto object-cover"
                 />

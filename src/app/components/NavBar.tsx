@@ -7,6 +7,7 @@ import { translations } from "../i18n";
 import { useSupabase } from "./SupabaseProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUserRole } from "../../hooks/useUserRole";
 import Logo from "./Logo";
 import ConfirmDialog from "./ConfirmDialog";
@@ -263,7 +264,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
 
               <Link href="/" className="flex items-center group">
                 <Logo 
-                  className="h-8 w-auto text-white group-hover:opacity-80 transition-opacity" 
+                  className="h-4 sm:h-8 w-auto text-white group-hover:opacity-80 transition-opacity" 
                   height={32}
                 />
               </Link>
@@ -272,155 +273,106 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
             <div className="flex items-center space-x-2">
               {/* Desktop Menu Items */}
               <div className="hidden lg:flex items-center space-x-4">
-                <div className="relative prayer-dropdown">
+                {/* Explore Dropdown */}
+                <div className="relative">
                   <button
                     onClick={() => setPrayerDropdownOpen(!prayerDropdownOpen)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
-                      isPrayerPage
-                        ? 'bg-white/20 text-white' 
-                        : 'text-white/90 hover:text-white hover:bg-white/10'
-                    }`}
+                    className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium flex items-center space-x-1"
                   >
-                    <BookOpen size={16} />
-                    <span>{translations[lang].prayer || 'Modlitba'}</span>
+                    <span>Preskúmať</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${prayerDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-
-                  {prayerDropdownOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
-                      <div className="p-4">
-                        {/* LECTIO NA DNES - VŽDY VIDITEĽNÉ */}
-                        <div className="mb-4">
-                          <button
-                            onClick={() => checkAuthAndNavigate('/lectio')}
-                            className="w-full flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200 transition-all duration-200 group"
-                          >
-                            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                              <Calendar className="w-4 h-4 text-white" />
-                            </div>
-                            <div className="flex-1 text-left">
-                              <span className="font-bold text-emerald-700 block">Lectio na dnes</span>
-                              <span className="text-xs text-emerald-600">
-                                {session ? 'Každodenná modlitba' : 'Prihlásenie potrebné'}
-                              </span>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors duration-200" />
-                          </button>
-                        </div>
-
-                        {/* LECTIO DIVINA SUBMENU */}
-                        <div className="mb-4">
-                          <button
-                            onClick={handleLectioClick}
-                            className="w-full flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors duration-200 group"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                <BookOpen className="w-4 h-4 text-white" />
-                              </div>
-                              <span className="font-bold text-gray-900">Lectio Divina</span>
-                            </div>
-                            <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${lectioSubmenuOpen ? 'rotate-90' : ''}`} />
-                          </button>
-                          
-                          {lectioSubmenuOpen && (
-                            <div className="ml-4 mt-2 space-y-1 border-l-2 border-indigo-100 pl-4">
-                              {lectioSteps.map((item, index) => (
-                                <Link
-                                  key={index}
-                                  href={item.href}
-                                  onClick={() => {
-                                    setPrayerDropdownOpen(false);
-                                    setLectioSubmenuOpen(false);
-                                  }}
-                                  className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 group"
-                                >
-                                  <div className="w-2 h-2 bg-gray-400 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
-                                  <span className="text-gray-700 group-hover:text-gray-900 text-sm font-medium">
-                                    {item.label}
-                                  </span>
-                                </Link>
-                              ))}
-                              
-                              <div className="mt-3 pt-3 border-t border-gray-100">
-                                <Link
-                                  href="/intro"
-                                  onClick={() => {
-                                    setPrayerDropdownOpen(false);
-                                    setLectioSubmenuOpen(false);
-                                  }}
-                                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200"
-                                >
-                                  <span>{translations[lang].start_the_guide || 'Začať sprievodcu'}</span>
-                                  <ChevronRight className="w-4 h-4" />
-                                </Link>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* RUŽENEC - VŽDY VIDITEĽNÝ */}
-                        <div className="border-t border-gray-100 pt-4">
-                          <button
-                            onClick={() => checkAuthAndNavigate('/rosary')}
-                            className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-rose-50 transition-colors duration-200 group"
-                          >
-                            <div className="w-8 h-8 bg-gradient-to-r from-rose-500 to-pink-600 rounded-lg flex items-center justify-center">
-                              <Flower className="w-4 h-4 text-white" />
-                            </div>
-                            <div className="flex-1 text-left">
-                              <span className="font-bold text-gray-900 block">Ruženec</span>
-                              <span className="text-xs text-gray-500">
-                                {session ? 'Formou Lectio Divina' : 'Prihlásenie potrebné'}
-                              </span>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-rose-600 transition-colors duration-200" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  
+                  <AnimatePresence>
+                    {prayerDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 w-56 rounded-lg shadow-xl overflow-hidden z-50"
+                        style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(10px)'
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            router.push('/about');
+                            setPrayerDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+                        >
+                          O Lectio Divina
+                        </button>
+                        <button
+                          onClick={() => {
+                            router.push('/intro');
+                            setPrayerDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+                        >
+                          Začať sprievodcu
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                <Link 
-                  href="/contact" 
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    isContactPage
-                      ? 'bg-white/20 text-white' 
-                      : 'text-white/90 hover:text-white hover:bg-white/10'
-                  }`}
+                {/* Prayer Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setLectioSubmenuOpen(!lectioSubmenuOpen)}
+                    className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium flex items-center space-x-1"
+                  >
+                    <span>Modlitba</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${lectioSubmenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  
+                  <AnimatePresence>
+                    {lectioSubmenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 w-56 rounded-lg shadow-xl overflow-hidden z-50"
+                        style={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(10px)'
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            checkAuthAndNavigate('/lectio');
+                            setLectioSubmenuOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+                        >
+                          Lectio na dnes
+                        </button>
+                        <button
+                          onClick={() => {
+                            checkAuthAndNavigate('/rosary');
+                            setLectioSubmenuOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
+                        >
+                          Ruženec
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Contact */}
+                <button
+                  onClick={() => router.push("/contact")}
+                  className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium"
                 >
-                  <Mail size={16} />
-                  <span>{translations[lang].contact || 'Kontakt'}</span>
-                </Link>
-                
-                {session && (
-                  <Link 
-                    href="/notes" 
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
-                      isNotesPage
-                        ? 'bg-white/20 text-white' 
-                        : 'text-white/90 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <FileText size={16} />
-                    <span>Poznámky</span>
-                  </Link>
-                )}
-                
-                {session && isAdmin && !roleLoading && (
-                  <Link 
-                    href="/admin" 
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
-                      isAdminPage
-                        ? 'bg-white/20 text-white' 
-                        : 'text-white/90 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Settings size={16} />
-                    <span>{translations[lang].admin}</span>
-                  </Link>
-                )}
+                  Kontakt
+                </button>
               </div>
 
               {/* Give Button */}
@@ -565,109 +517,76 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
         </div>
 
         {/* MOBILNÉ MENU */}
-        {mobileMenuOpen && (
-          <div 
-            className="lg:hidden backdrop-blur-md"
-            style={{
-              backgroundColor: 'rgba(64, 70, 123, 0.98)'
-            }}
-          >
-            <div className="px-4 py-4 space-y-3">
-              <div className="relative">
-                <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" />
-                <input
-                  type="text"
-                  placeholder="Hľadať..."
-                  className="pl-10 pr-4 py-2 w-full rounded-lg focus:ring-2 focus:ring-white/50 text-sm text-white placeholder-white/50 backdrop-blur-sm border"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderColor: 'rgba(255, 255, 255, 0.2)'
-                  }}
-                />
-              </div>
-
-              <div>
-                <button
-                  onClick={() => setLectioSubmenuOpen(!lectioSubmenuOpen)}
-                  className="w-full flex items-center justify-between text-white font-medium border-b pb-2 mb-3"
-                  style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
-                >
-                  <div className="flex items-center space-x-3">
-                    <BookOpen size={18} />
-                    <span>{translations[lang].prayer || 'Modlitba'}</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${lectioSubmenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {lectioSubmenuOpen && (
-                  <div className="space-y-2 ml-4 mb-4">
-                    {/* LECTIO NA DNES - MOBILE */}
-                    <div className="mb-3 pb-3 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
-                      <button
-                        onClick={() => checkAuthAndNavigate('/lectio')}
-                        className="w-full flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 border border-emerald-400 transition-colors duration-200"
-                      >
-                        <Calendar size={18} className="text-white" />
-                        <div className="text-left">
-                          <span className="block font-bold text-white">Lectio na dnes</span>
-                          <span className="text-xs text-white/80">
-                            {session ? 'Každodenná modlitba' : 'Prihlásenie potrebné'}
-                          </span>
-                        </div>
-                      </button>
-                    </div>
-
-                    <div className="font-medium text-white mb-2">Lectio Divina</div>
-                    {lectioSteps.map((item, index) => (
-                      <Link
-                        key={index}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block text-white/80 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                    
-                    <Link
-                      href="/intro"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="w-full text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 mt-3 block"
-                    >
-                      {translations[lang].start_the_guide || 'Začať sprievodcu'}
-                    </Link>
-
-                    {/* RUŽENEC - MOBILE */}
-                    <div className="border-t pt-3 mt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
-                      <button
-                        onClick={() => checkAuthAndNavigate('/rosary')}
-                        className="w-full flex items-center space-x-2 text-white/80 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
-                      >
-                        <Flower size={18} />
-                        <div className="text-left">
-                          <span className="block font-medium">Ruženec</span>
-                          <span className="text-xs text-white/60">
-                            {session ? 'Formou Lectio Divina' : 'Prihlásenie potrebné'}
-                          </span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Link 
-                href="/contact" 
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg font-medium transition-colors ${
-                  isContactPage
-                    ? 'bg-white/20 text-white' 
-                    : 'text-white/90 hover:text-white hover:bg-white/10'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden fixed left-0 right-0 top-16 bottom-0 flex items-start justify-center p-4 z-[60]"
+              style={{ 
+                backgroundColor: '#40467b',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              <div className="w-full max-w-md rounded-xl p-4 max-h-[80vh] overflow-y-auto"
+                style={{ 
+                  backgroundColor: 'rgba(96, 102, 153, 0.9',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
               >
-                <Mail size={18} />
-                <span>{translations[lang].contact || 'Kontakt'}</span>
-              </Link>
+                <div className="space-y-3">
+              {/* Explore Section */}
+              <div className="space-y-2">
+                <div className="text-white/60 font-bold text-xs uppercase tracking-wider px-2">Preskúmať</div>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); router.push('/about'); }}
+                  className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
+                >
+                  O Lectio Divina
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); router.push('/intro'); }}
+                  className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
+                >
+                  Začať sprievodcu
+                </button>
+              </div>
+
+              {/* Prayer Section */}
+              <div className="space-y-2">
+                <div className="text-white/60 font-bold text-xs uppercase tracking-wider px-2">Modlitba</div>
+                <button
+                  onClick={() => { 
+                    checkAuthAndNavigate('/lectio');
+                    setMobileMenuOpen(false); 
+                  }}
+                  className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
+                >
+                  Lectio na dnes
+                </button>
+                <button
+                  onClick={() => { 
+                    checkAuthAndNavigate('/rosary');
+                    setMobileMenuOpen(false); 
+                  }}
+                  className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
+                >
+                  Ruženec
+                </button>
+              </div>
+
+              {/* Contact */}
+              <button
+                onClick={() => {
+                  router.push("/contact");
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2"
+              >
+                Kontakt
+              </button>
 
               {/* Give Button - MOBILE */}
               <div className="border-t pt-3 mt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
@@ -768,18 +687,19 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-        )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* OVERLAY PRE ZATVORENIE DROPDOWN MENU */}
-      {(profileDropdownOpen || mobileMenuOpen || prayerDropdownOpen) && (
+      {(profileDropdownOpen || prayerDropdownOpen) && (
         <div 
           className="fixed inset-0 z-30" 
           onClick={() => {
             setProfileDropdownOpen(false);
-            setMobileMenuOpen(false);
             setPrayerDropdownOpen(false);
             setLectioSubmenuOpen(false);
           }}
