@@ -173,7 +173,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
           backgroundColor: 'rgba(64, 70, 123, 0.95)'
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-8">
               <button className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors text-white">
@@ -252,7 +252,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
           backgroundColor: 'rgba(64, 70, 123, 0.95)'
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <button
@@ -276,7 +276,10 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 {/* Explore Dropdown */}
                 <div className="relative">
                   <button
-                    onClick={() => setPrayerDropdownOpen(!prayerDropdownOpen)}
+                    onClick={() => {
+                      setPrayerDropdownOpen(!prayerDropdownOpen);
+                      setLectioSubmenuOpen(false);
+                    }}
                     className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium flex items-center space-x-1"
                   >
                     <span>Preskúmať</span>
@@ -322,7 +325,10 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 {/* Prayer Dropdown */}
                 <div className="relative">
                   <button
-                    onClick={() => setLectioSubmenuOpen(!lectioSubmenuOpen)}
+                    onClick={() => {
+                      setLectioSubmenuOpen(!lectioSubmenuOpen);
+                      setPrayerDropdownOpen(false);
+                    }}
                     className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium flex items-center space-x-1"
                   >
                     <span>Modlitba</span>

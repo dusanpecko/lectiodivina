@@ -57,7 +57,7 @@ export default function LectioStep() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-          style={{ backgroundImage: 'url(/about-background.webp)' }}
+          style={{ backgroundImage: 'url(/lectio-background.webp)' }}
         />
         <div className="absolute inset-0" style={{ backgroundColor: 'rgba(64, 70, 123, 0.8)' }} />
         <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl" />

@@ -386,7 +386,9 @@ export default function NotesPage() {
                           )}
                           <div className="flex items-center gap-1 text-xs text-gray-500">
                             <Calendar size={10} />
-                            <span>{formatDate(note.updated_at)}</span>
+                            <span>
+                              {note.updated_at ? formatDate(note.updated_at) : formatDate(note.created_at)}
+                            </span>
                           </div>
                         </button>
                       ))}
@@ -544,10 +546,16 @@ export default function NotesPage() {
                                 <Calendar size={14} />
                                 <span>Vytvorené: {formatDate(selectedNote.created_at)}</span>
                               </div>
-                              {selectedNote.updated_at !== selectedNote.created_at && (
+                              {selectedNote.updated_at && selectedNote.updated_at !== selectedNote.created_at && (
                                 <div className="flex items-center gap-2">
                                   <Calendar size={14} />
                                   <span>Upravené: {formatDate(selectedNote.updated_at)}</span>
+                                </div>
+                              )}
+                              {!selectedNote.updated_at && (
+                                <div className="flex items-center gap-2">
+                                  <Calendar size={14} />
+                                  <span className="italic">Poznámka nebola upravovaná</span>
                                 </div>
                               )}
                             </div>

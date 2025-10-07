@@ -57,7 +57,7 @@ export default function ContemplatioStep() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-          style={{ backgroundImage: 'url(/about-background.webp)' }}
+          style={{ backgroundImage: 'url(/conteplatio-background.webp)' }}
         />
         <div className="absolute inset-0" style={{ backgroundColor: 'rgba(64, 70, 123, 0.8)' }} />
         

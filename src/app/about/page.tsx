@@ -72,7 +72,7 @@ export default function AboutPage() {
       name: "Matúš Sedliak",
       role: "Grafický a audio tvorca projektu",
       image: "/profile_5.webp",
-      bio: "Matúš je najmladším členom tímu – má len 16 rokov a svoju prax začal v pastoračnom fonde KROK. Myšlienka projektu Lectio Divina ho nadchla natoľko, že sa stal jeho aktívnou súčasťou. Zodpovedá za grafické prvky projektu a stará sa aj o generovanie zvuku prostredníctvom ElevenLabs. Sme vďační, že je súčasťou tímu – prináša tvorivosť, nadšenie a svieži pohľad. Je skúsený softvérový inžinier, ktorý sa postará o to, aby aplikácia bežala hladko a bezpečne. Jeho technické zručnosti a pozornosť k detailom zabezpečujú, že naša platforma je spoľahlivá, rýchla a dostupná pre všetkých používateľov kedykoľvek potrebujú."
+      bio: "Matúš je najmladším členom tímu – má len 16 rokov a svoju prax začal v pastoračnom fonde KROK. Myšlienka projektu Lectio Divina ho nadchla natoľko, že sa stal jeho aktívnou súčasťou. Zodpovedá za grafické prvky projektu a stará sa aj o generovanie zvuku prostredníctvom ElevenLabs. Sme vďační, že je súčasťou tímu – prináša tvorivosť, nadšenie a svieži pohľad."
     }
   ];
 
