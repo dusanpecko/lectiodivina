@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
+import { adminSidebarTranslations } from "./adminSidebarTranslations";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { 
@@ -32,7 +33,7 @@ const links = [
   { href: "/admin/lectio-sources", key: "lectio_sources", icon: Book, color: "teal" }, 
   { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" },
   { href: "/admin/news", key: "news", icon: Newspaper, color: "red" },
-  { href: "/admin/notifications/", key: "Notifikácie", icon: Bell, color: "pink" },
+  { href: "/admin/notifications/", key: "notifications", icon: Bell, color: "pink" },
   { href: "/admin/calendar", key: "calendar", icon: Calendar, color: "green" },
   { href: "/admin/daily_quotes", key: "daily_quotes", icon: Quote, color: "purple" },
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
@@ -166,15 +167,16 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
 
   // Safe translations - wait for language to load
   const t = (mounted && isLoaded) ? translations[lang] as Record<SidebarKey, string> : {} as Record<SidebarKey, string>;
+  const adminT = (mounted && isLoaded) ? adminSidebarTranslations[lang] : adminSidebarTranslations.sk;
 
-  // Fallback pre tasks, lectio_sources a rosary ak nie sú v translations
+  // Fallback pre navigation items with adminT translations
   const getTranslation = (key: SidebarKey) => {
-    if (key === 'tasks') return 'Úlohy';
-    if (key === 'lectio_sources') return 'Lectio Zdroje';
-    if (key === 'rosary') return 'Ruženec';
-    if (key === 'error_reports') return 'Správa chýb';
-    if (key === 'programs') return 'Programy';
-    if (key === 'Notifikácie') return 'Notifikácie';
+    if (key === 'tasks') return adminT.navigation.tasks;
+    if (key === 'lectio_sources') return adminT.navigation.lectio_sources;
+    if (key === 'rosary') return adminT.navigation.rosary;
+    if (key === 'error_reports') return adminT.navigation.error_reports;
+    if (key === 'programs') return adminT.navigation.programs;
+    if (key === 'notifications') return adminT.navigation.notifications;
     return t[key] || key;
   };
 
@@ -225,8 +227,8 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
             
             {!isCollapsed && (
               <div className="flex-1">
-                <h2 className="text-base font-bold text-gray-800">Admin Panel</h2>
-                <p className="text-xs text-gray-500">Správa obsahu</p>
+                <h2 className="text-base font-bold text-gray-800">{adminT.header.title}</h2>
+                <p className="text-xs text-gray-500">{adminT.header.subtitle}</p>
               </div>
             )}
           </div>
@@ -253,7 +255,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   {/* Text - only show if not collapsed */}
                   {!isCollapsed && (
                     <span className="flex-1 text-xs font-medium transition-colors text-gray-700">
-                      Loading...
+                      {adminT.states.loading}
                     </span>
                   )}
                 </div>
@@ -288,8 +290,8 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
           
           {!isCollapsed && (
             <div className="flex-1">
-              <h2 className="text-base font-bold text-white">Admin Panel</h2>
-              <p className="text-xs text-gray-300">Správa obsahu</p>
+              <h2 className="text-base font-bold text-white">{adminT.header.title}</h2>
+              <p className="text-xs text-gray-300">{adminT.header.subtitle}</p>
             </div>
           )}
           
@@ -386,7 +388,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                 shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-110 
                 border-2 border-white/20 hover:bg-[#5a6096]
               `}
-              title="Rýchle akcie"
+              title={adminT.quick_actions.button_title}
             >
               <Plus 
                 size={isCollapsed ? 16 : 20} 
@@ -407,7 +409,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
               }}
             >
               <div className="text-xs font-semibold text-gray-300 uppercase tracking-wider px-3 pb-2 border-b border-[#1a1f3a]">
-                Rýchle akcie
+                {adminT.quick_actions.title}
               </div>
               <div className="py-1">
                 <Link
@@ -416,7 +418,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   onClick={() => setShowQuickActions(false)}
                 >
                   <Newspaper size={14} />
-                  Nový článok
+                  {adminT.quick_actions.new_article}
                 </Link>
                 <Link
                   href="/admin/lectio-sources/new"
@@ -424,7 +426,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   onClick={() => setShowQuickActions(false)}
                 >
                   <Book size={14} />
-                  Nový Lectio zdroj
+                  {adminT.quick_actions.new_lectio_source}
                 </Link>
                 <Link
                   href="/admin/notifications/"
@@ -432,7 +434,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
                   onClick={() => setShowQuickActions(false)}
                 >
                   <Bell size={14} />
-                  Notifikácie
+                  {adminT.quick_actions.notifications}
                 </Link>
               </div>
               {/* Šípka smerujúca dolu k tlačidlu */}

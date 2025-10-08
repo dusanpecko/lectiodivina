@@ -3,8 +3,18 @@ import NavBar from "@/app/components/NavBar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Moje poznámky - Lectio Divina | Duchovné zápisky a úvahy",
-  description: "Osobné poznámky a duchovné úvahy k denným čítaniam. Vytvárajte si vlastné zápisky s biblickými citátmi a meditáciami v aplikácii Lectio Divina.",
+  title: {
+    sk: "Moje poznámky - Lectio Divina | Duchovné zápisky a úvahy",
+    cz: "Moje poznámky - Lectio Divina | Duchovní zápisky a úvahy", 
+    en: "My Notes - Lectio Divina | Spiritual Notes and Reflections",
+    es: "Mis Notas - Lectio Divina | Notas Espirituales y Reflexiones"
+  }["sk"] as string, // Default to Slovak for now
+  description: {
+    sk: "Osobné poznámky a duchovné úvahy k denným čítaniam. Vytvárajte si vlastné zápisky s biblickými citátmi a meditáciami v aplikácii Lectio Divina.",
+    cz: "Osobní poznámky a duchovní úvahy k denním čtením. Vytvářejte si vlastní zápisky s biblickými citáty a meditacemi v aplikaci Lectio Divina.",
+    en: "Personal notes and spiritual reflections on daily readings. Create your own notes with biblical quotes and meditations in the Lectio Divina app.",
+    es: "Notas personales y reflexiones espirituales sobre las lecturas diarias. Crea tus propias notas con citas bíblicas y meditaciones en la aplicación Lectio Divina."
+  }["sk"] as string, // Default to Slovak for now
   keywords: ["poznámky", "duchovné úvahy", "biblické citáty", "meditácie", "Lectio Divina", "KROK", "duchovné čítanie"],
   authors: [{ name: "KROK – Pastoračný fond Žilinskej diecézy" }],
   robots: "noindex, nofollow",

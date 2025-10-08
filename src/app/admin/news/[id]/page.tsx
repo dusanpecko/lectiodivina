@@ -412,7 +412,7 @@ export default function NewsEditPage() {
                   <div className="space-y-2">
                     <label className="flex items-center text-sm font-semibold text-gray-700">
                       <span className="mr-2 text-lg">📸</span>
-                      {t.image_url || "Obrázok článku"}
+                      {t.image_url}
                     </label>
                     <ImageUploadCrop
                       supabase={supabase}

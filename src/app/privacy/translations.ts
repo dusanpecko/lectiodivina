@@ -5,6 +5,12 @@ export type MobilePrivacyTranslations = {
   backToHome: string;
   validFrom: string;
   lastUpdated: string;
+  downloadApp: string;
+  cookiesQuestion: string;
+  termsConditions: string;
+  footerQuestion: string;
+  contactUs: string;
+  exampleToken: string;
   
   sections: {
     intro: {
@@ -124,6 +130,12 @@ export const mobilePrivacyTranslations: Record<string, MobilePrivacyTranslations
     backToHome: "Späť na hlavnú stránku",
     validFrom: "Platné od:",
     lastUpdated: "Posledná aktualizácia: November 2024",
+    downloadApp: "Stiahnuť aplikáciu:",
+    cookiesQuestion: "Čo sú Cookies?",
+    termsConditions: "Podmienky použitia:",
+    footerQuestion: "Máte otázky ohľadom ochrany osobných údajov v našej mobilnej aplikácii?",
+    contactUs: "Kontaktujte nás",
+    exampleToken: "Príklad registration token:",
     
     sections: {
       intro: {
@@ -254,6 +266,12 @@ export const mobilePrivacyTranslations: Record<string, MobilePrivacyTranslations
     backToHome: "Back to homepage",
     validFrom: "Valid from:",
     lastUpdated: "Last updated: November 2024",
+    downloadApp: "Download app:",
+    cookiesQuestion: "What are Cookies?",
+    termsConditions: "Terms of Use:",
+    footerQuestion: "Do you have questions regarding privacy in our mobile application?",
+    contactUs: "Contact us",
+    exampleToken: "Example registration token:",
     
     sections: {
       intro: {
@@ -384,6 +402,12 @@ export const mobilePrivacyTranslations: Record<string, MobilePrivacyTranslations
     backToHome: "Zpět na hlavní stránku",
     validFrom: "Platné od:",
     lastUpdated: "Poslední aktualizace: Listopad 2024",
+    downloadApp: "Stáhnout aplikaci:",
+    cookiesQuestion: "Co jsou Cookies?",
+    termsConditions: "Podmínky použití:",
+    footerQuestion: "Máte otázky ohledně ochrany osobních údajů v naší mobilní aplikaci?",
+    contactUs: "Kontaktujte nás",
+    exampleToken: "Příklad registration token:",
     
     sections: {
       intro: {
@@ -514,6 +538,12 @@ export const mobilePrivacyTranslations: Record<string, MobilePrivacyTranslations
     backToHome: "Volver a la página principal",
     validFrom: "Válido desde:",
     lastUpdated: "Última actualización: Noviembre 2024",
+    downloadApp: "Descargar aplicación:",
+    cookiesQuestion: "¿Qué son las Cookies?",
+    termsConditions: "Condiciones de uso:",
+    footerQuestion: "¿Tiene preguntas sobre la privacidad en nuestra aplicación móvil?",
+    contactUs: "Contáctanos",
+    exampleToken: "Ejemplo de registration token:",
     
     sections: {
       intro: {

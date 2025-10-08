@@ -1,50 +1,40 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+type Review = {
+  author: string;
+  text: string;
+  rating: number;
+  platform: string;
+};
 
-const reviews = [
-  {
-    author: "Jana H.",
-    text: "Úžasná aplikácia, každé ráno sa teším na čítanie a konečne aj rozumiem, čo Boh ku mne hovorí a cítim radosť a pokoj. Vďaka Otec Dušan",
-    rating: 5,
-    platform: "Google Play"
-  },
-  {
-    author: "Jkb982",
-    text: "Úplne odporúčam! Na každý deň úseky z písma, nad ktorými môžem rozjímať. Presne toto som hľadal.",
-    rating: 5,
-    platform: "App Store"
-  },
-  {
-    author: "Štefan J.",
-    text: "Výborná pomôcka k duchovnému zreniu. Apka vyhotovená prehľadne a obsahuje moderné prvky. Vďaka za službu :)",
-    rating: 5,
-    platform: "Google Play"
-  },
-  {
-    author: "Ummarti",
-    text: "Skvelá práca. Aplikáciu používam denne. Oceňujem možnosť texty si vypočuť a dokonca v rôznych prekladoch👍 Krátke zamyslenia sú tak trefné a často mi otvoria nový pohľad na \"známy text\" Sv Písma. Ďakujem aj za \"Advent\" všetky zamyslenia a najmä vysvetľujúce komentáre. Vďaka za Váš čas a námahu.🙏",
-    rating: 5,
-    platform: "Google Play"
-  },
-  {
-    author: "Vladislav H.",
-    text: "Texty na meditáciu, viacero prekladov na jednom mieste, ako aj zamyslenia ako inšpirácia. Pre mňa skvelý pomocník pre rast v duchovnom živote",
-    rating: 5,
-    platform: "Google Play"
-  }
-];
+type ReviewSliderProps = {
+  reviews: Review[];
+  ariaLabel?: string;
+};
 
-export default function ReviewSlider() {
+export default function ReviewSlider({ reviews, ariaLabel }: ReviewSliderProps) {
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [reviews.length]);
 
   // Auto-slide every 5 seconds
   useEffect(() => {
+    if (!reviews.length) {
+      return undefined;
+    }
+
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % reviews.length);
     }, 5000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [reviews.length]);
+
+  if (!reviews.length) {
+    return null;
+  }
 
   return (
     <div
@@ -68,7 +58,7 @@ export default function ReviewSlider() {
         className="w-full flex-1"
       >
         <div className="mb-2 text-lg font-bold" style={{ color: '#40467b' }}>{reviews[index].author}</div>
-        <div className="flex justify-start mb-2">
+        <div className="flex justify-start mb-2" aria-hidden="true">
           {Array.from({ length: reviews[index].rating }).map((_, i) => (
             <span key={i} style={{ color: '#40467b', fontSize: '1.3rem', marginRight: 2 }}>★</span>
           ))}
@@ -81,7 +71,7 @@ export default function ReviewSlider() {
       
       {/* Dot indicators */}
       <div className="flex gap-2 mt-4">
-        {reviews.map((_, i) => (
+        {reviews.map((_review, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
@@ -93,7 +83,7 @@ export default function ReviewSlider() {
               border: 'none',
               cursor: 'pointer'
             }}
-            aria-label={`Go to review ${i + 1}`}
+            aria-label={ariaLabel ? `${ariaLabel} ${i + 1}` : `Go to review ${i + 1}`}
           />
         ))}
       </div>

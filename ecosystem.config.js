@@ -1,8 +1,9 @@
 module.exports = {
   apps: [{
     name: 'lectio',
-    script: 'server.js', // ✅ ZMENA: používaj server.js namiesto npm
-    cwd: '/www/wwwroot/lectio.one',
+    script: 'npm',
+    args: 'start',
+    cwd: '/srv/lectio/app',
     instances: 1,
     exec_mode: 'fork',
     watch: false,

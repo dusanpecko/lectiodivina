@@ -51,9 +51,9 @@ export default function PrivacyPolicyPage() {
           <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
             <h4 className="font-bold text-blue-900 mb-3">{t.sections.controller.content.companyTitle}</h4>
             <div className="text-blue-800 space-y-1">
-              <p>Jána Kalinčiaka 1</p>
-              <p>010 01 Žilina</p>
-              <p>IČO: 52 60 18 97</p>
+              <p>{t.sections.controller.content.address.street}</p>
+              <p>{t.sections.controller.content.address.city}</p>
+              <p>{t.sections.controller.content.address.ico}</p>
             </div>
           </div>
         </div>

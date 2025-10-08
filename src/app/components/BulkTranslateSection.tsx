@@ -1,4 +1,19 @@
 import React, { useState } from 'react';
+import { useLanguage } from './LanguageProvider';
+import { bulkTranslateSectionTranslations } from './bulkTranslateSectionTranslations';
+
+const getAvailableLanguages = (t: any) => [
+  { code: 'en', name: t.languages.english, flag: '🇺🇸' },
+  { code: 'de', name: t.languages.german, flag: '🇩🇪' },
+  { code: 'it', name: t.languages.italian, flag: '🇮🇹' },
+  { code: 'fr', name: t.languages.french, flag: '🇫🇷' },
+  { code: 'es', name: t.languages.spanish, flag: '🇪🇸' },
+  { code: 'pt', name: t.languages.portuguese, flag: '🇵🇹' },
+  { code: 'pl', name: t.languages.polish, flag: '🇵🇱' },
+  { code: 'cs', name: t.languages.czech, flag: '🇨🇿' },
+  { code: 'hu', name: t.languages.hungarian, flag: '🇭🇺' },
+  { code: 'hr', name: t.languages.croatian, flag: '🇭🇷' },
+];
 
 interface BulkTranslateProps {
   formData: Record<string, any>;
@@ -12,29 +27,18 @@ interface LanguageOption {
   flag: string;
 }
 
-const AVAILABLE_LANGUAGES: LanguageOption[] = [
-  { code: 'en', name: 'Angličtina', flag: '🇺🇸' },
-  { code: 'de', name: 'Nemčina', flag: '🇩🇪' },
-  { code: 'it', name: 'Taliančina', flag: '🇮🇹' },
-  { code: 'fr', name: 'Francúzština', flag: '🇫🇷' },
-  { code: 'es', name: 'Španielčina', flag: '🇪🇸' },
-  { code: 'pt', name: 'Portugalčina', flag: '🇵🇹' },
-  { code: 'pl', name: 'Poľština', flag: '🇵🇱' },
-  { code: 'cs', name: 'Čeština', flag: '🇨🇿' },
-  { code: 'hu', name: 'Maďarčina', flag: '🇭🇺' },
-  { code: 'hr', name: 'Chorvátčina', flag: '🇭🇷' },
-];
+
 
 // Polia ktoré sa majú preložiť hromadne
-const TRANSLATABLE_FIELDS = [
+const getTranslatableFields = (t: any) => [
   { key: 'hlava', label: 'Nadpis', type: 'hlava' },
-  { key: 'lectio_text', label: 'Lectio text', type: 'spiritual' },
-  { key: 'meditatio_text', label: 'Meditatio text', type: 'spiritual' },
+  { key: 'lectio_text', label: t.fields.lectio_text, type: 'spiritual' },
+  { key: 'meditatio_text', label: t.fields.meditation_text, type: 'spiritual' },
   { key: 'oratio_text', label: 'Oratio text', type: 'spiritual' },
-  { key: 'contemplatio_text', label: 'Contemplatio text', type: 'spiritual' },
+  { key: 'contemplatio_text', label: t.fields.contemplatio_text, type: 'spiritual' },
   { key: 'actio_text', label: 'Actio text', type: 'spiritual' },
   { key: 'reference', label: 'Reference', type: 'reference' },
-  { key: 'modlitba_zaver', label: 'Modlitba záver', type: 'prayer' }
+  { key: 'modlitba_zaver', label: t.fields.prayer_conclusion, type: 'prayer' }
 ];
 
 interface TranslationProgress {
@@ -44,7 +48,13 @@ interface TranslationProgress {
   errors: Array<{ field: string; error: string }>;
 }
 
-export default function BulkTranslateSection({ formData, onFieldsUpdated, disabled = false }: BulkTranslateProps) {
+export const BulkTranslateSection: React.FC<BulkTranslateProps> = ({
+  formData,
+  onFieldsUpdated,
+  disabled = false
+}) => {
+  const { lang } = useLanguage();
+  const t = bulkTranslateSectionTranslations[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
@@ -76,17 +86,17 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
   const handleBulkTranslate = async () => {
     if (!selectedLanguage) return;
 
-    const languageInfo = AVAILABLE_LANGUAGES.find(lang => lang.code === selectedLanguage);
+    const languageInfo = getAvailableLanguages(t).find(lang => lang.code === selectedLanguage);
     if (!languageInfo) return;
 
     // Filtrovať len polia s textom
-    const fieldsToTranslate = TRANSLATABLE_FIELDS.filter(field => {
+    const fieldsToTranslate = getTranslatableFields(t).filter(field => {
       const text = formData[field.key];
       return text && typeof text === 'string' && text.trim().length > 0;
     });
 
     if (fieldsToTranslate.length === 0) {
-      setGlobalError('Žiadne polia s textom na preloženie');
+      setGlobalError(t.errors.no_text_fields);
       return;
     }
 
@@ -124,7 +134,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
         console.error(`Translation error for ${field.key}:`, error);
         errors.push({
           field: field.label,
-          error: error.message || 'Neznáma chyba'
+          error: error.message || t.errors.unknown_error
         });
       }
 
@@ -137,7 +147,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
     setProgress(prev => prev ? {
       ...prev,
       completed: fieldsToTranslate.length,
-      current: 'Dokončené',
+      current: t.ui.completed,
       errors
     } : null);
 
@@ -159,7 +169,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
     }
   };
 
-  const fieldsWithText = TRANSLATABLE_FIELDS.filter(field => {
+  const fieldsWithText = getTranslatableFields(t).filter(field => {
     const text = formData[field.key];
     return text && typeof text === 'string' && text.trim().length > 0;
   });
@@ -173,7 +183,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
           <span className="text-2xl mr-3">🌍</span>
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              Hromadný preklad obsahu
+              {t.header.title}
             </h3>
             <p className="text-sm text-gray-600">
               Preloží všetky textové polia naraz do vybraného jazyka
@@ -200,7 +210,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
               className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="mr-2">🚀</span>
-              {isTranslating ? 'Prekladám...' : 'Spustiť hromadný preklad'}
+              {isTranslating ? t.ui.translating : t.ui.start_bulk_translation}
             </button>
 
             {fieldsWithText.length > 0 && (
@@ -217,7 +227,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
                   Vybrať cieľový jazyk:
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {AVAILABLE_LANGUAGES.map((lang) => (
+                  {getAvailableLanguages(t).map((lang) => (
                     <button
                       key={lang.code}
                       type="button"
@@ -271,12 +281,12 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
             <div className="bg-white rounded-lg p-4 border border-gray-200">
               <div className="flex items-center mb-3">
                 <span className="text-lg mr-2">⚡</span>
-                <span className="font-semibold">Prebieha preklad...</span>
+                <span className="font-semibold">{t.ui.translation_in_progress}</span>
               </div>
               
               <div className="mb-3">
                 <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Aktuálne: {progress.current}</span>
+                  <span>{t.ui.current_item}: {progress.current}</span>
                   <span>{progress.completed}/{progress.total}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -303,7 +313,7 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
                   <div className="flex items-center">
                     <span className="mr-2">✅</span>
                     <span>
-                      Preklad dokončený! {progress.total - progress.errors.length} z {progress.total} polí úspešne preložených.
+                      {t.ui.translation_completed} {progress.total - progress.errors.length} z {progress.total} {t.ui.successful_translations}.
                     </span>
                   </div>
                 </div>
@@ -314,4 +324,6 @@ export default function BulkTranslateSection({ formData, onFieldsUpdated, disabl
       )}
     </div>
   );
-}
+};
+
+export default BulkTranslateSection;

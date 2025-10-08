@@ -1,6 +1,8 @@
 // app/components/AuditLogViewer.tsx
 import React, { useEffect, useState } from 'react';
 import { useSupabase } from '@/app/components/SupabaseProvider';
+import { useLanguage } from '@/app/components/LanguageProvider';
+import { auditLogViewerTranslations } from './auditLogViewerTranslations';
 import { 
   Activity, 
   Plus, 
@@ -62,7 +64,8 @@ const getActionColor = (actionType: string) => {
   }
 };
 
-const formatTimeAgo = (dateString: string): string => {
+const formatTimeAgo = (dateString: string, lang: string): string => {
+  const t = auditLogViewerTranslations[lang];
   const date = new Date(dateString);
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();
@@ -70,12 +73,12 @@ const formatTimeAgo = (dateString: string): string => {
   const diffInHours = Math.floor(diffInMinutes / 60);
   const diffInDays = Math.floor(diffInHours / 24);
 
-  if (diffInMinutes < 1) return 'pred chvíľou';
-  if (diffInMinutes < 60) return `pred ${diffInMinutes} min`;
-  if (diffInHours < 24) return `pred ${diffInHours} h`;
-  if (diffInDays === 1) return 'včera';
-  if (diffInDays < 7) return `pred ${diffInDays} dňami`;
-  return date.toLocaleDateString('sk-SK');
+  if (diffInMinutes < 1) return t.time.just_now;
+  if (diffInMinutes < 60) return t.time.minutes_ago.replace('${minutes}', diffInMinutes.toString());
+  if (diffInHours < 24) return t.time.hours_ago.replace('${hours}', diffInHours.toString());
+  if (diffInDays === 1) return t.time.yesterday;
+  if (diffInDays < 7) return t.time.days_ago.replace('${days}', diffInDays.toString());
+  return date.toLocaleDateString(t.locale);
 };
 
 interface AuditLogViewerProps {
@@ -90,6 +93,8 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({
   className = '' 
 }) => {
   const { supabase } = useSupabase();
+  const { lang } = useLanguage();
+  const t = auditLogViewerTranslations[lang];
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -141,7 +146,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({
     return (
       <div className={`text-center py-8 text-gray-500 ${className}`}>
         <Activity size={48} className="mx-auto mb-2 text-gray-300" />
-        <p>Žiadne aktivity</p>
+        <p>{t.empty_state.no_activities}</p>
       </div>
     );
   }
@@ -175,7 +180,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({
                 {log.user_email}
               </p>
               <p className="text-xs text-gray-400">
-                {formatTimeAgo(log.created_at)}
+                {formatTimeAgo(log.created_at, lang)}
               </p>
             </div>
           </div>
@@ -187,17 +192,20 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({
 
 // Príklad použitia v komponente
 export const ExampleUsage: React.FC = () => {
+  const { lang } = useLanguage();
+  const t = auditLogViewerTranslations[lang];
+  
   return (
     <div>
       {/* Zobrazenie nedávnych aktivít */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">Nedávne aktivity</h3>
+        <h3 className="text-lg font-semibold mb-4">{t.examples.recent_activities}</h3>
         <AuditLogViewer limit={5} />
       </div>
       
       {/* Zobrazenie len aktivít pre články */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">Aktivity článkov</h3>
+        <h3 className="text-lg font-semibold mb-4">{t.examples.article_activities}</h3>
         <AuditLogViewer limit={10} tableName="news" />
       </div>
     </div>

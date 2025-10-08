@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSupabase } from '../components/SupabaseProvider';
 import { useLanguage } from '../components/LanguageProvider';
-import { translations } from '../i18n';
+import { lectioTranslations } from './translations';
 import Link from 'next/link';
 import Image from 'next/image';
 import ErrorReportModal, { ErrorReportData } from '../components/ErrorReportModal';
@@ -82,6 +82,7 @@ interface AudioSection {
 export default function LectioPage() {
   const { supabase, session } = useSupabase();
   const { lang } = useLanguage();
+  const t = lectioTranslations[lang];
   const [lectioData, setLectioData] = useState<LectioData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -148,6 +149,21 @@ export default function LectioPage() {
     fetchLectioData();
   }, [fetchLectioData]);
 
+  // Auto-select first available bible when data loads
+  useEffect(() => {
+    if (lectioData) {
+      const availableBibles = (['biblia_1', 'biblia_2', 'biblia_3'] as const).filter(bible => {
+        const text = lectioData[bible];
+        return text && text.trim() !== '';
+      });
+
+      // If current selectedBible is not available, switch to first available
+      if (availableBibles.length > 0 && !availableBibles.includes(selectedBible)) {
+        setSelectedBible(availableBibles[0]);
+      }
+    }
+  }, [lectioData, selectedBible]);
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !session) {
@@ -208,43 +224,43 @@ export default function LectioPage() {
         const dynamicAudioSections: AudioSection[] = [
           {
             key: 'modlitba_audio',
-            label: 'Modlitba',
+            label: t.audio_labels.prayer,
             icon: <Heart size={16} />,
             color: 'text-red-500'
           },
           {
             key: `${selectedBible}_audio` as keyof LectioData,
-            label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'Biblický text',
+            label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.fallback_title,
             icon: <BookOpen size={16} />,
             color: 'text-purple-500'
           },
           {
             key: 'lectio_audio',
-            label: 'Lectio',
+            label: t.audio_labels.lectio,
             icon: <BookOpen size={16} />,
             color: 'text-green-500'
           },
           {
             key: 'meditatio_audio',
-            label: 'Meditatio',
+            label: t.audio_labels.meditatio,
             icon: <Eye size={16} />,
             color: 'text-purple-500'
           },
           {
             key: 'oratio_audio',
-            label: 'Oratio',
+            label: t.audio_labels.oratio,
             icon: <Heart size={16} />,
             color: 'text-orange-500'
           },
           {
             key: 'contemplatio_audio',
-            label: 'Contemplatio',
+            label: t.audio_labels.contemplatio,
             icon: <MessageCircle size={16} />,
             color: 'text-pink-500'
           },
           {
             key: 'actio_audio',
-            label: 'Actio',
+            label: t.audio_labels.actio,
             icon: <Play size={16} />,
             color: 'text-teal-500'
           }
@@ -415,7 +431,7 @@ export default function LectioPage() {
               }}
             >
               {isCurrentlyPlaying ? <Pause size={16} /> : <Play size={16} />}
-              <span className="text-sm font-medium">{isCurrentlyPlaying ? 'Pauza' : 'Prehrať'}</span>
+              <span className="text-sm font-medium">{isCurrentlyPlaying ? t.audio.pause : t.audio.play}</span>
             </button>
           )}
         </div>
@@ -436,43 +452,43 @@ export default function LectioPage() {
     const dynamicAudioSections: AudioSection[] = [
       {
         key: 'modlitba_audio',
-        label: 'Modlitba',
+        label: t.audio_labels.prayer,
         icon: <Heart size={16} />,
         color: 'text-red-500'
       },
       {
         key: `${selectedBible}_audio` as keyof LectioData,
-        label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'Biblický text',
+        label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text,
         icon: <BookOpen size={16} />,
         color: 'text-purple-500'
       },
       {
         key: 'lectio_audio',
-        label: 'Lectio',
+        label: t.audio_labels.lectio,
         icon: <BookOpen size={16} />,
         color: 'text-green-500'
       },
       {
         key: 'meditatio_audio',
-        label: 'Meditatio',
+        label: t.audio_labels.meditatio,
         icon: <Eye size={16} />,
         color: 'text-purple-500'
       },
       {
         key: 'oratio_audio',
-        label: 'Oratio',
+        label: t.audio_labels.oratio,
         icon: <Heart size={16} />,
         color: 'text-orange-500'
       },
       {
         key: 'contemplatio_audio',
-        label: 'Contemplatio',
+        label: t.audio_labels.contemplatio,
         icon: <MessageCircle size={16} />,
         color: 'text-pink-500'
       },
       {
         key: 'actio_audio',
-        label: 'Actio',
+        label: t.audio_labels.actio,
         icon: <Play size={16} />,
         color: 'text-teal-500'
       }
@@ -485,7 +501,7 @@ export default function LectioPage() {
     return (
       <div className="fixed bottom-4 right-4 w-80 backdrop-blur-md rounded-2xl shadow-2xl p-6 border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.2)' }}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold" style={{ color: '#40467b' }}>Audio prehrávač</h3>
+          <h3 className="font-bold" style={{ color: '#40467b' }}>{t.audio.player_title}</h3>
           <button
             onClick={() => setShowAudioPlayer(false)}
             className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -496,7 +512,7 @@ export default function LectioPage() {
         
         {currentSection && (
           <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
-            <p className="text-xs text-gray-600 mb-1">Práve sa prehráva:</p>
+            <p className="text-xs text-gray-600 mb-1">{t.audio.now_playing}</p>
             <p className="font-medium" style={{ color: '#40467b' }}>
               {dynamicAudioSections.find(s => s.key === currentSection)?.label}
             </p>
@@ -552,7 +568,7 @@ export default function LectioPage() {
         )}
         
         <div className="space-y-2">
-          <p className="text-sm font-bold mb-3" style={{ color: '#40467b' }}>Dostupné nahrávky:</p>
+          <p className="text-sm font-bold mb-3" style={{ color: '#40467b' }}>{t.audio.available_recordings}</p>
           {availableAudios.map(section => (
             <button
               key={section.key}
@@ -582,7 +598,7 @@ export default function LectioPage() {
             <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
           </div>
           <h2 className="text-xl font-bold" style={{ color: '#40467b' }}>
-            {!session ? 'Overujem prihlásenie...' : 'Načítavam Lectio Divina...'}
+            {!session ? t.loading.checking_login : t.loading.loading_lectio}
           </h2>
         </div>
       </div>
@@ -600,8 +616,8 @@ export default function LectioPage() {
                 // Biblický text ako prvý slide
                 {
                   key: 'bible',
-                  title: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'BIBLICKÝ TEXT',
-                  subtitle: lectioData.suradnice_pismo || 'Sväté Písmo',
+                  title: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text.toUpperCase(),
+                  subtitle: lectioData.suradnice_pismo || t.bible.holy_scripture,
                   text: lectioData[selectedBible],
                   audioKey: `${selectedBible}_audio` as keyof LectioData,
                   icon: <Quote size={24} />,
@@ -610,8 +626,8 @@ export default function LectioPage() {
                 },
                 {
                   key: 'lectio',
-                  title: 'LECTIO',
-                  subtitle: 'Čítanie',
+                  title: t.sections.lectio,
+                  subtitle: t.sections.reading,
                   text: lectioData.lectio_text,
                   audioKey: 'lectio_audio' as keyof LectioData,
                   icon: <BookOpen size={24} />,
@@ -620,8 +636,8 @@ export default function LectioPage() {
                 },
                 {
                   key: 'meditatio',
-                  title: 'MEDITATIO',
-                  subtitle: 'Rozjímanie',
+                  title: t.sections.meditatio,
+                  subtitle: t.sections.meditation,
                   text: lectioData.meditatio_text,
                   audioKey: 'meditatio_audio' as keyof LectioData,
                   icon: <Eye size={24} />,
@@ -630,8 +646,8 @@ export default function LectioPage() {
                 },
                 {
                   key: 'oratio',
-                  title: 'ORATIO',
-                  subtitle: 'Modlitba',
+                  title: t.sections.oratio,
+                  subtitle: t.sections.prayer,
                   text: lectioData.oratio_text,
                   audioKey: 'oratio_audio' as keyof LectioData,
                   icon: <Heart size={24} />,
@@ -640,8 +656,8 @@ export default function LectioPage() {
                 },
                 {
                   key: 'contemplatio',
-                  title: 'CONTEMPLATIO',
-                  subtitle: 'Kontemplácia',
+                  title: t.sections.contemplatio,
+                  subtitle: t.sections.contemplation,
                   text: lectioData.contemplatio_text,
                   audioKey: 'contemplatio_audio' as keyof LectioData,
                   icon: <MessageCircle size={24} />,
@@ -650,8 +666,8 @@ export default function LectioPage() {
                 },
                 {
                   key: 'actio',
-                  title: 'ACTIO',
-                  subtitle: 'Konanie',
+                  title: t.sections.actio,
+                  subtitle: t.sections.action,
                   text: lectioData.actio_text,
                   audioKey: 'actio_audio' as keyof LectioData,
                   icon: <Play size={24} />,
@@ -670,43 +686,43 @@ export default function LectioPage() {
               const dynamicAudioSections: AudioSection[] = [
                 {
                   key: 'modlitba_audio',
-                  label: 'Modlitba',
+                  label: t.audio_labels.prayer,
                   icon: <Heart size={16} />,
                   color: 'text-red-500'
                 },
                 {
                   key: `${selectedBible}_audio` as keyof LectioData,
-                  label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'Biblický text',
+                  label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text,
                   icon: <BookOpen size={16} />,
                   color: 'text-purple-500'
                 },
                 {
                   key: 'lectio_audio',
-                  label: 'Lectio',
+                  label: t.audio_labels.lectio,
                   icon: <BookOpen size={16} />,
                   color: 'text-green-500'
                 },
                 {
                   key: 'meditatio_audio',
-                  label: 'Meditatio',
+                  label: t.audio_labels.meditatio,
                   icon: <Eye size={16} />,
                   color: 'text-purple-500'
                 },
                 {
                   key: 'oratio_audio',
-                  label: 'Oratio',
+                  label: t.audio_labels.oratio,
                   icon: <Heart size={16} />,
                   color: 'text-orange-500'
                 },
                 {
                   key: 'contemplatio_audio',
-                  label: 'Contemplatio',
+                  label: t.audio_labels.contemplatio,
                   icon: <MessageCircle size={16} />,
                   color: 'text-pink-500'
                 },
                 {
                   key: 'actio_audio',
-                  label: 'Actio',
+                  label: t.audio_labels.actio,
                   icon: <Play size={16} />,
                   color: 'text-teal-500'
                 }
@@ -724,14 +740,14 @@ export default function LectioPage() {
                         {/* Date Navigation */}
                         <div className="mb-4">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs font-bold" style={{ color: '#40467b' }}>Dátum</span>
+                            <span className="text-xs font-bold" style={{ color: '#40467b' }}>{t.navigation.date}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={goToPreviousDay}
                               className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
                               style={{ backgroundColor: '#686ea3' }}
-                              title="Predchádzajúci deň"
+                              title={t.navigation.previous_day}
                             >
                               <ChevronLeft size={16} />
                             </button>
@@ -760,7 +776,7 @@ export default function LectioPage() {
                                   type="button"
                                   className="p-2 rounded-lg transition-all hover:opacity-80 cursor-pointer flex items-center justify-center"
                                   style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
-                                  title="Vybrať dátum"
+                                  title={t.navigation.select_date}
                                   onClick={() => {
                                     const input = document.getElementById('datePickerInput') as HTMLInputElement;
                                     if (input) {
@@ -781,7 +797,7 @@ export default function LectioPage() {
                               onClick={goToNextDay}
                               className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
                               style={{ backgroundColor: '#686ea3' }}
-                              title="Nasledujúci deň"
+                              title={t.navigation.next_day}
                             >
                               <ChevronRight size={16} />
                             </button>
@@ -803,49 +819,59 @@ export default function LectioPage() {
                         )}
 
                         {/* Bible Selection */}
-                        {lang === 'sk' && (
-                          <div className="mb-4">
-                            <label className="text-xs font-bold mb-2 block" style={{ color: '#40467b' }}>
-                              Výber biblického textu:
-                            </label>
-                            <select
-                              value={selectedBible}
-                              onChange={(e) => setSelectedBible(e.target.value as 'biblia_1' | 'biblia_2' | 'biblia_3')}
-                              className="w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 text-sm font-medium"
-                              style={{ 
-                                borderColor: 'rgba(64, 70, 123, 0.2)',
-                                color: '#40467b',
-                                backgroundColor: 'white'
-                              }}
-                            >
-                              {(['biblia_1', 'biblia_2', 'biblia_3'] as const).map((bible) => {
-                                const title = lectioData[`nazov_${bible}` as keyof LectioData] as string;
-                                const text = lectioData[bible];
-                                if (!text) return null;
-                                
-                                return (
-                                  <option key={bible} value={bible}>
-                                    {title}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </div>
-                        )}
+                        {(() => {
+                          // Zistime, koľko biblí je dostupných
+                          const availableBibles = (['biblia_1', 'biblia_2', 'biblia_3'] as const).filter(bible => {
+                            const text = lectioData[bible];
+                            return text && text.trim() !== '';
+                          });
+
+                          // Zobrazíme dropdown len ak je viac ako jedna biblia
+                          if (availableBibles.length > 1) {
+                            return (
+                              <div className="mb-4">
+                                <label className="text-xs font-bold mb-2 block" style={{ color: '#40467b' }}>
+                                  {t.bible.selection_label}
+                                </label>
+                                <select
+                                  value={selectedBible}
+                                  onChange={(e) => setSelectedBible(e.target.value as 'biblia_1' | 'biblia_2' | 'biblia_3')}
+                                  className="w-full px-3 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 text-sm font-medium"
+                                  style={{ 
+                                    borderColor: 'rgba(64, 70, 123, 0.2)',
+                                    color: '#40467b',
+                                    backgroundColor: 'white'
+                                  }}
+                                >
+                                  {availableBibles.map((bible) => {
+                                    const title = lectioData[`nazov_${bible}` as keyof LectioData] as string;
+                                    
+                                    return (
+                                      <option key={bible} value={bible}>
+                                        {title || `${t.bible.biblical_text} ${bible.slice(-1)}`}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
 
                         {/* Audio Playlist */}
                         <div>
                           <div className="flex items-center gap-2 mb-3">
                             <Headphones size={16} style={{ color: '#40467b' }} />
                             <h3 className="text-xs font-bold" style={{ color: '#40467b' }}>
-                              Audio nahrávky
+                              {t.audio.recordings}
                             </h3>
                           </div>
 
                           {/* Audio Mode Selection */}
                           <div className="mb-3 p-3 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.05)' }}>
                             <p className="text-xs font-bold mb-3" style={{ color: '#40467b' }}>
-                              Režim prehrávania
+                              {t.audio.playback_mode}
                             </p>
                             
                             <div className="flex items-center justify-around gap-2">
@@ -880,7 +906,7 @@ export default function LectioPage() {
                                 </label>
                                 {/* Tooltip */}
                                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                                  {isPlaying ? 'Zastavte audio pre zmenu' : 'Bez pridaného audia'}
+                                  {isPlaying ? t.modes.stop_to_change : t.modes.no_added_audio}
                                 </div>
                               </div>
 
@@ -915,7 +941,7 @@ export default function LectioPage() {
                                 </label>
                                 {/* Tooltip */}
                                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                                  {isPlaying ? 'Zastavte audio pre zmenu' : 'Meditačné pozadie - krátke'}
+                                  {isPlaying ? t.modes.stop_to_change : t.modes.background_short_tooltip}
                                 </div>
                               </div>
 
@@ -950,7 +976,7 @@ export default function LectioPage() {
                                 </label>
                                 {/* Tooltip */}
                                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                                  {isPlaying ? 'Zastavte audio pre zmenu' : 'Meditačné pozadie - dlhšie'}
+                                  {isPlaying ? t.modes.stop_to_change : t.modes.background_long_tooltip}
                                 </div>
                               </div>
                             </div>
@@ -964,17 +990,17 @@ export default function LectioPage() {
                                 }}
                                 className="absolute top-1 right-1 p-1 rounded-lg transition-all hover:opacity-80"
                                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', color: '#40467b' }}
-                                title="Zavrieť prehrávač"
+                                title={t.audio.close_player}
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <line x1="18" y1="6" x2="6" y2="18"></line>
                                   <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>
                               </button>
-                              <p className="text-xs text-gray-600 mb-1">Práve hrá:</p>
+                              <p className="text-xs text-gray-600 mb-1">{t.audio.currently_playing}</p>
                               <p className="font-semibold text-xs pr-6" style={{ color: '#40467b' }}>
                                 {currentSection === 'interlude' 
-                                  ? (audioMode === 'long' ? 'Meditačné pozadie - dlhšie' : 'Meditačné pozadie - krátke')
+                                  ? (audioMode === 'long' ? t.modes.background_long_tooltip : t.modes.background_short_tooltip)
                                   : dynamicAudioSections.find(s => s.key === currentSection)?.label
                                 }
                               </p>
@@ -1003,7 +1029,7 @@ export default function LectioPage() {
                                   onClick={stopAudio}
                                   className="p-2 rounded-lg transition-all hover:opacity-80"
                                   style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
-                                  title="Zastaviť"
+                                  title={t.audio.stop}
                                 >
                                   <SkipForward size={18} />
                                 </button>
@@ -1051,7 +1077,7 @@ export default function LectioPage() {
                                 style={{ backgroundColor: '#40467b' }}
                               >
                                 <Plus size={16} />
-                                <span className="text-sm font-medium">Pridať poznámku</span>
+                                <span className="text-sm font-medium">{t.actions.add_note}</span>
                               </button>
                             )}
                             
@@ -1061,7 +1087,7 @@ export default function LectioPage() {
                               style={{ backgroundColor: '#686ea3' }}
                             >
                               <RefreshCw size={16} />
-                              <span className="text-sm font-medium">Obnoviť</span>
+                              <span className="text-sm font-medium">{t.actions.refresh}</span>
                             </button>
                           </div>
                         </div>
@@ -1082,7 +1108,7 @@ export default function LectioPage() {
                                 backgroundColor: fontSize === 'small' ? '#40467b' : 'transparent',
                                 color: fontSize === 'small' ? 'white' : '#40467b'
                               }}
-                              title="Malé písmo"
+                              title={t.content.font_size.small}
                             >
                               A-
                             </button>
@@ -1093,7 +1119,7 @@ export default function LectioPage() {
                                 backgroundColor: fontSize === 'medium' ? '#40467b' : 'transparent',
                                 color: fontSize === 'medium' ? 'white' : '#40467b'
                               }}
-                              title="Stredné písmo"
+                              title={t.content.font_size.medium}
                             >
                               A
                             </button>
@@ -1104,7 +1130,7 @@ export default function LectioPage() {
                                 backgroundColor: fontSize === 'large' ? '#40467b' : 'transparent',
                                 color: fontSize === 'large' ? 'white' : '#40467b'
                               }}
-                              title="Veľké písmo"
+                              title={t.content.font_size.large}
                             >
                               A+
                             </button>
@@ -1154,7 +1180,7 @@ export default function LectioPage() {
                                 style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}
                               >
                                 <AlertCircle size={16} />
-                                Nahlásiť chybu v texte
+                                {t.actions.report_error}
                               </button>
                             </div>
                           )}
@@ -1163,7 +1189,7 @@ export default function LectioPage() {
                           {errorReportSuccess && (
                             <div className="mt-4 p-3 rounded-lg animate-fade-in" style={{ backgroundColor: '#d1fae5' }}>
                               <p className="text-sm font-medium" style={{ color: '#065f46' }}>
-                                ✓ Hlásenie bolo úspešne odoslané. Ďakujeme za pomoc!
+                                ✓ {t.messages.error_report_success}
                               </p>
                             </div>
                           )}
@@ -1178,7 +1204,7 @@ export default function LectioPage() {
                             style={{ backgroundColor: '#686ea3' }}
                           >
                             <ChevronLeft size={18} />
-                            <span className="text-sm font-medium">Späť</span>
+                            <span className="text-sm font-medium">{t.navigation.back}</span>
                           </button>
 
                           <div className="text-sm font-bold" style={{ color: currentSlideData.color }}>
@@ -1191,7 +1217,7 @@ export default function LectioPage() {
                             className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed text-white shadow-sm"
                             style={{ backgroundColor: '#686ea3' }}
                           >
-                            <span className="text-sm font-medium">Ďalej</span>
+                            <span className="text-sm font-medium">{t.navigation.next}</span>
                             <ChevronRight size={18} />
                           </button>
                         </div>
@@ -1204,7 +1230,7 @@ export default function LectioPage() {
                     <div className="backdrop-blur-md rounded-2xl shadow-lg border flex flex-col xl:h-[calc(100vh-120px)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)' }}>
                       <div className="p-4 flex-shrink-0">
                         <h3 className="text-sm font-bold mb-4" style={{ color: '#40467b' }}>
-                          Kroky Lectio Divina
+                          {t.navigation.steps_title}
                         </h3>
                       </div>
                         
@@ -1232,7 +1258,7 @@ export default function LectioPage() {
                               </div>
                               <div className="flex-1 text-left">
                                 <div className="text-xs font-medium text-gray-500 mb-0.5">
-                                  Krok {slide.step}
+                                  {t.navigation.step_label} {slide.step}
                                 </div>
                                 <div 
                                   className="font-bold text-sm leading-tight"
@@ -1262,7 +1288,7 @@ export default function LectioPage() {
                             />
                           </div>
                           <div className="text-center text-xs font-bold" style={{ color: '#40467b' }}>
-                            {Math.round(((currentSlide + 1) / slides.length) * 100)}% hotovo
+                            {Math.round(((currentSlide + 1) / slides.length) * 100)}% {t.navigation.progress_complete}
                           </div>
                         </div>
                       </div>
@@ -1279,7 +1305,7 @@ export default function LectioPage() {
                   {/* Date Navigation */}
                   <div className="mb-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-bold" style={{ color: '#40467b' }}>Dátum</span>
+                      <span className="text-xs font-bold" style={{ color: '#40467b' }}>{t.navigation.date}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -1315,7 +1341,7 @@ export default function LectioPage() {
                             type="button"
                             className="p-2 rounded-lg transition-all hover:opacity-80 cursor-pointer flex items-center justify-center"
                             style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
-                            title="Vybrať dátum"
+                            title={t.navigation.select_date}
                             onClick={() => {
                               const input = document.getElementById('datePickerInputError') as HTMLInputElement;
                               if (input) {
@@ -1353,17 +1379,17 @@ export default function LectioPage() {
                       <BookOpen size={32} style={{ color: '#40467b' }} />
                     </div>
                     <h2 className="text-xl font-bold mb-2" style={{ color: '#40467b' }}>
-                      Lectio Divina nie je dostupná
+                      {t.messages.not_available_title}
                     </h2>
                     <p className="text-gray-600 mb-6">
-                      Pre vybraný dátum a jazyk nie je k dispozícii Lectio Divina.
+                      {t.messages.not_available_description}
                     </p>
                     <button
                       onClick={fetchLectioData}
                       className="text-white px-6 py-3 rounded-lg transition-all hover:opacity-80 shadow-md"
                       style={{ backgroundColor: '#40467b' }}
                     >
-                      Skúsiť znovu
+                      {t.actions.try_again}
                     </button>
                   </div>
                 </div>
@@ -1384,38 +1410,38 @@ export default function LectioPage() {
         const slides = [
           {
             key: 'bible',
-            title: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'BIBLICKÝ TEXT',
-            subtitle: lectioData.suradnice_pismo || 'Sväté Písmo',
+            title: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text.toUpperCase(),
+            subtitle: lectioData.suradnice_pismo || t.bible.holy_scripture,
             text: lectioData[selectedBible],
           },
           {
             key: 'lectio',
-            title: 'LECTIO',
-            subtitle: 'Čítanie',
+            title: t.sections.lectio,
+            subtitle: t.sections.reading,
             text: lectioData.lectio_text,
           },
           {
             key: 'meditatio',
-            title: 'MEDITATIO',
-            subtitle: 'Rozjímanie',
+            title: t.sections.meditatio,
+            subtitle: t.sections.meditation,
             text: lectioData.meditatio_text,
           },
           {
             key: 'oratio',
-            title: 'ORATIO',
-            subtitle: 'Modlitba',
+            title: t.sections.oratio,
+            subtitle: t.sections.prayer,
             text: lectioData.oratio_text,
           },
           {
             key: 'contemplatio',
-            title: 'CONTEMPLATIO',
-            subtitle: 'Kontemplácia',
+            title: t.sections.contemplatio,
+            subtitle: t.sections.contemplation,
             text: lectioData.contemplatio_text,
           },
           {
             key: 'actio',
-            title: 'ACTIO',
-            subtitle: 'Konanie',
+            title: t.sections.actio,
+            subtitle: t.sections.action,
             text: lectioData.actio_text,
           }
         ].filter(slide => slide.text);

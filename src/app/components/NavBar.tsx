@@ -149,6 +149,9 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
     pathname?.startsWith('/lectio')
   );
 
+  // Translations shortcut
+  const t = translations[lang];
+
   const flagEmojis = {
     sk: "🇸🇰",
     cz: "🇨🇿", 
@@ -157,12 +160,12 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
   };
 
   const lectioSteps = [
-    { href: '/about', label: 'O Lectio Divina', color: 'blue' },
-    { href: '/intro/lectio', label: 'Lectio', color: 'green' },
-    { href: '/intro/meditatio', label: 'Meditatio', color: 'amber' },
-    { href: '/intro/oratio', label: 'Oratio', color: 'red' },
-    { href: '/intro/contemplatio', label: 'Contemplatio', color: 'purple' },
-    { href: '/intro/actio', label: 'Actio', color: 'indigo' }
+    { href: '/about', label: t.navbar.about_lectio, color: 'blue' },
+    { href: '/intro/lectio', label: t.navbar.lectio_steps.lectio, color: 'green' },
+    { href: '/intro/meditatio', label: t.navbar.lectio_steps.meditatio, color: 'amber' },
+    { href: '/intro/oratio', label: t.navbar.lectio_steps.oratio, color: 'red' },
+    { href: '/intro/contemplatio', label: t.navbar.lectio_steps.contemplatio, color: 'purple' },
+    { href: '/intro/actio', label: t.navbar.lectio_steps.actio, color: 'indigo' }
   ];
 
   if (!mounted || !langLoaded) {
@@ -190,11 +193,11 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
               <div className="hidden lg:flex items-center space-x-6">
                 <div className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-white/90">
                   <Home size={16} />
-                  <span>Domov</span>
+                  <span>{t.home}</span>
                 </div>
                 <div className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-white/90">
                   <BookOpen size={16} />
-                  <span>Modlitba</span>
+                  <span>{t.prayer}</span>
                 </div>
                 <div className="flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-white/90">
                   <Mail size={16} />
@@ -226,7 +229,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 backgroundColor: 'rgba(255, 255, 255, 0.15)',
                 borderColor: 'rgba(255, 255, 255, 0.3)'
               }}>
-                Načítavam...
+                {t.loading}
               </div>
             </div>
           </div>
@@ -282,7 +285,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                     }}
                     className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium flex items-center space-x-1"
                   >
-                    <span>Preskúmať</span>
+                    <span>{t.explore}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${prayerDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
@@ -306,7 +309,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           }}
                           className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
                         >
-                          O Lectio Divina
+                          {t.navbar.about_lectio}
                         </button>
                         <button
                           onClick={() => {
@@ -315,7 +318,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           }}
                           className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
                         >
-                          Začať sprievodcu
+                          {t.start_the_guide}
                         </button>
                       </motion.div>
                     )}
@@ -331,7 +334,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                     }}
                     className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium flex items-center space-x-1"
                   >
-                    <span>Modlitba</span>
+                    <span>{t.prayer}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${lectioSubmenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
@@ -356,7 +359,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           }}
                           className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
                         >
-                          Lectio na dnes
+                          {t.today_lectio}
                         </button>
                         <button
                           onClick={() => {
@@ -365,7 +368,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           }}
                           className="w-full text-left px-4 py-3 text-gray-800 hover:bg-indigo-50 transition-colors duration-200 font-medium"
                         >
-                          Ruženec
+                          {t.rosary}
                         </button>
                       </motion.div>
                     )}
@@ -377,7 +380,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                   onClick={() => router.push("/contact")}
                   className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium"
                 >
-                  Kontakt
+                  {t.footer.contact}
                 </button>
               </div>
 
@@ -387,7 +390,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 className="hidden lg:flex items-center px-3 py-2 rounded-lg font-medium transition-all duration-200 text-white/90 hover:text-white hover:bg-white/10 border"
                 style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
               >
-                {translations[lang].give || 'Prispieť'}
+                {t.give}
               </button>
 
               {/* Language Selector */}
@@ -428,7 +431,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                     )}
                     <div className="hidden sm:block text-left">
                       <p className="text-sm font-medium text-white">
-                        {fullName || "Používateľ"}
+                        {fullName || t.homepage.default_user}
                       </p>
                       <p className="text-xs text-white/70">
                         {session.user.email}
@@ -454,7 +457,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           )}
                           <div>
                             <p className="font-medium text-gray-900">
-                              {fullName || "Používateľ"}
+                              {fullName || t.homepage.default_user}
                             </p>
                             <p className="text-sm text-gray-500">
                               {session.user.email}
@@ -470,7 +473,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           onClick={() => setProfileDropdownOpen(false)}
                         >
                           <User size={16} />
-                          <span>Môj profil</span>
+                          <span>{t.homepage.profile}</span>
                         </Link>
                         
                         <Link
@@ -479,7 +482,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                           onClick={() => setProfileDropdownOpen(false)}
                         >
                           <FileText size={16} />
-                          <span>Poznámky</span>
+                          <span>{t.homepage.notes}</span>
                         </Link>
                         
                         {isAdmin && !roleLoading && (
@@ -489,7 +492,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                             onClick={() => setProfileDropdownOpen(false)}
                           >
                             <Settings size={16} />
-                            <span>Administrácia</span>
+                            <span>{t.admin}</span>
                           </Link>
                         )}
                         
@@ -515,7 +518,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                     borderColor: 'rgba(255, 255, 255, 0.3)'
                   }}
                 >
-                  Prihlásiť sa
+                  {t.login}
                 </Link>
               )}
             </div>
@@ -545,24 +548,24 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 <div className="space-y-3">
               {/* Explore Section */}
               <div className="space-y-2">
-                <div className="text-white/60 font-bold text-xs uppercase tracking-wider px-2">Preskúmať</div>
+                <div className="text-white/60 font-bold text-xs uppercase tracking-wider px-2">{t.explore}</div>
                 <button
                   onClick={() => { setMobileMenuOpen(false); router.push('/about'); }}
                   className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
                 >
-                  O Lectio Divina
+                  {t.navbar.about_lectio}
                 </button>
                 <button
                   onClick={() => { setMobileMenuOpen(false); router.push('/intro'); }}
                   className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
                 >
-                  Začať sprievodcu
+                  {t.start_the_guide}
                 </button>
               </div>
 
               {/* Prayer Section */}
               <div className="space-y-2">
-                <div className="text-white/60 font-bold text-xs uppercase tracking-wider px-2">Modlitba</div>
+                <div className="text-white/60 font-bold text-xs uppercase tracking-wider px-2">{t.prayer}</div>
                 <button
                   onClick={() => { 
                     checkAuthAndNavigate('/lectio');
@@ -570,7 +573,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                   }}
                   className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
                 >
-                  Lectio na dnes
+                  {t.today_lectio}
                 </button>
                 <button
                   onClick={() => { 
@@ -579,7 +582,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                   }}
                   className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-2"
                 >
-                  Ruženec
+                  {t.rosary}
                 </button>
               </div>
 
@@ -591,7 +594,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                 }}
                 className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2"
               >
-                Kontakt
+                {t.footer.contact}
               </button>
 
               {/* Give Button - MOBILE */}
@@ -604,7 +607,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                   className="flex items-center justify-center space-x-2 w-full px-4 py-3 rounded-lg font-medium transition-colors text-white/90 hover:text-white hover:bg-white/10 border"
                   style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
                 >
-                  <span>{translations[lang].give || 'Prispieť'}</span>
+                  <span>{t.give}</span>
                 </button>
               </div>
 
@@ -627,7 +630,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                       )}
                       <div>
                         <p className="font-medium text-white">
-                          {fullName || "Používateľ"}
+                          {fullName || t.homepage.default_user}
                         </p>
                         <p className="text-sm text-white/70">
                           {session.user.email}
@@ -641,7 +644,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <User size={18} />
-                      <span>Môj profil</span>
+                      <span>{t.homepage.profile}</span>
                     </Link>
 
                     <Link
@@ -650,7 +653,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <FileText size={18} />
-                      <span>Poznámky</span>
+                      <span>{t.homepage.notes}</span>
                     </Link>
 
                     {isAdmin && !roleLoading && (
@@ -660,7 +663,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Settings size={18} />
-                        <span>Administrácia</span>
+                        <span>{t.admin}</span>
                       </Link>
                     )}
 
@@ -688,7 +691,7 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <User size={18} />
-                      <span>Prihlásiť sa</span>
+                      <span>{t.login}</span>
                     </Link>
                   </div>
                 )}
@@ -720,23 +723,23 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <User className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Prihlásenie potrebné</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{t.homepage.login_required_title}</h3>
               <p className="text-gray-600 mb-6">
-                Pre prístup k tejto funkcii sa prosím prihláste do svojho účtu.
+                {t.homepage.login_required_message}
               </p>
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowLoginModal(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  Zrušiť
+                  {t.cancel}
                 </button>
                 <Link
                   href="/login"
                   onClick={() => setShowLoginModal(false)}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
                 >
-                  Prihlásiť sa
+                  {t.login}
                 </Link>
               </div>
             </div>
@@ -747,10 +750,10 @@ export default function NavBar({ onMenuClick }: NavBarProps) {
       {/* Logout Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showLogoutDialog}
-        title="Odhlásiť sa"
-        message="Naozaj sa chcete odhlásiť zo svojho účtu?"
-        confirmText="Odhlásiť sa"
-        cancelText="Zrušiť"
+        title={t.homepage.logout_confirm_title}
+        message={t.homepage.logout_confirm_message}
+        confirmText={t.logout}
+        cancelText={t.cancel}
         onConfirm={handleLogout}
         onCancel={() => setShowLogoutDialog(false)}
         type="warning"

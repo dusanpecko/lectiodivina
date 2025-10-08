@@ -1,8 +1,9 @@
 "use client";
 import { useLanguage } from "./LanguageProvider";
-import { translations } from "@/app/i18n";
-import { useEffect, useRef, useState } from "react";
+import { translations, type Language } from "@/app/i18n";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { setCookieConsent, removeAppCookies, removeAppLocalStorage } from "../utils/cookieHelpers";
+import { cookieTranslations } from "./cookieTranslations";
 
 type Props = {
   visible: boolean;
@@ -10,10 +11,73 @@ type Props = {
   showIfNeeded: () => void;
 };
 
+// Language switcher component for cookie dialog
+function LanguageSwitcher({ currentLang, onLanguageChange }: { currentLang: string, onLanguageChange: (lang: Language) => void }) {
+  const languages = [
+    { code: 'sk' as Language, flag: '🇸🇰', label: 'Slovenčina' },
+    { code: 'cz' as Language, flag: '🇨🇿', label: 'Čeština' },  
+    { code: 'en' as Language, flag: '🇬🇧', label: 'English' },
+    { code: 'es' as Language, flag: '🇪🇸', label: 'Español' }
+  ];
+
+  const handleLanguageChange = (langCode: Language) => {
+    console.log('🍪 Cookie dialog: Button clicked, changing to', langCode);
+    console.log('🍪 Current lang before change:', currentLang);
+    onLanguageChange(langCode);
+  };
+
+  return (
+    <div className="mb-6 flex items-center justify-center gap-2">
+      {languages.map((language) => (
+        <button
+          key={language.code}
+          onClick={() => handleLanguageChange(language.code)}
+          className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            currentLang === language.code
+              ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-300'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+          title={language.label}
+        >
+          <span className="text-lg">{language.flag}</span>
+          <span className="text-xs hidden sm:inline">{language.code.toUpperCase()}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function CookieConsent({ visible, onClose, showIfNeeded }: Props) {
-  const { lang, isLoaded } = useLanguage();
+  const { lang, changeLang, isLoaded } = useLanguage();
   const t = translations[lang];
+  
+  // Use useMemo to ensure cookieT updates when lang changes
+  const cookieT = useMemo(() => {
+    return cookieTranslations[lang || 'sk'] || cookieTranslations['sk'];
+  }, [lang]);
+  
   const acceptRef = useRef<HTMLButtonElement>(null);
+
+  // Debug log to track re-renders
+  console.log('🍪 CookieConsent render with lang:', lang, 'title:', cookieT?.title);
+  
+  // Handle language change from switcher
+  const handleLanguageChange = (newLang: Language) => {
+    console.log('🍪 handleLanguageChange called with:', newLang);
+    console.log('🍪 Current lang before:', lang);
+    changeLang(newLang);
+    console.log('🍪 changeLang called, waiting for re-render...');
+  };
+  
+  // Debug function - accessible from browser console (only in development)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      (window as any).clearCookieConsent = () => {
+        localStorage.removeItem('cookieConsent');
+        window.location.reload();
+      };
+    }
+  }, []);
   const dialogRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -99,7 +163,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
       onClose();
       
     } catch (error) {
-      console.error("❌ Chyba pri ukladaní cookie súhlasu:", error);
+      console.error(`❌ ${cookieT.error_accepting}:`, error);
       
       try {
         document.cookie = "cookieConsent=accepted; path=/; SameSite=Strict; Secure";
@@ -130,7 +194,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
       onClose();
       
     } catch (error) {
-      console.error("❌ Chyba pri odmietnutí cookies:", error);
+      console.error(`❌ ${cookieT.error_declining}:`, error);
       
       try {
         document.cookie = "cookieConsent=declined; path=/; SameSite=Strict; Secure";
@@ -172,6 +236,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
 
   return (
     <div
+      key={`cookie-dialog-${lang}`}
       className="fixed inset-0 z-[9999] flex items-center justify-center transition-all duration-300"
       style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)' }}
       role="dialog"
@@ -194,7 +259,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         <button
           onClick={onClose}
           disabled={isProcessing}
-          aria-label="Zavrieť"
+          aria-label={cookieT.close_aria_label}
           className="absolute top-4 right-4 text-gray-400 text-xl w-8 h-8 flex items-center justify-center rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
           style={{ background: 'rgba(64, 70, 123, 0.1)' }}
           onMouseEnter={(e) => {
@@ -212,27 +277,29 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
         </button>
         
         {/* Cookie icon */}
-        <div className="mb-6 flex items-center justify-center">
+        <div className="mb-4 flex items-center justify-center">
           <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'rgba(64, 70, 123, 0.15)' }}>
             <span className="text-4xl" role="img" aria-label="Cookie">🍪</span>
           </div>
         </div>
+
+        {/* Language Switcher */}
+        <LanguageSwitcher currentLang={lang} onLanguageChange={handleLanguageChange} />
         
         {/* Title */}
         <h3 id="cookie-consent-title" className="text-2xl font-bold mb-4" style={{ color: '#40467b' }}>
-          {isLoaded && t.cookie_title ? t.cookie_title : "Súhlas s cookies"}
+          {cookieT.title}
         </h3>
         
         {/* Description */}
         <p id="cookie-consent-description" className="text-gray-600 mb-6 text-sm leading-relaxed">
-          {isLoaded && t.cookie_text ? t.cookie_text :
-            "Táto stránka používa cookies na analýzu návštevnosti a zlepšenie používateľského zážitku. Vaše súkromie je pre nás dôležité."}
+          {cookieT.description}
         </p>
         
         {/* Rozšírená informácia */}
         <details className="mb-6 text-left">
           <summary className="cursor-pointer text-sm font-medium focus:outline-none rounded px-2 py-2 transition-colors" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
-            {isLoaded && t.cookie_details ? t.cookie_details : "Viac informácií o cookies"}
+            {cookieT.more_info}
           </summary>
           <div className="mt-3 text-xs text-gray-600 space-y-3 pl-4" style={{ borderLeft: '2px solid rgba(64, 70, 123, 0.3)' }}>
             <div>
@@ -267,7 +334,7 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
                 <span>Spracováva sa...</span>
               </div>
             ) : (
-              isLoaded && t.accept_cookies ? t.accept_cookies : "Prijať všetko"
+              cookieT.accept_all
             )}
           </button>
           
@@ -285,14 +352,14 @@ export default function CookieConsent({ visible, onClose, showIfNeeded }: Props)
                 <span>Spracováva sa...</span>
               </div>
             ) : (
-              isLoaded && t.decline_cookies ? t.decline_cookies : "Odmietnuť"
+              cookieT.decline_all
             )}
           </button>
         </div>
         
         {/* Privacy policy link */}
         <p className="text-xs text-gray-500 mt-6">
-          {isLoaded && t.cookie_policy_link ? t.cookie_policy_link : "Viac informácií nájdete v našich"}{" "}
+          {cookieT.policy_link_text}{" "}
           <a 
             href="/privacy-policy" 
             className="underline focus:outline-none rounded transition-colors"

@@ -111,7 +111,7 @@ export default function NewsDetailArticle({
                   <div className="flex items-center space-x-2">
                     <Clock size={16} />
                     <span className="font-medium">
-                      {getReadingTime(news.content)} {t.newsDetail?.reading_time || "min čítania"}
+                      {getReadingTime(news.content)} {t.newsDetail.reading_time}
                     </span>
                   </div>
                 </motion.div>
@@ -131,7 +131,7 @@ export default function NewsDetailArticle({
                   {/* Article badge */}
                   <div className="absolute top-4 left-4">
                     <div className="text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg backdrop-blur-xl" style={{ backgroundColor: '#40467b' }}>
-                      {t.newsDetail?.article_badge || "ČLÁNOK"}
+                      {t.newsDetail.article_badge}
                     </div>
                   </div>
                 </div>

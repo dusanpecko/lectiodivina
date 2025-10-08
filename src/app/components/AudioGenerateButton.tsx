@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { useLanguage } from './LanguageProvider';
+import { audioGenerateButtonTranslations } from './audioGenerateButtonTranslations';
 
 interface AudioGenerateButtonProps {
   text: string;
@@ -9,6 +11,8 @@ interface AudioGenerateButtonProps {
   onAudioGenerated: (audioUrl: string) => void;
   disabled?: boolean;
   className?: string;
+  voice_id?: string;
+  model?: string;
 }
 
 interface AudioGenerationResult {
@@ -29,8 +33,12 @@ export default function AudioGenerateButton({
   currentAudioUrl,
   onAudioGenerated,
   disabled = false,
-  className = ""
+  className = "",
+  voice_id,
+  model
 }: AudioGenerateButtonProps) {
+  const { lang } = useLanguage();
+  const t = audioGenerateButtonTranslations[lang];
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generationResult, setGenerationResult] = useState<AudioGenerationResult | null>(null);
@@ -39,7 +47,7 @@ export default function AudioGenerateButton({
 
   const handleGenerate = async () => {
     if (!text.trim()) {
-      setError("Žiadny text na konverziu");
+      setError(t.errors.no_text_to_convert);
       return;
     }
 
@@ -58,13 +66,15 @@ export default function AudioGenerateButton({
           language,
           lectioId: lectioId.toString(),
           fieldName,
+          voice_id,
+          model,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `Chyba ${response.status}`);
+        throw new Error(data.error || t.errors.server_error.replace('${status}', response.status.toString()));
       }
 
       setGenerationResult(data);
@@ -73,7 +83,7 @@ export default function AudioGenerateButton({
       
     } catch (error: any) {
       console.error('Audio generation error:', error);
-      setError(error.message || 'Chyba pri generovaní audio');
+      setError(error.message || t.errors.generation_failed);
     } finally {
       setIsGenerating(false);
     }
@@ -111,23 +121,23 @@ export default function AudioGenerateButton({
           `}
           title={
             isTextEmpty 
-              ? "Najprv zadajte text" 
+              ? t.tooltips.enter_text_first
               : hasAudio 
-                ? "Pregenerovať audio" 
-                : "Generovať audio súbor"
+                ? t.tooltips.regenerate_audio
+                : t.tooltips.generate_audio_file
           }
         >
           {isGenerating ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600 mr-2"></div>
-              Generujem...
+              {t.buttons.generating}
             </>
           ) : (
             <>
               <span className="mr-2">
                 {hasAudio ? '🔄' : '🎵'}
               </span>
-              {hasAudio ? 'Pregenerovať' : 'Generovať audio'}
+              {hasAudio ? t.buttons.regenerate : t.buttons.generate_audio}
             </>
           )}
         </button>
@@ -141,7 +151,7 @@ export default function AudioGenerateButton({
             <span className="mr-1">
               {showPreview ? '🔇' : '🎧'}
             </span>
-            {showPreview ? 'Skryť' : 'Prehrať'}
+            {showPreview ? t.buttons.hide : t.buttons.play}
           </button>
         )}
       </div>
@@ -149,7 +159,7 @@ export default function AudioGenerateButton({
       {/* Text info */}
       {!isTextEmpty && (
         <div className="mt-1 text-xs text-gray-500">
-          {textLength} znakov • ~{estimatedSeconds}s reči
+          {t.info.characters_and_speech.replace('${length}', textLength.toString()).replace('${seconds}', estimatedSeconds.toString())}
         </div>
       )}
 
@@ -159,7 +169,7 @@ export default function AudioGenerateButton({
           <div className="flex items-start">
             <span className="mr-2">❌</span>
             <div>
-              <div className="font-semibold">Chyba generovania:</div>
+              <div className="font-semibold">{t.status.generation_error}</div>
               <div>{error}</div>
             </div>
           </div>
@@ -172,12 +182,12 @@ export default function AudioGenerateButton({
           <div className="flex items-start">
             <span className="mr-2">✅</span>
             <div>
-              <div className="font-semibold">Audio vygenerované</div>
+              <div className="font-semibold">{t.status.audio_generated}</div>
               <div className="grid grid-cols-2 gap-1 text-xs mt-1">
-                <div>Jazyk: {generationResult.language.toUpperCase()}</div>
-                <div>Model: {generationResult.model}</div>
-                <div>Hlas: {generationResult.voiceUsed.slice(0, 8)}...</div>
-                <div>Veľkosť: {Math.round(generationResult.fileSize / 1024)}KB</div>
+                <div>{t.status.language}: {generationResult.language.toUpperCase()}</div>
+                <div>{t.status.model}: {generationResult.model}</div>
+                <div>{t.status.voice}: {generationResult.voiceUsed.slice(0, 8)}...</div>
+                <div>{t.status.file_size}: {Math.round(generationResult.fileSize / 1024)}KB</div>
               </div>
             </div>
           </div>
@@ -189,7 +199,7 @@ export default function AudioGenerateButton({
         <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-blue-800">
-              🎧 Audio náhľad
+              {t.status.audio_preview}
             </span>
             <button
               type="button"
@@ -211,13 +221,13 @@ export default function AudioGenerateButton({
               src={generationResult?.audioUrl || currentAudioUrl} 
               type="audio/mpeg" 
             />
-            Váš prehliadač nepodporuje prehrávanie audio súborov.
+            {t.browser.no_audio_support}
           </audio>
           
           {generationResult && (
             <div className="mt-2 text-xs text-blue-600">
-              <div>Súbor: {generationResult.filename}</div>
-              <div>URL: {generationResult.audioUrl}</div>
+              <div>{t.status.file}: {generationResult.filename}</div>
+              <div>{t.status.url}: {generationResult.audioUrl}</div>
             </div>
           )}
         </div>

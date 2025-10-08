@@ -158,7 +158,7 @@ function generateAudioFilename(lectioId: string, fieldName: string, language: st
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, language, lectioId, fieldName } = await request.json();
+    const { text, language, lectioId, fieldName, voice_id, model } = await request.json();
 
     // Validation
     if (!text || text.trim().length === 0) {
@@ -184,14 +184,23 @@ export async function POST(request: NextRequest) {
 
     // Detect or validate language
     const detectedLang = detectLanguage(text, language);
-    const voiceConfig = VOICE_MAPPING[detectedLang as keyof typeof VOICE_MAPPING];
+    const defaultVoiceConfig = VOICE_MAPPING[detectedLang as keyof typeof VOICE_MAPPING];
     
-    if (!voiceConfig) {
+    if (!defaultVoiceConfig) {
       return NextResponse.json(
         { error: `Nepodporovaný jazyk: ${detectedLang}` },
         { status: 400 }
       );
     }
+
+    // Use custom voice_id and model if provided, otherwise use defaults
+    const voiceConfig = {
+      voice_id: voice_id || "scOwDtmlUjD3prqpp97I", // Sam ako predvolený
+      model: model || "eleven_v3", // v3 ako predvolený
+      stability: defaultVoiceConfig.stability,
+      similarity_boost: defaultVoiceConfig.similarity_boost,
+      style: defaultVoiceConfig.style
+    };
 
     // Split text into chunks if too long (helps with timeouts and ElevenLabs limits)
     const textChunks = splitTextIntoChunks(text.trim(), 1500);

@@ -4,6 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabase } from '../components/SupabaseProvider';
+import { useLanguage } from '../components/LanguageProvider';
+import { translations } from '../i18n';
 import { formatDate } from '../utils/dateUtils';
 import { 
   Search, 
@@ -32,6 +34,9 @@ interface Note {
 type EditorMode = 'empty' | 'new' | 'edit';
 
 export default function NotesPage() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -136,7 +141,7 @@ export default function NotesPage() {
   const handleSaveNote = async () => {
     if (!supabase || !session) return;
     if (!editTitle.trim() || !editContent.trim()) {
-      alert('Názov a obsah poznámky sú povinné');
+      alert(t.notesPage.editor.validation.required_fields);
       return;
     }
 
@@ -178,7 +183,7 @@ export default function NotesPage() {
       }
     } catch (error) {
       console.error('Error saving note:', error);
-      alert('Chyba pri ukladaní poznámky');
+      alert('Error saving note');
     } finally {
       setIsSaving(false);
     }
@@ -186,7 +191,7 @@ export default function NotesPage() {
 
   const handleDeleteNote = async (noteId: string) => {
     if (!supabase) return;
-    if (!confirm('Naozaj chcete odstrániť túto poznámku? Táto akcia sa nedá vrátiť späť.')) {
+    if (!confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
       return;
     }
     
@@ -206,13 +211,13 @@ export default function NotesPage() {
       await fetchNotes();
     } catch (error) {
       console.error('Error deleting note:', error);
-      alert('Chyba pri odstraňovaní poznámky');
+      alert('Error deleting note');
     }
   };
 
   const handleCloseEditor = () => {
     if (editorMode === 'new' && (editTitle || editContent)) {
-      if (!confirm('Máte neuloženú poznámku. Naozaj chcete zavrieť editor?')) {
+      if (!confirm(t.notesPage.editor.confirm.close_unsaved)) {
         return;
       }
     }
@@ -233,7 +238,7 @@ export default function NotesPage() {
             <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
           </div>
           <h2 className="text-xl font-bold" style={{ color: '#40467b' }}>
-            {authLoading ? 'Načítavam...' : 'Presmerovávam na prihlásenie...'}
+            {authLoading ? t.notesPage.loading_auth : t.notesPage.redirecting_login}
           </h2>
         </div>
       </div>
@@ -257,7 +262,7 @@ export default function NotesPage() {
               style={{ backgroundColor: mobileTab === 'list' ? '#40467b' : 'transparent' }}
             >
               <BookOpen size={16} />
-              Zoznam poznámok
+              {t.notesPage.editor.tabs.list}
             </button>
             <button
               onClick={() => setMobileTab('editor')}
@@ -269,7 +274,7 @@ export default function NotesPage() {
               style={{ backgroundColor: mobileTab === 'editor' ? '#40467b' : 'transparent' }}
             >
               <FileText size={16} />
-              Editor
+              {t.notesPage.editor.tabs.editor}
             </button>
           </div>
         </div>
@@ -292,10 +297,10 @@ export default function NotesPage() {
                     </div>
                     <div className="flex-1">
                       <h1 className="text-xl font-bold" style={{ color: '#40467b' }}>
-                        Moje poznámky
+                        {t.notesPage.title}
                       </h1>
                       <p className="text-xs text-gray-600">
-                        {filteredNotes.length} {filteredNotes.length === 1 ? 'poznámka' : 'poznámok'}
+                        {filteredNotes.length} {filteredNotes.length === 1 ? t.notesPage.notes_count : t.notesPage.notes_count_plural}
                       </p>
                     </div>
                   </div>
@@ -306,7 +311,7 @@ export default function NotesPage() {
                     style={{ backgroundColor: '#40467b' }}
                   >
                     <Plus size={18} />
-                    <span className="font-medium">Nová poznámka</span>
+                    <span className="font-medium">{t.notesPage.new_note}</span>
                   </button>
                 </div>
 
@@ -316,7 +321,7 @@ export default function NotesPage() {
                     <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Hľadať poznámky..."
+                                            placeholder={t.notesPage.search_placeholder}
                       value={searchQuery}
                       onChange={(e) => filterNotes(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm"
@@ -340,17 +345,17 @@ export default function NotesPage() {
                         <div className="absolute inset-0 rounded-full border-4 border-purple-200"></div>
                         <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
                       </div>
-                      <p className="text-sm text-gray-600">Načítavam poznámky...</p>
+                      <p className="text-sm text-gray-600">{t.notesPage.loading}</p>
                     </div>
                   ) : filteredNotes.length === 0 ? (
                     <div className="p-8 text-center">
                       <FileText size={32} className="mx-auto mb-4 text-gray-400" />
                       <p className="text-sm text-gray-600 mb-2">
-                        {searchQuery ? 'Žiadne výsledky' : 'Zatiaľ nemáte žiadne poznámky'}
+                        {searchQuery ? 'No results' : t.notesPage.empty_state.title}
                       </p>
                       {!searchQuery && (
                         <p className="text-xs text-gray-500">
-                          Kliknite na "Nová poznámka"
+                          {t.notesPage.empty_state.subtitle}
                         </p>
                       )}
                     </div>
@@ -412,10 +417,10 @@ export default function NotesPage() {
                         <Sparkles size={40} style={{ color: '#40467b' }} />
                       </div>
                       <h2 className="text-2xl font-bold mb-3" style={{ color: '#40467b' }}>
-                        Vyberte poznámku
+                        {t.notesPage.empty_editor.title}
                       </h2>
                       <p className="text-gray-600 mb-6">
-                        Kliknite na poznámku v zozname vľavo alebo vytvorte novú poznámku
+                        {t.notesPage.empty_editor.subtitle}
                       </p>
                       <button
                         onClick={handleNewNote}
@@ -423,7 +428,7 @@ export default function NotesPage() {
                         style={{ backgroundColor: '#40467b' }}
                       >
                         <Plus size={20} />
-                        <span className="font-medium">Vytvoriť novú poznámku</span>
+                        <span className="font-medium">{t.notesPage.empty_editor.button}</span>
                       </button>
                     </div>
                   </div>
@@ -439,7 +444,7 @@ export default function NotesPage() {
                           {editorMode === 'new' ? <Plus size={16} /> : <FileText size={16} />}
                         </div>
                         <h2 className="font-semibold" style={{ color: '#40467b' }}>
-                          {editorMode === 'new' ? 'Nová poznámka' : 'Upraviť poznámku'}
+                          {editorMode === 'new' ? t.notesPage.editor.modes.new_title : t.notesPage.editor.modes.edit_title}
                         </h2>
                       </div>
                       <div className="flex items-center gap-2">
@@ -449,7 +454,7 @@ export default function NotesPage() {
                             className="flex items-center gap-2 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm font-medium"
                           >
                             <Trash2 size={16} />
-                            Odstrániť
+                            {t.notesPage.editor.actions.delete}
                           </button>
                         )}
                         <button
@@ -459,7 +464,7 @@ export default function NotesPage() {
                           style={{ backgroundColor: '#40467b' }}
                         >
                           <Save size={16} />
-                          {isSaving ? 'Ukladám...' : 'Uložiť'}
+                          {isSaving ? t.notesPage.editor.actions.saving : t.notesPage.editor.actions.save}
                         </button>
                         <button
                           onClick={handleCloseEditor}
@@ -476,14 +481,14 @@ export default function NotesPage() {
                       <div className="max-w-4xl mx-auto space-y-6">
                         {/* Title */}
                         <div>
-                          <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                            Názov poznámky *
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t.notesPage.editor.form.title_label}
                           </label>
                           <input
                             type="text"
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
-                            placeholder="Zadajte názov..."
+                            placeholder={t.notesPage.editor.form.title_placeholder}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-lg font-semibold"
                           />
                         </div>
@@ -491,12 +496,12 @@ export default function NotesPage() {
                         {/* Content */}
                         <div>
                           <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                            Obsah poznámky *
+                            {t.notesPage.editor.form.content_label}
                           </label>
                           <textarea
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
-                            placeholder="Začnite písať svoje myšlienky..."
+                            placeholder={t.notesPage.editor.form.content_placeholder}
                             rows={12}
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
                           />
@@ -506,31 +511,31 @@ export default function NotesPage() {
                         <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-400 rounded-r-lg p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <Quote size={20} className="text-green-600" />
-                            <h3 className="font-semibold text-green-800">Biblický odkaz</h3>
+                            <h3 className="font-semibold text-green-800">{t.notesPage.editor.form.bible_section_title}</h3>
                           </div>
                           
                           <div className="space-y-4">
                             <div>
                               <label className="block text-sm font-medium text-green-800 mb-2">
-                                Odkaz (napr. Ján 3:16)
+                                {t.notesPage.editor.form.bible_reference_label}
                               </label>
                               <input
                                 type="text"
                                 value={editBibleRef}
                                 onChange={(e) => setEditBibleRef(e.target.value)}
-                                placeholder="Ján 3:16"
+                                placeholder={t.notesPage.editor.form.bible_reference_placeholder}
                                 className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-white"
                               />
                             </div>
                             
                             <div>
                               <label className="block text-sm font-medium text-green-800 mb-2">
-                                Citát z Biblie
+                                {t.notesPage.editor.form.bible_quote_label}
                               </label>
                               <textarea
                                 value={editBibleQuote}
                                 onChange={(e) => setEditBibleQuote(e.target.value)}
-                                placeholder="Vložte text z Biblie..."
+                                placeholder={t.notesPage.editor.form.bible_quote_placeholder}
                                 rows={4}
                                 className="w-full px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all resize-none bg-white"
                               />
@@ -544,18 +549,18 @@ export default function NotesPage() {
                             <div className="flex flex-wrap gap-4">
                               <div className="flex items-center gap-2">
                                 <Calendar size={14} />
-                                <span>Vytvorené: {formatDate(selectedNote.created_at)}</span>
+                                <span>{t.notesPage.metadata.created}: {formatDate(selectedNote.created_at)}</span>
                               </div>
                               {selectedNote.updated_at && selectedNote.updated_at !== selectedNote.created_at && (
                                 <div className="flex items-center gap-2">
                                   <Calendar size={14} />
-                                  <span>Upravené: {formatDate(selectedNote.updated_at)}</span>
+                                  <span>{t.notesPage.metadata.updated}: {formatDate(selectedNote.updated_at)}</span>
                                 </div>
                               )}
                               {!selectedNote.updated_at && (
                                 <div className="flex items-center gap-2">
                                   <Calendar size={14} />
-                                  <span className="italic">Poznámka nebola upravovaná</span>
+                                  <span className="italic">{t.notesPage.metadata.not_modified}</span>
                                 </div>
                               )}
                             </div>

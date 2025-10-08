@@ -82,7 +82,7 @@ export default function MobilePrivacyPage() {
           
           {/* App Download Links */}
           <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
-            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>📲 Stiahnuť aplikáciu:</h5>
+            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>📲 {t.downloadApp}</h5>
             <div className="flex flex-col sm:flex-row gap-4">
               <a 
                 href="https://apps.apple.com/sk/app/lectio-divina/id6443882687"
@@ -127,7 +127,7 @@ export default function MobilePrivacyPage() {
           <p>{t.sections.tokenData.content.description}</p>
           
           <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
-            <h5 className="font-semibold mb-3" style={{ color: '#40467b' }}>🔑 Príklad registration token:</h5>
+            <h5 className="font-semibold mb-3" style={{ color: '#40467b' }}>🔑 {t.exampleToken}</h5>
             <code className="text-sm bg-gray-800 text-green-400 p-4 rounded-xl block overflow-x-auto break-all shadow-inner">
               {t.sections.tokenData.content.example.split(': ')[1]}
             </code>
@@ -227,7 +227,7 @@ export default function MobilePrivacyPage() {
       content: (
         <div className="space-y-6">
           <div className="bg-white/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-white/30">
-            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>🍪 Čo sú Cookies?</h5>
+            <h5 className="font-semibold mb-4" style={{ color: '#40467b' }}>🍪 {t.cookiesQuestion}</h5>
             <p className="text-gray-700 mb-3 leading-relaxed">{t.sections.cookies.content.definition}</p>
             <p className="text-gray-700 leading-relaxed">{t.sections.cookies.content.purpose}</p>
           </div>
@@ -300,7 +300,7 @@ export default function MobilePrivacyPage() {
               </h5>
               <p className="text-sm text-gray-700 mb-6 leading-relaxed">{t.sections.terms.content.documents.intro}</p>
               <div className="bg-white/70 backdrop-blur-sm p-5 rounded-xl border border-white/30 mb-6">
-                <h6 className="font-semibold mb-3" style={{ color: '#40467b' }}>Podmienky použitia:</h6>
+                <h6 className="font-semibold mb-3" style={{ color: '#40467b' }}>{t.termsConditions}</h6>
                 <ul className="space-y-3">
                   {t.sections.terms.content.documents.conditions.map((condition: string, index: number) => (
                     <li key={index} className="flex items-start space-x-3 text-sm text-gray-700">
@@ -359,7 +359,7 @@ export default function MobilePrivacyPage() {
                 style={{ backgroundColor: '#40467b' }}
               >
                 <ArrowLeftIcon />
-                <span className="ml-2 font-medium">Späť na hlavnú stránku</span>
+                <span className="ml-2 font-medium">{t.backToHome}</span>
               </Link>
             </div>
             
@@ -429,14 +429,14 @@ export default function MobilePrivacyPage() {
         <div className="mt-12 text-center">
           <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20">
             <p className="text-gray-700 mb-6 text-lg">
-              Máte otázky ohľadom ochrany osobných údajov v našej mobilnej aplikácii?
+              {t.footerQuestion}
             </p>
             <Link 
               href="/contact" 
               className="inline-flex items-center text-white px-8 py-4 rounded-xl font-medium transition-all hover:scale-105 shadow-lg"
               style={{ backgroundColor: '#40467b' }}
             >
-              Kontaktujte nás
+              {t.contactUs}
             </Link>
           </div>
         </div>

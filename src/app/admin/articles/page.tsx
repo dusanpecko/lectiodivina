@@ -68,11 +68,7 @@ const LANGUAGE_OPTIONS = [
   { value: "es" as const, label: "Español", flag: "🇪🇸" },
 ];
 
-const STATUS_OPTIONS = [
-  { value: "draft", label: "Návrh", color: "bg-gray-100 text-gray-800", icon: "📝" },
-  { value: "published", label: "Publikované", color: "bg-green-100 text-green-800", icon: "✅" },
-  { value: "archived", label: "Archivované", color: "bg-red-100 text-red-800", icon: "📦" },
-];
+// Status options will be dynamically created with translations
 
 // Notification komponenta
 const Notification = ({ 
@@ -129,6 +125,13 @@ export default function ArticlesAdminPage() {
   const t = translations[appLang];
   const router = useRouter();
   const { supabase } = useSupabase();
+
+  // Dynamic STATUS_OPTIONS with translations
+  const STATUS_OPTIONS = [
+    { value: "draft", label: t.article_status.draft, color: "bg-gray-100 text-gray-800", icon: "📝" },
+    { value: "published", label: t.article_status.published, color: "bg-green-100 text-green-800", icon: "✅" },
+    { value: "archived", label: t.article_status.archived, color: "bg-red-100 text-red-800", icon: "📦" },
+  ];
 
   // State
   const [articles, setArticles] = useState<Article[]>([]);

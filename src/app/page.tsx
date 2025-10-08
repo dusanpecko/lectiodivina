@@ -367,7 +367,7 @@ export default function HomePage() {
                     className="px-4 h-10 text-white rounded-lg transition-colors duration-200 font-medium flex items-center"
                     style={{ backgroundColor: '#40467b' }}
                   >
-                    Download
+                    {t.homepage.download}
                   </button>
 
                   {/* Profile Dropdown / Login */}
@@ -390,7 +390,7 @@ export default function HomePage() {
                         )}
                         <div className="hidden sm:block text-left">
                           <p className="text-sm font-medium text-white">
-                            {fullName || "Používateľ"}
+                            {fullName || t.homepage.default_user}
                           </p>
                           <p className="text-xs text-white/70">
                             {session.user.email}
@@ -416,7 +416,7 @@ export default function HomePage() {
                               )}
                               <div>
                                 <p className="font-medium text-gray-900">
-                                  {fullName || "Používateľ"}
+                                  {fullName || t.homepage.default_user}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                   {session.user.email}
@@ -434,7 +434,7 @@ export default function HomePage() {
                               className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors w-full text-left"
                             >
                               <User size={16} />
-                              <span>Môj profil</span>
+                              <span>{t.homepage.profile}</span>
                             </button>
                             
                             <button
@@ -445,7 +445,7 @@ export default function HomePage() {
                               className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors w-full text-left"
                             >
                               <FileText size={16} />
-                              <span>Poznámky</span>
+                              <span>{t.homepage.notes}</span>
                             </button>
                             
                             {isAdmin && !roleLoading && (
@@ -457,7 +457,7 @@ export default function HomePage() {
                                 className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors w-full text-left"
                               >
                                 <Settings size={16} />
-                                <span>Administrácia</span>
+                                <span>{t.admin}</span>
                               </button>
                             )}
                             
@@ -595,7 +595,7 @@ export default function HomePage() {
                       className="block w-full text-left text-white font-medium py-2 px-4 rounded-lg"
                       style={{ backgroundColor: '#40467b' }}
                     >
-                      Download
+                      {t.homepage.download}
                     </button>
 
                     {/* Profile / Login */}
@@ -615,7 +615,7 @@ export default function HomePage() {
                           )}
                           <div>
                             <p className="font-medium text-white">
-                              {fullName || "Používateľ"}
+                              {fullName || t.homepage.default_user}
                             </p>
                             <p className="text-sm text-white/70">
                               {session.user.email}
@@ -631,7 +631,7 @@ export default function HomePage() {
                           className="flex items-center space-x-3 px-3 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
                         >
                           <User size={18} />
-                          <span>Môj profil</span>
+                          <span>{t.homepage.profile}</span>
                         </button>
 
                         <button
@@ -642,7 +642,7 @@ export default function HomePage() {
                           className="flex items-center space-x-3 px-3 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
                         >
                           <FileText size={18} />
-                          <span>Poznámky</span>
+                          <span>{t.homepage.notes}</span>
                         </button>
 
                         {isAdmin && !roleLoading && (
@@ -654,7 +654,7 @@ export default function HomePage() {
                             className="flex items-center space-x-3 px-3 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
                           >
                             <Settings size={18} />
-                            <span>Administrácia</span>
+                            <span>{t.admin}</span>
                           </button>
                         )}
 
@@ -792,16 +792,16 @@ export default function HomePage() {
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <User className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Prihlásenie potrebné</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{t.homepage.login_required_title}</h3>
               <p className="text-gray-600 mb-6">
-                Pre prístup k tejto funkcii sa prosím prihláste do svojho účtu.
+                {t.homepage.login_required_message}
               </p>
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowLoginModal(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  Zrušiť
+                  {t.cancel}
                 </button>
                 <button
                   onClick={() => {
@@ -810,7 +810,7 @@ export default function HomePage() {
                   }}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Prihlásiť sa
+                  {t.login}
                 </button>
               </div>
             </div>
@@ -916,10 +916,10 @@ export default function HomePage() {
       {/* Logout Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showLogoutDialog}
-        title="Odhlásiť sa"
-        message="Naozaj sa chcete odhlásiť zo svojho účtu?"
-        confirmText="Odhlásiť sa"
-        cancelText="Zrušiť"
+  title={t.homepage.logout_confirm_title}
+  message={t.homepage.logout_confirm_message}
+  confirmText={t.logout}
+  cancelText={t.cancel}
         onConfirm={async () => {
           await supabase.auth.signOut();
           setShowLogoutDialog(false);

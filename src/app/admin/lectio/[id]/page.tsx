@@ -1334,20 +1334,20 @@ export default function LectioEditPage() {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center mb-6">
               <span className="text-2xl mr-3">📝</span>
-              <h2 className="text-xl font-semibold text-gray-800">Základné informácie</h2>
+              <h2 className="text-xl font-semibold text-gray-800">{t.basic_info}</h2>
             </div>
             
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InputField
-                  label={t.hlava || "Nadpis"}
+                  label={t.hlava}
                   name="hlava"
                   defaultValue={lectio.hlava || ""}
                   required
                   placeholder="Zadajte nadpis lectio..."
                 />
                 <InputField
-                  label={t.suradnice_pismo || "Súradnice Písma"}
+                  label={t.suradnice_pismo}
                   name="suradnice_pismo"
                   defaultValue={lectio.suradnice_pismo || ""}
                   required

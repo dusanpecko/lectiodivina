@@ -1,12 +1,10 @@
-// components/DailyQuote.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import { useSupabase } from "./SupabaseProvider";
-import { motion } from "framer-motion";
-import { translations } from "@/app/i18n";
 import { Target } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { Translations } from "../i18n";
 
 type DailyQuoteRow = {
   date: string;
@@ -16,7 +14,7 @@ type DailyQuoteRow = {
 };
 
 type DailyQuoteProps = {
-  t: any;
+  t: Translations['sk']; // Type for one language from translations
   router: AppRouterInstance;
 };
 
@@ -74,27 +72,16 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
     );
   }
 
-  // Minimal error state
-  if (!quote) {
-    return (
-      <div className="w-full flex items-center justify-center py-6">
-        <div className="w-full max-w-2xl px-6 py-4 rounded-2xl bg-white/70 border border-white/40 shadow text-center">
-          <span className="text-lg font-semibold text-gray-500">{t.dailyQuote.notFound}</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <section className="relative min-h-screen py-12 lg:py-16 flex items-center justify-center snap-start" style={{ background: '#f8f9fa' }}>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 w-full">
         {/* Meet Your Hosts Section */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3" style={{ color: '#40467b' }}>
-            {t.meet_your_hosts || "Zoznámte sa s nami"}
+            {t.meet_your_hosts}
           </h2>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            {t.hosts_description || "Sme tím ľudí, ktorí s vierou a nadšením spájajú slovo, umenie a technológiu v projekte Lectio Divina."}
+            {t.hosts_description}
           </p>
         </div>
 
@@ -135,7 +122,7 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
             className="px-6 py-3 rounded-xl text-white font-semibold text-base shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
             style={{ background: '#40467b' }}
           >
-            {t.discover_more || "Spoznajte náš tím"}
+            {t.discover_more}
           </button>
         </div>
 
@@ -154,19 +141,32 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
                 <Target className="w-7 h-7" style={{ color: '#40467b' }} />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#40467b' }}>
-                {t.daily_actio || "Ži Božie slovo (ACTIO)"}
+                {t.daily_actio}
               </h3>
             </div>
 
             <div className="max-w-2xl mx-auto">
-              <blockquote className="mb-4">
-                <p className="text-lg sm:text-xl font-semibold leading-relaxed text-gray-700 text-center">
-                  "{quote.quote}"
-                </p>
-              </blockquote>
-              <cite className="block text-center text-sm text-gray-500 italic">
-                — {quote.reference}
-              </cite>
+              {quote ? (
+                <>
+                  <blockquote className="mb-4">
+                    <p className="text-lg sm:text-xl font-semibold leading-relaxed text-gray-700 text-center">
+                      &ldquo;{quote.quote}&rdquo;
+                    </p>
+                  </blockquote>
+                  <cite className="block text-center text-sm text-gray-500 italic">
+                    — {quote.reference}
+                  </cite>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-lg text-gray-600">
+                    {t.dailyQuote?.no_quote_today}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    {t.dailyQuote?.check_back_tomorrow}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

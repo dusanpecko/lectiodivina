@@ -107,16 +107,16 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen overflow-x-hidden bg-white text-black snap-y snap-mandatory overflow-y-auto" suppressHydrationWarning>
-        <CookieConsentProvider>
-          <SupabaseProvider session={null}>
-            <LanguageProvider>
+        <LanguageProvider>
+          <CookieConsentProvider>
+            <SupabaseProvider session={null}>
               <DynamicMetadata />
               {children}
               {!isAdminZone && <Footer />}
               <ScrollToTopButton />
-            </LanguageProvider>
-          </SupabaseProvider>
-        </CookieConsentProvider>
+            </SupabaseProvider>
+          </CookieConsentProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

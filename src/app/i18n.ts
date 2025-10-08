@@ -1,13 +1,9 @@
-import { Users } from "lucide-react";
 import { useContext, createContext } from "react";
 
 // 1. Definícia typov jazykov, ktoré podporuješ
 export type Language = "sk" | "cz" | "en" | "es";
 
-// 2. Typ pre hodnotu translations (kľudne môžeš rozšíriť/typovať ešte presnejšie)
-export type Translations = typeof translations;
-
-// 3. Kontext pre jazyk
+// 2. Kontext pre jazyk
 export const LangContext = createContext<{ lang: Language }>({ lang: "sk" });
 
 // 4. Hook na získanie aktuálneho jazyka
@@ -19,6 +15,7 @@ export function useLang() {
 export const supportedLangs: Language[] = ["sk", "cz", "en", "es"];
 
 // 6. Príklad prekladov (za týmto blokom vlož tvoj pôvodný `translations`)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const translations: Record<Language, any> = {
 
   sk: {
@@ -38,6 +35,30 @@ export const translations: Record<Language, any> = {
     logout: "Odhlásiť sa",
     logout_success: "Úspešne odhlásený.",
     select_language: "Vyberte jazyk",
+    meet_your_hosts: "Zoznámte sa s nami",
+    hosts_description: "Sme tím ľudí, ktorí s vierou a nadšením spájajú slovo, umenie a technológiu v projekte Lectio Divina.",
+    discover_more: "Spoznajte náš tím",
+    daily_actio: "Ži Božie slovo (ACTIO)",
+    navbar: {
+      about_lectio: "O Lectio Divina",
+      lectio_steps: {
+        lectio: "Lectio",
+        meditatio: "Meditatio", 
+        oratio: "Oratio",
+        contemplatio: "Contemplatio",
+        actio: "Actio"
+      }
+    },
+    homepage: {
+      download: "Stiahnuť",
+      default_user: "Používateľ",
+      profile: "Môj profil",
+      notes: "Poznámky",
+      login_required_title: "Prihlásenie potrebné",
+      login_required_message: "Pre prístup k tejto funkcii sa prosím prihláste do svojho účtu.",
+      logout_confirm_title: "Odhlásenie",
+      logout_confirm_message: "Naozaj sa chcete odhlásiť zo svojho účtu?"
+    },
     calendar_admin_title: "Úprava kalendára",
     language: "Jazyk",
     import_excel: "Importovať Excel",
@@ -98,6 +119,12 @@ export const translations: Record<Language, any> = {
     likes: "Páči sa mi",
     saving: "Ukladám...",
     add_news_title: "Pridať nový článok",
+    // Article statuses
+    article_status: {
+      draft: "Návrh",
+      published: "Publikované", 
+      archived: "Archivované"
+    },
     preparing: "PRIPRAVUJEME",
     app_title: "Lectio Divina",
     app_subtitle: "aplikácia pre každý deň",
@@ -229,12 +256,50 @@ export const translations: Record<Language, any> = {
     app_section: {
       headline: "MOBILNÁ APLIKÁCIA",
       lead: "Pozývame vás prehĺbiť svoj duchovný život s aplikáciou Lectio Divina!",
+      tagline: "Dať Božiemu Slovu priestor vo vašom srdci.",
       p1: "Lectio Divina je starobylá forma modlitby, ktorú po stáročia praktizovali rehoľné komunity aj jednotlivci. Teraz môžete túto obohacujúcu prax integrovať do svojho každodenného života aj vy!",
       p2: "Pozývame vás stiahnuť si našu novú aplikáciu Lectio Divina a dať Božiemu Slovu priestor vo vašom srdci. Či už sa rozhodnete pre Lectio osamote, v rodine, alebo v malej skupine, prostredníctvom čítania Božieho Slova sa váš život s Bohom začne prehlbovať a rozkvitať.",
       p3: "Stiahnite si aplikáciu Lectio Divina ešte dnes a začnite svoju cestu k hlbšiemu vzťahu s Bohom!",
       note: "Aplikácia je momentálne dostupná v slovenčine.",
       more: "Viac o Lectio Divina na www.lectiodivina.sk",
       alt: "Ilustrácia mobilnej aplikácie",
+      apple_store_alt: "Stiahnuť z App Store",
+      google_play_alt: "Stiahnuť z Google Play",
+    },
+    review_slider: {
+      aria_label: "Prejsť na recenziu",
+      items: [
+        {
+          author: "Jana H.",
+          text: "Úžasná aplikácia, každé ráno sa teším na čítanie a konečne aj rozumiem, čo Boh ku mne hovorí a cítim radosť a pokoj. Vďaka Otec Dušan",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Jkb982",
+          text: "Úplne odporúčam! Na každý deň úseky z Písma, nad ktorými môžem rozjímať. Presne toto som hľadal.",
+          rating: 5,
+          platform: "App Store"
+        },
+        {
+          author: "Štefan J.",
+          text: "Výborná pomôcka k duchovnému zreniu. Apka vyhotovená prehľadne a obsahuje moderné prvky. Vďaka za službu :)",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Ummarti",
+          text: "Skvelá práca. Aplikáciu používam denne. Oceňujem možnosť texty si vypočuť a dokonca v rôznych prekladoch. Krátke zamyslenia sú tak trefné a často mi otvoria nový pohľad na \"známy text\" Sv. Písma. Ďakujem aj za \"Advent\" – všetky zamyslenia a najmä vysvetľujúce komentáre. Vďaka za váš čas a námahu.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Vladislav H.",
+          text: "Texty na meditáciu, viacero prekladov na jednom mieste, ako aj zamyslenia ako inšpirácia. Pre mňa skvelý pomocník pre rast v duchovnom živote.",
+          rating: 5,
+          platform: "Google Play"
+        }
+      ]
     },
     users_id:"Používatelia",
     latest_news: "Najnovšie články",
@@ -340,7 +405,9 @@ export const translations: Record<Language, any> = {
       submit_btn: "Pridať sa ku komunite",
       success_message: "Ďakujeme! Vaša žiadosť bola úspešne odoslaná. Čoskoro vás budeme kontaktovať.",
       error_message: "Nastala chyba. Skontrolujte, či ste vyplnili všetky povinné polia a skúste znova.",
-      required_field: "Povinné pole"
+      required_field: "Povinné pole",
+      loading_form: "Načítavam formulár...",
+      message_placeholder: "Vaša správa alebo nápad..."
     },
     // Community admin preklady
     community_admin_title: "Správa členov komunity",
@@ -386,7 +453,9 @@ export const translations: Record<Language, any> = {
       todayLabel: "DNEŠNÝ CITÁT",
       notFound: "Dnešný citát nebol nájdený",
       notFoundDescription: "Skúste to prosím neskôr alebo si prečítajte naše archívne citáty.",
-      error: "Chyba pri načítaní citátu"
+      error: "Chyba pri načítaní citátu",
+      no_quote_today: "Na dnešný deň nie je k dispozícii žiadna myšlienka.",
+      check_back_tomorrow: "Skúste to zajtra."
     },
     // LectioStepsSection component
     lectioStepsSection: {
@@ -435,6 +504,84 @@ export const translations: Record<Language, any> = {
       show_article: "Zobraziť článok",
       show_all_articles: "Zobraziť všetky články"
     },
+    newsListPage: {
+      title: "Najnovšie články",
+      all_articles_badge: "VŠETKY ČLÁNKY", 
+      subtitle: "Prečítajte si najnovšie články a duchovné úvahy",
+      search_placeholder: "Hľadať články...",
+      sort_by_date: "Podľa dátumu",
+      sort_by_likes: "Podľa obľúbenosti", 
+      reading_time: "min čítania",
+      new_badge: "NOVÝ",
+      showing_results: "Zobrazuje sa {count} z {total} článkov",
+      search_results_for: " pre \"{searchTerm}\"",
+      no_search_results_title: "Žiadne výsledky",
+      no_search_results_desc: "Nenašli sa žiadne články pre hľadaný výraz \"{searchTerm}\". Skúste iné kľúčové slová.",
+      clear_search: "Vymazať vyhľadávanie",
+      no_articles_title: "Žiadne články",
+      no_articles_desc: "Žiadne články neboli nájdené."
+    },
+
+    // Notes page translations
+    notesPage: {
+      title: "Moje poznámky",
+      notes_count: "poznámka",
+      notes_count_plural: "poznámok",
+      new_note: "Nová poznámka",
+      search_placeholder: "Hľadať v poznámkach...",
+      loading: "Načítavam poznámky...",
+      loading_auth: "Načítavam...",
+      redirecting_login: "Presmerovávam na prihlásenie...",
+      empty_state: {
+        title: "Zatiaľ žiadne poznámky",
+        subtitle: "Kliknite na 'Nová poznámka' a začnite písať svoje myšlienky",
+        button: "Vytvoriť prvú poznámku"
+      },
+      empty_editor: {
+        title: "Vyberte poznámku",
+        subtitle: "Kliknite na poznámku v zozname vľavo alebo vytvorte novú poznámku",
+        button: "Vytvoriť novú poznámku"
+      },
+      editor: {
+        tabs: {
+          list: "Zoznam",
+          editor: "Editor"
+        },
+        modes: {
+          new_title: "Nová poznámka",
+          edit_title: "Upraviť poznámku",
+          empty_title: "Začať písať"
+        },
+        form: {
+          title_label: "Názov poznámky *",
+          title_placeholder: "Názov vašej poznámky...",
+          content_label: "Obsah poznámky *",
+          content_placeholder: "Začnite písať svoje myšlienky...",
+          bible_section_title: "Biblický odkaz",
+          bible_reference_label: "Odkaz (napr. Ján 3:16)",
+          bible_reference_placeholder: "Ján 3:16",
+          bible_quote_label: "Citát z Biblie",
+          bible_quote_placeholder: "Vložte text z Biblie..."
+        },
+        actions: {
+          save: "Uložiť poznámku",
+          saving: "Ukladám...",
+          cancel: "Zrušiť",
+          delete: "Zmazať poznámku"
+        },
+        validation: {
+          required_fields: "Názov a obsah poznámky sú povinné"
+        },
+        confirm: {
+          close_unsaved: "Máte neuloženú poznámku. Naozaj chcete zavrieť editor?"
+        }
+      },
+      metadata: {
+        created: "Vytvorené",
+        updated: "Upravené", 
+        not_modified: "Poznámka nebola upravovaná"
+      }
+    }
   },
   
     
@@ -455,6 +602,30 @@ export const translations: Record<Language, any> = {
     logout: "Odhlásit se",
     logout_success: "Úspěšně odhlášen.",
     select_language: "Vyberte jazyk",
+    meet_your_hosts: "Seznamte se s námi",
+    hosts_description: "Jsme tým lidí, kteří s vírou a nadšením spojují slovo, umění a technologie v projektu Lectio Divina.",
+    discover_more: "Poznejte náš tým",
+    daily_actio: "Žijte Boží slovo (ACTIO)",
+    navbar: {
+      about_lectio: "O Lectio Divina",
+      lectio_steps: {
+        lectio: "Lectio",
+        meditatio: "Meditatio", 
+        oratio: "Oratio",
+        contemplatio: "Contemplatio",
+        actio: "Actio"
+      }
+    },
+    homepage: {
+      download: "Stáhnout",
+      default_user: "Uživatel",
+      profile: "Můj profil",
+      notes: "Poznámky",
+      login_required_title: "Přihlášení je potřeba",
+      login_required_message: "Pro přístup k této funkci se prosím přihlaste ke svému účtu.",
+      logout_confirm_title: "Odhlášení",
+      logout_confirm_message: "Opravdu se chcete odhlásit ze svého účtu?"
+    },
     
     // Hero sekcia na hlavnej stránce
     hero: {
@@ -525,6 +696,12 @@ export const translations: Record<Language, any> = {
     likes: "Líbí se mi",
     saving: "Ukládám...",
     add_news_title: "Přidat nový článek",
+    // Article statuses
+    article_status: {
+      draft: "Návrh",
+      published: "Publikované",
+      archived: "Archivované"
+    },
     preparing: "PŘIPRAVUJEME",
     app_title: "Lectio Divina",
     app_subtitle: "aplikace pro každý den",
@@ -656,12 +833,50 @@ export const translations: Record<Language, any> = {
     app_section: {
       headline: "MOBILNÍ APLIKACE",
       lead: "Zveme vás, abyste prohloubili svůj duchovní život s aplikací Lectio Divina!",
+      tagline: "Dát Božímu Slovu prostor ve vašem srdci.",
       p1: "Lectio Divina je starobylá forma modlitby, kterou po staletí praktikovali řeholní komunity i jednotlivci. Nyní můžete tuto obohacující praxi začlenit do svého každodenního života i vy!",
       p2: "Zveme vás ke stažení naší nové aplikace Lectio Divina a k tomu, abyste dali Božímu Slovu prostor ve svém srdci. Ať už se rozhodnete pro Lectio sami, v rodině nebo v malé skupině, skrze čtení Božího Slova se váš život s Bohem začne prohlubovat a rozkvétat.",
       p3: "Stáhněte si aplikaci Lectio Divina ještě dnes a začněte svou cestu k hlubšímu vztahu s Bohem!",
       note: "Aplikace je momentálně dostupná v slovenštině.",
       more: "Více o Lectio Divina na www.lectiodivina.sk",
       alt: "Ilustrace mobilní aplikace",
+      apple_store_alt: "Stáhnout z App Store",
+      google_play_alt: "Stáhnout z Google Play",
+    },
+    review_slider: {
+      aria_label: "Přejít na recenzi",
+      items: [
+        {
+          author: "Jana H.",
+          text: "Úžasná aplikace, každé ráno se těším na čtení a konečně rozumím, co ke mně Bůh mluví, a cítím radost i pokoj. Díky, otče Dušane.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Jkb982",
+          text: "Rozhodně doporučuji! Na každý den úseky z Písma, nad kterými mohu rozjímat. Přesně tohle jsem hledal.",
+          rating: 5,
+          platform: "App Store"
+        },
+        {
+          author: "Štefan J.",
+          text: "Skvělá pomůcka pro duchovní zrání. Aplikace je přehledná a obsahuje moderní prvky. Díky za službu :)",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Ummarti",
+          text: "Skvělá práce. Aplikaci používám denně. Oceňuji možnost texty si poslechnout a dokonce v různých překladech. Krátká zamyšlení jsou trefná a často mi otevřou nový pohled na \"známý text\" Písma. Děkuji také za \"Advent\", všechna zamyšlení a hlavně vysvětlující komentáře. Díky za váš čas a námahu.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Vladislav H.",
+          text: "Texty k meditaci, více překladů na jednom místě i inspirativní zamyšlení. Pro mě skvělý pomocník pro růst v duchovním životě.",
+          rating: 5,
+          platform: "Google Play"
+        }
+      ]
     },
     users_id: "Uživatelé",
     latest_news: "Nejnovější články",
@@ -708,7 +923,9 @@ export const translations: Record<Language, any> = {
       submit_btn: "Připojit se ke komunitě",
       success_message: "Děkujeme! Vaše žádost byla úspěšně odeslána. Brzy vás budeme kontaktovat.",
       error_message: "Nastala chyba. Zkontrolujte, zda jste vyplnili všechna povinná pole a zkuste znovu.",
-      required_field: "Povinné pole"
+      required_field: "Povinné pole",
+      loading_form: "Načítám formulář...",
+      message_placeholder: "Vaše zpráva nebo nápad..."
     },
     community_admin_title: "Správa členů komunity",
     community_member_detail: "Detail člena komunity",
@@ -753,7 +970,9 @@ export const translations: Record<Language, any> = {
       todayLabel: "DNEŠNÍ CITÁT",
       notFound: "Dnešní citát nebyl nalezen",
       notFoundDescription: "Zkuste to prosím později nebo si přečtěte naše archivní citáty.",
-      error: "Chyba při načítání citátu"
+      error: "Chyba při načítání citátu",
+      no_quote_today: "Pro dnešní den není k dispozici žádná myšlenka.",
+      check_back_tomorrow: "Zkuste to zítra."
     },
     lectioStepsSection: {
   title: "Lectio Divina - Pět kroků",
@@ -800,6 +1019,84 @@ export const translations: Record<Language, any> = {
       show_article: "Zobrazit článek",
       show_all_articles: "Zobrazit všechny články"
     },
+    newsListPage: {
+      title: "Nejnovější články",
+      all_articles_badge: "VŠECHNY ČLÁNKY",
+      subtitle: "Přečtěte si nejnovější články a duchovní úvahy", 
+      search_placeholder: "Hledat články...",
+      sort_by_date: "Podle data",
+      sort_by_likes: "Podle oblíbenosti",
+      reading_time: "min čtení",
+      new_badge: "NOVÝ", 
+      showing_results: "Zobrazuje se {count} z {total} článků",
+      search_results_for: " pro \"{searchTerm}\"",
+      no_search_results_title: "Žádné výsledky",
+      no_search_results_desc: "Nenašly se žádné články pro hledaný výraz \"{searchTerm}\". Zkuste jiná klíčová slova.",
+      clear_search: "Vymazat vyhledávání",
+      no_articles_title: "Žádné články", 
+      no_articles_desc: "Žádné články nebyly nalezeny."
+    },
+
+    // Notes page translations
+    notesPage: {
+      title: "Moje poznámky",
+      notes_count: "poznámka",
+      notes_count_plural: "poznámek",
+      new_note: "Nová poznámka",
+      search_placeholder: "Hledat v poznámkách...",
+      loading: "Načítám poznámky...",
+      loading_auth: "Načítám...",
+      redirecting_login: "Přesměrovávám na přihlášení...",
+      empty_state: {
+        title: "Zatím žádné poznámky",
+        subtitle: "Klikněte na 'Nová poznámka' a začněte psát své myšlenky",
+        button: "Vytvořit první poznámku"
+      },
+      empty_editor: {
+        title: "Vyberte poznámku",
+        subtitle: "Klikněte na poznámku v seznamu vlevo nebo vytvořte novou poznámku",
+        button: "Vytvořit novou poznámku"
+      },
+      editor: {
+        tabs: {
+          list: "Seznam",
+          editor: "Editor"
+        },
+        modes: {
+          new_title: "Nová poznámka",
+          edit_title: "Upravit poznámku",
+          empty_title: "Začít psát"
+        },
+        form: {
+          title_label: "Název poznámky *",
+          title_placeholder: "Název vaší poznámky...",
+          content_label: "Obsah poznámky *",
+          content_placeholder: "Začněte psát své myšlenky...",
+          bible_section_title: "Biblický odkaz",
+          bible_reference_label: "Odkaz (např. Jan 3:16)",
+          bible_reference_placeholder: "Jan 3:16",
+          bible_quote_label: "Citát z Bible",
+          bible_quote_placeholder: "Vložte text z Bible..."
+        },
+        actions: {
+          save: "Uložit poznámku",
+          saving: "Ukládám...",
+          cancel: "Zrušit",
+          delete: "Smazat poznámku"
+        },
+        validation: {
+          required_fields: "Název a obsah poznámky jsou povinné"
+        },
+        confirm: {
+          close_unsaved: "Máte neuloženou poznámku. Opravdu chcete zavřít editor?"
+        }
+      },
+      metadata: {
+        created: "Vytvořeno",
+        updated: "Upraveno", 
+        not_modified: "Poznámka nebyla upravována"
+      }
+    }
   },
   en: {
     give: "Give",
@@ -818,6 +1115,30 @@ export const translations: Record<Language, any> = {
     logout: "Logout",
     logout_success: "Successfully logged out.",
     select_language: "Select language",
+    meet_your_hosts: "Meet Your Hosts",
+    hosts_description: "We are a team of people who faithfully and passionately combine word, art and technology in the Lectio Divina project.",
+    discover_more: "Discover Our Team",
+    daily_actio: "Live God's Word (ACTIO)",
+    navbar: {
+      about_lectio: "About Lectio Divina",
+      lectio_steps: {
+        lectio: "Lectio",
+        meditatio: "Meditatio", 
+        oratio: "Oratio",
+        contemplatio: "Contemplatio",
+        actio: "Actio"
+      }
+    },
+    homepage: {
+      download: "Download",
+      default_user: "User",
+      profile: "My profile",
+      notes: "Notes",
+      login_required_title: "Login required",
+      login_required_message: "Please sign in to access this feature.",
+      logout_confirm_title: "Sign out",
+      logout_confirm_message: "Are you sure you want to sign out of your account?"
+    },
 
     calendar_admin_title: "Calendar Edit",
     language: "Language",
@@ -879,6 +1200,12 @@ export const translations: Record<Language, any> = {
     likes: "Likes",
     saving: "Saving...",
     add_news_title: "Add new article",
+    // Article statuses
+    article_status: {
+      draft: "Draft",
+      published: "Published",
+      archived: "Archived"
+    },
     preparing: "COMING SOON",
     app_title: "Lectio Divina",
     app_subtitle: "an app for every day",
@@ -1010,12 +1337,50 @@ export const translations: Record<Language, any> = {
     app_section: {
       headline: "MOBILE APP",
       lead: "We invite you to deepen your spiritual life with the Lectio Divina app!",
+      tagline: "Give God's Word space in your heart.",
       p1: "Lectio Divina is an ancient form of prayer practiced for centuries by religious communities and individuals. Now you can integrate this enriching practice into your everyday life!",
       p2: "Download our new Lectio Divina app and give God's Word space in your heart. Whether you choose Lectio alone, with your family, or in a small group, through reading God's Word your life with God will deepen and blossom.",
       p3: "Download the Lectio Divina app today and begin your journey to a deeper relationship with God!",
       note: "The app is currently available in Slovak.",
       more: "More about Lectio Divina at www.lectiodivina.sk",
       alt: "Illustration of the mobile app",
+      apple_store_alt: "Download on the App Store",
+      google_play_alt: "Get it on Google Play",
+    },
+    review_slider: {
+      aria_label: "Go to review",
+      items: [
+        {
+          author: "Jana H.",
+          text: "Amazing app. Every morning I look forward to reading and I finally understand what God is speaking to me; I feel joy and peace. Thank you, Father Dušan.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Jkb982",
+          text: "Highly recommend! Daily passages of Scripture to meditate on. Exactly what I was looking for.",
+          rating: 5,
+          platform: "App Store"
+        },
+        {
+          author: "Štefan J.",
+          text: "Great tool for spiritual growth. The app is clear and includes modern features. Thanks for the service :)",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Ummarti",
+          text: "Great work. I use the app every day. I appreciate being able to listen to the texts, even in different translations. The short reflections are so spot-on and often open a new view of a \"familiar text\" of Scripture. Thank you also for the Advent reflections and especially the explanatory comments. Thanks for your time and effort.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Vladislav H.",
+          text: "Texts for meditation, multiple translations in one place, and reflections for inspiration. For me, an excellent companion for growing in the spiritual life.",
+          rating: 5,
+          platform: "Google Play"
+        }
+      ]
     },
     users_id: "Users",
     latest_news: "Latest Articles",
@@ -1119,7 +1484,9 @@ export const translations: Record<Language, any> = {
       submit_btn: "Join the Community",
       success_message: "Thank you! Your request has been successfully submitted. We will contact you soon.",
       error_message: "An error occurred. Please check that you have filled in all required fields and try again.",
-      required_field: "Required field"
+      required_field: "Required field",
+      loading_form: "Loading form...",
+      message_placeholder: "Your message or idea..."
     },
     community_admin_title: "Community Members Management",
     community_member_detail: "Community Member Detail",
@@ -1164,7 +1531,9 @@ export const translations: Record<Language, any> = {
       todayLabel: "TODAY'S QUOTE",
       notFound: "Today's quote was not found",
       notFoundDescription: "Please try again later or read our archived quotes.",
-      error: "Error loading quote"
+      error: "Error loading quote",
+      no_quote_today: "No quote is available for today.",
+      check_back_tomorrow: "Please check back tomorrow."
     },
     lectioStepsSection: {
       title: "Lectio Divina - Five Steps",
@@ -1208,9 +1577,87 @@ export const translations: Record<Language, any> = {
       no_articles_title: "No articles yet",
       no_articles_desc: "No articles for language \"{lang}\" were found.",
       new_badge: "NEW",
-      show_article: "Show article",
+      show_article: "Show article", 
       show_all_articles: "Show all articles"
     },
+    newsListPage: {
+      title: "Latest Articles",
+      all_articles_badge: "ALL ARTICLES",
+      subtitle: "Read the latest articles and spiritual reflections",
+      search_placeholder: "Search articles...",
+      sort_by_date: "By date",
+      sort_by_likes: "By popularity",
+      reading_time: "min read",
+      new_badge: "NEW",
+      showing_results: "Showing {count} of {total} articles", 
+      search_results_for: " for \"{searchTerm}\"",
+      no_search_results_title: "No results",
+      no_search_results_desc: "No articles found for search term \"{searchTerm}\". Try different keywords.",
+      clear_search: "Clear search",
+      no_articles_title: "No articles",
+      no_articles_desc: "No articles were found."
+    },
+
+    // Notes page translations
+    notesPage: {
+      title: "My Notes",
+      notes_count: "note",
+      notes_count_plural: "notes",
+      new_note: "New Note",
+      search_placeholder: "Search notes...",
+      loading: "Loading notes...",
+      loading_auth: "Loading...",
+      redirecting_login: "Redirecting to login...",
+      empty_state: {
+        title: "No notes yet",
+        subtitle: "Click 'New Note' and start writing your thoughts",
+        button: "Create first note"
+      },
+      empty_editor: {
+        title: "Select a note",
+        subtitle: "Click on a note in the left list or create a new note",
+        button: "Create new note"
+      },
+      editor: {
+        tabs: {
+          list: "List",
+          editor: "Editor"
+        },
+        modes: {
+          new_title: "New Note",
+          edit_title: "Edit Note",
+          empty_title: "Start Writing"
+        },
+        form: {
+          title_label: "Note Title *",
+          title_placeholder: "Your note title...",
+          content_label: "Note Content *",
+          content_placeholder: "Start writing your thoughts...",
+          bible_section_title: "Bible Reference",
+          bible_reference_label: "Reference (e.g. John 3:16)",
+          bible_reference_placeholder: "John 3:16",
+          bible_quote_label: "Bible Quote",
+          bible_quote_placeholder: "Insert text from Bible..."
+        },
+        actions: {
+          save: "Save Note",
+          saving: "Saving...",
+          cancel: "Cancel",
+          delete: "Delete Note"
+        },
+        validation: {
+          required_fields: "Note title and content are required"
+        },
+        confirm: {
+          close_unsaved: "You have an unsaved note. Do you really want to close the editor?"
+        }
+      },
+      metadata: {
+        created: "Created",
+        updated: "Updated", 
+        not_modified: "Note was not modified"
+      }
+    }
   },
   es: {
     give: "Donar",
@@ -1229,6 +1676,30 @@ export const translations: Record<Language, any> = {
     logout: "Cerrar sesión",
     logout_success: "Cierre de sesión exitoso.",
     select_language: "Seleccione el idioma",
+    meet_your_hosts: "Conoce a Tus Anfitriones",
+    hosts_description: "Somos un equipo de personas que con fe y pasión combinamos palabra, arte y tecnología en el proyecto Lectio Divina.",
+    discover_more: "Descubre Nuestro Equipo",
+    daily_actio: "Vive la Palabra de Dios (ACTIO)",
+    navbar: {
+      about_lectio: "Acerca de Lectio Divina",
+      lectio_steps: {
+        lectio: "Lectio",
+        meditatio: "Meditatio", 
+        oratio: "Oratio",
+        contemplatio: "Contemplatio",
+        actio: "Actio"
+      }
+    },
+    homepage: {
+      download: "Descargar",
+      default_user: "Usuario",
+      profile: "Mi perfil",
+      notes: "Notas",
+      login_required_title: "Inicio de sesión requerido",
+      login_required_message: "Inicia sesión en tu cuenta para acceder a esta función.",
+      logout_confirm_title: "Cerrar sesión",
+      logout_confirm_message: "¿Estás seguro de que deseas cerrar sesión en tu cuenta?"
+    },
 
     calendar_admin_title: "Edición del calendario",
     import_excel: "Importar Excel",
@@ -1289,6 +1760,12 @@ export const translations: Record<Language, any> = {
     likes: "Me gusta",
     saving: "Guardando...",
     add_news_title: "Agregar nuevo artículo",
+    // Article statuses
+    article_status: {
+      draft: "Borrador",
+      published: "Publicado",
+      archived: "Archivado"
+    },
     preparing: "PRÓXIMAMENTE",
     app_title: "Lectio Divina",
     app_subtitle: "aplicación para cada día",
@@ -1420,12 +1897,50 @@ export const translations: Record<Language, any> = {
     app_section: {
       headline: "APLICACIÓN MÓVIL",
       lead: "¡Te invitamos a profundizar tu vida espiritual con la aplicación Lectio Divina!",
+      tagline: "Dale espacio a la Palabra de Dios en tu corazón.",
       p1: "Lectio Divina es una forma antigua de oración practicada durante siglos por comunidades religiosas y personas individuales. ¡Ahora puedes integrar esta práctica enriquecedora en tu vida cotidiana!",
       p2: "Descarga nuestra nueva aplicación Lectio Divina y dale un espacio a la Palabra de Dios en tu corazón. Ya sea que elijas Lectio a solas, en familia o en un pequeño grupo, a través de la lectura de la Palabra de Dios tu vida con Él empezará a profundizarse y florecer.",
       p3: "¡Descarga la aplicación Lectio Divina hoy y comienza tu camino hacia una relación más profunda con Dios!",
       note: "La aplicación está disponible actualmente en eslovaco.",
       more: "Más sobre Lectio Divina en www.lectiodivina.sk",
       alt: "Ilustración de la aplicación móvil",
+      apple_store_alt: "Descargar en App Store",
+      google_play_alt: "Obtener en Google Play",
+    },
+    review_slider: {
+      aria_label: "Ir a la reseña",
+      items: [
+        {
+          author: "Jana H.",
+          text: "Aplicación increíble, cada mañana espero con ganas la lectura y por fin entiendo lo que Dios me dice; siento alegría y paz. Gracias, padre Dušan.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Jkb982",
+          text: "La recomiendo totalmente. Pasajes diarios de la Escritura para meditar. Justo lo que buscaba.",
+          rating: 5,
+          platform: "App Store"
+        },
+        {
+          author: "Štefan J.",
+          text: "Excelente herramienta para el crecimiento espiritual. La app es clara e incluye elementos modernos. Gracias por el servicio :)",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Ummarti",
+          text: "Gran trabajo. Uso la aplicación cada día. Aprecio poder escuchar los textos, incluso en diferentes traducciones. Las breves reflexiones son muy acertadas y a menudo me abren una nueva mirada sobre un \"texto conocido\" de la Sagrada Escritura. Gracias también por el Adviento, todas las reflexiones y especialmente los comentarios explicativos. Gracias por su tiempo y esfuerzo.",
+          rating: 5,
+          platform: "Google Play"
+        },
+        {
+          author: "Vladislav H.",
+          text: "Textos para la meditación, varias traducciones en un solo lugar y reflexiones como inspiración. Para mí es un gran apoyo para crecer en la vida espiritual.",
+          rating: 5,
+          platform: "Google Play"
+        }
+      ]
     },
     users_id: "Usuarios",
     latest_news: "Artículos más recientes",
@@ -1472,7 +1987,9 @@ export const translations: Record<Language, any> = {
       submit_btn: "Unirse a la Comunidad",
       success_message: "¡Gracias! Tu solicitud ha sido enviada exitosamente. Te contactaremos pronto.",
       error_message: "Ocurrió un error. Por favor verifica que hayas completado todos los campos obligatorios e intenta de nuevo.",
-      required_field: "Campo obligatorio"
+      required_field: "Campo obligatorio",
+      loading_form: "Cargando formulario...",
+      message_placeholder: "Tu mensaje o idea..."
     },
     community_admin_title: "Gestión de Miembros de la Comunidad",
     community_member_detail: "Detalle del Miembro de la Comunidad",
@@ -1517,7 +2034,9 @@ export const translations: Record<Language, any> = {
       todayLabel: "CITA DE HOY",
       notFound: "La cita de hoy no fue encontrada",
       notFoundDescription: "Por favor, inténtelo más tarde o lea nuestras citas archivadas.",
-      error: "Error al cargar la cita"
+      error: "Error al cargar la cita",
+      no_quote_today: "No hay ninguna cita disponible para hoy.",
+      check_back_tomorrow: "Por favor, vuelve mañana."
     },
     lectioStepsSection: {
       title: "Lectio Divina - Cinco Pasos",
@@ -1564,6 +2083,87 @@ export const translations: Record<Language, any> = {
       show_article: "Mostrar artículo",
       show_all_articles: "Mostrar todos los artículos"
     },
+    newsListPage: {
+      title: "Últimos Artículos",
+      all_articles_badge: "TODOS LOS ARTÍCULOS",
+      subtitle: "Lea los últimos artículos y reflexiones espirituales",
+      search_placeholder: "Buscar artículos...",
+      sort_by_date: "Por fecha",
+      sort_by_likes: "Por popularidad",
+      reading_time: "min de lectura",
+      new_badge: "NUEVO",
+      showing_results: "Mostrando {count} de {total} artículos",
+      search_results_for: " para \"{searchTerm}\"",
+      no_search_results_title: "Sin resultados",
+      no_search_results_desc: "No se encontraron artículos para el término de búsqueda \"{searchTerm}\". Pruebe con diferentes palabras clave.",
+      clear_search: "Limpiar búsqueda",
+      no_articles_title: "Sin artículos",
+      no_articles_desc: "No se encontraron artículos."
+    },
+
+    // Notes page translations
+    notesPage: {
+      title: "Mis Notas",
+      notes_count: "nota",
+      notes_count_plural: "notas",
+      new_note: "Nueva Nota",
+      search_placeholder: "Buscar notas...",
+      loading: "Cargando notas...",
+      loading_auth: "Cargando...",
+      redirecting_login: "Redirigiendo al inicio de sesión...",
+      empty_state: {
+        title: "Aún no hay notas",
+        subtitle: "Haz clic en 'Nueva Nota' y empieza a escribir tus pensamientos",
+        button: "Crear primera nota"
+      },
+      empty_editor: {
+        title: "Selecciona una nota",
+        subtitle: "Haz clic en una nota de la lista izquierda o crea una nueva nota",
+        button: "Crear nueva nota"
+      },
+      editor: {
+        tabs: {
+          list: "Lista",
+          editor: "Editor"
+        },
+        modes: {
+          new_title: "Nueva Nota",
+          edit_title: "Editar Nota",
+          empty_title: "Empezar a Escribir"
+        },
+        form: {
+          title_label: "Título de la Nota *",
+          title_placeholder: "Título de tu nota...",
+          content_label: "Contenido de la Nota *",
+          content_placeholder: "Empieza a escribir tus pensamientos...",
+          bible_section_title: "Referencia Bíblica",
+          bible_reference_label: "Referencia (ej. Juan 3:16)",
+          bible_reference_placeholder: "Juan 3:16",
+          bible_quote_label: "Cita Bíblica",
+          bible_quote_placeholder: "Insertar texto de la Biblia..."
+        },
+        actions: {
+          save: "Guardar Nota",
+          saving: "Guardando...",
+          cancel: "Cancelar",
+          delete: "Eliminar Nota"
+        },
+        validation: {
+          required_fields: "El título y contenido de la nota son obligatorios"
+        },
+        confirm: {
+          close_unsaved: "Tiene una nota sin guardar. ¿Realmente quiere cerrar el editor?"
+        }
+      },
+      metadata: {
+        created: "Creado",
+        updated: "Actualizado", 
+        not_modified: "La nota no fue modificada"
+      }
+    }
   },
   
 }
+
+// Typ pre hodnotu translations (definovaný po vytvorení objektu)
+export type Translations = typeof translations;

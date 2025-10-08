@@ -271,7 +271,7 @@ export default function NotificationsAdmin() {
                 <div className="mt-2">
                   <img
                     src={formData.image_url}
-                    alt="Náhľad obrázka"
+                    alt="Image preview"
                     className="h-20 w-40 object-cover rounded border"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
@@ -341,7 +341,7 @@ export default function NotificationsAdmin() {
                 {formData.image_url && formData.image_url.trim() && validateImageUrl(formData.image_url) && (
                   <img
                     src={formData.image_url}
-                    alt="Náhľad"
+                    alt="Preview"
                     className="w-full h-24 object-cover rounded mb-2"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';

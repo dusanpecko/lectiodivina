@@ -8,6 +8,21 @@ interface SupportWay {
   button?: string;
 }
 
+interface TeamMember {
+  name: string;
+  role: string;
+  bio: string;
+}
+
+interface Stats {
+  downloads: string;
+  downloads_desc: string;
+  feedback: string;
+  feedback_desc: string;
+  fruits: string;
+  fruits_desc: string;
+}
+
 interface AboutTranslation {
   title: string;
   subtitle: string;
@@ -26,6 +41,14 @@ interface AboutTranslation {
   proven_project: {
     title: string;
     text: string;
+  };
+  stats: Stats;
+  team: {
+    title: string;
+    description: string;
+    show_bio: string;
+    contact_link: string;
+    members: TeamMember[];
   };
   new_version: {
     title: string;
@@ -69,6 +92,49 @@ export const aboutTranslations: Record<Language, AboutTranslation> = {
     proven_project: {
       title: "Osvedčený projekt s víziou do budúcnosti",
       text: "Prvá verzia aplikácie nám ukázala, že túžba po hlbšom vzťahu s Bohom cez jeho Slovo je obrovská. Za prvý mesiac si ju stiahlo viac ako päťtisíc ľudí! Dostali sme úžasné ohlasy od jednotlivcov, rodín aj spoločenstiev. Videli sme, ako sa Lectio Divina stalo súčasťou stretiek s mladými či rodinami a ako im táto prax dáva „úžasnú možnosť rásť v hodnotách\". Práve tento osvedčený úspech a reálny dopad nás motivujú ísť ďalej. Nová verzia nie je len vylepšením, ale krokom vpred, postaveným na pevných základoch a spätnej väzbe od používateľov."
+    },
+
+    stats: {
+      downloads: "5000+",
+      downloads_desc: "Stiahnutí za prvý mesiac",
+      feedback: "100%",
+      feedback_desc: "Pozitívna spätná väzba",
+      fruits: "∞",
+      fruits_desc: "Duchovné ovocie"
+    },
+
+    team: {
+      title: "Náš tím",
+      description: "Spoznajte ľudí, ktorí stoja za projektom Lectio Divina a každý deň pracujú na tom, aby ste mohli prežívať hlbší vzťah s Bohom.",
+      show_bio: "Zobraziť bio",
+      contact_link: "Môj kontakt →",
+      members: [
+        {
+          name: "o Dušan Pecko",
+          role: "Zakladateľ a vedúci projektu",
+          bio: "o. Dušan je kňaz Žilinskej diecézy a zakladateľ projektu Lectio Divina. Jeho vášňou je pomáhať ľuďom objavovať hlbší vzťah s Bohom cez Božie slovo. Pôsobí ako výkonný riaditeľ diecézneho pastoračného fondu KROK, ktorý podporuje pastoráciu a duchovné iniciatívy v Žilinskej diecéze."
+        },
+        {
+          name: "Adam Čižmárik",
+          role: "Prekladateľ a člen tímu pre rozvoj projektu",
+          bio: "Adam je členom projektu od jeho začiatkov. Pracuje na prekladoch do angličtiny a popri tom študuje právo, kde je v druhom ročníku. Usiluje sa žiť podľa princípov Lectio Divina a prenášať ich do každodenného života. Je autorom projektu mypro.one, ktorý sa venuje digitálnym vizitkám a moderným formám online identity."
+        },
+        {
+          name: "Kristínka Krchová",
+          role: "Koordinátorka obsahu a srdce projektu",
+          bio: "Kristínka je súčasťou projektu od jeho začiatkov a stála pri budovaní jeho základov. Vďaka jej trpezlivej práci boli do databázy zapracované všetky údaje, pričom venovala projektu nespočetné hodiny. Je srdcom tímu Lectio Divina a aj počas materskej zostáva jeho neoddeliteľnou súčasťou."
+        },
+        {
+          name: "sr. Mary Carmen",
+          role: "Koordinátorka španielskeho prekladu",
+          bio: "Sr. Mary Carmen pochádza zo Španielska a je rehoľnou sestrou Kongregácie Sestier Panny Márie Útechy. Spolu so svojimi spolusestrami má na starosti preklad projektu Lectio Divina do španielčiny a tvorí modlitbové zázemie, ktoré sprevádza celý projekt s duchovnou podporou a modlitbou."
+        },
+        {
+          name: "Matúš Sedliak",
+          role: "Grafický a audio tvorca projektu",
+          bio: "Matúš je najmladším členom tímu – má len 16 rokov a svoju prax začal v pastoračnom fonde KROK. Myšlienka projektu Lectio Divina ho nadchla natoľko, že sa stal jeho aktívnou súčasťou. Zodpovedá za grafické prvky projektu a stará sa aj o generovanie zvuku prostredníctvom ElevenLabs. Sme vďační, že je súčasťou tímu – prináša tvorivosť, nadšenie a svieži pohľad."
+        }
+      ]
     },
 
     new_version: {
@@ -139,6 +205,50 @@ export const aboutTranslations: Record<Language, AboutTranslation> = {
       title: "Osvědčený projekt s vizí do budoucna",
       text: "První verze aplikace nám ukázala, že touha po hlubším vztahu s Bohem skrze jeho Slovo je obrovská. Za první měsíc si ji stáhlo více než pět tisíc lidí! Dostali jsme úžasné ohlasy od jednotlivců, rodin i společenství. Viděli jsme, jak se Lectio Divina stalo součástí setkání s mladými či rodinami a jak jim tato praxe dává „úžasnou možnost růst v hodnotách\". Právě tento osvědčený úspěch a reálný dopad nás motivují jít dál. Nová verze není jen vylepšením, ale krokem vpřed, postaveným na pevných základech a zpětné vazbě od uživatelů."
     },
+
+    stats: {
+      downloads: "5000+",
+      downloads_desc: "Stažení za první měsíc",
+      feedback: "100%",
+      feedback_desc: "Pozitivní zpětná vazba",
+      fruits: "∞",
+      fruits_desc: "Duchovní ovoce"
+    },
+
+    team: {
+      title: "Náš tým",
+      description: "Poznáte lidi, kteří stojí za projektem Lectio Divina a každý den pracují na tom, abyste mohli prožívat hlubší vztah s Bohem.",
+      show_bio: "Zobrazit bio",
+      contact_link: "Můj kontakt →",
+      members: [
+        {
+          name: "o Dušan Pecko",
+          role: "Zakladatel a vedoucí projektu",
+          bio: "o. Dušan je kněz Žilinské diecéze a zakladatel projektu Lectio Divina. Jeho vášní je pomáhat lidem objevovat hlubší vztah s Bohem skrze Boží slovo. Působí jako výkonný ředitel diecézního pastorálního fondu KROK, který podporuje pastoraci a duchovní iniciativy v Žilinské diecézi."
+        },
+        {
+          name: "Adam Čižmárik",
+          role: "Překladatel a člen týmu pro rozvoj projektu",
+          bio: "Adam je členem projektu od jeho začátků. Pracuje na překladech do angličtiny a vedle toho studuje právo, kde je ve druhém ročníku. Snaží se žít podle principů Lectio Divina a přenášet je do každodenního života. Je autorem projektu mypro.one, který se věnuje digitálním vizitkám a moderním formám online identity."
+        },
+        {
+          name: "Kristínka Krchová",
+          role: "Koordinátorka obsahu a srdce projektu",
+          bio: "Kristínka je součástí projektu od jeho začátků a stála při budování jeho základů. Díky její trpělivé práci byly do databáze zpracovány všechny údaje, přičemž věnovala projektu nespočetné hodiny. Je srdcem týmu Lectio Divina a i během mateřské zůstává jeho neoddělitelnou součástí."
+        },
+        {
+          name: "sr. Mary Carmen",
+          role: "Koordinátorka španělského překladu",
+          bio: "Sr. Mary Carmen pochází ze Španělska a je řeholní sestrou Kongregace Sester Panny Marie Útěchy. Spolu se svými spolusestrami má na starosti překlad projektu Lectio Divina do španělštiny a tvoří modlitební zázemí, které doprovází celý projekt s duchovní podporou a modlitbou."
+        },
+        {
+          name: "Matúš Sedliak",
+          role: "Grafický a audio tvůrce projektu",
+          bio: "Matúš je nejmladším členem týmu – má jen 16 let a svou praxi začal v pastorálním fondu KROK. Myšlenka projektu Lectio Divina ho nadchla natolik, že se stal jeho aktivní součástí. Zodpovídá za grafické prvky projektu a stará se také o generování zvuku prostřednictvím ElevenLabs. Jsme vděční, že je součástí týmu – přináší kreativitu, nadšení a svěží pohled."
+        }
+      ]
+    },
+
     new_version: {
       title: "Na co se můžete těšit v nové verzi?",
       completed: "Již je hotovo:",
@@ -204,6 +314,50 @@ export const aboutTranslations: Record<Language, AboutTranslation> = {
       title: "A Proven Project with a Vision for the Future",
       text: "The first version of the app showed us that the desire for a deeper relationship with God through His Word is huge. In the first month, more than five thousand people downloaded it! We received amazing feedback from individuals, families, and communities. We saw how Lectio Divina became part of meetings with young people and families, giving them a \"wonderful opportunity to grow in values.\" This proven success and real impact motivate us to go further. The new version is not just an improvement, but a step forward, built on a solid foundation and user feedback."
     },
+
+    stats: {
+      downloads: "5000+",
+      downloads_desc: "Downloads in the first month",
+      feedback: "100%",
+      feedback_desc: "Positive feedback",
+      fruits: "∞",
+      fruits_desc: "Spiritual fruits"
+    },
+
+    team: {
+      title: "Our Team",
+      description: "Meet the people behind the Lectio Divina project who work every day to help you experience a deeper relationship with God.",
+      show_bio: "Show bio",
+      contact_link: "My contact →",
+      members: [
+        {
+          name: "Fr. Dušan Pecko",
+          role: "Founder and Project Leader",
+          bio: "Fr. Dušan is a priest of the Žilina Diocese and founder of the Lectio Divina project. His passion is helping people discover a deeper relationship with God through God's word. He serves as executive director of the diocesan pastoral fund KROK, which supports pastoral work and spiritual initiatives in the Žilina Diocese."
+        },
+        {
+          name: "Adam Čižmárik",
+          role: "Translator and Project Development Team Member",
+          bio: "Adam has been a member of the project since its beginning. He works on English translations while studying law in his second year. He strives to live according to Lectio Divina principles and bring them into everyday life. He is the author of the mypro.one project, which focuses on digital business cards and modern forms of online identity."
+        },
+        {
+          name: "Kristínka Krchová",
+          role: "Content Coordinator and Heart of the Project",
+          bio: "Kristínka has been part of the project since its beginning and stood by its foundation building. Thanks to her patient work, all data was incorporated into the database, dedicating countless hours to the project. She is the heart of the Lectio Divina team and remains its inseparable part even during maternity leave."
+        },
+        {
+          name: "Sr. Mary Carmen",
+          role: "Spanish Translation Coordinator",
+          bio: "Sr. Mary Carmen comes from Spain and is a religious sister of the Congregation of Sisters of Our Lady of Consolation. Together with her fellow sisters, she is responsible for translating the Lectio Divina project into Spanish and creates the prayer foundation that accompanies the entire project with spiritual support and prayer."
+        },
+        {
+          name: "Matúš Sedliak",
+          role: "Graphic and Audio Creator of the Project",
+          bio: "Matúš is the youngest team member – he is only 16 years old and started his practice at the pastoral fund KROK. The idea of the Lectio Divina project captivated him so much that he became its active part. He is responsible for the graphic elements of the project and also takes care of sound generation through ElevenLabs. We are grateful that he is part of the team – he brings creativity, enthusiasm and a fresh perspective."
+        }
+      ]
+    },
+
     new_version: {
       title: "What can you look forward to in the new version?",
       completed: "Already completed:",
@@ -269,6 +423,50 @@ export const aboutTranslations: Record<Language, AboutTranslation> = {
       title: "Un proyecto probado con visión de futuro",
       text: "La primera versión de la aplicación nos mostró que el deseo de una relación más profunda con Dios a través de Su Palabra es enorme. ¡En el primer mes, más de cinco mil personas la descargaron! Recibimos comentarios increíbles de personas, familias y comunidades. Vimos cómo Lectio Divina se convirtió en parte de reuniones con jóvenes y familias, dándoles una \"maravillosa oportunidad de crecer en valores.\" Este éxito probado y el impacto real nos motivan a seguir adelante. La nueva versión no es solo una mejora, sino un paso adelante, construido sobre una base sólida y la retroalimentación de los usuarios."
     },
+
+    stats: {
+      downloads: "5000+",
+      downloads_desc: "Descargas en el primer mes",
+      feedback: "100%",
+      feedback_desc: "Comentarios positivos",
+      fruits: "∞",
+      fruits_desc: "Frutos espirituales"
+    },
+
+    team: {
+      title: "Nuestro Equipo",
+      description: "Conoce a las personas detrás del proyecto Lectio Divina que trabajan todos los días para ayudarte a experimentar una relación más profunda con Dios.",
+      show_bio: "Mostrar bio",
+      contact_link: "Mi contacto →",
+      members: [
+        {
+          name: "P. Dušan Pecko",
+          role: "Fundador y Líder del Proyecto",
+          bio: "P. Dušan es sacerdote de la Diócesis de Žilina y fundador del proyecto Lectio Divina. Su pasión es ayudar a las personas a descubrir una relación más profunda con Dios a través de la palabra de Dios. Sirve como director ejecutivo del fondo pastoral diocesano KROK, que apoya el trabajo pastoral y las iniciativas espirituales en la Diócesis de Žilina."
+        },
+        {
+          name: "Adam Čižmárik",
+          role: "Traductor y Miembro del Equipo de Desarrollo del Proyecto",
+          bio: "Adam ha sido miembro del proyecto desde sus inicios. Trabaja en traducciones al inglés mientras estudia derecho en su segundo año. Se esfuerza por vivir según los principios de Lectio Divina y llevarlos a la vida cotidiana. Es el autor del proyecto mypro.one, que se centra en tarjetas de presentación digitales y formas modernas de identidad en línea."
+        },
+        {
+          name: "Kristínka Krchová",
+          role: "Coordinadora de Contenido y Corazón del Proyecto",
+          bio: "Kristínka ha sido parte del proyecto desde sus inicios y estuvo presente en la construcción de sus cimientos. Gracias a su trabajo paciente, todos los datos se incorporaron a la base de datos, dedicando innumerables horas al proyecto. Ella es el corazón del equipo Lectio Divina y sigue siendo su parte inseparable incluso durante su licencia de maternidad."
+        },
+        {
+          name: "Hna. Mary Carmen",
+          role: "Coordinadora de Traducción al Español",
+          bio: "Hna. Mary Carmen viene de España y es una hermana religiosa de la Congregación de Hermanas de Nuestra Señora de la Consolación. Junto con sus hermanas, es responsable de traducir el proyecto Lectio Divina al español y crea la base de oración que acompaña todo el proyecto con apoyo espiritual y oración."
+        },
+        {
+          name: "Matúš Sedliak",
+          role: "Creador Gráfico y de Audio del Proyecto",
+          bio: "Matúš es el miembro más joven del equipo: tiene solo 16 años y comenzó su práctica en el fondo pastoral KROK. La idea del proyecto Lectio Divina lo cautivó tanto que se convirtió en su parte activa. Es responsable de los elementos gráficos del proyecto y también se encarga de la generación de sonido a través de ElevenLabs. Estamos agradecidos de que sea parte del equipo: aporta creatividad, entusiasmo y una perspectiva fresca."
+        }
+      ]
+    },
+
     new_version: {
       title: "¿Qué puedes esperar en la nueva versión?",
       completed: "Ya está listo:",

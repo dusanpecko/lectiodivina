@@ -27,6 +27,8 @@ interface CommunitySectionProps {
       success_message: string;
       error_message: string;
       required_field: string;
+      loading_form: string;
+      message_placeholder: string;
     };
   };
 }
@@ -203,7 +205,7 @@ export default function CommunitySection({ translations }: CommunitySectionProps
             >
               <div className="space-y-6">
                 <div className="text-center text-gray-500">
-                  Načítavam formulár...
+                  {t.loading_form}
                 </div>
               </div>
             </div>
@@ -418,7 +420,7 @@ export default function CommunitySection({ translations }: CommunitySectionProps
                   style={{ outline: 'none' }}
                   onFocus={(e) => e.target.style.borderColor = '#40467b'}
                   onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
-                  placeholder="Vaša správa alebo nápad..."
+                  placeholder={t.message_placeholder}
                 />
               </div>
 

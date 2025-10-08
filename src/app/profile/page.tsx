@@ -7,6 +7,8 @@ import { User } from '@supabase/supabase-js';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { useLanguage } from '../components/LanguageProvider';
+import { profileTranslations } from './translations';
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -135,6 +137,8 @@ interface UserProfile {
 export default function ProfilePage() {
   const { supabase, session } = useSupabase();
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = profileTranslations[lang];
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [fullName, setFullName] = useState('');
@@ -221,7 +225,7 @@ export default function ProfilePage() {
 
   const saveProfile = async () => {
     if (!user || !fullName.trim()) {
-      showMessage('error', 'Meno je povinné');
+      showMessage('error', t.validation.name_required);
       return;
     }
 
@@ -241,9 +245,9 @@ export default function ProfilePage() {
         if (emailError) throw emailError;
       }
 
-      showMessage('success', 'Profil bol úspešne uložený');
+      showMessage('success', t.messages.profile_saved);
     } catch (error: any) {
-      showMessage('error', `Chyba pri ukladaní: ${error.message}`);
+      showMessage('error', `${t.messages.save_error}: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -301,9 +305,9 @@ export default function ProfilePage() {
       if (updateError) throw updateError;
 
       setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
-      showMessage('success', 'Avatar bol úspešne zmenený');
+      showMessage('success', t.messages.avatar_changed);
     } catch (error: any) {
-      showMessage('error', `Chyba pri nahrávaní avatara: ${error.message}`);
+      showMessage('error', `${t.messages.avatar_error}: ${error.message}`);
     } finally {
       setIsUploading(false);
       setShowAvatarPicker(false);
@@ -314,17 +318,17 @@ export default function ProfilePage() {
     if (!user?.email || !supabase) return;
 
     if (newPassword.length < 6) {
-      setPasswordError('Nové heslo musí mať minimálne 6 znakov');
+      setPasswordError(t.validation.password_min_length);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('Heslá sa nezhodujú');
+      setPasswordError(t.validation.passwords_not_match);
       return;
     }
 
     if (newPassword === currentPassword) {
-      setPasswordError('Nové heslo nemôže byť rovnaké ako aktuálne');
+      setPasswordError(t.validation.password_same_as_current);
       return;
     }
 
@@ -338,7 +342,7 @@ export default function ProfilePage() {
       });
 
       if (signInError) {
-        setPasswordError('Nesprávne aktuálne heslo');
+        setPasswordError(t.validation.wrong_current_password);
         return;
       }
 
@@ -352,9 +356,9 @@ export default function ProfilePage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      showMessage('success', 'Heslo bolo úspešne zmenené');
+      showMessage('success', t.messages.password_changed);
     } catch (error: any) {
-      setPasswordError(`Chyba: ${error.message}`);
+      setPasswordError(`${t.messages.password_error}: ${error.message}`);
     } finally {
       setIsChangingPassword(false);
     }
@@ -363,8 +367,8 @@ export default function ProfilePage() {
   const deleteAccount = async () => {
     if (!user || !supabase) return;
 
-    if (deleteConfirmText !== 'ODSTRÁNIŤ') {
-      showMessage('error', 'Potvrďte zmazanie zadaním textu "ODSTRÁNIŤ"');
+    if (deleteConfirmText !== t.validation.delete_confirmation_text) {
+      showMessage('error', t.validation.delete_confirmation_required);
       return;
     }
 
@@ -396,7 +400,7 @@ export default function ProfilePage() {
         await supabase.auth.signOut();
       }
 
-      showMessage('success', 'Účet bol úspešne odstránený');
+      showMessage('success', t.messages.account_deleted);
       
       // Presmeruj na hlavnú stránku
       setTimeout(() => {
@@ -404,7 +408,7 @@ export default function ProfilePage() {
       }, 2000);
 
     } catch (error: any) {
-      showMessage('error', `Chyba pri odstraňovaní účtu: ${error.message}`);
+      showMessage('error', `${t.messages.delete_error}: ${error.message}`);
     } finally {
       setIsDeletingAccount(false);
       setShowDeleteDialog(false);
@@ -425,7 +429,8 @@ export default function ProfilePage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('sk-SK');
+    const localeMap = { sk: 'sk-SK', cz: 'cs-CZ', en: 'en-US', es: 'es-ES' };
+    return date.toLocaleDateString(localeMap[lang]);
   };
   if (isCheckingAuth) {
     return (
@@ -436,8 +441,8 @@ export default function ProfilePage() {
             <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
             <div className="absolute inset-2 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Načítavam profil</h2>
-          <p className="text-gray-600 text-sm">Overujem prístup...</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t.loading.title}</h2>
+          <p className="text-gray-600 text-sm">{t.loading.checking_access}</p>
         </div>
       </div>
     );
@@ -450,7 +455,7 @@ export default function ProfilePage() {
   const sections = [
     {
       id: "profile-info",
-      title: "Profilové informácie",
+      title: t.sections.profile_info.title,
       icon: <EditIcon />,
       content: (
         <div className="space-y-6">
@@ -482,14 +487,14 @@ export default function ProfilePage() {
               style={{ backgroundColor: '#40467b' }}
             >
               <CameraIcon />
-              <span>Zmeniť avatar</span>
+              <span>{t.sections.profile_info.change_avatar}</span>
             </button>
           </div>
 
           {/* Full Name */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
-              Celé meno
+              {t.sections.profile_info.full_name}
             </label>
             <input
               type="text"
@@ -499,7 +504,7 @@ export default function ProfilePage() {
               style={{ '--tw-ring-color': '#40467b', '--tw-border-opacity': '1' } as any}
               onFocus={(e) => e.target.style.borderColor = '#40467b'}
               onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
-              placeholder="Zadajte svoje meno"
+              placeholder={t.sections.profile_info.full_name_placeholder}
             />
           </div>
 
@@ -513,12 +518,12 @@ export default function ProfilePage() {
             {isSaving ? (
               <div className="flex items-center justify-center space-x-2">
                 <Loader2Icon />
-                <span>Ukladá sa...</span>
+                <span>{t.sections.profile_info.saving}</span>
               </div>
             ) : (
               <div className="flex items-center justify-center space-x-2">
                 <SaveIcon />
-                <span>Uložiť zmeny</span>
+                <span>{t.sections.profile_info.save_changes}</span>
               </div>
             )}
           </button>
@@ -527,7 +532,7 @@ export default function ProfilePage() {
     },
     {
       id: "account-info",
-      title: "Informácie o účte",
+      title: t.sections.account_info.title,
       icon: <UserIcon />,
       content: (
         <div className="space-y-4">
@@ -537,7 +542,7 @@ export default function ProfilePage() {
                 <MailIcon />
               </div>
               <div>
-                <div className="font-medium" style={{ color: '#40467b' }}>Emailová adresa</div>
+                <div className="font-medium" style={{ color: '#40467b' }}>{t.sections.account_info.email_address}</div>
                 <div className="text-gray-700">{email}</div>
               </div>
             </div>
@@ -550,7 +555,7 @@ export default function ProfilePage() {
                   <CalendarIcon />
                 </div>
                 <div>
-                  <div className="font-medium" style={{ color: '#40467b' }}>Dátum registrácie</div>
+                  <div className="font-medium" style={{ color: '#40467b' }}>{t.sections.account_info.registration_date}</div>
                   <div className="text-gray-700">{formatDate(profile.created_at)}</div>
                 </div>
               </div>
@@ -563,8 +568,8 @@ export default function ProfilePage() {
                 <ShieldIcon />
               </div>
               <div>
-                <div className="font-medium text-green-900">Používateľská rola</div>
-                <div className="text-green-700">{profile?.role || 'Načítava sa...'}</div>
+                <div className="font-medium text-green-900">{t.sections.account_info.user_role}</div>
+                <div className="text-green-700">{profile?.role || t.sections.account_info.role_loading}</div>
               </div>
             </div>
           </div>
@@ -573,7 +578,7 @@ export default function ProfilePage() {
     },
     {
       id: "security",
-      title: "Bezpečnosť",
+      title: t.sections.security.title,
       icon: <LockIcon />,
       content: (
         <div className="space-y-4">
@@ -582,17 +587,17 @@ export default function ProfilePage() {
               <div className="text-yellow-600">
                 <LockIcon />
               </div>
-              <h4 className="font-medium text-yellow-900">Zmena hesla</h4>
+              <h4 className="font-medium text-yellow-900">{t.sections.security.password_change.title}</h4>
             </div>
             <p className="text-yellow-800 text-sm mb-4">
-              Pravidelne si meňte heslo pre lepšiu bezpečnosť vašeho účtu.
+              {t.sections.security.password_change.description}
             </p>
             <button
               onClick={() => setShowPasswordDialog(true)}
               className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
             >
               <LockIcon />
-              <span>Zmeniť heslo</span>
+              <span>{t.sections.security.password_change.button}</span>
             </button>
           </div>
 
@@ -601,17 +606,17 @@ export default function ProfilePage() {
               <div className="text-red-600">
                 <LogOutIcon />
               </div>
-              <h4 className="font-medium text-red-900">Odhlásiť sa</h4>
+              <h4 className="font-medium text-red-900">{t.sections.security.logout.title}</h4>
             </div>
             <p className="text-red-800 text-sm mb-4">
-              Odhláste sa zo svojho účtu, ak používate zdieľané zariadenie.
+              {t.sections.security.logout.description}
             </p>
             <button
               onClick={handleSignOutClick}
               className="inline-flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               <LogOutIcon />
-              <span>Odhlásiť sa</span>
+              <span>{t.sections.security.logout.button}</span>
             </button>
           </div>
 
@@ -620,17 +625,17 @@ export default function ProfilePage() {
               <div className="text-red-700">
                 <TrashIcon />
               </div>
-              <h4 className="font-medium text-red-900">Odstrániť účet</h4>
+              <h4 className="font-medium text-red-900">{t.sections.security.delete_account.title}</h4>
             </div>
             <p className="text-red-800 text-sm mb-4">
-              Trvale odstráni váš účet a všetky súvisiace údaje. Táto akcia je nezvratná.
+              {t.sections.security.delete_account.description}
             </p>
             <button
               onClick={() => setShowDeleteDialog(true)}
               className="inline-flex items-center space-x-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors"
             >
               <TrashIcon />
-              <span>Odstrániť účet</span>
+              <span>{t.sections.security.delete_account.button}</span>
             </button>
           </div>
         </div>
@@ -643,23 +648,14 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link 
-            href="/admin" 
-            className="inline-flex items-center hover:text-gray-600 mb-4 transition-colors"
-            style={{ color: '#40467b' }}
-          >
-            <ArrowLeftIcon />
-            <span className="ml-2">Späť na Dashboard</span>
-          </Link>
-          
           <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                 <UserIcon />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Môj profil</h1>
-                <p className="text-gray-600">Spravujte svoje údaje a nastavenia</p>
+                <h1 className="text-3xl font-bold text-gray-900">{t.header.title}</h1>
+                <p className="text-gray-600">{t.header.description}</p>
               </div>
             </div>
           </div>
@@ -722,14 +718,14 @@ export default function ProfilePage() {
         <div className="mt-12 text-center">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <p className="text-gray-600 mb-4">
-              Potrebujete pomoc s nastavením profilu?
+              {t.footer.help_text}
             </p>
             <Link 
               href="/contact" 
               className="inline-flex items-center text-white px-6 py-3 rounded-lg hover:opacity-90 transition-colors"
               style={{ backgroundColor: '#40467b' }}
             >
-              Kontaktujte nás
+              {t.footer.contact_us}
             </Link>
           </div>
         </div>
@@ -740,7 +736,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Vyberte avatar</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t.dialogs.avatar_picker.title}</h3>
               <button
                 onClick={() => setShowAvatarPicker(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -756,7 +752,7 @@ export default function ProfilePage() {
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                   <UploadIcon />
                 </div>
-                <span className="font-medium text-gray-700">Nahrať z galérie</span>
+                <span className="font-medium text-gray-700">{t.dialogs.avatar_picker.select_image}</span>
               </button>
             </div>
           </div>
@@ -768,7 +764,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-red-900">Odstrániť účet</h3>
+              <h3 className="text-lg font-semibold text-red-900">{t.dialogs.delete_account.title}</h3>
               <button
                 onClick={() => {
                   setShowDeleteDialog(false);
@@ -784,35 +780,35 @@ export default function ProfilePage() {
               <div className="bg-red-50 p-4 rounded-lg border border-red-200">
                 <div className="flex items-center space-x-2 mb-2">
                   <TrashIcon />
-                  <span className="font-medium text-red-900">Varovanie!</span>
+                  <span className="font-medium text-red-900">{t.dialogs.delete_account.warning_title}</span>
                 </div>
                 <p className="text-red-800 text-sm">
-                  Táto akcia je <strong>nezvratná</strong>. Váš účet a všetky súvisiace údaje budú trvale odstránené.
+                  {t.dialogs.delete_account.warning_text}
                 </p>
               </div>
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Pre potvrdenie napíšte: <span className="font-bold text-red-600">ODSTRÁNIŤ</span>
+                  {t.dialogs.delete_account.confirmation_label} <span className="font-bold text-red-600">{t.dialogs.delete_account.confirmation_text}</span>
                 </label>
                 <input
                   type="text"
                   value={deleteConfirmText}
                   onChange={(e) => setDeleteConfirmText(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
-                  placeholder="Napíšte ODSTRÁNIŤ"
+                  placeholder={`${t.dialogs.delete_account.confirmation_label.split(':')[0]} ${t.dialogs.delete_account.confirmation_text}`}
                 />
               </div>
 
               <div className="bg-gray-50 p-3 rounded-lg">
                 <p className="text-gray-700 text-sm">
-                  <strong>Čo sa odstráni:</strong>
+                  <strong>{t.dialogs.delete_account.what_will_be_deleted}</strong>
                 </p>
                 <ul className="text-gray-600 text-sm mt-2 space-y-1">
-                  <li>• Váš používateľský profil</li>
-                  <li>• Profilový obrázok</li>
-                  <li>• Všetky súvisiace údaje</li>
-                  <li>• Prístup k administrácii</li>
+                  <li>• {t.dialogs.delete_account.deletion_list.profile}</li>
+                  <li>• {t.dialogs.delete_account.deletion_list.avatar}</li>
+                  <li>• {t.dialogs.delete_account.deletion_list.data}</li>
+                  <li>• {t.dialogs.delete_account.deletion_list.admin_access}</li>
                 </ul>
               </div>
             </div>
@@ -825,22 +821,22 @@ export default function ProfilePage() {
                 }}
                 className="flex-1 px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
               >
-                Zrušiť
+                {t.dialogs.delete_account.cancel}
               </button>
               <button
                 onClick={deleteAccount}
-                disabled={isDeletingAccount || deleteConfirmText !== 'ODSTRÁNIŤ'}
+                disabled={isDeletingAccount || deleteConfirmText !== t.validation.delete_confirmation_text}
                 className="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 disabled:opacity-50 font-medium"
               >
                 {isDeletingAccount ? (
                   <div className="flex items-center justify-center space-x-2">
                     <Loader2Icon />
-                    <span>Odstraňuje sa...</span>
+                    <span>{t.dialogs.delete_account.deleting}</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-2">
                     <TrashIcon />
-                    <span>Odstrániť účet</span>
+                    <span>{t.dialogs.delete_account.delete}</span>
                   </div>
                 )}
               </button>
@@ -852,7 +848,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Zmeniť heslo</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t.dialogs.change_password.title}</h3>
               <button
                 onClick={() => {
                   setShowPasswordDialog(false);
@@ -871,7 +867,7 @@ export default function ProfilePage() {
               {/* Current Password */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Aktuálne heslo
+                  {t.dialogs.change_password.current_password}
                 </label>
                 <div className="relative">
                   <input
@@ -897,7 +893,7 @@ export default function ProfilePage() {
               {/* New Password */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Nové heslo
+                  {t.dialogs.change_password.new_password}
                 </label>
                 <div className="relative">
                   <input
@@ -923,7 +919,7 @@ export default function ProfilePage() {
               {/* Confirm Password */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Potvrdiť nové heslo
+                  {t.dialogs.change_password.confirm_password}
                 </label>
                 <div className="relative">
                   <input
@@ -967,7 +963,7 @@ export default function ProfilePage() {
                 }}
                 className="flex-1 px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
               >
-                Zrušiť
+                {t.dialogs.change_password.cancel}
               </button>
               <button
                 onClick={changePassword}
@@ -978,10 +974,10 @@ export default function ProfilePage() {
                 {isChangingPassword ? (
                   <div className="flex items-center justify-center space-x-2">
                     <Loader2Icon />
-                    <span>Mení sa...</span>
+                    <span>{t.dialogs.change_password.changing}</span>
                   </div>
                 ) : (
-                  'Zmeniť'
+                  t.dialogs.change_password.change
                 )}
               </button>
             </div>
@@ -1004,10 +1000,10 @@ export default function ProfilePage() {
       {/* Logout Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showLogoutDialog}
-        title="Odhlásiť sa"
-        message="Naozaj sa chcete odhlásiť zo svojho účtu?"
-        confirmText="Odhlásiť sa"
-        cancelText="Zrušiť"
+        title={t.dialogs.logout.title}
+        message={t.dialogs.logout.message}
+        confirmText={t.dialogs.logout.logout}
+        cancelText={t.dialogs.logout.cancel}
         onConfirm={signOut}
         onCancel={() => setShowLogoutDialog(false)}
         type="warning"

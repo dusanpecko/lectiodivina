@@ -88,7 +88,7 @@ export default function NewsDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500">
-        {t.loading || "Načítavam..."}
+        {t.loading}
       </div>
     );
   }
@@ -96,12 +96,12 @@ export default function NewsDetailPage() {
   if (!news) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="text-xl text-gray-700 mt-10">{t.item_not_found || "Článok nenájdený"}</div>
+        <div className="text-xl text-gray-700 mt-10">{t.item_not_found}</div>
         <a
           href="/news"
           className="mt-6 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          {t.show_all_news || "Zobraziť všetky články"}
+          {t.show_all_news}
         </a>
       </div>
     );

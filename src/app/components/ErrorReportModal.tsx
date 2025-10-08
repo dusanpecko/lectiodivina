@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
+import { useLanguage } from './LanguageProvider';
+import { errorReportModalTranslations } from './errorReportModalTranslations';
 
 interface ErrorReportModalProps {
   isOpen: boolean;
@@ -41,6 +43,8 @@ export default function ErrorReportModal({
   userEmail,
   onSubmit
 }: ErrorReportModalProps) {
+  const { lang } = useLanguage();
+  const t = errorReportModalTranslations[lang];
   const [originalText, setOriginalText] = useState('');
   const [correctedText, setCorrectedText] = useState('');
   const [severity, setSeverity] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
@@ -55,12 +59,12 @@ export default function ErrorReportModal({
     setError('');
 
     if (!originalText.trim() || !correctedText.trim()) {
-      setError('Prosím vyplňte pôvodný aj opravený text.');
+      setError(t.validation.required_fields);
       return;
     }
 
     if (originalText.trim() === correctedText.trim()) {
-      setError('Pôvodný a opravený text nemôžu byť rovnaké.');
+      setError(t.validation.texts_identical);
       return;
     }
 
@@ -87,7 +91,7 @@ export default function ErrorReportModal({
       setNotes('');
       onClose();
     } catch (err) {
-      setError('Nepodarilo sa odoslať hlásenie. Skúste to prosím znova.');
+      setError(t.validation.submit_error);
       console.error('Error submitting report:', err);
     } finally {
       setIsSubmitting(false);
@@ -110,7 +114,7 @@ export default function ErrorReportModal({
             </div>
             <div>
               <h2 className="text-xl font-bold" style={{ color: '#40467b' }}>
-                Nahlásiť chybu
+                {t.header.title}
               </h2>
               <p className="text-sm text-gray-600 mt-0.5">
                 {stepName}
@@ -132,12 +136,12 @@ export default function ErrorReportModal({
             {/* Original Text */}
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                Pôvodný text (s chybou) *
+                {t.form.original_text.label}
               </label>
               <textarea
                 value={originalText}
                 onChange={(e) => setOriginalText(e.target.value)}
-                placeholder="Skopírujte časť textu, kde ste našli chybu..."
+                placeholder={t.form.original_text.placeholder}
                 rows={4}
                 className="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 resize-none"
                 style={{ 
@@ -151,12 +155,12 @@ export default function ErrorReportModal({
             {/* Corrected Text */}
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                Opravený text *
+                {t.form.corrected_text.label}
               </label>
               <textarea
                 value={correctedText}
                 onChange={(e) => setCorrectedText(e.target.value)}
-                placeholder="Napište správnu verziu textu..."
+                placeholder={t.form.corrected_text.placeholder}
                 rows={4}
                 className="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 resize-none"
                 style={{ 
@@ -170,14 +174,14 @@ export default function ErrorReportModal({
             {/* Severity */}
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                Stupeň závažnosti *
+                {t.form.severity.label}
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {[
-                  { value: 'low', label: 'Malá chyba', desc: 'Preklep', color: '#10b981' },
-                  { value: 'medium', label: 'Gramatika', desc: 'Gramatická chyba', color: '#f59e0b' },
-                  { value: 'high', label: 'Význam', desc: 'Chyba vo význame', color: '#ef4444' },
-                  { value: 'critical', label: 'Kritická', desc: 'Nesprávna informácia', color: '#dc2626' }
+                  { value: 'low', label: t.form.severity.levels.low.label, desc: t.form.severity.levels.low.description, color: '#10b981' },
+                  { value: 'medium', label: t.form.severity.levels.medium.label, desc: t.form.severity.levels.medium.description, color: '#f59e0b' },
+                  { value: 'high', label: t.form.severity.levels.high.label, desc: t.form.severity.levels.high.description, color: '#ef4444' },
+                  { value: 'critical', label: t.form.severity.levels.critical.label, desc: t.form.severity.levels.critical.description, color: '#dc2626' }
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -203,12 +207,12 @@ export default function ErrorReportModal({
             {/* Additional Notes */}
             <div>
               <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                Poznámky (nepovinné)
+                {t.form.notes.label}
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Doplňujúce informácie, kontext chyby..."
+                placeholder={t.form.notes.placeholder}
                 rows={2}
                 className="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 resize-none"
                 style={{ 
@@ -235,7 +239,7 @@ export default function ErrorReportModal({
               style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
               disabled={isSubmitting}
             >
-              Zrušiť
+              {t.actions.cancel}
             </button>
             <button
               type="submit"
@@ -243,7 +247,7 @@ export default function ErrorReportModal({
               style={{ backgroundColor: '#40467b' }}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Odeielam...' : 'Odoslať hlásenie'}
+              {isSubmitting ? t.actions.submitting : t.actions.submit}
             </button>
           </div>
         </form>

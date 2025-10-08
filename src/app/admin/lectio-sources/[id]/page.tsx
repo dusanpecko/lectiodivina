@@ -8,6 +8,7 @@ import { translations } from "@/app/i18n";
 import TranslateButton from "@/app/components/TranslateButton";
 import BulkTranslateSection from "@/app/components/BulkTranslateSection";
 import AudioGenerateButton from "@/app/components/AudioGenerateButton";
+import VoiceSelector from "@/app/components/VoiceSelector";
 
 // Interfaces
 interface Locale {
@@ -623,6 +624,10 @@ export default function LectioSourceEditPage() {
   const [isDraftAvailable, setIsDraftAvailable] = useState(false);
   const [showBibleImport, setShowBibleImport] = useState(false);
   const [currentBibleField, setCurrentBibleField] = useState<number>(1);
+  
+  // Voice and model settings
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>("scOwDtmlUjD3prqpp97I"); // Sam ako predvolený
+  const [selectedModel, setSelectedModel] = useState<string>("eleven_v3"); // V3 ako predvolený
 
   const DRAFT_KEY = `lectio_draft_${id}`;
 
@@ -1153,6 +1158,16 @@ export default function LectioSourceEditPage() {
             </div>
           </div>
 
+          {/* Voice and Model Settings */}
+          <VoiceSelector
+            selectedVoiceId={selectedVoiceId}
+            selectedModel={selectedModel}
+            onVoiceChange={setSelectedVoiceId}
+            onModelChange={setSelectedModel}
+            language={formData.lang}
+            className="mb-8"
+          />
+
           {/* Biblické texty s import funkciou */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center mb-6">
@@ -1235,6 +1250,8 @@ export default function LectioSourceEditPage() {
                           currentAudioUrl={formData[`biblia_${i}_audio` as keyof LectioSource] as string || ""}
                           onAudioGenerated={(audioUrl) => handleAudioGenerated(`biblia_${i}_audio`, audioUrl)}
                           disabled={saving}
+                          voice_id={selectedVoiceId}
+                          model={selectedModel}
                         />
                       </div>
                       <input
@@ -1456,6 +1473,8 @@ export default function LectioSourceEditPage() {
                       currentAudioUrl={formData.lectio_audio || ""}
                       onAudioGenerated={(audioUrl) => handleAudioGenerated("lectio_audio", audioUrl)}
                       disabled={saving}
+                      voice_id={selectedVoiceId}
+                      model={selectedModel}
                     />
                   </div>
                   <input
@@ -1480,6 +1499,8 @@ export default function LectioSourceEditPage() {
                       currentAudioUrl={formData.meditatio_audio || ""}
                       onAudioGenerated={(audioUrl) => handleAudioGenerated("meditatio_audio", audioUrl)}
                       disabled={saving}
+                      voice_id={selectedVoiceId}
+                      model={selectedModel}
                     />
                   </div>
                   <input
@@ -1504,6 +1525,8 @@ export default function LectioSourceEditPage() {
                       currentAudioUrl={formData.oratio_audio || ""}
                       onAudioGenerated={(audioUrl) => handleAudioGenerated("oratio_audio", audioUrl)}
                       disabled={saving}
+                      voice_id={selectedVoiceId}
+                      model={selectedModel}
                     />
                   </div>
                   <input
@@ -1527,6 +1550,8 @@ export default function LectioSourceEditPage() {
                       fieldName="contemplatio_audio"
                       currentAudioUrl={formData.contemplatio_audio || ""}
                       onAudioGenerated={(audioUrl) => handleAudioGenerated("contemplatio_audio", audioUrl)}
+                      voice_id={selectedVoiceId}
+                      model={selectedModel}
                       disabled={saving}
                     />
                   </div>
@@ -1552,6 +1577,8 @@ export default function LectioSourceEditPage() {
                       currentAudioUrl={formData.actio_audio || ""}
                       onAudioGenerated={(audioUrl) => handleAudioGenerated("actio_audio", audioUrl)}
                       disabled={saving}
+                      voice_id={selectedVoiceId}
+                      model={selectedModel}
                     />
                   </div>
                   <input

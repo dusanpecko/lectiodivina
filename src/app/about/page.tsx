@@ -8,15 +8,10 @@ import {
   BookOpen, 
   Users, 
   Smartphone, 
-  Bell, 
-  Monitor, 
-  Globe, 
-  Palette,
   ExternalLink,
   HandHeart,
   MessageCircle,
-  Building2,
-  Lightbulb
+  Building2
 } from "lucide-react";
 
 export default function AboutPage() {
@@ -38,43 +33,13 @@ export default function AboutPage() {
     }
   };
 
-  const teamMembers = [
-    {
-      id: 1,
-      name: "o Dušan Pecko",
-      role: "Zakladateľ a vedúci projektu",
-      image: "/profile_1.webp",
-      bio: "o. Dušan je kňaz Žilinskej diecézy a zakladateľ projektu Lectio Divina. Jeho vášňou je pomáhať ľuďom objavovať hlbší vzťah s Bohom cez Božie slovo. Pôsobí ako výkonný riaditeľ diecézneho pastoračného fondu KROK, ktorý podporuje pastoráciu a duchovné iniciatívy v Žilinskej diecéze."
-    },
-    {
-      id: 2,
-      name: "Adam Čižmárik",
-      role: "Prekladateľ a člen tímu pre rozvoj projektu",
-      image: "/profile_2.webp",
-      bio: "Adam je členom projektu od jeho začiatkov. Pracuje na prekladoch do angličtiny a popri tom študuje právo, kde je v druhom ročníku. Usiluje sa žiť podľa princípov Lectio Divina a prenášať ich do každodenného života. Je autorom projektu mypro.one, ktorý sa venuje digitálnym vizitkám a moderným formám online identity."
-    },
-    {
-      id: 3,
-      name: "Kristínka Krchová",
-      role: "Koordinátorka obsahu a srdce projektu",
-      image: "/profile_3.webp",
-      bio: "Kristínka je súčasťou projektu od jeho začiatkov a stála pri budovaní jeho základov. Vďaka jej trpezlivej práci boli do databázy zapracované všetky údaje, pričom venovala projektu nespočetné hodiny. Je srdcom tímu Lectio Divina a aj počas materskej zostáva jeho neoddeliteľnou súčasťou."
-    },
-    {
-      id: 4,
-      name: "sr. Mary Carmen",
-      role: "Koordinátorka španielskeho prekladu",
-      image: "/profile_4.webp",
-      bio: "Sr. Mary Carmen pochádza zo Španielska a je rehoľnou sestrou Kongregácie Sestier Panny Márie Útechy. Spolu so svojimi spolusestrami má na starosti preklad projektu Lectio Divina do španielčiny a tvorí modlitbové zázemie, ktoré sprevádza celý projekt s duchovnou podporou a modlitbou."
-    },
-    {
-      id: 5,
-      name: "Matúš Sedliak",
-      role: "Grafický a audio tvorca projektu",
-      image: "/profile_5.webp",
-      bio: "Matúš je najmladším členom tímu – má len 16 rokov a svoju prax začal v pastoračnom fonde KROK. Myšlienka projektu Lectio Divina ho nadchla natoľko, že sa stal jeho aktívnou súčasťou. Zodpovedá za grafické prvky projektu a stará sa aj o generovanie zvuku prostredníctvom ElevenLabs. Sme vďační, že je súčasťou tímu – prináša tvorivosť, nadšenie a svieži pohľad."
-    }
-  ];
+  const teamMembers = t.team.members.map((member, index) => ({
+    id: index + 1,
+    name: member.name,
+    role: member.role,
+    image: `/profile_${index + 1}.webp`,
+    bio: member.bio
+  }));
 
   return (
     <div className="relative">
@@ -297,16 +262,16 @@ export default function AboutPage() {
               className="grid grid-cols-1 gap-6"
             >
               <div className="text-center p-8 backdrop-blur-sm rounded-2xl border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}>
-                <div className="text-5xl font-bold text-white mb-3">5000+</div>
-                <div className="text-lg text-white/90">Stiahnutí za prvý mesiac</div>
+                <div className="text-5xl font-bold text-white mb-3">{t.stats.downloads}</div>
+                <div className="text-lg text-white/90">{t.stats.downloads_desc}</div>
               </div>
               <div className="text-center p-8 backdrop-blur-sm rounded-2xl border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}>
-                <div className="text-5xl font-bold text-white mb-3">100%</div>
-                <div className="text-lg text-white/90">Pozitívna spätná väzba</div>
+                <div className="text-5xl font-bold text-white mb-3">{t.stats.feedback}</div>
+                <div className="text-lg text-white/90">{t.stats.feedback_desc}</div>
               </div>
               <div className="text-center p-8 backdrop-blur-sm rounded-2xl border" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: 'rgba(255, 255, 255, 0.3)' }}>
-                <div className="text-5xl font-bold text-white mb-3">∞</div>
-                <div className="text-lg text-white/90">Duchovné ovocie</div>
+                <div className="text-5xl font-bold text-white mb-3">{t.stats.fruits}</div>
+                <div className="text-lg text-white/90">{t.stats.fruits_desc}</div>
               </div>
             </motion.div>
           </motion.div>
@@ -319,16 +284,17 @@ export default function AboutPage() {
           {/* Nadpis */}
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#40467b' }}>
-              Náš tím
+              {t.team.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Spoznajte ľudí, ktorí stoja za projektom Lectio Divina a každý deň pracujú na tom, aby ste mohli prežívať hlbší vzťah s Bohom.
+              {t.team.description}
             </p>
           </div>
 
           {/* Tímové fotky - Grid */}
           <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12 items-stretch"
+            style={{ gridAutoRows: 'minmax(auto, 1fr)' }}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
@@ -338,33 +304,35 @@ export default function AboutPage() {
               <motion.div
                 key={member.id}
                 variants={fadeInUp}
-                className="flex flex-col items-center"
+                className="flex flex-col items-center h-full"
               >
-                <div 
-                  className="relative w-32 h-32 sm:w-40 sm:h-40 mb-4 rounded-full overflow-hidden border-4 border-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl cursor-pointer"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${index % 3 === 0 ? '#40467b' : index % 3 === 1 ? '#686ea3' : '#9ca3af'} 0%, rgba(255,255,255,0.2) 100%)`
-                  }}
-                  onClick={() => setSelectedMember(member.id)}
-                >
-                  <img 
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="flex flex-col items-center flex-grow">
+                  <div 
+                    className="relative w-32 h-32 sm:w-40 sm:h-40 mb-4 rounded-full overflow-hidden border-4 border-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-2xl cursor-pointer"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${index % 3 === 0 ? '#40467b' : index % 3 === 1 ? '#686ea3' : '#9ca3af'} 0%, rgba(255,255,255,0.2) 100%)`
+                    }}
+                    onClick={() => setSelectedMember(member.id)}
+                  >
+                    <img 
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 text-center mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-sm text-center mb-6 flex-grow flex items-center" style={{ color: '#40467b', minHeight: '3rem' }}>
+                    {member.role}
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 text-center mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-sm text-center mb-3" style={{ color: '#40467b' }}>
-                  {member.role}
-                </p>
                 <button
                   onClick={() => setSelectedMember(member.id)}
-                  className="px-4 py-2 rounded-lg text-white font-medium text-sm transition-all duration-200 hover:opacity-80"
+                  className="px-4 py-2 rounded-lg text-white font-medium text-sm transition-all duration-200 hover:opacity-80 mt-auto"
                   style={{ backgroundColor: '#40467b' }}
                 >
-                  Zobraziť bio
+                  {t.team.show_bio}
                 </button>
               </motion.div>
             ))}
@@ -426,7 +394,7 @@ export default function AboutPage() {
                       className="text-lg font-medium hover:underline"
                       style={{ color: '#40467b' }}
                     >
-                      Môj kontakt →
+                      {t.team.contact_link}
                     </a>
                   </div>
                 </>
@@ -500,7 +468,7 @@ export default function AboutPage() {
             >
               <p className="text-2xl font-bold text-white flex items-center gap-3">
                 <BookOpen className="w-8 h-8" />
-                {t.conclusion.thanks || "Ďakujeme, že ste súčasťou našej komunity!"}
+                {t.conclusion.thanks}
               </p>
             </div>
           </motion.div>
@@ -576,7 +544,7 @@ export default function AboutPage() {
               }}
             >
               <p className="text-2xl lg:text-3xl text-white leading-relaxed font-medium italic">
-                "{t.conclusion.text}"
+                &ldquo;{t.conclusion.text}&rdquo;
               </p>
             </div>
           </motion.div>
