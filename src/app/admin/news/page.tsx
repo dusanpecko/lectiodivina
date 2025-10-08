@@ -279,7 +279,7 @@ export default function NewsAdminPage() {
     
     if (publishDate > now) {
       return (
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100" style={{ color: '#40467b' }}>
           <Calendar size={12} className="mr-1" />
           Naplánované
         </span>
@@ -287,7 +287,7 @@ export default function NewsAdminPage() {
     }
     
     return (
-      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100" style={{ color: '#40467b' }}>
         <Eye size={12} className="mr-1" />
         Publikované
       </span>
@@ -296,52 +296,78 @@ export default function NewsAdminPage() {
 
   const activeFiltersCount = Object.values(filter).filter(v => v !== "").length + (globalSearch ? 1 : 0);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
-                <span className="mr-3">📰</span>
-                {t.news_admin_title || "Správa článkov"}
-              </h1>
-              <p className="text-gray-600 flex items-center">
-                <span className="mr-2">📊</span>
-                Celkom {total} článkov v jazyku {filterLang.toUpperCase()}
-              </p>
-            </div>
-            <div className="text-5xl">📝</div>
-          </div>
+  // Statistics
+  const stats = {
+    total: total,
+    published: news.filter(n => n.published_at && new Date(n.published_at) <= new Date()).length,
+    draft: news.filter(n => !n.published_at || new Date(n.published_at) > new Date()).length,
+    thisMonth: news.filter(n => {
+      const publishDate = new Date(n.published_at);
+      const now = new Date();
+      return publishDate.getMonth() === now.getMonth() && publishDate.getFullYear() === now.getFullYear();
+    }).length,
+    totalLikes: news.reduce((sum, n) => sum + (n.likes || 0), 0),
+  };
 
-          {/* Controls */}
-          <div className="flex flex-wrap items-center gap-4">
+  return (
+    <div className="space-y-6">
+      {/* Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+          <div className="text-sm text-gray-600 mb-1">Celkovo</div>
+          <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{stats.total}</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+          <div className="text-sm text-gray-600 mb-1">Publikované</div>
+          <div className="text-2xl font-bold" style={{ color: '#10b981' }}>{stats.published}</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+          <div className="text-sm text-gray-600 mb-1">Koncepty</div>
+          <div className="text-2xl font-bold" style={{ color: '#f59e0b' }}>{stats.draft}</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+          <div className="text-sm text-gray-600 mb-1">Tento mesiac</div>
+          <div className="text-2xl font-bold" style={{ color: '#3b82f6' }}>{stats.thisMonth}</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+          <div className="text-sm text-gray-600 mb-1">Celkom lajkov</div>
+          <div className="text-2xl font-bold" style={{ color: '#ef4444' }}>
+            <div className="flex items-center gap-1">
+              <Heart size={20} fill="#ef4444" />
+              {stats.totalLikes}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-6">
+          {/* Top Row - Language and Actions */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
             {/* Language Filter */}
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">🌍</span>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
-                  {t.language || "Jazyk"}
-                </label>
-                <select
-                  value={filterLang}
-                  onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                >
-                  <option value="sk">🇸🇰 Slovenčina</option>
-                  <option value="cz">🇨🇿 Čeština</option>
-                  <option value="en">🇬🇧 English</option>
-                  <option value="es">🇪🇸 Español</option>
-                </select>
-              </div>
+            <div className="flex items-center gap-2">
+              <Filter size={20} style={{ color: '#40467b' }} />
+              <select
+                value={filterLang}
+                onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
+                className="px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2"
+                style={{ 
+                  borderColor: 'rgba(64, 70, 123, 0.2)',
+                  color: '#40467b'
+                }}
+              >
+                <option value="sk">🇸🇰 Slovenčina</option>
+                <option value="cz">🇨🇿 Čeština</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Español</option>
+              </select>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center space-x-3 ml-auto">
-              <label className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-md">
+            <div className="flex items-center gap-3">
+              <label className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition cursor-pointer font-medium" style={{ backgroundColor: '#40467b' }}>
                 <Upload size={18} />
-                <span className="font-medium">{t.import_excel || "Import Excel"}</span>
+                <span>{t.import_excel || "Import"}</span>
                 <input
                   type="file"
                   accept=".xlsx"
@@ -351,17 +377,19 @@ export default function NewsAdminPage() {
               </label>
               
               <button
-                className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-md"
+                className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition font-medium"
+                style={{ backgroundColor: '#f59e0b' }}
                 onClick={handleExportExcel}
                 type="button"
               >
                 <Download size={18} />
-                <span className="font-medium">{t.export_excel || "Export Excel"}</span>
+                <span>{t.export_excel || "Export"}</span>
               </button>
               
               <Link href="/admin/news/new">
                 <button
-                  className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition shadow-md font-medium"
+                  className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-medium"
+                  style={{ backgroundColor: '#10b981' }}
                   type="button"
                 >
                   <PlusCircle size={18} />
@@ -370,30 +398,28 @@ export default function NewsAdminPage() {
               </Link>
             </div>
           </div>
-        </div>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           {/* Global Search */}
-          <div className="flex items-center space-x-4 mb-4">
+          <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={globalSearch}
                 onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#40467b]"
+                style={{ borderColor: 'rgba(64, 70, 123, 0.2)' }}
                 placeholder={t.global_search || "Hľadať v článkoch..."}
               />
             </div>
             
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`inline-flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition ${
-                showFilters || activeFiltersCount > 0
-                  ? "bg-emerald-100 text-emerald-700 border border-emerald-300"
-                  : "bg-gray-100 text-gray-700 border border-gray-300"
-              }`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
+              style={{ 
+                backgroundColor: showFilters || activeFiltersCount > 0 ? 'rgba(64, 70, 123, 0.1)' : 'rgba(64, 70, 123, 0.05)',
+                color: '#40467b'
+              }}
               type="button"
             >
               <Filter size={18} />
@@ -403,7 +429,7 @@ export default function NewsAdminPage() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="border-t pt-4">
+            <div className="border-t pt-4 mt-4" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">
@@ -476,7 +502,8 @@ export default function NewsAdminPage() {
               
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
+                style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
                 type="button"
               >
                 <Eraser size={16} />
@@ -484,14 +511,14 @@ export default function NewsAdminPage() {
               </button>
             </div>
           )}
-        </div>
+      </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      {/* Table */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+                <tr className="text-white" style={{ backgroundColor: '#40467b' }}>
                   <th className="px-6 py-4 text-left font-semibold">
                     <div className="flex items-center">
                       <span className="mr-2">📝</span>
@@ -604,7 +631,8 @@ export default function NewsAdminPage() {
                             <button
                               onClick={saveEdit}
                               disabled={editLoading}
-                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                              className="inline-flex items-center px-3 py-1 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
+                              style={{ backgroundColor: '#40467b' }}
                             >
                               {editLoading ? "💾" : "✅"} {t.save || "Uložiť"}
                             </button>
@@ -618,7 +646,7 @@ export default function NewsAdminPage() {
                         </td>
                       </tr>
                     ) : (
-                      <tr key={n.id} className="border-b hover:bg-emerald-50 transition-colors">
+                      <tr key={n.id} className="border-b hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-start space-x-3">
                             {n.image_url && (
@@ -665,14 +693,14 @@ export default function NewsAdminPage() {
                           <div className="flex gap-2 items-center justify-center">
                             <Link href={`/admin/news/${n.id}`}>
                               <button
-                                className="p-2 rounded-lg hover:bg-emerald-100 transition group"
+                                className="p-2 rounded-lg hover:bg-gray-100 transition group"
                                 title="Upraviť v editore"
                               >
                                 <PencilLine size={18} className="text-emerald-600 group-hover:text-emerald-700" />
                               </button>
                             </Link>
                             <button
-                              className="p-2 rounded-lg hover:bg-blue-100 transition group"
+                              className="p-2 rounded-lg hover:bg-gray-100 transition group"
                               title="Rýchla úprava"
                               onClick={() => startEdit(n)}
                             >
@@ -701,109 +729,35 @@ export default function NewsAdminPage() {
           </div>
 
           {/* Pagination */}
-          {!loading && news.length > 0 && (
-            <div className="border-t bg-gray-50 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  Zobrazené <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
-                  <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
-                  <span className="font-medium">{total}</span> článkov
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <button
-                    className="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                  >
-                    ← {t.previous || "Predchádzajúca"}
-                  </button>
-                  
-                  <div className="flex items-center space-x-1">
-                    {Array.from({ length: Math.min(5, Math.ceil(total / PAGE_SIZE)) }, (_, i) => {
-                      const pageNum = Math.max(1, page - 2) + i;
-                      if (pageNum > Math.ceil(total / PAGE_SIZE)) return null;
-                      
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setPage(pageNum)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                            pageNum === page
-                              ? "bg-emerald-600 text-white"
-                              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  
-                  <button
-                    className="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                    onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-                    disabled={page * PAGE_SIZE >= total}
-                  >
-                    {t.next || "Ďalšia"} →
-                  </button>
-                </div>
+          {!loading && news.length > 0 && Math.ceil(total / PAGE_SIZE) > 1 && (
+            <div className="px-4 py-4 border-t flex items-center justify-between" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
+              <div className="text-sm text-gray-600">
+                Zobrazené {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, total)} z {total} záznamov
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
+                  style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                >
+                  ← Predchádzajúca
+                </button>
+                <span className="px-4 py-2 text-sm font-medium" style={{ color: '#40467b' }}>
+                  Strana {page} z {Math.ceil(total / PAGE_SIZE)}
+                </span>
+                <button
+                  onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                  disabled={page * PAGE_SIZE >= total}
+                  className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
+                  style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                >
+                  Ďalšia →
+                </button>
               </div>
             </div>
           )}
         </div>
-
-        {/* Stats Cards */}
-        {!loading && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Celkom článkov</p>
-                  <p className="text-3xl font-bold text-gray-900">{total}</p>
-                </div>
-                <div className="text-3xl">📰</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Publikované</p>
-                  <p className="text-3xl font-bold text-green-600">
-                    {news.filter(n => n.published_at && new Date(n.published_at) <= new Date()).length}
-                  </p>
-                </div>
-                <div className="text-3xl">✅</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Koncepty</p>
-                  <p className="text-3xl font-bold text-gray-600">
-                    {news.filter(n => !n.published_at).length}
-                  </p>
-                </div>
-                <div className="text-3xl">📝</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Celkové páči sa</p>
-                  <p className="text-3xl font-bold text-pink-600">
-                    {news.reduce((sum, n) => sum + (n.likes || 0), 0)}
-                  </p>
-                </div>
-                <div className="text-3xl">❤️</div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

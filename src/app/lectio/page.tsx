@@ -30,7 +30,10 @@ import {
   Quote,
   Music,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Volume,
+  VolumeOff,
+  Type
 } from 'lucide-react';
 
 interface LectioData {
@@ -88,7 +91,6 @@ export default function LectioPage() {
   const [currentSection, setCurrentSection] = useState<string | null>(null);
   const [backgroundMusicEnabled, setBackgroundMusicEnabled] = useState(false);
   const [backgroundVolume, setBackgroundVolume] = useState(0.3);
-  const [selectedAudios, setSelectedAudios] = useState<Record<string, boolean>>({});
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [playlistIndex, setPlaylistIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -96,68 +98,21 @@ export default function LectioPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorReportSuccess, setErrorReportSuccess] = useState(false);
+  const [audioMode, setAudioMode] = useState<'none' | 'short' | 'long'>('short');
+  const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
 
-  const audioSections: AudioSection[] = [
-    {
-      key: 'modlitba_audio',
-      label: 'Modlitba',
-      icon: <Heart size={16} />,
-      color: 'text-red-500'
-    },
-    {
-      key: 'biblia_1_audio',
-      label: 'Biblia 1',
-      icon: <BookOpen size={16} />,
-      color: 'text-purple-500'
-    },
-    {
-      key: 'biblia_2_audio',
-      label: 'Biblia 2',
-      icon: <BookOpen size={16} />,
-      color: 'text-purple-600'
-    },
-    {
-      key: 'biblia_3_audio',
-      label: 'Biblia 3',
-      icon: <BookOpen size={16} />,
-      color: 'text-purple-700'
-    },
-    {
-      key: 'lectio_audio',
-      label: 'Lectio',
-      icon: <BookOpen size={16} />,
-      color: 'text-green-500'
-    },
-    {
-      key: 'meditatio_audio',
-      label: 'Meditatio',
-      icon: <Eye size={16} />,
-      color: 'text-purple-500'
-    },
-    {
-      key: 'oratio_audio',
-      label: 'Oratio',
-      icon: <Heart size={16} />,
-      color: 'text-orange-500'
-    },
-    {
-      key: 'contemplatio_audio',
-      label: 'Contemplatio',
-      icon: <MessageCircle size={16} />,
-      color: 'text-pink-500'
-    },
-    {
-      key: 'actio_audio',
-      label: 'Actio',
-      icon: <Play size={16} />,
-      color: 'text-teal-500'
-    }
-  ];
+  // Helper funkcia pre formátovanie dátumu do YYYY-MM-DD v lokálnom časovom pásme
+  const formatDateToLocalString = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const fetchLectioData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      const dateStr = formatDateToLocalString(selectedDate);
       
       // Skúsiť načítať pre aktuálny jazyk
       let { data, error } = await supabase
@@ -182,15 +137,6 @@ export default function LectioPage() {
       }
 
       setLectioData(data);
-      
-      // Inicializovať selectedAudios
-      if (data) {
-        const initialAudios: Record<string, boolean> = {};
-        audioSections.forEach(section => {
-          initialAudios[section.key] = !!(data[section.key] && data[section.key].toString().trim());
-        });
-        setSelectedAudios(initialAudios);
-      }
     } catch (error) {
       console.error('Error fetching lectio data:', error);
     } finally {
@@ -201,6 +147,24 @@ export default function LectioPage() {
   useEffect(() => {
     fetchLectioData();
   }, [fetchLectioData]);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !session) {
+      window.location.href = '/login?redirect=/lectio';
+    }
+  }, [session, isLoading]);
+
+  // Cleanup audio when component unmounts (navigating away)
+  useEffect(() => {
+    return () => {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio.src = ''; // Release the audio resource
+      }
+    };
+  }, [currentAudio]);
 
   const goToPreviousDay = () => {
     setSelectedDate(prev => {
@@ -238,14 +202,114 @@ export default function LectioPage() {
       setCurrentSection(null);
       setCurrentAudio(null);
       
-      // Auto-play next in playlist
-      const availableAudios = audioSections.filter(section => 
-        selectedAudios[section.key] && lectioData?.[section.key]
-      );
-      const currentIndex = availableAudios.findIndex(section => section.key === sectionKey);
-      if (currentIndex < availableAudios.length - 1) {
-        const nextSection = availableAudios[currentIndex + 1];
-        playAudio(lectioData![nextSection.key] as string, nextSection.key);
+      // Auto-play next in playlist with optional interludes
+      if (lectioData) {
+        // Dynamicky vytvoríme audio sekcie s aktuálne vybranou Bibliou
+        const dynamicAudioSections: AudioSection[] = [
+          {
+            key: 'modlitba_audio',
+            label: 'Modlitba',
+            icon: <Heart size={16} />,
+            color: 'text-red-500'
+          },
+          {
+            key: `${selectedBible}_audio` as keyof LectioData,
+            label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'Biblický text',
+            icon: <BookOpen size={16} />,
+            color: 'text-purple-500'
+          },
+          {
+            key: 'lectio_audio',
+            label: 'Lectio',
+            icon: <BookOpen size={16} />,
+            color: 'text-green-500'
+          },
+          {
+            key: 'meditatio_audio',
+            label: 'Meditatio',
+            icon: <Eye size={16} />,
+            color: 'text-purple-500'
+          },
+          {
+            key: 'oratio_audio',
+            label: 'Oratio',
+            icon: <Heart size={16} />,
+            color: 'text-orange-500'
+          },
+          {
+            key: 'contemplatio_audio',
+            label: 'Contemplatio',
+            icon: <MessageCircle size={16} />,
+            color: 'text-pink-500'
+          },
+          {
+            key: 'actio_audio',
+            label: 'Actio',
+            icon: <Play size={16} />,
+            color: 'text-teal-500'
+          }
+        ];
+        
+        const availableAudios = dynamicAudioSections.filter(section => 
+          lectioData[section.key]
+        );
+        
+        const currentIndex = availableAudios.findIndex(section => section.key === sectionKey);
+        
+        // Určíme, či má nasledovať prechodové audio
+        const needsInterlude = currentIndex < availableAudios.length - 1;
+        
+        if (needsInterlude) {
+          let interludeUrl = '';
+          
+          const nextSection = availableAudios[currentIndex + 1];
+          
+          // Zmapujeme audio kľúč na slide index
+          const audioKeyToSlideMap: Record<string, number> = {
+            [`${selectedBible}_audio`]: 0, // Bible je prvý slide
+            'lectio_audio': 1,
+            'meditatio_audio': 2,
+            'oratio_audio': 3,
+            'contemplatio_audio': 4,
+            'actio_audio': 5
+          };
+          
+          // Nastavíme správny slide pre ďalšiu sekciu
+          const nextSlideIndex = audioKeyToSlideMap[nextSection.key];
+          if (nextSlideIndex !== undefined) {
+            setCurrentSlide(nextSlideIndex);
+          }
+          
+          if (audioMode === 'none') {
+            // Žiadne pozadie - priamo ďalšia sekcia
+            playAudio(lectioData[nextSection.key] as string, nextSection.key);
+            return;
+          } else if (audioMode === 'short') {
+            // Krátke meditačné pozadie
+            // audio_null.mp3 pre všetky okrem contemplatio
+            // Pre contemplatio použij lectio_full.mp3
+            if (sectionKey === 'contemplatio_audio') {
+              interludeUrl = 'https://unnijykbupxguogrkolj.supabase.co/storage/v1/object/public/audio-files/lectio/lectio_full.mp3';
+            } else {
+              interludeUrl = 'https://unnijykbupxguogrkolj.supabase.co/storage/v1/object/public/audio-files/lectio/audio_null.mp3';
+            }
+          } else if (audioMode === 'long') {
+            // Dlhé meditačné pozadie - vždy lectio_full.mp3
+            interludeUrl = 'https://unnijykbupxguogrkolj.supabase.co/storage/v1/object/public/audio-files/lectio/lectio_full.mp3';
+          }
+          
+          // Prehrať prechodové audio a potom ďalšiu nahrávku
+          const interludeAudio = new Audio(interludeUrl);
+          
+          interludeAudio.addEventListener('ended', () => {
+            playAudio(lectioData[nextSection.key] as string, nextSection.key);
+          });
+          
+          interludeAudio.play();
+          setCurrentAudio(interludeAudio);
+          setCurrentSection('interlude');
+          setIsPlaying(true);
+        }
       }
     });
 
@@ -368,8 +432,54 @@ export default function LectioPage() {
   const AudioPlayer = () => {
     if (!showAudioPlayer || !lectioData) return null;
     
-    const availableAudios = audioSections.filter(section => 
-      selectedAudios[section.key] && lectioData[section.key]
+    // Dynamicky vytvoríme audio sekcie s aktuálne vybranou Bibliou
+    const dynamicAudioSections: AudioSection[] = [
+      {
+        key: 'modlitba_audio',
+        label: 'Modlitba',
+        icon: <Heart size={16} />,
+        color: 'text-red-500'
+      },
+      {
+        key: `${selectedBible}_audio` as keyof LectioData,
+        label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'Biblický text',
+        icon: <BookOpen size={16} />,
+        color: 'text-purple-500'
+      },
+      {
+        key: 'lectio_audio',
+        label: 'Lectio',
+        icon: <BookOpen size={16} />,
+        color: 'text-green-500'
+      },
+      {
+        key: 'meditatio_audio',
+        label: 'Meditatio',
+        icon: <Eye size={16} />,
+        color: 'text-purple-500'
+      },
+      {
+        key: 'oratio_audio',
+        label: 'Oratio',
+        icon: <Heart size={16} />,
+        color: 'text-orange-500'
+      },
+      {
+        key: 'contemplatio_audio',
+        label: 'Contemplatio',
+        icon: <MessageCircle size={16} />,
+        color: 'text-pink-500'
+      },
+      {
+        key: 'actio_audio',
+        label: 'Actio',
+        icon: <Play size={16} />,
+        color: 'text-teal-500'
+      }
+    ];
+    
+    const availableAudios = dynamicAudioSections.filter(section => 
+      lectioData[section.key]
     );
     
     return (
@@ -388,7 +498,7 @@ export default function LectioPage() {
           <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
             <p className="text-xs text-gray-600 mb-1">Práve sa prehráva:</p>
             <p className="font-medium" style={{ color: '#40467b' }}>
-              {audioSections.find(s => s.key === currentSection)?.label}
+              {dynamicAudioSections.find(s => s.key === currentSection)?.label}
             </p>
           </div>
         )}
@@ -462,7 +572,8 @@ export default function LectioPage() {
     );
   };
 
-  if (isLoading) {
+  // Show loading while checking authentication or loading data
+  if (isLoading || !session) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f5f5f7 0%, #e8e9f3 50%, #f5f5f7 100%)' }}>
         <div className="backdrop-blur-md rounded-2xl shadow-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}>
@@ -471,7 +582,7 @@ export default function LectioPage() {
             <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
           </div>
           <h2 className="text-xl font-bold" style={{ color: '#40467b' }}>
-            Načítavam Lectio Divina...
+            {!session ? 'Overujem prihlásenie...' : 'Načítavam Lectio Divina...'}
           </h2>
         </div>
       </div>
@@ -479,12 +590,12 @@ export default function LectioPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #f5f5f7 0%, #e8e9f3 50%, #f5f5f7 100%)' }}>
-      <div className="max-w-[1600px] mx-auto px-4 py-8">
+    <div className="min-h-screen pt-20 pb-8 px-4" style={{ background: 'linear-gradient(135deg, #f5f5f7 0%, #e8e9f3 50%, #f5f5f7 100%)' }}>
+      <div className="max-w-[1600px] mx-auto">
         {/* Content */}
-        {lectioData ? (
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-            {(() => {
+        <div className="flex flex-col xl:grid xl:grid-cols-12 gap-4 min-h-[calc(100vh-120px)] xl:h-[calc(100vh-120px)]">
+          {lectioData ? (
+            (() => {
               const slides = [
                 // Biblický text ako prvý slide
                 {
@@ -554,19 +665,65 @@ export default function LectioPage() {
 
               const hasAudio = currentSlideData.audioKey && lectioData[currentSlideData.audioKey];
               const isCurrentlyPlaying = currentSection === currentSlideData.audioKey && isPlaying;
-              const availableAudios = audioSections.filter(section => 
-                selectedAudios[section.key] && lectioData[section.key]
+              
+              // Dynamicky vytvoríme audio sekcie s aktuálne vybranou Bibliou
+              const dynamicAudioSections: AudioSection[] = [
+                {
+                  key: 'modlitba_audio',
+                  label: 'Modlitba',
+                  icon: <Heart size={16} />,
+                  color: 'text-red-500'
+                },
+                {
+                  key: `${selectedBible}_audio` as keyof LectioData,
+                  label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || 'Biblický text',
+                  icon: <BookOpen size={16} />,
+                  color: 'text-purple-500'
+                },
+                {
+                  key: 'lectio_audio',
+                  label: 'Lectio',
+                  icon: <BookOpen size={16} />,
+                  color: 'text-green-500'
+                },
+                {
+                  key: 'meditatio_audio',
+                  label: 'Meditatio',
+                  icon: <Eye size={16} />,
+                  color: 'text-purple-500'
+                },
+                {
+                  key: 'oratio_audio',
+                  label: 'Oratio',
+                  icon: <Heart size={16} />,
+                  color: 'text-orange-500'
+                },
+                {
+                  key: 'contemplatio_audio',
+                  label: 'Contemplatio',
+                  icon: <MessageCircle size={16} />,
+                  color: 'text-pink-500'
+                },
+                {
+                  key: 'actio_audio',
+                  label: 'Actio',
+                  icon: <Play size={16} />,
+                  color: 'text-teal-500'
+                }
+              ];
+              
+              const availableAudios = dynamicAudioSections.filter(section => 
+                lectioData[section.key]
               );
 
               return (
                 <>
                   {/* LEFT COLUMN - Info & Controls */}
                   <div className="xl:col-span-3">
-                    <div className="backdrop-blur-md rounded-2xl shadow-lg border p-4 sticky top-24 overflow-y-auto" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)', maxHeight: 'calc(100vh - 120px)' }}>
+                    <div className="backdrop-blur-md rounded-2xl shadow-lg border p-4 xl:overflow-y-auto xl:h-[calc(100vh-120px)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)' }}>
                         {/* Date Navigation */}
                         <div className="mb-4">
                           <div className="flex items-center gap-2 mb-2">
-                            <Calendar size={18} style={{ color: '#40467b' }} />
                             <span className="text-xs font-bold" style={{ color: '#40467b' }}>Dátum</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -578,15 +735,48 @@ export default function LectioPage() {
                             >
                               <ChevronLeft size={16} />
                             </button>
-                            <div className="flex-1 text-center p-2 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
-                              <span className="text-xs font-bold block" style={{ color: '#40467b' }}>
-                                {selectedDate.toLocaleDateString('sk-SK', {
-                                  weekday: 'short',
-                                  day: 'numeric',
-                                  month: 'short'
-                                })}
-                              </span>
+                            
+                            <div className="flex-1 flex items-center gap-2">
+                              <div className="flex-1 text-center p-2 rounded-lg text-xs font-bold" style={{ 
+                                backgroundColor: 'rgba(64, 70, 123, 0.1)',
+                                color: '#40467b'
+                              }}>
+                                {selectedDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric', year: 'numeric' })}
+                              </div>
+                              
+                              <div className="relative">
+                                <input
+                                  type="date"
+                                  value={formatDateToLocalString(selectedDate)}
+                                  onChange={(e) => {
+                                    const [year, month, day] = e.target.value.split('-').map(Number);
+                                    const newDate = new Date(year, month - 1, day);
+                                    setSelectedDate(newDate);
+                                  }}
+                                  style={{ position: 'absolute', width: 0, height: 0, opacity: 0, zIndex: -1 }}
+                                  id="datePickerInput"
+                                />
+                                <button
+                                  type="button"
+                                  className="p-2 rounded-lg transition-all hover:opacity-80 cursor-pointer flex items-center justify-center"
+                                  style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                                  title="Vybrať dátum"
+                                  onClick={() => {
+                                    const input = document.getElementById('datePickerInput') as HTMLInputElement;
+                                    if (input) {
+                                      if (input.showPicker) {
+                                        input.showPicker();
+                                      } else {
+                                        input.click();
+                                      }
+                                    }
+                                  }}
+                                >
+                                  <Calendar size={16} />
+                                </button>
+                              </div>
                             </div>
+
                             <button
                               onClick={goToNextDay}
                               className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
@@ -652,6 +842,120 @@ export default function LectioPage() {
                             </h3>
                           </div>
 
+                          {/* Audio Mode Selection */}
+                          <div className="mb-3 p-3 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.05)' }}>
+                            <p className="text-xs font-bold mb-3" style={{ color: '#40467b' }}>
+                              Režim prehrávania
+                            </p>
+                            
+                            <div className="flex items-center justify-around gap-2">
+                              {/* Bez pridaného audia */}
+                              <div className="relative group">
+                                <label className={`block ${isPlaying ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                  <input
+                                    type="radio"
+                                    name="audioMode"
+                                    value="none"
+                                    checked={audioMode === 'none'}
+                                    onChange={(e) => setAudioMode('none')}
+                                    disabled={isPlaying}
+                                    className="sr-only"
+                                  />
+                                  <div 
+                                    className="p-2 rounded-lg transition-all"
+                                    style={{
+                                      backgroundColor: audioMode === 'none' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(64, 70, 123, 0.05)',
+                                      border: audioMode === 'none' ? '2px solid #ef4444' : '2px solid transparent',
+                                      opacity: isPlaying ? 0.5 : 1,
+                                      cursor: isPlaying ? 'not-allowed' : 'pointer'
+                                    }}
+                                  >
+                                    <VolumeX 
+                                      size={20} 
+                                      style={{ 
+                                        color: audioMode === 'none' ? '#ef4444' : '#9ca3af'
+                                      }} 
+                                    />
+                                  </div>
+                                </label>
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                  {isPlaying ? 'Zastavte audio pre zmenu' : 'Bez pridaného audia'}
+                                </div>
+                              </div>
+
+                              {/* Meditačné pozadie - krátke */}
+                              <div className="relative group">
+                                <label className={`block ${isPlaying ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                  <input
+                                    type="radio"
+                                    name="audioMode"
+                                    value="short"
+                                    checked={audioMode === 'short'}
+                                    onChange={(e) => setAudioMode('short')}
+                                    disabled={isPlaying}
+                                    className="sr-only"
+                                  />
+                                  <div 
+                                    className="p-2 rounded-lg transition-all"
+                                    style={{
+                                      backgroundColor: audioMode === 'short' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(64, 70, 123, 0.05)',
+                                      border: audioMode === 'short' ? '2px solid #3b82f6' : '2px solid transparent',
+                                      opacity: isPlaying ? 0.5 : 1,
+                                      cursor: isPlaying ? 'not-allowed' : 'pointer'
+                                    }}
+                                  >
+                                    <Volume 
+                                      size={20} 
+                                      style={{ 
+                                        color: audioMode === 'short' ? '#3b82f6' : '#9ca3af'
+                                      }} 
+                                    />
+                                  </div>
+                                </label>
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                  {isPlaying ? 'Zastavte audio pre zmenu' : 'Meditačné pozadie - krátke'}
+                                </div>
+                              </div>
+
+                              {/* Meditačné pozadie - dlhšie */}
+                              <div className="relative group">
+                                <label className={`block ${isPlaying ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                  <input
+                                    type="radio"
+                                    name="audioMode"
+                                    value="long"
+                                    checked={audioMode === 'long'}
+                                    onChange={(e) => setAudioMode('long')}
+                                    disabled={isPlaying}
+                                    className="sr-only"
+                                  />
+                                  <div 
+                                    className="p-2 rounded-lg transition-all"
+                                    style={{
+                                      backgroundColor: audioMode === 'long' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(64, 70, 123, 0.05)',
+                                      border: audioMode === 'long' ? '2px solid #22c55e' : '2px solid transparent',
+                                      opacity: isPlaying ? 0.5 : 1,
+                                      cursor: isPlaying ? 'not-allowed' : 'pointer'
+                                    }}
+                                  >
+                                    <Volume2 
+                                      size={20} 
+                                      style={{ 
+                                        color: audioMode === 'long' ? '#22c55e' : '#9ca3af'
+                                      }} 
+                                    />
+                                  </div>
+                                </label>
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                  {isPlaying ? 'Zastavte audio pre zmenu' : 'Meditačné pozadie - dlhšie'}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                           {currentSection && (
                             <div className="mb-3 p-2 rounded-lg relative" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
                               <button
@@ -669,7 +973,10 @@ export default function LectioPage() {
                               </button>
                               <p className="text-xs text-gray-600 mb-1">Práve hrá:</p>
                               <p className="font-semibold text-xs pr-6" style={{ color: '#40467b' }}>
-                                {audioSections.find(s => s.key === currentSection)?.label}
+                                {currentSection === 'interlude' 
+                                  ? (audioMode === 'long' ? 'Meditačné pozadie - dlhšie' : 'Meditačné pozadie - krátke')
+                                  : dynamicAudioSections.find(s => s.key === currentSection)?.label
+                                }
                               </p>
                             </div>
                           )}
@@ -763,21 +1070,77 @@ export default function LectioPage() {
 
                   {/* MIDDLE COLUMN - Content Slide */}
                   <div className="xl:col-span-6">
-                    <div className="backdrop-blur-md rounded-2xl shadow-lg border flex flex-col" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)', height: 'calc(100vh - 120px)' }}>
+                    <div className="backdrop-blur-md rounded-2xl shadow-lg border flex flex-col xl:h-[calc(100vh-120px)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)' }}>
                       <div className="p-6 flex flex-col flex-1 overflow-hidden">
+                        {/* Font Size Controls */}
+                        <div className="flex items-center justify-end gap-2 mb-4">
+                          <div className="flex items-center gap-1 p-1 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.05)' }}>
+                            <button
+                              onClick={() => setFontSize('small')}
+                              className="px-3 py-1.5 rounded-md transition-all text-xs font-bold"
+                              style={{
+                                backgroundColor: fontSize === 'small' ? '#40467b' : 'transparent',
+                                color: fontSize === 'small' ? 'white' : '#40467b'
+                              }}
+                              title="Malé písmo"
+                            >
+                              A-
+                            </button>
+                            <button
+                              onClick={() => setFontSize('medium')}
+                              className="px-3 py-1.5 rounded-md transition-all text-sm font-bold"
+                              style={{
+                                backgroundColor: fontSize === 'medium' ? '#40467b' : 'transparent',
+                                color: fontSize === 'medium' ? 'white' : '#40467b'
+                              }}
+                              title="Stredné písmo"
+                            >
+                              A
+                            </button>
+                            <button
+                              onClick={() => setFontSize('large')}
+                              className="px-3 py-1.5 rounded-md transition-all text-base font-bold"
+                              style={{
+                                backgroundColor: fontSize === 'large' ? '#40467b' : 'transparent',
+                                color: fontSize === 'large' ? 'white' : '#40467b'
+                              }}
+                              title="Veľké písmo"
+                            >
+                              A+
+                            </button>
+                          </div>
+                        </div>
+
                         {/* Content - Scrollable */}
                         <div className="flex-1 overflow-y-auto mb-6">
                           <div 
                             className="prose max-w-none p-5 rounded-xl"
                             style={{ backgroundColor: `${currentSlideData.color}08` }}
                           >
-                            <h3 className="text-2xl font-bold mb-4" style={{ color: currentSlideData.color }}>
+                            <h3 
+                              className="font-bold mb-4" 
+                              style={{ 
+                                color: currentSlideData.color,
+                                fontSize: fontSize === 'small' ? '1.25rem' : fontSize === 'large' ? '1.875rem' : '1.5rem'
+                              }}
+                            >
                               {currentSlideData.title}
                             </h3>
-                            <p className="text-sm text-gray-600 mb-4 font-medium">
+                            <p 
+                              className="text-gray-600 mb-4 font-medium"
+                              style={{
+                                fontSize: fontSize === 'small' ? '0.813rem' : fontSize === 'large' ? '1rem' : '0.875rem'
+                              }}
+                            >
                               {currentSlideData.subtitle}
                             </p>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">
+                            <p 
+                              className="text-gray-700 leading-relaxed whitespace-pre-wrap"
+                              style={{
+                                fontSize: fontSize === 'small' ? '0.875rem' : fontSize === 'large' ? '1.125rem' : '1rem',
+                                lineHeight: fontSize === 'small' ? '1.5' : fontSize === 'large' ? '1.75' : '1.625'
+                              }}
+                            >
                               {currentSlideData.text}
                             </p>
                           </div>
@@ -838,7 +1201,7 @@ export default function LectioPage() {
 
                   {/* RIGHT COLUMN - Steps Navigation */}
                   <div className="xl:col-span-3">
-                    <div className="backdrop-blur-md rounded-2xl shadow-lg border sticky top-24 flex flex-col" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)', maxHeight: 'calc(100vh - 120px)' }}>
+                    <div className="backdrop-blur-md rounded-2xl shadow-lg border flex flex-col xl:h-[calc(100vh-120px)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)' }}>
                       <div className="p-4 flex-shrink-0">
                         <h3 className="text-sm font-bold mb-4" style={{ color: '#40467b' }}>
                           Kroky Lectio Divina
@@ -907,28 +1270,110 @@ export default function LectioPage() {
                   </div>
                 </>
               );
-            })()}
-          </div>
-        ) : (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-12 text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl flex items-center justify-center">
-              <BookOpen size={32} className="text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
-              Lectio Divina nie je dostupná
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Pre vybraný dátum a jazyk nie je k dispozícii Lectio Divina.
-            </p>
-            <button
-              onClick={fetchLectioData}
-              className="text-white px-6 py-3 rounded-lg transition-all hover:opacity-80 shadow-md"
-              style={{ backgroundColor: '#40467b' }}
-            >
-              Skúsiť znovu
-            </button>
-          </div>
-        )}
+            })()
+          ) : (
+            <>
+              {/* LEFT COLUMN - Date Navigation Only */}
+              <div className="xl:col-span-3">
+                <div className="backdrop-blur-md rounded-2xl shadow-lg border p-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)' }}>
+                  {/* Date Navigation */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-bold" style={{ color: '#40467b' }}>Dátum</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={goToPreviousDay}
+                        className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
+                        style={{ backgroundColor: '#686ea3' }}
+                        title="Predchádzajúci deň"
+                      >
+                        <ChevronLeft size={16} />
+                      </button>
+                      
+                      <div className="flex-1 flex items-center gap-2">
+                        <div className="flex-1 text-center p-2 rounded-lg text-xs font-bold" style={{ 
+                          backgroundColor: 'rgba(64, 70, 123, 0.1)',
+                          color: '#40467b'
+                        }}>
+                          {selectedDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric', year: 'numeric' })}
+                        </div>
+                        
+                        <div className="relative">
+                          <input
+                            type="date"
+                            value={formatDateToLocalString(selectedDate)}
+                            onChange={(e) => {
+                              const [year, month, day] = e.target.value.split('-').map(Number);
+                              const newDate = new Date(year, month - 1, day);
+                              setSelectedDate(newDate);
+                            }}
+                            style={{ position: 'absolute', width: 0, height: 0, opacity: 0, zIndex: -1 }}
+                            id="datePickerInputError"
+                          />
+                          <button
+                            type="button"
+                            className="p-2 rounded-lg transition-all hover:opacity-80 cursor-pointer flex items-center justify-center"
+                            style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                            title="Vybrať dátum"
+                            onClick={() => {
+                              const input = document.getElementById('datePickerInputError') as HTMLInputElement;
+                              if (input) {
+                                if (input.showPicker) {
+                                  input.showPicker();
+                                } else {
+                                  input.click();
+                                }
+                              }
+                            }}
+                          >
+                            <Calendar size={16} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={goToNextDay}
+                        className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
+                        style={{ backgroundColor: '#686ea3' }}
+                        title="Nasledujúci deň"
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* MIDDLE COLUMN - Error Message */}
+              <div className="xl:col-span-6">
+                <div className="backdrop-blur-md rounded-2xl shadow-lg border flex items-center justify-center xl:h-[calc(100vh-120px)]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(64, 70, 123, 0.15)' }}>
+                  <div className="text-center p-12">
+                    <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)' }}>
+                      <BookOpen size={32} style={{ color: '#40467b' }} />
+                    </div>
+                    <h2 className="text-xl font-bold mb-2" style={{ color: '#40467b' }}>
+                      Lectio Divina nie je dostupná
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                      Pre vybraný dátum a jazyk nie je k dispozícii Lectio Divina.
+                    </p>
+                    <button
+                      onClick={fetchLectioData}
+                      className="text-white px-6 py-3 rounded-lg transition-all hover:opacity-80 shadow-md"
+                      style={{ backgroundColor: '#40467b' }}
+                    >
+                      Skúsiť znovu
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN - Empty */}
+              <div className="xl:col-span-3"></div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Audio Player */}
@@ -983,7 +1428,7 @@ export default function LectioPage() {
             isOpen={showErrorModal}
             onClose={() => setShowErrorModal(false)}
             lectioId={lectioData.id}
-            lectioDate={selectedDate.toISOString().split('T')[0]}
+            lectioDate={formatDateToLocalString(selectedDate)}
             stepKey={currentSlideData.key}
             stepName={`${currentSlideData.title} - ${currentSlideData.subtitle}`}
             currentText={currentSlideData.text}

@@ -811,7 +811,7 @@ export default function LectioAdminPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+    <div className="space-y-6">
       {/* Notifikácie */}
       {notification && (
         <Notification
@@ -821,133 +821,49 @@ export default function LectioAdminPage() {
         />
       )}
 
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Hlavička */}
-        <header className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <BookOpen size={24} className="text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  Správa Lectio Divina
-                </h1>
-                <p className="text-gray-600">Duchovné čítanie a rozjímanie</p>
-              </div>
-            </div>
-            
-            {/* Štatistiky */}
-            {detailedStats && (
-              <div className="space-y-4">
-                {/* Hlavné štatistiky */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-emerald-600">{detailedStats.total}</div>
-                    <div className="text-sm text-gray-500">Celkom</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{detailedStats.complete}</div>
-                    <div className="text-sm text-gray-500">Kompletné</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">{detailedStats.completePercentage}%</div>
-                    <div className="text-sm text-gray-500">Dokončené</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{detailedStats.audio}</div>
-                    <div className="text-sm text-gray-500">Audio 🎧</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">
-                      {LANGUAGE_OPTIONS.find(l => l.value === filterLang)?.flag}
-                    </div>
-                    <div className="text-sm text-gray-500">Jazyk</div>
-                  </div>
-                </div>
-                
-                {/* Detailné štatistiky obsahu */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-700 mb-3">Detailný prehľad obsahu</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-cyan-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-cyan-800">{detailedStats.biblia1}</div>
-                      <div className="text-xs text-gray-500">Biblia 1</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-teal-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-teal-800">{detailedStats.biblia2}</div>
-                      <div className="text-xs text-gray-500">Biblia 2</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-lime-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-lime-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-lime-800">{detailedStats.biblia3}</div>
-                      <div className="text-xs text-gray-500">Biblia 3</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-purple-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-purple-800">{detailedStats.lectio}</div>
-                      <div className="text-xs text-gray-500">Lectio</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-green-800 text-xs">👁️</span>
-                      </div>
-                      <div className="font-bold text-green-800">{detailedStats.meditatio}</div>
-                      <div className="text-xs text-gray-500">Meditatio</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-orange-800 text-xs">❤️</span>
-                      </div>
-                      <div className="font-bold text-orange-800">{detailedStats.oratio}</div>
-                      <div className="text-xs text-gray-500">Oratio</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-indigo-800 text-xs">👁️</span>
-                      </div>
-                      <div className="font-bold text-indigo-800">{detailedStats.contemplatio}</div>
-                      <div className="text-xs text-gray-500">Contemplatio</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-pink-800 text-xs">❤️</span>
-                      </div>
-                      <div className="font-bold text-pink-800">{detailedStats.actio}</div>
-                      <div className="text-xs text-gray-500">Actio</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+      {/* Statistics */}
+      {detailedStats && (
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+            <div className="text-sm text-gray-600 mb-1">Celkovo</div>
+            <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.total}</div>
           </div>
-        </header>
-
-        {/* Ovládacie panely */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Výber jazyka */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Globe size={20} className="text-emerald-600" />
-              <h3 className="font-semibold text-gray-800">Jazyk Lectio</h3>
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+            <div className="text-sm text-gray-600 mb-1">Kompletné</div>
+            <div className="text-2xl font-bold" style={{ color: '#10b981' }}>{detailedStats.complete}</div>
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+            <div className="text-sm text-gray-600 mb-1">Dokončené</div>
+            <div className="text-2xl font-bold" style={{ color: '#8b5cf6' }}>{detailedStats.completePercentage}%</div>
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+            <div className="text-sm text-gray-600 mb-1">Audio</div>
+            <div className="text-2xl font-bold" style={{ color: '#3b82f6' }}>{detailedStats.audio} 🎧</div>
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+            <div className="text-sm text-gray-600 mb-1">Jazyk</div>
+            <div className="text-2xl font-bold" style={{ color: '#f59e0b' }}>
+              {LANGUAGE_OPTIONS.find(l => l.value === filterLang)?.flag} {filterLang.toUpperCase()}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-6">
+        {/* Top Row - Language and Actions */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+          {/* Language Filter */}
+          <div className="flex items-center gap-2">
+            <Filter size={20} style={{ color: '#40467b' }} />
             <select
               value={filterLang}
-              onChange={e => { 
-                setFilterLang(e.target.value as any); 
-                setPage(1); 
+              onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
+              className="px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: 'rgba(64, 70, 123, 0.2)',
+                color: '#40467b'
               }}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             >
               {LANGUAGE_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
@@ -957,213 +873,193 @@ export default function LectioAdminPage() {
             </select>
           </div>
 
-          {/* Import/Export */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Download size={20} className="text-green-600" />
-              <h3 className="font-semibold text-gray-800">Import / Export</h3>
-            </div>
-            <div className="flex gap-2">
-              <label className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2">
-                {importing ? <LoadingSpinner size={4} /> : <Upload size={16} />}
-                {importing ? "Importujem..." : "Import"}
-                <input
-                  type="file"
-                  accept=".xlsx"
-                  onChange={handleExcelImport}
-                  className="hidden"
-                  disabled={importing}
-                />
-              </label>
-              <button
-                onClick={handleExportExcel}
-                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center justify-center gap-2"
-              >
-                <Download size={16} />
-                Export
-              </button>
-            </div>
-          </div>
-
-          {/* Akcie */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <PlusCircle size={20} className="text-teal-600" />
-              <h3 className="font-semibold text-gray-800">Akcie</h3>
-            </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => router.push("/admin/lectio/new")}
-                className="w-full bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center justify-center gap-2"
-              >
-                <PlusCircle size={16} />
-                Pridať Lectio
-              </button>
-              <button
-                onClick={handleBulkSyncFromSources}
-                disabled={syncingId !== null}
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {syncingId !== null ? <LoadingSpinner size={4} /> : <RefreshCw size={16} />}
-                Sync všetko z lectio-sources
-              </button>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            <label className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition cursor-pointer font-medium" style={{ backgroundColor: '#40467b' }}>
+              {importing ? <LoadingSpinner size={4} /> : <Upload size={18} />}
+              <span>Import</span>
+              <input
+                type="file"
+                accept=".xlsx"
+                onChange={handleExcelImport}
+                className="hidden"
+                disabled={importing}
+              />
+            </label>
+            
+            <button
+              onClick={handleExportExcel}
+              className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition font-medium"
+              style={{ backgroundColor: '#f59e0b' }}
+              type="button"
+            >
+              <Download size={18} />
+              <span>Export</span>
+            </button>
+            
+            <button
+              onClick={handleBulkSyncFromSources}
+              disabled={syncingId !== null}
+              className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-medium disabled:opacity-50"
+              style={{ backgroundColor: '#3b82f6' }}
+              type="button"
+            >
+              {syncingId !== null ? <LoadingSpinner size={4} /> : <RefreshCw size={18} />}
+              Sync všetko
+            </button>
+            
+            <button
+              onClick={() => router.push("/admin/lectio/new")}
+              className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-medium"
+              style={{ backgroundColor: '#10b981' }}
+              type="button"
+            >
+              <PlusCircle size={18} />
+              Pridať Lectio
+            </button>
           </div>
         </div>
 
-        {/* Vyhľadávanie a filtre */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Search size={20} className="text-gray-600" />
-              <h3 className="font-semibold text-gray-800">Vyhľadávanie a filtre</h3>
-              {hasActiveFilters && (
-                <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">
-                  Aktívne filtre
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition"
-            >
-              <Filter size={16} />
-              {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
+        {/* Global Search */}
+        <div className="flex items-center gap-4">
+          <div className="flex-1 relative">
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={globalSearch}
+              onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
+              className="w-full pl-10 pr-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#40467b]"
+              style={{ borderColor: 'rgba(64, 70, 123, 0.2)' }}
+              placeholder="Hľadať v názvoch, súradniciach a textoch..."
+            />
           </div>
+          
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
+            style={{ 
+              backgroundColor: showFilters || hasActiveFilters ? 'rgba(64, 70, 123, 0.1)' : 'rgba(64, 70, 123, 0.05)',
+              color: '#40467b'
+            }}
+            type="button"
+          >
+            <Filter size={18} />
+            Filtre {hasActiveFilters && `(aktívne)`}
+          </button>
+        </div>
 
-          {/* Globálne vyhľadávanie */}
-          <div className="mb-4">
-            <div className="relative">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={globalSearch}
-                onChange={e => { 
-                  setGlobalSearch(e.target.value); 
-                  setPage(1); 
-                }}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-                placeholder="Vyhľadať v názvoch, súradniciach a textoch..."
-              />
-            </div>
-          </div>
-
-          {/* Detailné filtre */}
-          {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Advanced Filters */}
+        {showFilters && (
+          <div className="border-t pt-4 mt-4" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FileText size={16} className="inline mr-1" />
-                  Nadpis
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  📝 Nadpis
                 </label>
                 <input
                   type="text"
                   value={filter.hlava}
-                  onChange={e => { 
-                    setFilter(f => ({ ...f, hlava: e.target.value })); 
-                    setPage(1); 
-                  }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  onChange={e => { setFilter(f => ({ ...f, hlava: e.target.value })); setPage(1); }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b]"
                   placeholder="Filtrovať nadpisy..."
                   disabled={!!globalSearch}
                 />
               </div>
+              
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Scroll size={16} className="inline mr-1" />
-                  Súradnice Písma
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  📜 Súradnice Písma
                 </label>
                 <input
                   type="text"
                   value={filter.suradnice_pismo}
-                  onChange={e => { 
-                    setFilter(f => ({ ...f, suradnice_pismo: e.target.value })); 
-                    setPage(1); 
-                  }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  onChange={e => { setFilter(f => ({ ...f, suradnice_pismo: e.target.value })); setPage(1); }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b]"
                   placeholder="Mt 5,1-12..."
                   disabled={!!globalSearch}
                 />
               </div>
+              
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum od</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  📅 Dátum od
+                </label>
                 <input
                   type="date"
                   value={filter.datumFrom}
-                  onChange={e => { 
-                    setFilter(f => ({ ...f, datumFrom: e.target.value })); 
-                    setPage(1); 
-                  }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  onChange={e => { setFilter(f => ({ ...f, datumFrom: e.target.value })); setPage(1); }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b]"
                   disabled={!!globalSearch}
                 />
               </div>
+              
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum do</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  📅 Dátum do
+                </label>
                 <input
                   type="date"
                   value={filter.datumTo}
-                  onChange={e => { 
-                    setFilter(f => ({ ...f, datumTo: e.target.value })); 
-                    setPage(1); 
-                  }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                  onChange={e => { setFilter(f => ({ ...f, datumTo: e.target.value })); setPage(1); }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b]"
                   disabled={!!globalSearch}
                 />
               </div>
             </div>
-          )}
+            
+            <button
+              onClick={clearFilters}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
+              style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+              type="button"
+            >
+              <X size={16} />
+              Vymazať filtre
+            </button>
+          </div>
+        )}
+      </div>
 
-          {/* Vyčistiť filtre */}
-          {hasActiveFilters && (
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-              >
-                <X size={16} />
-                Vyčistiť filtre
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Tabuľka */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} />
-                      Dátum
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <FileText size={16} />
-                      Nadpis
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Scroll size={16} />
-                      Súradnice
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Globe size={16} />
-                      Jazyk
-                    </div>
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Obsah</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Akcie</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
+      {/* Table */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="text-white" style={{ backgroundColor: '#40467b' }}>
+                <th className="px-6 py-4 text-left font-semibold">
+                  <div className="flex items-center">
+                    <span className="mr-2">📅</span>
+                    Dátum
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-left font-semibold">
+                  <div className="flex items-center">
+                    <span className="mr-2">📝</span>
+                    Nadpis
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-left font-semibold">
+                  <div className="flex items-center">
+                    <span className="mr-2">📜</span>
+                    Súradnice
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-left font-semibold">
+                  <div className="flex items-center">
+                    <span className="mr-2">🌍</span>
+                    Jazyk
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-left font-semibold">Obsah</th>
+                <th className="px-6 py-4 text-center font-semibold">
+                  <div className="flex items-center justify-center">
+                    <span className="mr-2">⚙️</span>
+                    Akcie
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center">
@@ -1324,188 +1220,37 @@ export default function LectioAdminPage() {
           </div>
         </div>
 
-        {/* Stránkovanie */}
-        {totalPages > 1 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-            <div className="text-center text-sm text-gray-600 mb-4">
-              Zobrazujem <span className="font-bold">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
-              <span className="font-bold">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
-              <span className="font-bold">{total}</span> Lectio Divina
+      {/* Pagination */}
+      {!loading && lectios.length > 0 && Math.ceil(total / PAGE_SIZE) > 1 && (
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Zobrazené {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, total)} z {total} záznamov
             </div>
-            
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
+                style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
               >
-                <ArrowLeft size={16} />
-                <span className="hidden sm:inline">Predchádzajúca</span>
+                ← Predchádzajúca
               </button>
-              
-              <div className="hidden sm:flex items-center gap-2">
-                {(() => {
-                  const maxVisible = 5;
-                  
-                  if (totalPages <= maxVisible) {
-                    return Array.from({ length: totalPages }, (_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <button
-                          key={`page-${pageNum}`}
-                          onClick={() => setPage(pageNum)}
-                          className={`w-10 h-10 rounded-lg transition ${
-                            page === pageNum
-                              ? "bg-emerald-600 text-white"
-                              : "border border-gray-300 hover:bg-gray-50"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    });
-                  }
-                  
-                  const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
-                  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
-                  
-                  const pages = [];
-                  
-                  if (startPage > 1) {
-                    pages.push(
-                      <button
-                        key="page-1"
-                        onClick={() => setPage(1)}
-                        className="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
-                      >
-                        1
-                      </button>
-                    );
-                    if (startPage > 2) {
-                      pages.push(
-                        <span key="dots-start" className="px-2 text-gray-400">
-                          ...
-                        </span>
-                      );
-                    }
-                  }
-                  
-                  for (let i = startPage; i <= endPage; i++) {
-                    pages.push(
-                      <button
-                        key={`page-${i}`}
-                        onClick={() => setPage(i)}
-                        className={`w-10 h-10 rounded-lg transition ${
-                          page === i
-                            ? "bg-emerald-600 text-white"
-                            : "border border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {i}
-                      </button>
-                    );
-                  }
-                  
-                  if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                      pages.push(
-                        <span key="dots-end" className="px-2 text-gray-400">
-                          ...
-                        </span>
-                      );
-                    }
-                    pages.push(
-                      <button
-                        key={`page-${totalPages}`}
-                        onClick={() => setPage(totalPages)}
-                        className="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
-                      >
-                        {totalPages}
-                      </button>
-                    );
-                  }
-                  
-                  return pages;
-                })()}
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 whitespace-nowrap">Stránka:</span>
-                <select
-                  value={page}
-                  onChange={(e) => setPage(Number(e.target.value))}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition min-w-[80px]"
-                >
-                  {Array.from({ length: Math.ceil(total / PAGE_SIZE) }, (_, i) => {
-                    const pageNum = i + 1;
-                    return (
-                      <option key={pageNum} value={pageNum}>
-                        {pageNum} / {Math.ceil(total / PAGE_SIZE)}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-              
-              <div className="hidden lg:flex items-center gap-2">
-                <span className="text-sm text-gray-600 whitespace-nowrap">Ísť na:</span>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min="1"
-                    max={Math.ceil(total / PAGE_SIZE)}
-                    placeholder={String(page)}
-                    className="w-16 border border-gray-300 rounded-lg px-2 py-2 text-sm text-center focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const newPage = Number((e.target as HTMLInputElement).value);
-                        const maxPages = Math.ceil(total / PAGE_SIZE);
-                        if (newPage >= 1 && newPage <= maxPages) {
-                          setPage(newPage);
-                          (e.target as HTMLInputElement).value = '';
-                          (e.target as HTMLInputElement).blur();
-                        }
-                      }
-                    }}
-                    onBlur={(e) => {
-                      const newPage = Number(e.target.value);
-                      const maxPages = Math.ceil(total / PAGE_SIZE);
-                      if (newPage >= 1 && newPage <= maxPages) {
-                        setPage(newPage);
-                      }
-                      e.target.value = '';
-                    }}
-                  />
-                </div>
-              </div>
-              
+              <span className="px-4 py-2 text-sm font-medium" style={{ color: '#40467b' }}>
+                Stránka {page} z {Math.ceil(total / PAGE_SIZE)}
+              </span>
               <button
                 onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
                 disabled={page * PAGE_SIZE >= total}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
+                style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
               >
-                <span className="hidden sm:inline">Ďalšia</span>
-                <ArrowRight size={16} />
+                Ďalšia →
               </button>
             </div>
-            
-            <div className="sm:hidden mt-4 pt-4 border-t border-gray-200">
-              <div className="text-center text-sm text-gray-500">
-                {Math.ceil(total / PAGE_SIZE) > 10 && (
-                  <p className="mb-2">
-                    Tip: Použite dropdown "Stránka" pre rýchly prechod na konkrétnu stránku
-                  </p>
-                )}
-                <div className="flex justify-center gap-4">
-                  <span>Stránka {page} z {Math.ceil(total / PAGE_SIZE)}</span>
-                  <span>•</span>
-                  <span>{Math.ceil(total / PAGE_SIZE)} celkom</span>
-                </div>
-              </div>
-            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Progress Bar */}
       <ProgressBar 

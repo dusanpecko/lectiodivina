@@ -295,8 +295,8 @@ export default function ContactPage() {
                   <MailIcon />
                   <div>
                     <p className="font-medium">{t.contact.email}</p>
-                    <a href="mailto:mojkrok@dcza.sk" className="text-white/90 hover:text-white">
-                      mojkrok@dcza.sk
+                    <a href="mailto:info@lectio.one" className="text-white/90 hover:text-white">
+                      info@lectio.one
                     </a>
                   </div>
                 </div>

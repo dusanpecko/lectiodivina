@@ -138,8 +138,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // CRITICAL: Show consistent static layout until mounted (prevents hydration mismatch)
   if (!mounted) {
     return (
-      <div className="h-screen bg-white overflow-hidden">
-        {/* Background pattern - removed for clean white background */}
+      <div className="h-screen overflow-hidden" style={{ backgroundColor: '#f8f9fa' }}>
+        {/* Background pattern - removed for clean background */}
         
         <div className="relative z-10 h-screen flex flex-col">
           <div className="fixed top-0 left-0 right-0 z-50">
@@ -169,10 +169,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // After mount - fully interactive version
   return (
-    <div className="min-h-screen bg-white">
-      {/* Background pattern - removed for clean white background */}
-      
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+      {/* Background pattern - removed for clean background */}      <div className="relative z-10 min-h-screen flex flex-col">
         {/* Top Navigation - Fixed */}
         <div className="fixed top-0 left-0 right-0 z-50">
           <NavBar />
