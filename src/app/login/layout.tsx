@@ -1,7 +1,11 @@
 "use client";
 import NavBar from "../components/NavBar";
+import { useLanguage } from "../components/LanguageProvider";
+import { loginTranslations } from "./translations";
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
+  const { lang } = useLanguage();
+  const t = loginTranslations[lang];
   return (
     <div 
       className="min-h-screen relative"
@@ -25,10 +29,10 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
           {/* Left side - Welcome message */}
           <div className="hidden lg:block space-y-6 text-white">
             <h1 className="text-5xl font-bold leading-tight">
-              Vitajte späť v <span className="text-white/90">Lectio Divina</span>
+              {t.welcomeBackTo} <span className="text-white/90">{t.lectioDivina}</span>
             </h1>
             <p className="text-xl text-white/80 leading-relaxed">
-              Pokračujte vo svojej duchovnej ceste s dennými čítaniami, modlitbami a meditáciami.
+              {t.continueJourney}
             </p>
             <div className="space-y-4 pt-8">
               <div className="flex items-start space-x-4">
@@ -36,8 +40,8 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   <span className="text-2xl">📖</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-1">Denné čítania</h3>
-                  <p className="text-white/70">Prístup k liturgickým čítaniam každý deň</p>
+                  <h3 className="font-semibold text-lg mb-1">{t.dailyReadingsTitle}</h3>
+                  <p className="text-white/70">{t.dailyReadingsDesc}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
@@ -45,8 +49,8 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   <span className="text-2xl">🙏</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-1">Osobné poznámky</h3>
-                  <p className="text-white/70">Zaznamenávajte si svoje duchovné úvahy</p>
+                  <h3 className="font-semibold text-lg mb-1">{t.personalNotesTitle}</h3>
+                  <p className="text-white/70">{t.personalNotesDesc}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
@@ -54,8 +58,8 @@ export default function LoginLayout({ children }: { children: React.ReactNode })
                   <span className="text-2xl">✨</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-1">Sprievodca modlitbou</h3>
-                  <p className="text-white/70">Kroky Lectio Divina a ruženec</p>
+                  <h3 className="font-semibold text-lg mb-1">{t.prayerGuideTitle}</h3>
+                  <p className="text-white/70">{t.prayerGuideDesc}</p>
                 </div>
               </div>
             </div>

@@ -12,6 +12,7 @@ import {
   isValidDecadeNumber,
   getCategoryInfo
 } from '@/app/lib/rosary-utils';
+import { rosaryTranslations } from '../../translations';
 import { 
   RosaryCategory, 
   LectioDivinaRuzenec
@@ -31,7 +32,10 @@ import {
   Pause,
   SkipForward,
   X,
-  RefreshCw
+  RefreshCw,
+  VolumeX,
+  Volume,
+  Volume2
 } from 'lucide-react';
 
 interface Slide {
@@ -42,6 +46,7 @@ interface Slide {
   icon: React.ReactNode;
   color: string;
   step: string;
+  audioUrl?: string;
 }
 
 export default function DecadeDetailPage() {
@@ -49,6 +54,7 @@ export default function DecadeDetailPage() {
   const router = useRouter();
   const { lang } = useLanguage();
   const { supabase } = useSupabase();
+  const t = rosaryTranslations[lang as keyof typeof rosaryTranslations] ?? rosaryTranslations.sk;
   
   const category = params.category as string;
   const decadeNumber = parseInt(params.decade as string);
@@ -71,6 +77,7 @@ export default function DecadeDetailPage() {
   const [currentSection, setCurrentSection] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [audioMode, setAudioMode] = useState<'none' | 'short' | 'long'>('short');
 
   const categoryInfo = getCategoryInfo(category as RosaryCategory);
 
@@ -85,7 +92,27 @@ export default function DecadeDetailPage() {
       try {
         const { data, error } = await supabase
           .from('lectio_divina_ruzenec')
-          .select('*')
+          .select(`
+            *,
+            uvod,
+            uvod_audio,
+            ilustracny_obrazok,
+            uvodne_modlitby,
+            uvodne_modlitby_audio,
+            lectio_text,
+            lectio_audio,
+            komentar,
+            komentar_audio,
+            meditatio_text,
+            meditatio_audio,
+            oratio_html,
+            oratio_audio,
+            contemplatio_text,
+            contemplatio_audio,
+            actio_text,
+            actio_audio,
+            audio_nahravka
+          `)
           .eq('kategoria', category)
           .eq('lang', lang)
           .eq('publikovane', true)
@@ -98,13 +125,13 @@ export default function DecadeDetailPage() {
         const targetDecade = data[decadeNumber - 1];
         
         if (!targetDecade) {
-          throw new Error('Desiatka nenájdený');
+          throw new Error(t.decadeNotFound);
         }
 
         setDecade(targetDecade);
       } catch (err) {
         console.error('Error fetching decade:', err);
-        setError(err instanceof Error ? err.message : 'Neznáma chyba');
+        setError(err instanceof Error ? err.message : t.unknownError);
       } finally {
         setLoading(false);
       }
@@ -113,42 +140,229 @@ export default function DecadeDetailPage() {
     fetchDecade();
   }, [supabase, category, decadeNumber, lang]);
 
-  // Audio handling
+  // Helper function to get text before dash
+  const getTextBeforeDash = (text: string) => {
+    const dashIndex = text.indexOf('–');
+    return dashIndex !== -1 ? text.substring(0, dashIndex).trim() : text;
+  };
+
+  // Build slides array with useMemo
+  const slides = React.useMemo<Slide[]>(() => {
+    if (!decade) return [];
+    
+    return [
+      // 0. Úvodné modlitby
+      decade.uvodne_modlitby && {
+        key: 'prayers',
+        title: t.steps.prayers.title,
+        subtitle: t.steps.prayers.subtitle,
+        text: decade.uvodne_modlitby,
+        icon: <Heart size={24} />,
+        color: '#2d3250',
+        step: t.steps.prayers.step,
+        audioUrl: decade.uvodne_modlitby_audio
+      },
+      // 1. Úvod do tajomstva
+      {
+        key: 'intro',
+        title: getTextBeforeDash(decade.ruzenec),
+        subtitle: t.steps.intro.title,
+        text: decade.uvod || decade.biblicky_text,
+        icon: <Quote size={24} />,
+        color: '#40467b',
+        step: t.steps.intro.step,
+        audioUrl: decade.uvod_audio
+      },
+      // 2. Lectio - Čítanie
+      decade.lectio_text && {
+        key: 'lectio',
+        title: t.steps.lectio.title,
+        subtitle: t.steps.lectio.subtitle,
+        text: decade.lectio_text,
+        icon: <BookOpen size={24} />,
+        color: '#545a94',
+        step: t.steps.lectio.step,
+        audioUrl: decade.lectio_audio
+      },
+      // 3. Komentár
+      decade.komentar && {
+        key: 'commentary',
+        title: t.steps.commentary.title,
+        subtitle: t.steps.commentary.subtitle,
+        text: decade.komentar,
+        icon: <MessageCircle size={24} />,
+        color: '#606697',
+        step: t.steps.commentary.step,
+        audioUrl: decade.komentar_audio
+      },
+      // 4. Meditatio - Rozjímanie
+      decade.meditatio_text && {
+        key: 'meditatio',
+        title: t.steps.meditatio.title,
+        subtitle: t.steps.meditatio.subtitle,
+        text: decade.meditatio_text,
+        icon: <Eye size={24} />,
+        color: '#686ea3',
+        step: t.steps.meditatio.step,
+        audioUrl: decade.meditatio_audio
+      },
+      // 5. Oratio - Modlitba
+      decade.oratio_html && {
+        key: 'oratio',
+        title: t.steps.oratio.title,
+        subtitle: t.steps.oratio.subtitle,
+        text: decade.oratio_html,
+        icon: <Heart size={24} />,
+        color: '#7c82b2',
+        step: t.steps.oratio.step,
+        audioUrl: decade.oratio_audio
+      },
+      // 6. Contemplatio - Kontemplácia
+      decade.contemplatio_text && {
+        key: 'contemplatio',
+        title: t.steps.contemplatio.title,
+        subtitle: t.steps.contemplatio.subtitle,
+        text: decade.contemplatio_text,
+        icon: <Calendar size={24} />,
+        color: '#9096c1',
+        step: t.steps.contemplatio.step,
+        audioUrl: decade.contemplatio_audio
+      },
+      // 7. Actio - Konanie
+      decade.actio_text && {
+        key: 'actio',
+        title: t.steps.actio.title,
+        subtitle: t.steps.actio.subtitle,
+        text: decade.actio_text,
+        icon: <PlayIcon size={24} />,
+        color: '#a4aad0',
+        step: t.steps.actio.step,
+        audioUrl: decade.actio_audio
+      }
+    ].filter(Boolean) as Slide[];
+  }, [decade, t]);
+
+  // Dynamically map audio keys to slide indices (since some slides may not exist)
+  const audioKeyToSlideMap = React.useMemo(() => {
+    const map: { [key: string]: number } = {};
+    slides.forEach((slide, index) => {
+      map[slide.key] = index;
+    });
+    return map;
+  }, [slides]);
+
+  // Audio handling with auto-playlist and interludes
   useEffect(() => {
-    if (currentAudio) {
-      const updateTime = () => {
-        setCurrentTime(currentAudio.currentTime);
-        setDuration(currentAudio.duration);
-      };
+    if (!currentAudio) return;
 
-      const handleEnded = () => {
-        setIsPlaying(false);
-        setCurrentSection(null);
-      };
+    const updateTime = () => {
+      setCurrentTime(currentAudio.currentTime);
+      setDuration(currentAudio.duration);
+    };
 
-      currentAudio.addEventListener('timeupdate', updateTime);
-      currentAudio.addEventListener('ended', handleEnded);
-      currentAudio.addEventListener('loadedmetadata', updateTime);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      
+      // Skip auto-play for interlude (it handles its own progression)
+      if (currentSection === 'interlude') {
+        return;
+      }
+      
+      // Auto-play next section (like in lectio)
+      if (currentSection) {
+        // Get available audio sections
+        const availableAudios = slides.filter(slide => slide.audioUrl);
+        const currentIndex = availableAudios.findIndex(slide => slide.key === currentSection);
+        
+        if (currentIndex !== -1 && currentIndex < availableAudios.length - 1) {
+          const nextSlide = availableAudios[currentIndex + 1];
+          
+          // Check if we need an interlude between sections
+          const needsInterlude = audioMode !== 'none';
+          
+          if (needsInterlude) {
+            let interludeUrl = '';
+            
+            if (audioMode === 'short') {
+              // Short interlude - silent pause or short music
+              // audio_null.mp3 pre všetky okrem contemplatio
+              // Pre contemplatio použij lectio_full.mp3
+              if (currentSection === 'contemplatio') {
+                interludeUrl = 'https://unnijykbupxguogrkolj.supabase.co/storage/v1/object/public/audio-files/lectio/lectio_full.mp3';
+              } else {
+                interludeUrl = 'https://unnijykbupxguogrkolj.supabase.co/storage/v1/object/public/audio-files/lectio/audio_null.mp3';
+              }
+            } else if (audioMode === 'long') {
+              // Long interlude - full music - vždy lectio_full.mp3
+              interludeUrl = 'https://unnijykbupxguogrkolj.supabase.co/storage/v1/object/public/audio-files/lectio/lectio_full.mp3';
+            }
+            
+            if (interludeUrl) {
+              const interludeAudio = new Audio(interludeUrl);
+              
+              // Set up the ended listener for interlude BEFORE playing
+              interludeAudio.addEventListener('ended', () => {
+                // After interlude, play next section
+                playAudio(nextSlide.audioUrl!, nextSlide.key);
+                
+                // Move to next slide
+                const nextSlideIndex = audioKeyToSlideMap[nextSlide.key];
+                if (nextSlideIndex !== undefined) {
+                  setCurrentSlide(nextSlideIndex);
+                }
+              });
+              
+              interludeAudio.play().catch(err => console.error('Interlude play error:', err));
+              setCurrentAudio(interludeAudio);
+              setCurrentSection('interlude');
+              setIsPlaying(true);
+              
+              return;
+            }
+          }
+          
+          // No interlude - play next directly
+          playAudio(nextSlide.audioUrl!, nextSlide.key);
+          
+          // Move to next slide
+          const nextSlideIndex = audioKeyToSlideMap[nextSlide.key];
+          if (nextSlideIndex !== undefined) {
+            setCurrentSlide(nextSlideIndex);
+          }
+        } else {
+          // Last section finished
+          setCurrentSection(null);
+        }
+      }
+    };
 
-      return () => {
-        currentAudio.removeEventListener('timeupdate', updateTime);
-        currentAudio.removeEventListener('ended', handleEnded);
-        currentAudio.removeEventListener('loadedmetadata', updateTime);
-      };
-    }
-  }, [currentAudio]);
+    currentAudio.addEventListener('timeupdate', updateTime);
+    currentAudio.addEventListener('ended', handleEnded);
+    currentAudio.addEventListener('loadedmetadata', updateTime);
+
+    return () => {
+      currentAudio.removeEventListener('timeupdate', updateTime);
+      currentAudio.removeEventListener('ended', handleEnded);
+      currentAudio.removeEventListener('loadedmetadata', updateTime);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAudio, currentSection, audioMode, slides, audioKeyToSlideMap]);
 
   const playAudio = useCallback((audioUrl: string, section: string) => {
-    if (currentAudio) {
-      currentAudio.pause();
-    }
+    // Stop current audio if playing
+    setCurrentAudio(prevAudio => {
+      if (prevAudio) {
+        prevAudio.pause();
+      }
+      return prevAudio;
+    });
 
     const audio = new Audio(audioUrl);
-    audio.play();
+    audio.play().catch(err => console.error('Audio play error:', err));
     setCurrentAudio(audio);
     setIsPlaying(true);
     setCurrentSection(section);
-  }, [currentAudio]);
+  }, []);
 
   const pauseAudio = useCallback(() => {
     if (currentAudio) {
@@ -165,6 +379,48 @@ export default function DecadeDetailPage() {
       setCurrentSection(null);
     }
   }, [currentAudio]);
+
+  const skipToNext = useCallback(() => {
+    if (!currentSection || currentSection === 'interlude') return;
+    
+    // Stop current audio
+    if (currentAudio) {
+      currentAudio.pause();
+    }
+    
+    // Find next audio
+    const availableAudios = slides.filter(slide => slide.audioUrl);
+    const currentIndex = availableAudios.findIndex(slide => slide.key === currentSection);
+    
+    if (currentIndex !== -1 && currentIndex < availableAudios.length - 1) {
+      const nextSlide = availableAudios[currentIndex + 1];
+      
+      // Play next audio immediately (bez interlude)
+      playAudio(nextSlide.audioUrl!, nextSlide.key);
+      
+      // Move to next slide
+      const nextSlideIndex = audioKeyToSlideMap[nextSlide.key];
+      if (nextSlideIndex !== undefined) {
+        setCurrentSlide(nextSlideIndex);
+      }
+    } else {
+      // Was last section - stop
+      stopAudio();
+    }
+  }, [currentAudio, currentSection, slides, audioKeyToSlideMap, playAudio, stopAudio]);
+
+  const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!currentAudio || !duration) return;
+    
+    const progressBar = e.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const newTime = percentage * duration;
+    
+    currentAudio.currentTime = newTime;
+    setCurrentTime(newTime);
+  }, [currentAudio, duration]);
 
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return '0:00';
@@ -216,9 +472,9 @@ export default function DecadeDetailPage() {
             }}
           />
           <h2 className="text-xl font-bold mb-2" style={{ color: '#40467b' }}>
-            Načítavam tajomstvo...
+            {t.loadingMystery}
           </h2>
-          <p className="text-gray-600">Pripravujem duchovnú cestu pre vás</p>
+          <p className="text-gray-600">{t.preparingPath}</p>
         </div>
       </div>
     );
@@ -231,80 +487,22 @@ export default function DecadeDetailPage() {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center max-w-md w-full">
           <div className="text-6xl mb-4">😔</div>
           <h2 className="text-xl font-bold mb-2" style={{ color: '#40467b' }}>
-            Tajomstvo nenájdené
+            {t.mysteryNotFound}
           </h2>
           <p className="text-gray-600 mb-6">
-            {error || 'Požadované tajomstvo ruženec sa nenašlo.'}
+            {error || t.mysteryNotFoundDesc}
           </p>
           <button
             onClick={() => router.push('/rosary')}
             className="px-6 py-3 text-white rounded-lg transition-all hover:opacity-80 shadow-md"
             style={{ backgroundColor: '#40467b' }}
           >
-            Späť na kategórie
+            {t.backToCategories}
           </button>
         </div>
       </div>
     );
   }
-
-  // Build slides array
-  const slides: Slide[] = [
-    {
-      key: 'intro',
-      title: decade.ruzenec,
-      subtitle: 'Úvod do tajomstva',
-      text: decade.uvod || decade.biblicky_text,
-      icon: <Quote size={24} />,
-      color: '#40467b',
-      step: '0/5'
-    },
-    decade.lectio_text && {
-      key: 'lectio',
-      title: 'LECTIO',
-      subtitle: 'Čítanie',
-      text: decade.lectio_text,
-      icon: <BookOpen size={24} />,
-      color: '#545a94',
-      step: '1/5'
-    },
-    decade.meditatio_text && {
-      key: 'meditatio',
-      title: 'MEDITATIO',
-      subtitle: 'Rozjímanie',
-      text: decade.meditatio_text,
-      icon: <Eye size={24} />,
-      color: '#686ea3',
-      step: '2/5'
-    },
-    decade.oratio_html && {
-      key: 'oratio',
-      title: 'ORATIO',
-      subtitle: 'Modlitba',
-      text: decade.oratio_html,
-      icon: <Heart size={24} />,
-      color: '#7c82b2',
-      step: '3/5'
-    },
-    decade.contemplatio_text && {
-      key: 'contemplatio',
-      title: 'CONTEMPLATIO',
-      subtitle: 'Kontemplácia',
-      text: decade.contemplatio_text,
-      icon: <MessageCircle size={24} />,
-      color: '#9096c1',
-      step: '4/5'
-    },
-    decade.actio_text && {
-      key: 'actio',
-      title: 'ACTIO',
-      subtitle: 'Konanie',
-      text: decade.actio_text,
-      icon: <PlayIcon size={24} />,
-      color: '#a4aad0',
-      step: '5/5'
-    }
-  ].filter(Boolean) as Slide[];
 
   const currentSlideData = slides[currentSlide];
 
@@ -345,8 +543,11 @@ export default function DecadeDetailPage() {
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
                 <div className="flex items-center gap-3 mb-2">
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg"
-                    style={{ backgroundColor: categoryInfo.color }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg"
+                    style={{ 
+                      backgroundColor: categoryInfo.color,
+                      color: categoryInfo.textColor
+                    }}
                   >
                     {decadeNumber}
                   </div>
@@ -355,7 +556,7 @@ export default function DecadeDetailPage() {
                       {decade.ruzenec}
                     </h1>
                     <p className="text-xs text-gray-600 mt-1">
-                      {decadeNumber}. tajomstvo
+                      {decadeNumber}. {t.mysteryNumber}
                     </p>
                   </div>
                 </div>
@@ -364,7 +565,7 @@ export default function DecadeDetailPage() {
               {/* Navigation between decades */}
               <div className="mb-6">
                 <h3 className="font-semibold text-sm mb-3" style={{ color: '#40467b' }}>
-                  Navigácia tajomstiev
+                  {t.mysteryNavigation}
                 </h3>
                 <div className="flex items-center justify-between gap-2">
                   <button
@@ -374,7 +575,7 @@ export default function DecadeDetailPage() {
                     style={{ color: '#40467b' }}
                   >
                     <ChevronLeft size={16} />
-                    Predchádzajúce
+                    {t.previous}
                   </button>
                   <div className="text-sm font-bold" style={{ color: '#40467b' }}>
                     {decadeNumber}/5
@@ -385,7 +586,7 @@ export default function DecadeDetailPage() {
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100"
                     style={{ color: '#40467b' }}
                   >
-                    Nasledujúce
+                    {t.next}
                     <ChevronRight size={16} />
                   </button>
                 </div>
@@ -397,14 +598,128 @@ export default function DecadeDetailPage() {
                   <div className="flex items-center gap-2 mb-3">
                     <Headphones size={18} style={{ color: '#40467b' }} />
                     <h3 className="font-semibold text-sm" style={{ color: '#40467b' }}>
-                      Audio nahrávka
+                      {t.audioRecording}
                     </h3>
+                  </div>
+
+                  {/* Audio Mode Selector */}
+                  <div className="mb-3 p-3 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.05)' }}>
+                    <p className="text-xs font-bold mb-3" style={{ color: '#40467b' }}>
+                      {t.audioMode.title}
+                    </p>
+                    
+                    <div className="flex items-center justify-around gap-2">
+                      {/* Bez pridaného audia */}
+                      <div className="relative group">
+                        <label className={`block ${isPlaying ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                          <input
+                            type="radio"
+                            name="audioMode"
+                            value="none"
+                            checked={audioMode === 'none'}
+                            onChange={() => setAudioMode('none')}
+                            disabled={isPlaying}
+                            className="sr-only"
+                          />
+                          <div 
+                            className="p-2 rounded-lg transition-all"
+                            style={{
+                              backgroundColor: audioMode === 'none' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(64, 70, 123, 0.05)',
+                              border: audioMode === 'none' ? '2px solid #ef4444' : '2px solid transparent',
+                              opacity: isPlaying ? 0.5 : 1,
+                              cursor: isPlaying ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            <VolumeX 
+                              size={20} 
+                              style={{ 
+                                color: audioMode === 'none' ? '#ef4444' : '#9ca3af'
+                              }} 
+                            />
+                          </div>
+                        </label>
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                          {t.audioMode.none.desc}
+                        </div>
+                      </div>
+
+                      {/* Meditačné pozadie - krátke */}
+                      <div className="relative group">
+                        <label className={`block ${isPlaying ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                          <input
+                            type="radio"
+                            name="audioMode"
+                            value="short"
+                            checked={audioMode === 'short'}
+                            onChange={() => setAudioMode('short')}
+                            disabled={isPlaying}
+                            className="sr-only"
+                          />
+                          <div 
+                            className="p-2 rounded-lg transition-all"
+                            style={{
+                              backgroundColor: audioMode === 'short' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(64, 70, 123, 0.05)',
+                              border: audioMode === 'short' ? '2px solid #3b82f6' : '2px solid transparent',
+                              opacity: isPlaying ? 0.5 : 1,
+                              cursor: isPlaying ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            <Volume 
+                              size={20} 
+                              style={{ 
+                                color: audioMode === 'short' ? '#3b82f6' : '#9ca3af'
+                              }} 
+                            />
+                          </div>
+                        </label>
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                          {t.audioMode.short.desc}
+                        </div>
+                      </div>
+
+                      {/* Meditačné pozadie - dlhšie */}
+                      <div className="relative group">
+                        <label className={`block ${isPlaying ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                          <input
+                            type="radio"
+                            name="audioMode"
+                            value="long"
+                            checked={audioMode === 'long'}
+                            onChange={() => setAudioMode('long')}
+                            disabled={isPlaying}
+                            className="sr-only"
+                          />
+                          <div 
+                            className="p-2 rounded-lg transition-all"
+                            style={{
+                              backgroundColor: audioMode === 'long' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(64, 70, 123, 0.05)',
+                              border: audioMode === 'long' ? '2px solid #22c55e' : '2px solid transparent',
+                              opacity: isPlaying ? 0.5 : 1,
+                              cursor: isPlaying ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            <Volume2 
+                              size={20} 
+                              style={{ 
+                                color: audioMode === 'long' ? '#22c55e' : '#9ca3af'
+                              }} 
+                            />
+                          </div>
+                        </label>
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                          {t.audioMode.long.desc}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {currentSection && (
                     <div className="bg-blue-50 rounded-lg p-3 mb-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-blue-900">Práve hrá</span>
+                        <span className="text-xs font-medium text-blue-900">{t.nowPlaying}</span>
                         <button
                           onClick={stopAudio}
                           className="p-1 rounded hover:bg-blue-100 transition-colors"
@@ -422,9 +737,10 @@ export default function DecadeDetailPage() {
                           {isPlaying ? <Pause size={20} /> : <PlayIcon size={20} />}
                         </button>
                         <button
-                          onClick={stopAudio}
+                          onClick={skipToNext}
                           className="p-2 rounded-lg transition-all hover:bg-blue-100"
                           style={{ color: '#40467b' }}
+                          title={t.next}
                         >
                           <SkipForward size={18} />
                         </button>
@@ -432,7 +748,14 @@ export default function DecadeDetailPage() {
 
                       {/* Progress bar */}
                       <div className="space-y-1">
-                        <div className="h-1 bg-blue-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-1 bg-blue-200 rounded-full overflow-hidden cursor-pointer hover:h-1.5 transition-all"
+                          onClick={handleProgressClick}
+                          role="progressbar"
+                          aria-valuenow={currentTime}
+                          aria-valuemin={0}
+                          aria-valuemax={duration}
+                        >
                           <div 
                             className="h-full bg-blue-600 transition-all duration-300"
                             style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
@@ -445,18 +768,89 @@ export default function DecadeDetailPage() {
                       </div>
                     </div>
                   )}
-
-                  {/* Audio button */}
-                  <button
-                    onClick={() => playAudio(decade.audio_nahravka!, 'main')}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white transition-all hover:opacity-90 shadow-md"
-                    style={{ backgroundColor: '#40467b' }}
-                  >
-                    <PlayIcon size={18} />
-                    <span className="font-medium">Prehrať audio</span>
-                  </button>
                 </div>
               )}
+
+              {/* Steps with Audio */}
+              <div className="mb-6">
+                <h3 className="text-xs font-bold mb-3" style={{ color: '#40467b' }}>
+                  Kroky Lectio Divina
+                </h3>
+                <div className="space-y-1">
+                  {slides.map((slide, index) => (
+                    slide.audioUrl ? (
+                      // Audio button (kombinované s navigation)
+                      <button
+                        key={slide.key}
+                        onClick={() => {
+                          if (currentSection === slide.key && isPlaying) {
+                            pauseAudio();
+                          } else {
+                            setCurrentSlide(index);
+                            playAudio(slide.audioUrl!, slide.key);
+                          }
+                        }}
+                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-all hover:opacity-90"
+                        style={{ 
+                          backgroundColor: currentSection === slide.key && isPlaying 
+                            ? `${slide.color}20` 
+                            : 'rgba(64, 70, 123, 0.05)',
+                          border: currentSection === slide.key && isPlaying 
+                            ? `2px solid ${slide.color}` 
+                            : '2px solid transparent'
+                        }}
+                      >
+                        {/* Icon - farebná bez pozadia */}
+                        <div 
+                          className="flex-shrink-0"
+                          style={{ color: slide.color }}
+                        >
+                          {React.isValidElement(slide.icon) && React.cloneElement(slide.icon, { size: 15 } as any)}
+                        </div>
+                        
+                        {/* Title */}
+                        <div className="flex-1 min-w-0 text-left">
+                          <span 
+                            className="text-[11px] font-semibold block truncate leading-tight"
+                            style={{ color: '#374151' }}
+                          >
+                            {slide.title}
+                          </span>
+                        </div>
+                      </button>
+                    ) : (
+                      // Steps bez audia (len navigation button)
+                      <button
+                        key={slide.key}
+                        onClick={() => setCurrentSlide(index)}
+                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-all hover:bg-gray-50"
+                        style={{
+                          backgroundColor: currentSlide === index ? `${slide.color}08` : 'transparent',
+                        }}
+                      >
+                        {/* Icon - farebná bez pozadia */}
+                        <div 
+                          className="flex-shrink-0"
+                          style={{ color: slide.color }}
+                        >
+                          {React.isValidElement(slide.icon) && React.cloneElement(slide.icon, { size: 15 } as any)}
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <span 
+                            className="text-[11px] font-semibold block truncate leading-tight"
+                            style={{ color: currentSlide === index ? slide.color : '#374151' }}
+                          >
+                            {slide.title}
+                          </span>
+                        </div>
+                        {currentSlide === index && (
+                          <ChevronRight size={12} style={{ color: slide.color }} className="flex-shrink-0" />
+                        )}
+                      </button>
+                    )
+                  ))}
+                </div>
+              </div>
 
               {/* Action Buttons */}
               <div className="space-y-2">
@@ -466,7 +860,7 @@ export default function DecadeDetailPage() {
                   style={{ color: '#40467b' }}
                 >
                   <Crown size={18} />
-                  Všetky kategórie
+                  {t.allCategories}
                 </button>
                 <button
                   onClick={() => window.location.reload()}
@@ -474,7 +868,7 @@ export default function DecadeDetailPage() {
                   style={{ color: '#40467b' }}
                 >
                   <RefreshCw size={18} />
-                  Obnoviť
+                  {t.refresh}
                 </button>
               </div>
             </div>
@@ -503,6 +897,19 @@ export default function DecadeDetailPage() {
                       <p className="text-sm text-gray-600">{currentSlideData.subtitle}</p>
                     </div>
                   </div>
+                  
+                  {/* Ilustračný obrázok pre Úvod */}
+                  {currentSlideData.key === 'intro' && decade.ilustracny_obrazok && (
+                    <div className="mb-6">
+                      <img 
+                        src={decade.ilustracny_obrazok} 
+                        alt={currentSlideData.title}
+                        className="w-full h-auto rounded-lg shadow-md object-cover"
+                        style={{ maxHeight: '400px' }}
+                      />
+                    </div>
+                  )}
+                  
                   <div 
                     className="text-base text-gray-700 leading-relaxed whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{ __html: currentSlideData.text }}
@@ -539,69 +946,71 @@ export default function DecadeDetailPage() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Steps Navigation */}
+          {/* RIGHT COLUMN - Steps Overview */}
           <div className="hidden xl:block xl:col-span-3">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6 xl:flex xl:flex-col w-full xl:h-[calc(100vh-120px)]">
-              <h3 className="font-bold text-lg mb-4 flex-shrink-0" style={{ color: '#40467b' }}>
-                Kroky Lectio Divina
-              </h3>
-
-              {/* Steps list */}
-              <div className="xl:flex-1 xl:overflow-y-auto space-y-2 mb-4">
-                {slides.map((slide, index) => (
-                  <button
-                    key={slide.key}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left ${
-                      currentSlide === index
-                        ? 'shadow-md transform scale-[1.02]'
-                        : 'hover:bg-gray-50'
-                    }`}
-                    style={{
-                      backgroundColor: currentSlide === index ? `${slide.color}15` : 'transparent',
-                      borderLeft: currentSlide === index ? `3px solid ${slide.color}` : '3px solid transparent'
-                    }}
-                  >
-                    <div 
-                      className="p-2 rounded-lg flex-shrink-0"
-                      style={{ 
-                        backgroundColor: currentSlide === index ? slide.color : `${slide.color}20`,
-                        color: currentSlide === index ? 'white' : slide.color
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border xl:flex xl:flex-col w-full xl:h-[calc(100vh-120px)]" style={{ borderColor: 'rgba(64, 70, 123, 0.15)' }}>
+              <div className="p-4 flex-shrink-0">
+                <h3 className="text-sm font-bold mb-4" style={{ color: '#40467b' }}>
+                  Kroky Lectio Divina
+                </h3>
+              </div>
+              
+              <div className="px-4 pb-4 flex-1 overflow-y-auto">
+                <div className="space-y-2">
+                  {slides.map((slide, index) => (
+                    <button
+                      key={slide.key}
+                      onClick={() => setCurrentSlide(index)}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:shadow-sm group"
+                      style={{
+                        backgroundColor: currentSlide === index 
+                          ? `${slide.color}15` 
+                          : 'rgba(64, 70, 123, 0.03)',
+                        borderLeft: currentSlide === index 
+                          ? `3px solid ${slide.color}` 
+                          : '3px solid transparent'
                       }}
                     >
-                      {slide.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
                       <div 
-                        className="font-semibold text-sm truncate"
-                        style={{ color: currentSlide === index ? slide.color : '#374151' }}
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm flex-shrink-0"
+                        style={{ backgroundColor: slide.color }}
                       >
-                        {slide.title}
+                        {slide.icon}
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
-                        {slide.subtitle}
+                      <div className="flex-1 text-left">
+                        <div className="text-xs font-medium text-gray-500 mb-0.5">
+                          {slide.step}
+                        </div>
+                        <div 
+                          className="font-bold text-sm leading-tight"
+                          style={{ color: currentSlide === index ? slide.color : '#374151' }}
+                        >
+                          {slide.title}
+                        </div>
                       </div>
-                    </div>
-                    {currentSlide === index && (
-                      <ChevronRight size={18} style={{ color: slide.color }} className="flex-shrink-0" />
-                    )}
-                  </button>
-                ))}
+                      {currentSlide === index && (
+                        <ChevronRight size={18} style={{ color: slide.color }} />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Progress bar */}
-              <div className="flex-shrink-0 pt-4 border-t border-gray-200">
-                <div className="h-2 bg-gray-200 rounded-full mb-2 overflow-hidden">
-                  <div 
-                    className="h-full rounded-full transition-all duration-300"
-                    style={{ 
-                      width: `${((currentSlide + 1) / slides.length) * 100}%`,
-                      backgroundColor: currentSlideData.color
-                    }}
-                  />
-                </div>
-                <div className="text-center text-xs font-bold" style={{ color: '#40467b' }}>
-                  {Math.round(((currentSlide + 1) / slides.length) * 100)}% hotovo
+              {/* Progress */}
+              <div className="p-4 pt-0 flex-shrink-0">
+                <div className="pt-4 border-t" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
+                  <div className="h-2 bg-gray-200 rounded-full mb-2 overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ 
+                        width: `${((currentSlide + 1) / slides.length) * 100}%`,
+                        backgroundColor: currentSlideData.color
+                      }}
+                    />
+                  </div>
+                  <div className="text-center text-xs font-bold" style={{ color: '#40467b' }}>
+                    {Math.round(((currentSlide + 1) / slides.length) * 100)}% hotovo
+                  </div>
                 </div>
               </div>
             </div>

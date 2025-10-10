@@ -13,6 +13,7 @@ export const translations = {
     fiveStepsTitle: "Päť krokov Lectio Divina",
     fiveStepsText:
       "Každý krok vás priblíži k hlbšiemu vzťahu s Bohom. Postupujte svojím tempom a nechajte Ducha Svätého viesť vaše srdce.",
+    step: "Krok",
     startStep: "Začať krok",
     benefitsTitle: "Posvätné čítanie ako stretnutie",
     benefitsText:
@@ -133,6 +134,7 @@ export const translations = {
         fiveStepsTitle: "Pět kroků Lectio Divina",
         fiveStepsText:
             "Každý krok Tě přiblíží k hlubšímu vztahu s Bohem. Postupuj svým tempem a nech se vést Duchem Svatým.",
+        step: "Krok",
         startStep: "Začít krok",
         benefitsTitle: "Posvátné čtení jako setkání",
         benefitsText:
@@ -250,6 +252,7 @@ export const translations = {
         fiveStepsTitle: "The Five Steps of Lectio Divina",
         fiveStepsText:
             "Each step brings you closer to a deeper relationship with God. Go at your own pace, and let the Holy Spirit guide your heart.",
+        step: "Step",
         startStep: "Start this step",
         benefitsTitle: "Sacred reading as encounter",
         benefitsText:
@@ -366,6 +369,7 @@ export const translations = {
             fiveStepsTitle: "Cinco pasos de Lectio Divina",
             fiveStepsText:
                 "Cada paso te acerca a una relación más profunda con Dios. Avanza a tu propio ritmo y deja que el Espíritu Santo guíe tu corazón.",
+            step: "Paso",
             startStep: "Comenzar el paso",
             benefitsTitle: "Lectura sagrada como encuentro",
             benefitsText:

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from './LanguageProvider';
 import { bulkTranslateSectionTranslations } from './bulkTranslateSectionTranslations';
+import { Globe } from 'lucide-react';
 
 const getAvailableLanguages = (t: any) => [
   { code: 'en', name: t.languages.english, flag: '🇺🇸' },
@@ -177,20 +178,20 @@ export const BulkTranslateSection: React.FC<BulkTranslateProps> = ({
   const hasTextToTranslate = fieldsWithText.length > 0;
 
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+    <div className="border border-gray-200 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <span className="text-2xl mr-3">🌍</span>
+          <Globe size={20} className="mr-3 text-gray-600" />
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">
+            <h3 className="text-sm font-semibold text-gray-800 mb-1">
               {t.header.title}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs text-gray-600">
               Preloží všetky textové polia naraz do vybraného jazyka
             </p>
           </div>
         </div>
-        <div className="text-sm text-purple-700 bg-purple-100 px-3 py-1 rounded-full">
+        <div className="text-xs text-gray-700 bg-gray-200 px-3 py-1 rounded-full">
           {fieldsWithText.length} polí na preklad
         </div>
       </div>
@@ -207,7 +208,8 @@ export const BulkTranslateSection: React.FC<BulkTranslateProps> = ({
               type="button"
               onClick={() => setIsOpen(!isOpen)}
               disabled={disabled || isTranslating}
-              className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: '#40467b' }}
+              className="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="mr-2">🚀</span>
               {isTranslating ? t.ui.translating : t.ui.start_bulk_translation}
@@ -235,10 +237,11 @@ export const BulkTranslateSection: React.FC<BulkTranslateProps> = ({
                       className={`
                         flex items-center px-3 py-2 text-sm rounded-lg border
                         ${selectedLanguage === lang.code
-                          ? 'bg-purple-100 border-purple-300 text-purple-800'
+                          ? 'border-gray-400 text-white'
                           : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
                         }
                       `}
+                      style={selectedLanguage === lang.code ? { backgroundColor: '#40467b' } : undefined}
                     >
                       <span className="mr-2">{lang.flag}</span>
                       <span>{lang.name}</span>
@@ -263,7 +266,8 @@ export const BulkTranslateSection: React.FC<BulkTranslateProps> = ({
                   type="button"
                   onClick={handleBulkTranslate}
                   disabled={!selectedLanguage}
-                  className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: '#40467b' }}
+                  className="px-6 py-2 text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Preložiť všetko
                 </button>
@@ -291,8 +295,8 @@ export const BulkTranslateSection: React.FC<BulkTranslateProps> = ({
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
-                    className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${(progress.completed / progress.total) * 100}%` }}
+                    className="h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(progress.completed / progress.total) * 100}%`, backgroundColor: '#40467b' }}
                   />
                 </div>
               </div>

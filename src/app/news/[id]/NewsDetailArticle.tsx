@@ -158,7 +158,17 @@ export default function NewsDetailArticle({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 1.2 }}
-                  className="prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-p:text-slate-700 prose-p:leading-relaxed prose-a:no-underline prose-strong:text-slate-800"
+                  className="prose prose-lg max-w-none prose-slate 
+                    prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8
+                    prose-p:text-slate-700 prose-p:leading-relaxed prose-p:mb-6
+                    prose-a:no-underline prose-a:text-blue-600 prose-a:hover:text-blue-800
+                    prose-strong:text-slate-800 prose-strong:font-semibold
+                    prose-ul:my-6 prose-ul:space-y-2
+                    prose-ol:my-6 prose-ol:space-y-2
+                    prose-li:text-slate-700
+                    prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-6
+                    prose-img:rounded-lg prose-img:shadow-md prose-img:my-8
+                    prose-hr:my-8 prose-hr:border-gray-300"
                   style={{
                     '--tw-prose-headings': '#40467b',
                     '--tw-prose-links': '#40467b',

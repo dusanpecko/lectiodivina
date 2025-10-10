@@ -21,7 +21,7 @@ const VOICE_MAPPING = {
     style: 0.2
   },
   // Čeština - Sam (dobre funguje aj pre češtinu)  
-  cs: {
+  cz: {
     voice_id: "scOwDtmlUjD3prqpp97I", // Sam - správne ID
     model: "eleven_v3",
     stability: 0.4,

@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useLanguage } from "./LanguageProvider";
+import { voiceTranslations } from "./translations";
+import { Volume2 } from 'lucide-react';
 
 // Dostupné hlasy z ElevenLabs
 const AVAILABLE_VOICES = [
@@ -27,50 +30,55 @@ interface VoiceSelectorProps {
   className?: string;
 }
 
+
 export default function VoiceSelector({
-  selectedVoiceId = "scOwDtmlUjD3prqpp97I", // Sam ako predvolený
-  selectedModel = "eleven_v3", // V3 ako predvolený
+  selectedVoiceId = "scOwDtmlUjD3prqpp97I",
+  selectedModel = "eleven_v3",
   onVoiceChange,
   onModelChange,
   language = 'sk',
   className = ""
 }: VoiceSelectorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { lang } = useLanguage();
+  const t = voiceTranslations[lang as keyof typeof voiceTranslations] || voiceTranslations.sk;
 
   const selectedVoice = AVAILABLE_VOICES.find(v => v.id === selectedVoiceId) || AVAILABLE_VOICES[0];
   const selectedModelInfo = AVAILABLE_MODELS.find(m => m.id === selectedModel) || AVAILABLE_MODELS[0];
 
-  // Filter voices that are recommended for the current language
   const getRecommendedVoices = () => {
     if (!language) return AVAILABLE_VOICES;
-    
-    return AVAILABLE_VOICES.filter(voice => 
-      voice.languages === "všetky" || 
+    return AVAILABLE_VOICES.filter(voice =>
+      voice.languages === "všetky" ||
       voice.languages.includes(language) ||
-      language === 'sk' // Sam je najlepší pre slovenčinu
+      language === 'sk'
     );
   };
 
   const toggleExpanded = () => setIsExpanded(!isExpanded);
 
   return (
-    <div className={`bg-gray-50 border border-gray-200 rounded-lg p-4 ${className}`}>
+    <div className={`border border-gray-200 rounded-lg p-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-semibold text-gray-800 mb-1">
-            🎭 Nastavenia hlasu a modelu
-          </h3>
-          <div className="text-xs text-gray-600">
-            <div><strong>Hlas:</strong> {selectedVoice.name} - {selectedVoice.description}</div>
-            <div><strong>Model:</strong> {selectedModelInfo.name} - {selectedModelInfo.description}</div>
+        <div className="flex items-center flex-1">
+          <Volume2 size={20} className="mr-3 text-gray-600" />
+          <div>
+            <h3 className="text-sm font-semibold text-gray-800 mb-1">
+              {t.settings}
+            </h3>
+            <div className="text-xs text-gray-600">
+              <div><strong>{t.voice}:</strong> {selectedVoice.name} - {selectedVoice.description}</div>
+              <div><strong>{t.model}:</strong> {selectedModelInfo.name} - {selectedModelInfo.description}</div>
+            </div>
           </div>
         </div>
         <button
           type="button"
           onClick={toggleExpanded}
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+          style={{ backgroundColor: '#40467b' }}
+          className="text-white hover:opacity-90 text-xs font-medium px-3 py-2 rounded-lg ml-3"
         >
-          {isExpanded ? '▼ Skryť' : '▶ Zmeniť'}
+          {isExpanded ? `▼ ${t.hide}` : `▶ ${t.change}`}
         </button>
       </div>
 
@@ -79,7 +87,7 @@ export default function VoiceSelector({
           {/* Voice Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Výber hlasu:
+              {t.selectVoice}
             </label>
             <div className="space-y-2">
               {getRecommendedVoices().map((voice) => (
@@ -101,20 +109,20 @@ export default function VoiceSelector({
                         {voice.name}
                       </span>
                       <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                        voice.gender === 'male' 
-                          ? 'bg-blue-100 text-blue-800' 
+                        voice.gender === 'male'
+                          ? 'bg-blue-100 text-blue-800'
                           : 'bg-pink-100 text-pink-800'
                       }`}>
                         {voice.gender === 'male' ? '👨' : '👩'}
                       </span>
                       {voice.id === "scOwDtmlUjD3prqpp97I" && (
                         <span className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-full">
-                          Predvolený
+                          {t.default}
                         </span>
                       )}
                     </div>
                     <div className="text-xs text-gray-600 mt-0.5">
-                      {voice.description} • Jazyky: {voice.languages}
+                      {voice.description} • {t.languages}: {voice.languages}
                     </div>
                   </div>
                 </label>
@@ -125,7 +133,7 @@ export default function VoiceSelector({
           {/* Model Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Výber modelu:
+              {t.selectModel}
             </label>
             <div className="space-y-2">
               {AVAILABLE_MODELS.map((model) => (
@@ -147,18 +155,18 @@ export default function VoiceSelector({
                         {model.name}
                       </span>
                       <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                        model.quality === 'highest' 
+                        model.quality === 'highest'
                           ? 'bg-green-100 text-green-800'
                           : model.quality === 'high'
-                          ? 'bg-yellow-100 text-yellow-800' 
+                          ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {model.quality === 'highest' ? '⭐ Najlepší' : 
-                         model.quality === 'high' ? '👍 Dobrý' : '👌 Základný'}
+                        {model.quality === 'highest' ? t.best :
+                         model.quality === 'high' ? t.good : t.basic}
                       </span>
                       {model.id === "eleven_v3" && (
                         <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
-                          Predvolený
+                          {t.default}
                         </span>
                       )}
                     </div>
@@ -172,7 +180,7 @@ export default function VoiceSelector({
           </div>
 
           <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded">
-            <strong>💡 Tip:</strong> Hlas "Sam" a model "Eleven V3" sú predvolené pre všetky jazyky a poskytujú najlepšiu kvalitu.
+            <strong>💡 Tip:</strong> {t.tip}
           </div>
         </div>
       )}

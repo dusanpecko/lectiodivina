@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import Link from "next/link";
-import { Pencil, Trash2, PlusCircle, Eraser, PencilLine, Download, Upload, Search, Calendar, Filter, Eye, Heart, Clock } from "lucide-react";
+import { Pencil, Trash2, PlusCircle, Eraser, PencilLine, Download, Upload, Search, Calendar, Filter, Eye, Heart, Clock, Database, Tag, Settings } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
@@ -310,64 +310,84 @@ export default function NewsAdminPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Celkovo</div>
-          <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{stats.total}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Publikované</div>
-          <div className="text-2xl font-bold" style={{ color: '#10b981' }}>{stats.published}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Koncepty</div>
-          <div className="text-2xl font-bold" style={{ color: '#f59e0b' }}>{stats.draft}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Tento mesiac</div>
-          <div className="text-2xl font-bold" style={{ color: '#3b82f6' }}>{stats.thisMonth}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Celkom lajkov</div>
-          <div className="text-2xl font-bold" style={{ color: '#ef4444' }}>
-            <div className="flex items-center gap-1">
-              <Heart size={20} fill="#ef4444" />
-              {stats.totalLikes}
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hlavička */}
+        <header className="mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] px-8 py-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                  <PencilLine size={28} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-sm">
+                    Správa Noviniek
+                  </h1>
+                  <p className="text-indigo-100 mt-1">Novinky a aktuality pre používateľov</p>
+                </div>
+              </div>
+              
+              {/* Štatistiky */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.total}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Celkom</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.published}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Publikované</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.draft}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Koncepty</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.thisMonth}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Tento mesiac</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow flex items-center justify-center gap-1">
+                    <Heart size={20} fill="white" />
+                    {stats.totalLikes}
+                  </div>
+                  <div className="text-sm text-indigo-100 mt-1">Celkom lajkov</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </header>
 
-      {/* Filters */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-6">
-          {/* Top Row - Language and Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            {/* Language Filter */}
-            <div className="flex items-center gap-2">
-              <Filter size={20} style={{ color: '#40467b' }} />
-              <select
-                value={filterLang}
-                onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
-                className="px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2"
-                style={{ 
-                  borderColor: 'rgba(64, 70, 123, 0.2)',
-                  color: '#40467b'
-                }}
-              >
-                <option value="sk">🇸🇰 Slovenčina</option>
-                <option value="cz">🇨🇿 Čeština</option>
-                <option value="en">🇬🇧 English</option>
-                <option value="es">🇪🇸 Español</option>
-              </select>
+        {/* Ovládacie panely */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Výber jazyka */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Filter size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Filter jazyka</h3>
             </div>
+            <select
+              value={filterLang}
+              onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
+              className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
+            >
+              <option value="sk">🇸🇰 Slovenčina</option>
+              <option value="cz">🇨🇿 Čeština</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="es">🇪🇸 Español</option>
+            </select>
+          </div>
 
-            {/* Action Buttons */}
+          {/* Import / Export */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Database size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Import / Export</h3>
+            </div>
             <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition cursor-pointer font-medium" style={{ backgroundColor: '#40467b' }}>
+              <label className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all cursor-pointer font-medium shadow-sm">
                 <Upload size={18} />
-                <span>{t.import_excel || "Import"}</span>
+                <span>Import</span>
                 <input
                   type="file"
                   accept=".xlsx"
@@ -377,29 +397,36 @@ export default function NewsAdminPage() {
               </label>
               
               <button
-                className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg transition font-medium"
-                style={{ backgroundColor: '#f59e0b' }}
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2.5 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all font-medium shadow-sm"
                 onClick={handleExportExcel}
                 type="button"
               >
                 <Download size={18} />
-                <span>{t.export_excel || "Export"}</span>
+                <span>Export</span>
               </button>
-              
-              <Link href="/admin/news/new">
-                <button
-                  className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-medium"
-                  style={{ backgroundColor: '#10b981' }}
-                  type="button"
-                >
-                  <PlusCircle size={18} />
-                  {t.add_item || "Nový článok"}
-                </button>
-              </Link>
             </div>
           </div>
 
-          {/* Global Search */}
+          {/* Nový článok */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <PlusCircle size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Pridať novú novinku</h3>
+            </div>
+            <Link href="/admin/news/new">
+              <button
+                className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-sm"
+                type="button"
+              >
+                <PlusCircle size={18} />
+                {t.add_item || "Nový článok"}
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Vyhľadávanie a filtre */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -407,19 +434,18 @@ export default function NewsAdminPage() {
                 type="text"
                 value={globalSearch}
                 onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#40467b]"
-                style={{ borderColor: 'rgba(64, 70, 123, 0.2)' }}
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder={t.global_search || "Hľadať v článkoch..."}
               />
             </div>
             
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
-              style={{ 
-                backgroundColor: showFilters || activeFiltersCount > 0 ? 'rgba(64, 70, 123, 0.1)' : 'rgba(64, 70, 123, 0.05)',
-                color: '#40467b'
-              }}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+                showFilters || activeFiltersCount > 0 
+                  ? 'bg-indigo-50 text-indigo-700' 
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
               type="button"
             >
               <Filter size={18} />
@@ -429,72 +455,72 @@ export default function NewsAdminPage() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="border-t pt-4 mt-4" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
+            <div className="border-t border-gray-200 pt-4 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📝 {t.title || "Nadpis"}
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    {t.title || "Nadpis"}
                   </label>
                   <input
                     type="text"
                     value={filter.title}
                     onChange={e => { setFilter(f => ({ ...f, title: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     placeholder="Hľadať v nadpisoch..."
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📄 {t.summary || "Súhrn"}
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    {t.summary || "Súhrn"}
                   </label>
                   <input
                     type="text"
                     value={filter.summary}
                     onChange={e => { setFilter(f => ({ ...f, summary: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     placeholder="Hľadať v súhrnoch..."
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📖 {t.content || "Obsah"}
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    {t.content || "Obsah"}
                   </label>
                   <input
                     type="text"
                     value={filter.content}
                     onChange={e => { setFilter(f => ({ ...f, content: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     placeholder="Hľadať v obsahu..."
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📅 {t.date_from || "Od dátumu"}
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    {t.date_from || "Od dátumu"}
                   </label>
                   <input
                     type="date"
                     value={filter.dateFrom}
                     onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📅 {t.date_to || "Do dátumu"}
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    {t.date_to || "Do dátumu"}
                   </label>
                   <input
                     type="date"
                     value={filter.dateTo}
                     onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     disabled={!!globalSearch}
                   />
                 </div>
@@ -502,8 +528,7 @@ export default function NewsAdminPage() {
               
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
-                style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
                 type="button"
               >
                 <Eraser size={16} />
@@ -511,48 +536,60 @@ export default function NewsAdminPage() {
               </button>
             </div>
           )}
-      </div>
+        </div>
 
-      {/* Table */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden">
+        {/* Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="text-white" style={{ backgroundColor: '#40467b' }}>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">📝</span>
-                      {t.title || "Nadpis"}
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <PencilLine size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {t.title || "Nadpis"}
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">📄</span>
-                      {t.summary || "Súhrn"}
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Eye size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {t.summary || "Súhrn"}
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">📅</span>
-                      Dátum
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Dátum
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">❤️</span>
-                      Páči sa
+                  <th className="px-6 py-4 text-left w-32">
+                    <div className="flex items-center gap-2">
+                      <Heart size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Páči sa
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">🏷️</span>
-                      Status
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Tag size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Status
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-center font-semibold">
-                    <div className="flex items-center justify-center">
-                      <span className="mr-2">⚙️</span>
-                      {t.actions || "Akcie"}
+                  <th className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <Settings size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {t.actions || "Akcie"}
+                      </span>
                     </div>
                   </th>
                 </tr>
@@ -586,7 +623,7 @@ export default function NewsAdminPage() {
                 ) : (
                   news.map(n =>
                     editingId === n.id ? (
-                      <tr key={n.id} className="border-b bg-yellow-50 hover:bg-yellow-100 transition-colors">
+                      <tr key={n.id} className="border-b border-gray-200 bg-yellow-50 hover:bg-yellow-100 transition-all">
                         <td className="px-6 py-4">
                           <input
                             value={editData.title || ""}
@@ -646,7 +683,7 @@ export default function NewsAdminPage() {
                         </td>
                       </tr>
                     ) : (
-                      <tr key={n.id} className="border-b hover:bg-gray-50 transition-colors">
+                      <tr key={n.id} className="border-b border-gray-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all">
                         <td className="px-6 py-4">
                           <div className="flex items-start space-x-3">
                             {n.image_url && (
@@ -730,27 +767,25 @@ export default function NewsAdminPage() {
 
           {/* Pagination */}
           {!loading && news.length > 0 && Math.ceil(total / PAGE_SIZE) > 1 && (
-            <div className="px-4 py-4 border-t flex items-center justify-between" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
-              <div className="text-sm text-gray-600">
+            <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t-2 border-gray-200 flex items-center justify-between">
+              <div className="text-sm text-gray-600 font-medium">
                 Zobrazené {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, total)} z {total} záznamov
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
-                  style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                  className="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 text-gray-700 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:border-indigo-300 hover:bg-indigo-50"
                 >
                   ← Predchádzajúca
                 </button>
-                <span className="px-4 py-2 text-sm font-medium" style={{ color: '#40467b' }}>
+                <span className="px-4 py-2 text-sm font-bold text-indigo-700">
                   Strana {page} z {Math.ceil(total / PAGE_SIZE)}
                 </span>
                 <button
                   onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
                   disabled={page * PAGE_SIZE >= total}
-                  className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
-                  style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
+                  className="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 text-gray-700 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:border-indigo-300 hover:bg-indigo-50"
                 >
                   Ďalšia →
                 </button>
@@ -758,6 +793,7 @@ export default function NewsAdminPage() {
             </div>
           )}
         </div>
+      </div>
     </div>
   );
 }

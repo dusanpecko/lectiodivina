@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabase } from '@/app/components/SupabaseProvider';
+import { useLanguage } from '@/app/components/LanguageProvider';
+import { adminTranslations } from '../translations';
 import { 
   CheckCircle2, 
   Clock, 
@@ -33,24 +35,26 @@ const priorityColors = {
   low: 'bg-green-100 text-green-800 border-green-200'
 };
 
-const priorityLabels = {
-  high: 'Vysoká',
-  medium: 'Stredná',
-  low: 'Nízka'
-};
-
-const statusLabels = {
-  navrhy: 'Návrh',
-  vyvoj: 'Vo vývoji',
-  testovanie: 'V testovaní',
-  hotove: 'Hotové'
-};
-
 export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetProps) {
   const { supabase, session } = useSupabase();
+  const { lang } = useLanguage();
+  const t = adminTranslations[lang];
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  
+  const priorityLabels = {
+    high: t.priorityHigh,
+    medium: t.priorityMedium,
+    low: t.priorityLow
+  };
+
+  const statusLabels = {
+    navrhy: t.statusProposal,
+    vyvoj: t.statusDevelopment,
+    testovanie: t.statusTesting,
+    hotove: t.statusDone
+  };
 
   useEffect(() => {
     if (session) {
@@ -115,9 +119,10 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
 
   // Funkcia na formátovanie dátumu
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Bez termínu';
+    if (!dateString) return t.noDueDate;
     const date = new Date(dateString);
-    return date.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' });
+    const locale = lang === 'sk' ? 'sk-SK' : lang === 'cz' ? 'cs-CZ' : lang === 'en' ? 'en-US' : 'es-ES';
+    return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
   };
 
   // Funkcia na zistenie, či je úloha neskoro
@@ -159,19 +164,19 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
     return (
       <div className="bg-white rounded-xl shadow-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Moje úlohy</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t.myTasks}</h2>
           <button
             onClick={() => router.push('/admin/tasks')}
             className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1"
           >
-            <span>Zobraziť všetky</span>
+            <span>{t.showAll}</span>
             <ArrowRight size={16} />
           </button>
         </div>
         <div className="text-center py-12">
           <CheckCircle2 size={48} className="mx-auto text-green-500 mb-3" />
-          <p className="text-gray-600 text-lg font-medium">Nemáte žiadne pridelené úlohy</p>
-          <p className="text-gray-400 text-sm mt-2">Skvelá práca! Všetko máte hotové 🎉</p>
+          <p className="text-gray-600 text-lg font-medium">{t.noAssignedTasks}</p>
+          <p className="text-gray-400 text-sm mt-2">{t.greatWork}</p>
           
           {/* Debug info */}
           <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-left">
@@ -204,16 +209,16 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Moje úlohy</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t.myTasks}</h2>
           <p className="text-sm text-gray-600 mt-1">
-            Máte {stats.total} {stats.total === 1 ? 'pridelenú úlohu' : stats.total < 5 ? 'pridelené úlohy' : 'pridelených úloh'}
+            {t.have} {stats.total} {stats.total === 1 ? t.assignedTask : stats.total < 5 ? t.assignedTasks2to4 : t.assignedTasks5plus}
           </p>
         </div>
         <button
           onClick={() => router.push('/admin/tasks')}
           className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1 transition-colors"
         >
-          <span>Zobraziť všetky</span>
+          <span>{t.showAll}</span>
           <ArrowRight size={16} />
         </button>
       </div>
@@ -227,7 +232,7 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
               <div className="flex items-center space-x-3">
                 <AlertCircle className="text-red-600" size={24} />
                 <div>
-                  <p className="text-sm font-medium text-red-900">Neskoro</p>
+                  <p className="text-sm font-medium text-red-900">{t.overdue}</p>
                   <p className="text-2xl font-bold text-red-600">{stats.overdue.length}</p>
                 </div>
               </div>
@@ -240,7 +245,7 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
               <div className="flex items-center space-x-3">
                 <Clock className="text-orange-600" size={24} />
                 <div>
-                  <p className="text-sm font-medium text-orange-900">Neskoro (3 dni)</p>
+                  <p className="text-sm font-medium text-orange-900">{t.urgentDays}</p>
                   <p className="text-2xl font-bold text-orange-600">{stats.urgent.length}</p>
                 </div>
               </div>
@@ -253,7 +258,7 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
               <div className="flex items-center space-x-3">
                 <Flag className="text-purple-600" size={24} />
                 <div>
-                  <p className="text-sm font-medium text-purple-900">Vysoká priorita</p>
+                  <p className="text-sm font-medium text-purple-900">{t.highPriority}</p>
                   <p className="text-2xl font-bold text-purple-600">{stats.high.length}</p>
                 </div>
               </div>
@@ -284,12 +289,12 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
                     <h3 className="font-semibold text-gray-900">{task.title}</h3>
                     {urgency === 'overdue' && (
                       <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full font-medium">
-                        NESKORO
+                        {t.overdueLabel}
                       </span>
                     )}
                     {urgency === 'urgent' && (
                       <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded-full font-medium">
-                        URGENTNÉ
+                        {t.urgentLabel}
                       </span>
                     )}
                   </div>
@@ -335,7 +340,7 @@ export default function TasksDashboardWidget({ userId }: TasksDashboardWidgetPro
             onClick={() => router.push('/admin/tasks')}
             className="text-sm text-blue-600 hover:text-blue-800 font-medium"
           >
-            + Zobraziť ďalších {myTasks.length - 5} {myTasks.length - 5 === 1 ? 'úlohu' : 'úloh'}
+            + {t.showMore} {myTasks.length - 5} {myTasks.length - 5 === 1 ? t.taskWord : t.tasksWord}
           </button>
         </div>
       )}

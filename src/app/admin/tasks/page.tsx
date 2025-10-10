@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Calendar, Flag, User, Eye, Settings, BarChart3, Save, X, Upload, Image as ImageIcon, ChevronDown, ChevronRight, AlertTriangle, Search, Filter, Copy } from 'lucide-react';
+import { Plus, Edit2, Trash2, Calendar, Flag, User, Eye, Settings, BarChart3, Save, X, Upload, Image as ImageIcon, ChevronDown, ChevronRight, AlertTriangle, Search, Filter, Copy, Maximize, Minimize } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -45,6 +45,8 @@ export default function AdminTasksPage() {
   const [draggedOver, setDraggedOver] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set()); // Sledovanie rozbalených úloh
+  const [fullscreenTask, setFullscreenTask] = useState<Task | null>(null); // Fullscreen režim pre task
+  const [fullscreenBoard, setFullscreenBoard] = useState(false); // Fullscreen režim pre celý board
   
   // Filter & Search states
   const [searchTerm, setSearchTerm] = useState('');
@@ -562,36 +564,277 @@ export default function AdminTasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">Admin - Správa úloh</h1>
-              <p className="text-gray-600 mt-1">Kanban board pre Lectio Divina projekt</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-                <span className="font-semibold">Pokrok: {getProgress()}%</span>
+    <>
+      {/* Fullscreen Task Modal - Higher z-index to show above fullscreen board */}
+      {fullscreenTask && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4"
+          onClick={() => setFullscreenTask(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] text-white p-6 rounded-t-2xl flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className={`w-3 h-3 rounded-full ${
+                  fullscreenTask.priority === 'high' ? 'bg-red-300' : 
+                  fullscreenTask.priority === 'medium' ? 'bg-yellow-300' : 'bg-green-300'
+                }`}></span>
+                <h2 className="text-2xl font-bold">{fullscreenTask.title}</h2>
               </div>
               <button
-                onClick={() => setShowAddForm(true)}
-                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={() => setFullscreenTask(null)}
+                className="text-white hover:bg-white/20 p-2 rounded-lg transition-all"
+                title="Zavrieť"
               >
-                <Plus className="w-4 h-4" />
-                <span>Pridať úlohu</span>
+                <Minimize size={24} />
               </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Status & Priority */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Flag size={20} className="text-gray-600" />
+                      <span className="font-semibold text-gray-700">Status:</span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        fullscreenTask.status === 'navrhy' ? 'bg-blue-100 text-blue-700' :
+                        fullscreenTask.status === 'vyvoj' ? 'bg-yellow-100 text-yellow-700' :
+                        fullscreenTask.status === 'testovanie' ? 'bg-orange-100 text-orange-700' :
+                        'bg-green-100 text-green-700'
+                      }`}>
+                        {columns[fullscreenTask.status].title}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-700">Priorita:</span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${
+                        priorityColors[fullscreenTask.priority]
+                      }`}>
+                        {priorityLabels[fullscreenTask.priority]}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  {fullscreenTask.description && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <Eye size={20} className="text-gray-600" />
+                        Popis
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4 text-gray-700 whitespace-pre-wrap">
+                        {fullscreenTask.description}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Image */}
+                  {fullscreenTask.image_url && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <ImageIcon size={20} className="text-gray-600" />
+                        Príloha
+                      </h3>
+                      <img
+                        src={fullscreenTask.image_url}
+                        alt="Task attachment"
+                        className="w-full rounded-lg shadow-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+                  {/* Assignee */}
+                  {fullscreenTask.assignee && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        <User size={18} className="text-gray-600" />
+                        Priradené
+                      </h4>
+                      <p className="text-gray-900">{getUserDisplayName(fullscreenTask.assignee)}</p>
+                    </div>
+                  )}
+
+                  {/* Due Date */}
+                  {fullscreenTask.due_date && (
+                    <div className={`rounded-lg p-4 ${
+                      isOverdue(fullscreenTask.due_date) && fullscreenTask.status !== 'hotove'
+                        ? 'bg-red-50 border-2 border-red-200'
+                        : 'bg-gray-50'
+                    }`}>
+                      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        <Calendar size={18} className={
+                          isOverdue(fullscreenTask.due_date) && fullscreenTask.status !== 'hotove'
+                            ? 'text-red-600'
+                            : 'text-gray-600'
+                        } />
+                        Termín
+                      </h4>
+                      <p className={
+                        isOverdue(fullscreenTask.due_date) && fullscreenTask.status !== 'hotove'
+                          ? 'text-red-700 font-semibold'
+                          : 'text-gray-900'
+                      }>
+                        {new Date(fullscreenTask.due_date).toLocaleDateString('sk-SK', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                        {isOverdue(fullscreenTask.due_date) && fullscreenTask.status !== 'hotove' && (
+                          <span className="block text-sm mt-1">⚠️ Po termíne</span>
+                        )}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Created Date */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <Calendar size={18} className="text-gray-600" />
+                      Vytvorené
+                    </h4>
+                    <p className="text-gray-900 text-sm">
+                      {new Date(fullscreenTask.created_at).toLocaleDateString('sk-SK', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        handleEditTask(fullscreenTask);
+                        setFullscreenTask(null);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#40467b] to-[#5a5f8f] text-white px-4 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+                    >
+                      <Edit2 size={16} />
+                      Upraviť úlohu
+                    </button>
+                    <button
+                      onClick={() => {
+                        duplicateTask(fullscreenTask);
+                        setFullscreenTask(null);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+                    >
+                      <Copy size={16} />
+                      Duplikovať
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleDeleteTask(fullscreenTask.id);
+                        setFullscreenTask(null);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+                    >
+                      <Trash2 size={16} />
+                      Vymazať
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* 🔍 SEARCH AND FILTERS - MOVED HERE */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">🔍 Vyhľadávanie a Filtre</h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header with Stats */}
+        <header className="mb-8">
+          <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] rounded-2xl shadow-xl p-8 text-white">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <Settings size={28} />
+                  <h1 className="text-3xl font-bold">Správa úloh</h1>
+                </div>
+                <p className="text-white/90">Kanban board pre Lectio Divina projekt</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setFullscreenBoard(!fullscreenBoard)}
+                  className="flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-all hover:shadow-lg hover:scale-105"
+                  title={fullscreenBoard ? "Ukončiť fullscreen" : "Fullscreen board"}
+                >
+                  {fullscreenBoard ? <Minimize size={20} /> : <Maximize size={20} />}
+                  <span className="font-medium">{fullscreenBoard ? "Ukončiť" : "Fullscreen"}</span>
+                </button>
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-lg transition-all hover:shadow-lg hover:scale-105"
+                >
+                  <Plus size={20} />
+                  <span className="font-medium">Pridať úlohu</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Settings size={20} className="text-white/80" />
+                  <span className="text-sm font-medium text-white/80">Celkom</span>
+                </div>
+                <div className="text-2xl font-bold">{tasks.length}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Flag size={20} className="text-blue-300" />
+                  <span className="text-sm font-medium text-white/80">Návrhy</span>
+                </div>
+                <div className="text-2xl font-bold">{tasks.filter(t => t.status === 'navrhy').length}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Settings size={20} className="text-yellow-300" />
+                  <span className="text-sm font-medium text-white/80">Vo vývoji</span>
+                </div>
+                <div className="text-2xl font-bold">{tasks.filter(t => t.status === 'vyvoj').length}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Eye size={20} className="text-orange-300" />
+                  <span className="text-sm font-medium text-white/80">Testovanie</span>
+                </div>
+                <div className="text-2xl font-bold">{tasks.filter(t => t.status === 'testovanie').length}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 size={20} className="text-green-300" />
+                  <span className="text-sm font-medium text-white/80">Pokrok</span>
+                </div>
+                <div className="text-2xl font-bold">{getProgress()}%</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Search and Filters */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Search size={20} className="text-gray-600" />
+            <h3 className="font-semibold text-gray-900">Vyhľadávanie a filtre</h3>
+          </div>
           
           {/* Search Bar */}
           <div className="flex flex-col lg:flex-row gap-4 mb-4">
@@ -602,7 +845,7 @@ export default function AdminTasksPage() {
                 placeholder="Vyhľadať úlohy..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             
@@ -610,40 +853,40 @@ export default function AdminTasksPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setQuickFilter('all')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   quickFilter === 'all' 
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-indigo-50 text-indigo-700' 
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 Všetky
               </button>
               <button
                 onClick={() => setQuickFilter('overdue')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   quickFilter === 'overdue' 
-                    ? 'bg-red-100 text-red-700 border border-red-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-red-50 text-red-700' 
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 Po termíne
               </button>
               <button
                 onClick={() => setQuickFilter('thisWeek')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   quickFilter === 'thisWeek' 
-                    ? 'bg-green-100 text-green-700 border border-green-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-green-50 text-green-700' 
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 Tento týždeň
               </button>
               <button
                 onClick={() => setQuickFilter('my')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   quickFilter === 'my' 
-                    ? 'bg-purple-100 text-purple-700 border border-purple-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-purple-50 text-purple-700' 
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 Moje úlohy
@@ -652,12 +895,12 @@ export default function AdminTasksPage() {
           </div>
           
           {/* Advanced Filters */}
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 border-t border-gray-200 pt-4 mt-4">
             {/* Priority Filter */}
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900"
             >
               <option value="all">Všetky priority</option>
               <option value="high">Vysoká priorita</option>
@@ -669,7 +912,7 @@ export default function AdminTasksPage() {
             <select
               value={filterAssignee}
               onChange={(e) => setFilterAssignee(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900"
             >
               <option value="all">Všetky osoby</option>
               {getUniqueAssignees().map(user => (
@@ -681,7 +924,7 @@ export default function AdminTasksPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900"
             >
               <option value="all">Všetky stavy</option>
               <option value="navrhy">Návrhy</option>
@@ -694,7 +937,7 @@ export default function AdminTasksPage() {
             {(searchTerm || filterPriority !== 'all' || filterAssignee !== 'all' || filterStatus !== 'all' || quickFilter !== 'all') && (
               <button
                 onClick={clearFilters}
-                className="px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-all"
               >
                 Vymazať filtre
               </button>
@@ -708,11 +951,10 @@ export default function AdminTasksPage() {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Add/Edit Task Modal */}
+      {/* Add/Edit Task Modal - Higher z-index to show above fullscreen board */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
           <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">
@@ -977,6 +1219,13 @@ export default function AdminTasksPage() {
                           {/* Tretí riadok - tlačidlá akcií */}
                           <div className="flex items-center space-x-1">
                             <button
+                              onClick={() => setFullscreenTask(task)}
+                              className="text-gray-400 hover:text-indigo-600 transition-colors p-1"
+                              title="Fullscreen"
+                            >
+                              <Maximize className="w-4 h-4" />
+                            </button>
+                            <button
                               onClick={() => duplicateTask(task)}
                               className="text-gray-400 hover:text-green-600 transition-colors p-1"
                               title="Duplikovať"
@@ -1100,5 +1349,223 @@ export default function AdminTasksPage() {
         </div>
       </div>
     </div>
+
+    {/* Fullscreen Board Modal */}
+    {fullscreenBoard && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div className="h-screen flex flex-col bg-white">
+          {/* Fullscreen Board Header */}
+          <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] text-white px-6 py-4 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-4">
+              <Settings size={24} />
+              <h1 className="text-2xl font-bold">Kanban Board</h1>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="bg-white/20 px-3 py-1 rounded-full">{tasks.length} úloh</span>
+                <span className="bg-white/20 px-3 py-1 rounded-full">{getProgress()}% hotovo</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all"
+              >
+                <Plus size={18} />
+                <span className="font-medium">Pridať</span>
+              </button>
+              <button
+                onClick={() => setFullscreenBoard(false)}
+                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all"
+              >
+                <Minimize size={18} />
+                <span className="font-medium">Ukončiť</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Kanban Board Content */}
+          <div className="flex-1 overflow-hidden p-4">
+            <div className="grid grid-cols-4 gap-4 h-full">
+              {Object.entries(columns).map(([status, column]) => (
+                <div key={status} className={`rounded-lg border-2 ${column.color} flex flex-col h-full`}>
+                  <div className={`${column.headerColor} p-4 rounded-t-lg flex-shrink-0`}>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-800">{column.title}</h3>
+                      <div className="flex items-center space-x-2">
+                        <span className="bg-white text-gray-600 px-2 py-1 rounded-full text-sm font-medium">
+                          {getFilteredTasksByStatus(status as Task['status']).length}
+                        </span>
+                        <button
+                          onClick={() => quickAddTask(status as Task['status'])}
+                          className="bg-white/80 hover:bg-white text-gray-600 hover:text-gray-800 p-1 rounded-full transition-colors"
+                          title="Rýchlo pridať úlohu"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div
+                    className={`p-4 flex-1 overflow-y-auto transition-colors ${
+                      draggedOver === status ? 'bg-blue-50' : ''
+                    }`}
+                    onDragOver={(e) => handleDragOver(e, status)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, status as Task['status'])}
+                  >
+                    {getFilteredTasksByStatus(status as Task['status']).map((task) => {
+                      const isExpanded = expandedTasks.has(task.id);
+                      const taskOverdue = isOverdue(task.due_date);
+                      
+                      return (
+                        <div
+                          key={task.id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, task)}
+                          onDragEnd={handleDragEnd}
+                          className={`bg-white rounded-lg shadow-sm border mb-3 transition-all cursor-move hover:shadow-md ${
+                            draggedTask?.id === task.id ? 'shadow-lg rotate-1 opacity-50' : ''
+                          } ${
+                            taskOverdue && task.status !== 'hotove' 
+                              ? 'border-red-300 bg-red-50' 
+                              : 'border-gray-200'
+                          }`}
+                        >
+                          {/* Task card content - compact mode */}
+                          <div className="p-3">
+                            <div className="flex items-center space-x-3 mb-2">
+                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                                task.priority === 'high' ? 'bg-red-500' : 
+                                task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                              }`}></span>
+                              
+                              <span className={`font-medium flex-1 ${
+                                taskOverdue && task.status !== 'hotove' 
+                                  ? 'text-red-800' 
+                                  : 'text-gray-800'
+                              }`}>
+                                {task.title}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                {taskOverdue && task.status !== 'hotove' && (
+                                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                                )}
+                                {task.image_url && (
+                                  <ImageIcon className="w-4 h-4 text-gray-400" />
+                                )}
+                                {task.assignee && (
+                                  <User className="w-4 h-4 text-gray-400" />
+                                )}
+                                {task.due_date && (
+                                  <Calendar className={`w-4 h-4 ${
+                                    taskOverdue && task.status !== 'hotove' 
+                                      ? 'text-red-500' 
+                                      : 'text-gray-400'
+                                  }`} />
+                                )}
+                              </div>
+                              
+                              <div className="flex items-center space-x-1">
+                                <button
+                                  onClick={() => setFullscreenTask(task)}
+                                  className="text-gray-400 hover:text-indigo-600 transition-colors p-1"
+                                  title="Fullscreen"
+                                >
+                                  <Maximize className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => duplicateTask(task)}
+                                  className="text-gray-400 hover:text-green-600 transition-colors p-1"
+                                  title="Duplikovať"
+                                >
+                                  <Copy className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleEditTask(task)}
+                                  className="text-gray-400 hover:text-blue-600 transition-colors p-1"
+                                  title="Upraviť"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteTask(task.id)}
+                                  className="text-gray-400 hover:text-red-600 transition-colors p-1"
+                                  title="Vymazať"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => toggleTaskExpansion(task.id)}
+                                  className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                  title={isExpanded ? "Zbaliť" : "Rozbaliť"}
+                                >
+                                  {isExpanded ? (
+                                    <ChevronDown className="w-4 h-4" />
+                                  ) : (
+                                    <ChevronRight className="w-4 h-4" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Expanded view */}
+                          {isExpanded && (
+                            <div className="px-3 pb-3 border-t border-gray-100 pt-3">
+                              {task.description && (
+                                <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">
+                                  {task.description}
+                                </p>
+                              )}
+                              
+                              {task.image_url && (
+                                <div className="mb-3">
+                                  <img
+                                    src={task.image_url}
+                                    alt="Task attachment"
+                                    className="w-full rounded-lg"
+                                  />
+                                </div>
+                              )}
+                              
+                              <div className="flex flex-wrap gap-2 text-xs">
+                                {task.assignee && (
+                                  <span className="flex items-center text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
+                                    <User className="w-3 h-3 mr-1" />
+                                    {getUserDisplayName(task.assignee)}
+                                  </span>
+                                )}
+                                
+                                {task.due_date && (
+                                  <span className={`flex items-center px-2 py-1 rounded-full ${
+                                    taskOverdue && task.status !== 'hotove'
+                                      ? 'text-red-700 bg-red-100 border border-red-200'
+                                      : 'text-gray-500 bg-gray-50'
+                                  }`}>
+                                    <Calendar className="w-3 h-3 mr-1" />
+                                    {new Date(task.due_date).toLocaleDateString('sk-SK')}
+                                    {taskOverdue && task.status !== 'hotove' && (
+                                      <AlertTriangle className="w-3 h-3 ml-1" />
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

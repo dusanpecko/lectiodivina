@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import Link from "next/link";
-import { Eye, Trash2, Users, Mail, TestTube, Lightbulb, Eraser, Download } from "lucide-react";
+import { Eye, Trash2, Users, Mail, TestTube, Lightbulb, Eraser, Download, Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
@@ -46,6 +46,7 @@ export default function CommunityAdminPage() {
     has_idea: "",
   });
   const [globalSearch, setGlobalSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   // Načítanie dát
   const fetchMembers = async () => {
@@ -186,175 +187,276 @@ export default function CommunityAdminPage() {
 
   const stats = getStats();
 
+  // Aktívne filtre
+  const hasActiveFilters = 
+    filter.name || filter.email || filter.message || 
+    filter.dateFrom || filter.dateTo || 
+    filter.want_testing || filter.want_newsletter || filter.has_idea;
+
   return (
-    <main>
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Users size={28} className="text-amber-600" />
-        {t.community_admin_title || "Správa členov komunity"}
-      </h1>
-
-      {/* Štatistiky */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <Users size={20} className="text-blue-600" />
-            <span className="text-sm text-blue-600 font-medium">Celkom členov</span>
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hlavička */}
+        <header className="mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] px-8 py-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                  <Users size={28} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-sm">
+                    {t.community_admin_title || "Správa členov komunity"}
+                  </h1>
+                  <p className="text-indigo-100 mt-1">Členovia a záujemcovia o komunitu</p>
+                </div>
+              </div>
+              
+              {/* Štatistiky */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.total}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Celkom členov</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.testers}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Testeri</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.newsletter}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Newsletter</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.ideas}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Nápady</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="text-2xl font-bold text-blue-700">{stats.total}</div>
-        </div>
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <TestTube size={20} className="text-green-600" />
-            <span className="text-sm text-green-600 font-medium">Testeri</span>
-          </div>
-          <div className="text-2xl font-bold text-green-700">{stats.testers}</div>
-        </div>
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <Mail size={20} className="text-purple-600" />
-            <span className="text-sm text-purple-600 font-medium">Newsletter</span>
-          </div>
-          <div className="text-2xl font-bold text-purple-700">{stats.newsletter}</div>
-        </div>
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <Lightbulb size={20} className="text-orange-600" />
-            <span className="text-sm text-orange-600 font-medium">Nápady</span>
-          </div>
-          <div className="text-2xl font-bold text-orange-700">{stats.ideas}</div>
-        </div>
-      </div>
+        </header>
 
-      {/* Akcie */}
-      <div className="flex items-center gap-4 mb-4">
-        <button
-          className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-2 h-11 rounded hover:bg-green-700 transition"
-          onClick={handleExportExcel}
-          aria-label="Exportovať Excel"
-          type="button"
-        >
-          <Download size={20} />
-          {t.export_excel || "Exportovať Excel"}
-        </button>
-      </div>
+        {/* Export tlačidlo */}
+        <div className="mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Download size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Export dát</h3>
+            </div>
+            <button
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2.5 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all font-medium shadow-sm"
+              onClick={handleExportExcel}
+              aria-label="Exportovať Excel"
+              type="button"
+            >
+              <Download size={18} />
+              <span>{t.export_excel || "Exportovať Excel"}</span>
+            </button>
+          </div>
+        </div>
 
-      {/* Filtre */}
-      <div className="flex gap-4 mb-4 flex-wrap items-end">
-        <div>
-          <label className="block text-xs">{t.global_search || "Hľadaj"}</label>
-          <input
-            type="text"
-            value={globalSearch}
-            onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-            className="border rounded px-2 py-1 h-10 min-w-[200px]"
-            placeholder={t.global_search || "Hľadaj"}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">{t.name || "Meno"}</label>
-          <input
-            type="text"
-            value={filter.name}
-            onChange={e => { setFilter(f => ({ ...f, name: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder={t.name || "Meno"}
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">{t.email || "Email"}</label>
-          <input
-            type="email"
-            value={filter.email}
-            onChange={e => { setFilter(f => ({ ...f, email: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            placeholder={t.email || "Email"}
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">Testovanie</label>
-          <select
-            value={filter.want_testing}
-            onChange={e => { setFilter(f => ({ ...f, want_testing: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          >
-            <option value="">Všetci</option>
-            <option value="true">Áno</option>
-            <option value="false">Nie</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs">Newsletter</label>
-          <select
-            value={filter.want_newsletter}
-            onChange={e => { setFilter(f => ({ ...f, want_newsletter: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          >
-            <option value="">Všetci</option>
-            <option value="true">Áno</option>
-            <option value="false">Nie</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs">Nápady</label>
-          <select
-            value={filter.has_idea}
-            onChange={e => { setFilter(f => ({ ...f, has_idea: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          >
-            <option value="">Všetci</option>
-            <option value="true">Áno</option>
-            <option value="false">Nie</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs">{t.date_from || "Dátum od"}</label>
-          <input
-            type="date"
-            value={filter.dateFrom}
-            onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <div>
-          <label className="block text-xs">{t.date_to || "Dátum do"}</label>
-          <input
-            type="date"
-            value={filter.dateTo}
-            onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
-            className="border rounded px-2 py-1 h-10"
-            disabled={!!globalSearch}
-          />
-        </div>
-        <button
-          onClick={clearFilters}
-          className="flex gap-1 items-center px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm font-semibold transition"
-          type="button"
-          aria-label={t.clear_filters}
-        >
-          <Eraser size={16} /> {t.clear_filters || "Vymazať filtre"}
-        </button>
-      </div>
+        {/* Vyhľadávanie a filtre */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Search size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Vyhľadávanie a filtre</h3>
+              {hasActiveFilters && (
+                <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-2 py-1 rounded-full">
+                  Aktívne filtre
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                showFilters || hasActiveFilters 
+                  ? 'bg-indigo-50 text-indigo-700' 
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Filter size={16} />
+              {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
 
-      {/* Tabuľka */}
-      <div className="overflow-x-auto rounded-xl shadow">
-        <table className="w-full bg-white">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-3">{t.name || "Meno"}</th>
-              <th className="p-3">{t.email || "Email"}</th>
-              <th className="p-3">Záujmy</th>
-              <th className="p-3">{t.message || "Správa"}</th>
-              <th className="p-3">Dátum registrácie</th>
-              <th className="p-3 text-center">{t.actions || "Akcie"}</th>
-            </tr>
-          </thead>
-          <tbody>
+          {/* Globálne vyhľadávanie */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={globalSearch}
+                onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder={t.global_search || "Hľadať vo všetkých poliach..."}
+              />
+            </div>
+          </div>
+
+          {/* Detailné filtre */}
+          {showFilters && (
+            <div className="border-t border-gray-200 pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                {t.name || "Meno"}
+              </label>
+              <input
+                type="text"
+                value={filter.name}
+                onChange={e => { setFilter(f => ({ ...f, name: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                placeholder={t.name || "Meno"}
+                disabled={!!globalSearch}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                {t.email || "Email"}
+              </label>
+              <input
+                type="email"
+                value={filter.email}
+                onChange={e => { setFilter(f => ({ ...f, email: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                placeholder={t.email || "Email"}
+                disabled={!!globalSearch}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                Testovanie
+              </label>
+              <select
+                value={filter.want_testing}
+                onChange={e => { setFilter(f => ({ ...f, want_testing: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                disabled={!!globalSearch}
+              >
+                <option value="">Všetci</option>
+                <option value="true">Áno</option>
+                <option value="false">Nie</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                Newsletter
+              </label>
+              <select
+                value={filter.want_newsletter}
+                onChange={e => { setFilter(f => ({ ...f, want_newsletter: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                disabled={!!globalSearch}
+              >
+                <option value="">Všetci</option>
+                <option value="true">Áno</option>
+                <option value="false">Nie</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                Nápady
+              </label>
+              <select
+                value={filter.has_idea}
+                onChange={e => { setFilter(f => ({ ...f, has_idea: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                disabled={!!globalSearch}
+              >
+                <option value="">Všetci</option>
+                <option value="true">Áno</option>
+                <option value="false">Nie</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                {t.date_from || "Dátum od"}
+              </label>
+              <input
+                type="date"
+                value={filter.dateFrom}
+                onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                disabled={!!globalSearch}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                {t.date_to || "Dátum do"}
+              </label>
+              <input
+                type="date"
+                value={filter.dateTo}
+                onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                disabled={!!globalSearch}
+              />
+            </div>
+              </div>
+              
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  type="button"
+                  aria-label={t.clear_filters}
+                >
+                  <Eraser size={16} />
+                  {t.clear_filters || "Vymazať filtre"}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Tabuľka */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Users size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {t.name || "Meno"}
+                      </span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Mail size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {t.email || "Email"}
+                      </span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Záujmy
+                    </span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      {t.message || "Správa"}
+                    </span>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Dátum registrácie
+                    </span>
+                  </th>
+                  <th className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <Trash2 size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {t.actions || "Akcie"}
+                      </span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
             {loading ? (
               <tr>
                 <td colSpan={6} className="p-6 text-center text-gray-400">
@@ -369,7 +471,7 @@ export default function CommunityAdminPage() {
               </tr>
             ) : (
               members.map(member => (
-                <tr key={member.id} className="border-b hover:bg-blue-50 transition">
+                <tr key={member.id} className="border-b border-gray-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all">
                   <td className="p-3 font-medium">{member.name}</td>
                   <td className="p-3">
                     <a 
@@ -429,32 +531,44 @@ export default function CommunityAdminPage() {
                 </tr>
               ))
             )}
-          </tbody>
-        </table>
-      </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      {/* Stránkovanie */}
-      <div className="flex justify-center items-center gap-6 py-6">
-        <button
-          className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-40"
-          onClick={() => setPage(p => Math.max(1, p - 1))}
-          disabled={page === 1}
-          aria-label={t.previous || "Predchádzajúca"}
-        >
-          {t.previous || "Predchádzajúca"}
-        </button>
-        <span>
-          {t.page || "Strana"} <b>{page}</b> {t.of || "z"} <b>{Math.ceil(total / PAGE_SIZE) || 1}</b>
-        </span>
-        <button
-          className="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-40"
-          onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-          disabled={page * PAGE_SIZE >= total}
-          aria-label={t.next || "Ďalšia"}
-        >
-          {t.next || "Ďalšia"}
-        </button>
+        {/* Stránkovanie */}
+        {!loading && members.length > 0 && Math.ceil(total / PAGE_SIZE) > 1 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600 font-medium">
+                Zobrazené {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, total)} z {total} členov
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <button
+                  className="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 text-gray-700 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:border-indigo-300 hover:bg-indigo-50"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  aria-label={t.previous || "Predchádzajúca"}
+                >
+                  {t.previous || "Predchádzajúca"}
+                </button>
+                <span className="text-sm font-bold text-indigo-700">
+                  {t.page || "Strana"} {page} {t.of || "z"} {Math.ceil(total / PAGE_SIZE) || 1}
+                </span>
+                <button
+                  className="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 text-gray-700 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:border-indigo-300 hover:bg-indigo-50"
+                  onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                  disabled={page * PAGE_SIZE >= total}
+                  aria-label={t.next || "Ďalšia"}
+                >
+                  {t.next || "Ďalšia"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </main>
+    </div>
   );
 }

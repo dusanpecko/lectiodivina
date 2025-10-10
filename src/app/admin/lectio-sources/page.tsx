@@ -270,9 +270,13 @@ export default function LectioSourcesAdminPage() {
     lectioSource: LectioSource | null;
   }>({ isOpen: false, lectioSource: null });
 
-  // Filtre a stránkovanie
+  // Filtre a stránkovanie - inicializuj page z URL
   const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => {
+    const pageParam = searchParams.get('page');
+    const pageNum = pageParam ? parseInt(pageParam, 10) : 1;
+    return pageNum > 0 ? pageNum : 1;
+  });
   const [total, setTotal] = useState(0);
   const [detailedStats, setDetailedStats] = useState<any>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -348,14 +352,16 @@ export default function LectioSourcesAdminPage() {
   // Load page from URL on mount or from localStorage if returning from edit
   useEffect(() => {
     const pageParam = searchParams.get('page');
-    if (pageParam) {
-      const pageNum = parseInt(pageParam, 10);
-      if (pageNum > 0) {
-        setPage(pageNum); // Používame setPage pretože URL už je správne nastavené
-      }
-    } else {
-      // Ak nie je stránka v URL, skús načítať z localStorage (návrat z editácie)
+    
+    // Ak nie je stránka v URL, skús načítať z localStorage (návrat z editácie)
+    if (!pageParam) {
       const returnPage = localStorage.getItem('lectio_sources_return_page');
+      const returnLang = localStorage.getItem('lectio_sources_return_lang');
+      
+      if (returnLang) {
+        setFilterLang(returnLang as "sk" | "cz" | "en" | "es");
+      }
+      
       if (returnPage) {
         const pageNum = parseInt(returnPage, 10);
         if (pageNum > 0) {
@@ -363,6 +369,10 @@ export default function LectioSourcesAdminPage() {
         }
         // Vymaž localStorage po použití
         localStorage.removeItem('lectio_sources_return_page');
+      }
+      
+      if (returnLang) {
+        localStorage.removeItem('lectio_sources_return_lang');
       }
     }
   }, [searchParams, updatePage]);
@@ -588,8 +598,9 @@ export default function LectioSourcesAdminPage() {
         "success"
       );
       
-      // Uložíme aktuálnu stránku
+      // Uložíme aktuálnu stránku a jazyk
       localStorage.setItem('lectio_sources_return_page', page.toString());
+      localStorage.setItem('lectio_sources_return_lang', filterLang);
       
       // Presmerujeme na editáciu nového záznamu
       router.push(`/admin/lectio-sources/${data.id}`);
@@ -707,113 +718,119 @@ export default function LectioSourcesAdminPage() {
         lectioSource={copyDialog.lectioSource}
       />
 
-      <div className="max-w-7xl mx-auto p-6">
-        <header className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#40467b' }}>
-                <Book size={24} className="text-white" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hlavička */}
+        <header className="mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] px-8 py-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                  <Book size={28} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-sm">
+                    Správa Lectio Zdrojov
+                  </h1>
+                  <p className="text-indigo-100 mt-1">Zdrojový obsah pre Lectio Divina</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  Správa Lectio Zdrojov
-                </h1>
-                <p className="text-gray-600">Zdrojový obsah pre Lectio Divina</p>
-              </div>
-            </div>
-            
-            {detailedStats && (
-              <div className="space-y-4">
-                {/* Hlavné štatistiky */}
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.total}</div>
-                    <div className="text-sm text-gray-500">Celkom</div>
+              
+              {/* Štatistiky */}
+              {detailedStats && (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-6">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white drop-shadow">{detailedStats.total}</div>
+                    <div className="text-sm text-indigo-100 mt-1">Celkom</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.complete}</div>
-                    <div className="text-sm text-gray-500">Kompletné</div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white drop-shadow">{detailedStats.complete}</div>
+                    <div className="text-sm text-indigo-100 mt-1">Kompletné</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.completePercentage}%</div>
-                    <div className="text-sm text-gray-500">Dokončené</div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white drop-shadow">{detailedStats.completePercentage}%</div>
+                    <div className="text-sm text-indigo-100 mt-1">Dokončené</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.checkedPercentage}%</div>
-                    <div className="text-sm text-gray-500">Skontrolované ✓</div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white drop-shadow">{detailedStats.checkedPercentage}%</div>
+                    <div className="text-sm text-indigo-100 mt-1">Skontrolované ✓</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{detailedStats.audio}</div>
-                    <div className="text-sm text-gray-500">Audio 🎧</div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white drop-shadow">{detailedStats.audio}</div>
+                    <div className="text-sm text-indigo-100 mt-1">Audio 🎧</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white drop-shadow">
                       {LANGUAGE_OPTIONS.find(l => l.value === filterLang)?.flag}
                     </div>
-                    <div className="text-sm text-gray-500">Jazyk</div>
+                    <div className="text-sm text-indigo-100 mt-1">Jazyk</div>
                   </div>
                 </div>
-                
-                {/* Detailné štatistiky obsahu */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-700 mb-3">Detailný prehľad obsahu</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-cyan-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-cyan-800">{detailedStats.biblia1}</div>
-                      <div className="text-xs text-gray-500">Biblia 1</div>
+              )}
+            </div>
+
+            {/* Detailné štatistiky obsahu - mimo gradientu */}
+            {detailedStats && (
+              <div className="bg-gray-50 rounded-xl p-6 mx-6 -mt-4 mb-6 border-t border-gray-200">
+                <h4 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                  <BookOpen size={18} style={{ color: '#40467b' }} />
+                  Detailný prehľad obsahu
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-cyan-800 text-xs">📖</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-teal-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-teal-800">{detailedStats.biblia2}</div>
-                      <div className="text-xs text-gray-500">Biblia 2</div>
+                    <div className="font-bold text-cyan-800">{detailedStats.biblia1}</div>
+                    <div className="text-xs text-gray-500">Biblia 1</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-teal-800 text-xs">📖</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-lime-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-lime-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-lime-800">{detailedStats.biblia3}</div>
-                      <div className="text-xs text-gray-500">Biblia 3</div>
+                    <div className="font-bold text-teal-800">{detailedStats.biblia2}</div>
+                    <div className="text-xs text-gray-500">Biblia 2</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-lime-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-lime-800 text-xs">📖</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-purple-800 text-xs">📖</span>
-                      </div>
-                      <div className="font-bold text-purple-800">{detailedStats.lectio}</div>
-                      <div className="text-xs text-gray-500">Lectio</div>
+                    <div className="font-bold text-lime-800">{detailedStats.biblia3}</div>
+                    <div className="text-xs text-gray-500">Biblia 3</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-purple-800 text-xs">📖</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-green-800 text-xs">👁️</span>
-                      </div>
-                      <div className="font-bold text-green-800">{detailedStats.meditatio}</div>
-                      <div className="text-xs text-gray-500">Meditatio</div>
+                    <div className="font-bold text-purple-800">{detailedStats.lectio}</div>
+                    <div className="text-xs text-gray-500">Lectio</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-green-800 text-xs">👁️</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-orange-800 text-xs">❤️</span>
-                      </div>
-                      <div className="font-bold text-orange-800">{detailedStats.oratio}</div>
-                      <div className="text-xs text-gray-500">Oratio</div>
+                    <div className="font-bold text-green-800">{detailedStats.meditatio}</div>
+                    <div className="text-xs text-gray-500">Meditatio</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-orange-800 text-xs">❤️</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-indigo-800 text-xs">👁️</span>
-                      </div>
-                      <div className="font-bold text-indigo-800">{detailedStats.contemplatio}</div>
-                      <div className="text-xs text-gray-500">Contemplatio</div>
+                    <div className="font-bold text-orange-800">{detailedStats.oratio}</div>
+                    <div className="text-xs text-gray-500">Oratio</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-indigo-800 text-xs">👁️</span>
                     </div>
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <span className="text-pink-800 text-xs">❤️</span>
-                      </div>
-                      <div className="font-bold text-pink-800">{detailedStats.actio}</div>
-                      <div className="text-xs text-gray-500">Actio</div>
+                    <div className="font-bold text-indigo-800">{detailedStats.contemplatio}</div>
+                    <div className="text-xs text-gray-500">Contemplatio</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <span className="text-pink-800 text-xs">❤️</span>
                     </div>
+                    <div className="font-bold text-pink-800">{detailedStats.actio}</div>
+                    <div className="text-xs text-gray-500">Actio</div>
                   </div>
                 </div>
               </div>
@@ -821,11 +838,14 @@ export default function LectioSourcesAdminPage() {
           </div>
         </header>
 
+        {/* Ovládacie panely */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <Globe size={20} className="text-emerald-600" />
-              <h3 className="font-semibold text-gray-800">Jazyk</h3>
+              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <Globe size={20} style={{ color: '#40467b' }} />
+              </div>
+              <h3 className="font-semibold text-gray-800">Jazyk zdrojov</h3>
             </div>
             <select
               value={filterLang}
@@ -833,8 +853,7 @@ export default function LectioSourcesAdminPage() {
                 setFilterLang(e.target.value as any); 
                 updatePage(1); 
               }}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:border-transparent transition"
-              style={{'--tw-ring-color': '#40467b'} as any}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b] transition"
             >
               {LANGUAGE_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
@@ -844,13 +863,16 @@ export default function LectioSourcesAdminPage() {
             </select>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          {/* Import/Export */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <Download size={20} className="text-green-600" />
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <Download size={20} className="text-green-600" />
+              </div>
               <h3 className="font-semibold text-gray-800">Import / Export</h3>
             </div>
             <div className="flex gap-2">
-              <label className="flex-1 text-white px-4 py-2 rounded-lg hover:opacity-90 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2" style={{ backgroundColor: '#40467b' }}>
+              <label className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-800 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2 shadow-sm">
                 {importing ? <LoadingSpinner size={4} /> : <Upload size={16} />}
                 {importing ? "Importujem..." : "Import"}
                 <input
@@ -863,7 +885,7 @@ export default function LectioSourcesAdminPage() {
               </label>
               <button
                 onClick={handleExportExcel}
-                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-800 transition text-sm flex items-center justify-center gap-2 shadow-sm"
               >
                 <Download size={16} />
                 Export
@@ -871,14 +893,17 @@ export default function LectioSourcesAdminPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          {/* Akcie */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <PlusCircle size={20} className="text-teal-600" />
+              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <PlusCircle size={20} style={{ color: '#40467b' }} />
+              </div>
               <h3 className="font-semibold text-gray-800">Akcie</h3>
             </div>
             <button
               onClick={() => router.push("/admin/lectio-sources/new")}
-              className="w-full bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-[#40467b] to-[#686ea3] text-white px-4 py-2.5 rounded-lg hover:from-[#686ea3] hover:to-[#40467b] transition flex items-center justify-center gap-2 shadow-sm font-medium"
             >
               <PlusCircle size={16} />
               Pridať Lectio Zdroj
@@ -1048,7 +1073,7 @@ export default function LectioSourcesAdminPage() {
                   </tr>
                 ) : (
                   lectioSources.map(l => (
-                    <tr key={l.id} className="hover:bg-emerald-50 transition-colors">
+                    <tr key={l.id} className="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all duration-200">
                       <td className="px-6 py-4">
                         <div className="text-gray-900 font-medium">
                           {l.hlava?.length > 50 ? (
@@ -1146,6 +1171,7 @@ export default function LectioSourcesAdminPage() {
                             title="Upraviť"
                             onClick={() => {
                               localStorage.setItem('lectio_sources_return_page', page.toString());
+                              localStorage.setItem('lectio_sources_return_lang', filterLang);
                               router.push(`/admin/lectio-sources/${l.id}`);
                             }}
                           >

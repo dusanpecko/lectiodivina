@@ -18,11 +18,15 @@ import {
   RefreshCw,
   Clock
 } from 'lucide-react';
+import { useLanguage } from '@/app/components/LanguageProvider';
+import { resetPasswordTranslations } from './translations';
 
 export default function ResetPasswordForm() {
   const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { lang } = useLanguage();
+  const t = resetPasswordTranslations[lang];
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [token, setToken] = useState('');
@@ -61,18 +65,18 @@ export default function ResetPasswordForm() {
 
             if (error) {
               setManualMode(true);
-              setError('Automatická validácia zlyhala. Prosím, kliknite na "Overiť kód" nižšie.');
+              setError(t.autoValidationFailed);
             } else if (data.session) {
               setTokenValidated(true);
               setManualMode(false);
               window.history.replaceState(null, '', window.location.pathname);
             } else {
               setManualMode(true);
-              setError('Nepodarilo sa vytvoriť session. Kliknite na "Overiť kód" pre manuálne overenie.');
+              setError(t.sessionFailed);
             }
           } catch (err: any) {
             setManualMode(true);
-            setError('Chyba pri automatickom overení. Kliknite na "Overiť kód" pre manuálne overenie.');
+            setError(t.autoValidationFailed);
           }
         }
         // Ak je chyba, prejdeme na manuálny režim
@@ -121,7 +125,7 @@ export default function ResetPasswordForm() {
             window.history.replaceState(null, '', window.location.pathname);
           } else {
             setManualMode(true);
-            setError('Automatická validácia zlyhala. Prosím, zadajte kód z emailu manuálne.');
+            setError(t.linkExpiredManual);
           }
         }
         // Žiadne parametre - manuálny režim
@@ -142,7 +146,7 @@ export default function ResetPasswordForm() {
 
   const handleManualVerification = async () => {
     if (!token || !email) {
-      setError('Prosím, zadajte kód aj email adresu.');
+      setError(t.enterCodeAndEmail);
       return;
     }
 
@@ -161,7 +165,7 @@ export default function ResetPasswordForm() {
       }
 
       if (!data.session) {
-        throw new Error('Nepodarilo sa vytvoriť session.');
+        throw new Error(t.sessionFailed);
       }
       
       setTokenValidated(true);
@@ -170,9 +174,9 @@ export default function ResetPasswordForm() {
     } catch (err: any) {
       let errorMessage = err.message;
       if (errorMessage.includes('Token has expired')) {
-        errorMessage = 'Kód expiroval. Prosím, požiadajte o nový email na obnovenie hesla.';
+        errorMessage = t.tokenExpired;
       } else if (errorMessage.includes('Invalid token')) {
-        errorMessage = 'Neplatný kód. Skontrolujte, že ste zadali správny kód z emailu.';
+        errorMessage = t.invalidToken;
       }
       
       setError(errorMessage);
@@ -182,11 +186,11 @@ export default function ResetPasswordForm() {
   };
 
   const validatePassword = (value: string): string | null => {
-    if (value.length < 8) return 'Heslo musí mať aspoň 8 znakov.';
-    if (!/[a-z]/.test(value)) return 'Heslo musí obsahovať malé písmeno.';
-    if (!/[A-Z]/.test(value)) return 'Heslo musí obsahovať veľké písmeno.';
-    if (!/[0-9]/.test(value)) return 'Heslo musí obsahovať číslicu.';
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Heslo musí obsahovať špeciálny znak.';
+    if (value.length < 8) return t.passwordMinLength;
+    if (!/[a-z]/.test(value)) return t.passwordLowercase;
+    if (!/[A-Z]/.test(value)) return t.passwordUppercase;
+    if (!/[0-9]/.test(value)) return t.passwordNumber;
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return t.passwordSpecialChar;
     return null;
   };
 
@@ -198,9 +202,9 @@ export default function ResetPasswordForm() {
     if (/[0-9]/.test(password)) score++;
     if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
     
-    if (score < 2) return { level: 'weak', color: 'red', text: 'Slabé' };
-    if (score < 4) return { level: 'medium', color: 'yellow', text: 'Stredné' };
-    return { level: 'strong', color: 'green', text: 'Silné' };
+    if (score < 2) return { level: 'weak', color: 'red', text: t.weak };
+    if (score < 4) return { level: 'medium', color: 'yellow', text: t.medium };
+    return { level: 'strong', color: 'green', text: t.strong };
   };
 
   const handlePasswordReset = async (e: React.FormEvent) => {
@@ -215,7 +219,7 @@ export default function ResetPasswordForm() {
     }
 
     if (password !== confirmPassword) {
-      setError('Heslá sa nezhodujú.');
+      setError(t.passwordMismatch);
       return;
     }
 
@@ -224,7 +228,7 @@ export default function ResetPasswordForm() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        throw new Error('Session expirovala. Prosím, použite nový odkaz na obnovu hesla.');
+        throw new Error(t.sessionExpired);
       }
 
       const { error } = await supabase.auth.updateUser({ 
@@ -235,13 +239,13 @@ export default function ResetPasswordForm() {
         throw error;
       }
 
-      setSuccess('Heslo bolo úspešne zmenené! Môžete sa teraz prihlásiť s novým heslom.');
+      setSuccess(t.passwordChangedDesc);
       
       // Odhlásiť používateľa po úspešnej zmene hesla
       await supabase.auth.signOut();
 
     } catch (err: any) {
-      setError(err.message || 'Nepodarilo sa zmeniť heslo. Skúste to znovu.');
+      setError(err.message || t.unknownError);
     } finally {
       setLoading(false);
     }
@@ -251,30 +255,29 @@ export default function ResetPasswordForm() {
 
   if (validating) {
     return (
-      <div className="w-full max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg mb-4">
-            <Key size={32} className="text-white" />
+      <div className="w-full">
+        <div className="text-center mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg shadow-lg mb-2" style={{ backgroundColor: '#686ea3' }}>
+            <Key size={24} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Overujem odkaz 🔍
+          <h1 className="text-xl font-bold text-white mb-0.5">
+            {t.verifyingLink}
           </h1>
-          <p className="text-gray-600">
-            Kontrolujem platnosť vašeho odkazu...
+          <p className="text-white/70 text-xs">
+            {t.checkingValidity}
           </p>
         </div>
 
         <div className="space-y-4">
-          <div className="w-16 h-16 mx-auto relative">
-            <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
-            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-600 animate-spin"></div>
+          <div className="w-12 h-12 mx-auto relative">
+            <div className="absolute inset-0 rounded-full border-4 border-white/20"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-white animate-spin"></div>
           </div>
           
           <div className="flex justify-center space-x-1">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce animation-delay-100"></div>
-            <div className="w-2 h-2 bg-pink-600 rounded-full animate-bounce animation-delay-200"></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-white/80 rounded-full animate-bounce animation-delay-100"></div>
+            <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce animation-delay-200"></div>
           </div>
         </div>
       </div>
@@ -282,58 +285,48 @@ export default function ResetPasswordForm() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg mb-4">
-          <Lock size={32} className="text-white" />
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg shadow-lg mb-2" style={{ backgroundColor: '#686ea3' }}>
+          <Lock size={24} className="text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Nastavenie nového hesla 🔒
+        <h1 className="text-xl font-bold text-white mb-0.5">
+          {t.setNewPassword}
         </h1>
-        <p className="text-gray-600">
-          Vytvorte si bezpečné nové heslo
+        <p className="text-white/70 text-xs">
+          {t.createSecurePassword}
         </p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-red-800 font-medium mb-1">Chyba</p>
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
+        <div className="mb-3 p-3 bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <AlertCircle size={16} className="text-red-600" />
+            <span className="text-red-800 font-medium text-sm">{t.errorOccurred}</span>
           </div>
+          <p className="text-red-700 text-xs mt-1">{error}</p>
         </div>
       )}
 
       {/* Success Message */}
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <CheckCircle2 size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
+        <div className="mb-3 p-3 bg-green-50/80 backdrop-blur-sm border border-green-200/50 rounded-lg">
+          <div className="flex items-start space-x-2">
+            <CheckCircle2 size={16} className="text-green-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-green-800 font-medium mb-1">Úspech!</p>
-              <p className="text-green-700 text-sm mb-3">{success}</p>
+              <p className="text-green-800 font-medium text-sm mb-0.5">{t.passwordChanged}</p>
+              <p className="text-green-700 text-xs mb-2">{success}</p>
               
-              <div className="p-3 bg-green-100 rounded border border-green-200">
-                <p className="text-sm font-medium text-green-800 mb-2">Ďalšie kroky:</p>
-                <ol className="text-sm text-green-700 list-decimal list-inside space-y-1">
-                  <li>Otvorte si aplikáciu</li>
-                  <li>Prihláste sa s novým heslom</li>
-                  <li>Túto stránku môžete zatvoriť</li>
-                </ol>
-              </div>
-              
-              <div className="mt-4">
+              <div className="mt-3">
                 <Link
                   href="/login"
-                  className="inline-flex items-center space-x-2 text-green-700 hover:text-green-900 font-medium transition-colors"
+                  className="inline-flex items-center justify-center space-x-2 py-2 px-4 rounded-lg transition-all duration-200 font-semibold text-white text-sm hover:opacity-90"
+                  style={{ backgroundColor: '#686ea3' }}
                 >
                   <ArrowLeft size={16} />
-                  <span>Prejsť na prihlásenie</span>
+                  <span>{t.backToLogin}</span>
                 </Link>
               </div>
             </div>
@@ -343,52 +336,49 @@ export default function ResetPasswordForm() {
 
       {/* Manual Token Verification */}
       {manualMode && !tokenValidated && (
-        <div className="space-y-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start space-x-3">
-              <Clock size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
+        <div className="space-y-4">
+          <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-lg p-3">
+            <div className="flex items-start space-x-2">
+              <Clock size={16} className="text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-medium text-blue-800 mb-1">Overenie kódu</h3>
-                <p className="text-sm text-blue-700">
-                  {token && email ? 
-                    'Automatické overenie zlyhalo. Kliknite na "Overiť kód" pre manuálne overenie.' :
-                    'Zadajte 6-miestny kód z emailu a vašu email adresu.'
-                  }
+                <h3 className="text-sm font-medium text-blue-800 mb-0.5">{t.enterCode}</h3>
+                <p className="text-xs text-blue-700">
+                  {token && email ? t.linkExpiredManual : t.linkExpiredManual}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 flex items-center">
-                <Mail size={16} className="mr-2" />
-                Email adresa
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white/90 flex items-center">
+                <Mail size={14} className="mr-1.5" />
+                {t.emailAddress}
               </label>
               <div className="relative">
                 <input
                   type="email"
-                  placeholder="váš@email.com"
+                  placeholder={t.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 pl-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-3 py-2.5 pl-9 border border-white/20 bg-white/10 backdrop-blur-sm rounded-lg focus:ring-2 focus:ring-white/40 focus:border-white/40 transition-all duration-200 text-white placeholder-white/50 text-sm"
                   disabled={loading}
                 />
-                <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 flex items-center">
-                <Key size={16} className="mr-2" />
-                6-miestny kód z emailu
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white/90 flex items-center">
+                <Key size={14} className="mr-1.5" />
+                {t.codeFromEmail}
               </label>
               <input
                 type="text"
-                placeholder="123456"
+                placeholder={t.codePlaceholder}
                 value={token}
                 onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest font-mono transition-all duration-200"
+                className="w-full px-3 py-2.5 border border-white/20 bg-white/10 backdrop-blur-sm rounded-lg focus:ring-2 focus:ring-white/40 focus:border-white/40 text-center text-xl tracking-widest font-mono transition-all duration-200 text-white placeholder-white/50"
                 disabled={loading}
                 maxLength={6}
               />
@@ -397,17 +387,18 @@ export default function ResetPasswordForm() {
             <button
               onClick={handleManualVerification}
               disabled={loading || !token || !email || token.length !== 6}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full text-white py-2.5 px-4 rounded-lg font-semibold hover:opacity-90 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-sm"
+              style={{ backgroundColor: '#686ea3' }}
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Overujem...</span>
+                  <span>{t.verifying}</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center space-x-2">
                   <Shield size={18} />
-                  <span>Overiť kód</span>
+                  <span>{t.verifyCode}</span>
                 </div>
               )}
             </button>
@@ -417,81 +408,72 @@ export default function ResetPasswordForm() {
 
       {/* Password Reset Form */}
       {tokenValidated && !success && (
-        <div className="space-y-6">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center space-x-3">
-              <CheckCircle2 size={20} className="text-green-600" />
-              <span className="text-sm font-medium text-green-800">
-                Kód bol úspešne overený! Teraz zadajte nové heslo.
-              </span>
-            </div>
-          </div>
-
-          <form onSubmit={handlePasswordReset} className="space-y-6">
+        <div className="space-y-4">
+          <form onSubmit={handlePasswordReset} className="space-y-4">
             {/* New Password */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 flex items-center">
-                <Lock size={16} className="mr-2" />
-                Nové heslo
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white/90 flex items-center">
+                <Lock size={14} className="mr-1.5" />
+                {t.newPassword}
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Zadajte nové heslo"
+                  placeholder={t.passwordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pl-11 pr-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                  className="w-full px-3 py-2.5 pl-9 pr-9 border border-white/20 bg-white/10 backdrop-blur-sm rounded-lg focus:ring-2 focus:ring-white/40 focus:border-white/40 transition-all duration-200 text-white placeholder-white/50 text-sm"
                   disabled={loading}
                 />
-                <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Lock size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               
               {/* Password Requirements */}
-              <div className="text-xs text-gray-500 space-y-1">
-                <p>Heslo musí obsahovať:</p>
-                <ul className="space-y-1 ml-2">
-                  <li className={`flex items-center space-x-1 ${password.length >= 8 ? 'text-green-600' : 'text-gray-400'}`}>
+              <div className="text-xs text-white/60 space-y-1">
+                <p className="font-medium">{t.passwordRequirements}</p>
+                <ul className="space-y-0.5 ml-2">
+                  <li className={`flex items-center space-x-1 ${password.length >= 8 ? 'text-green-400' : 'text-white/40'}`}>
                     <span>{password.length >= 8 ? '✓' : '○'}</span>
-                    <span>Aspoň 8 znakov</span>
+                    <span>{t.minLength}</span>
                   </li>
-                  <li className={`flex items-center space-x-1 ${/[a-z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                  <li className={`flex items-center space-x-1 ${/[a-z]/.test(password) ? 'text-green-400' : 'text-white/40'}`}>
                     <span>{/[a-z]/.test(password) ? '✓' : '○'}</span>
-                    <span>Malé písmeno</span>
+                    <span>{t.lowercase}</span>
                   </li>
-                  <li className={`flex items-center space-x-1 ${/[A-Z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                  <li className={`flex items-center space-x-1 ${/[A-Z]/.test(password) ? 'text-green-400' : 'text-white/40'}`}>
                     <span>{/[A-Z]/.test(password) ? '✓' : '○'}</span>
-                    <span>Veľké písmeno</span>
+                    <span>{t.uppercase}</span>
                   </li>
-                  <li className={`flex items-center space-x-1 ${/[0-9]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                  <li className={`flex items-center space-x-1 ${/[0-9]/.test(password) ? 'text-green-400' : 'text-white/40'}`}>
                     <span>{/[0-9]/.test(password) ? '✓' : '○'}</span>
-                    <span>Číslicu</span>
+                    <span>{t.number}</span>
                   </li>
-                  <li className={`flex items-center space-x-1 ${/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+                  <li className={`flex items-center space-x-1 ${/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-green-400' : 'text-white/40'}`}>
                     <span>{/[!@#$%^&*(),.?":{}|<>]/.test(password) ? '✓' : '○'}</span>
-                    <span>Špeciálny znak</span>
+                    <span>{t.specialChar}</span>
                   </li>
                 </ul>
               </div>
 
               {/* Password Strength Indicator */}
               {password && (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-600">Sila hesla:</span>
-                    <span className={`text-xs font-medium text-${passwordStrength.color}-600`}>
+                    <span className="text-xs text-white/60">{t.passwordStrength}</span>
+                    <span className={`text-xs font-medium text-${passwordStrength.color}-400`}>
                       {passwordStrength.text}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-white/20 rounded-full h-1.5">
                     <div 
-                      className={`h-2 rounded-full bg-${passwordStrength.color}-500 transition-all duration-300`}
+                      className={`h-1.5 rounded-full bg-${passwordStrength.color}-400 transition-all duration-300`}
                       style={{ 
                         width: passwordStrength.level === 'weak' ? '33%' : 
                                passwordStrength.level === 'medium' ? '66%' : '100%' 
@@ -503,37 +485,37 @@ export default function ResetPasswordForm() {
             </div>
 
             {/* Confirm Password */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700 flex items-center">
-                <Lock size={16} className="mr-2" />
-                Potvrdiť nové heslo
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white/90 flex items-center">
+                <Lock size={14} className="mr-1.5" />
+                {t.confirmPassword}
               </label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Potvrďte nové heslo"
+                  placeholder={t.passwordPlaceholder}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 pl-11 pr-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                  className="w-full px-3 py-2.5 pl-9 pr-9 border border-white/20 bg-white/10 backdrop-blur-sm rounded-lg focus:ring-2 focus:ring-white/40 focus:border-white/40 transition-all duration-200 text-white placeholder-white/50 text-sm"
                   disabled={loading}
                 />
-                <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Lock size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               
               {/* Password Match Indicator */}
               {confirmPassword && (
                 <div className={`text-xs flex items-center space-x-1 ${
-                  password === confirmPassword ? 'text-green-600' : 'text-red-600'
+                  password === confirmPassword ? 'text-green-400' : 'text-red-400'
                 }`}>
                   <span>{password === confirmPassword ? '✓' : '✗'}</span>
-                  <span>{password === confirmPassword ? 'Heslá sa zhodujú' : 'Heslá sa nezhodujú'}</span>
+                  <span>{password === confirmPassword ? t.passwordsMatch : t.passwordMismatch}</span>
                 </div>
               )}
             </div>
@@ -542,17 +524,18 @@ export default function ResetPasswordForm() {
             <button
               type="submit"
               disabled={loading || !password || !confirmPassword || password !== confirmPassword}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full text-white py-2.5 px-4 rounded-lg font-semibold hover:opacity-90 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg text-sm"
+              style={{ backgroundColor: '#686ea3' }}
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Zapisujem heslo...</span>
+                  <span>{t.resetting}</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center space-x-2">
                   <CheckCircle2 size={18} />
-                  <span>Zmeniť heslo</span>
+                  <span>{t.resetPassword}</span>
                 </div>
               )}
             </button>
@@ -563,13 +546,13 @@ export default function ResetPasswordForm() {
       {/* Fallback Options */}
       {!manualMode && !tokenValidated && !validating && (
         <div className="space-y-4">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-start space-x-3">
-              <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="bg-amber-50/80 backdrop-blur-sm border border-amber-200/50 rounded-lg p-3">
+            <div className="flex items-start space-x-2">
+              <AlertCircle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-yellow-800 mb-1">Link expiroval</p>
-                <p className="text-sm text-yellow-700">
-                  Link na obnovenie hesla expiroval alebo bol už použitý.
+                <p className="text-sm font-medium text-amber-800 mb-0.5">{t.linkExpired}</p>
+                <p className="text-xs text-amber-700">
+                  {t.linkExpiredManual}
                 </p>
               </div>
             </div>
@@ -578,33 +561,35 @@ export default function ResetPasswordForm() {
           <div className="space-y-3">
             <button
               onClick={() => setManualMode(true)}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full text-white py-2.5 px-4 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+              style={{ backgroundColor: '#686ea3' }}
             >
               <div className="flex items-center justify-center space-x-2">
-                <Key size={18} />
-                <span>Zadať kód manuálne</span>
+                <Key size={16} />
+                <span>{t.enterCodeManually}</span>
               </div>
             </button>
             
             <Link
               href="/auth/forgot-password"
-              className="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition-all duration-200 font-medium text-gray-700"
+              className="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg transition-all duration-200 font-semibold text-white text-sm hover:opacity-90"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
             >
-              <RefreshCw size={18} />
-              <span>Požiadať o nový email</span>
+              <RefreshCw size={16} />
+              <span>{t.requestNewEmail}</span>
             </Link>
           </div>
         </div>
       )}
 
       {/* Help Section */}
-      <div className="mt-8 text-center">
+      <div className="mt-4 text-center">
         <Link
           href="/login"
-          className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          className="inline-flex items-center space-x-2 text-white hover:text-white/80 font-medium transition-colors text-sm"
         >
           <ArrowLeft size={16} />
-          <span>Späť na prihlásenie</span>
+          <span>{t.backToLogin}</span>
         </Link>
       </div>
 

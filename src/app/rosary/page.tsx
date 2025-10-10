@@ -12,6 +12,7 @@ import {
   ROSARY_CATEGORIES, 
   getCategoryInfo
 } from '@/app/lib/rosary-utils';
+import { rosaryTranslations } from './translations';
 import { RosaryCategory } from '@/app/types/rosary';
 import { 
   BookOpen, 
@@ -42,6 +43,7 @@ export default function RosaryPage() {
   const { lang } = useLanguage();
   const { supabase } = useSupabase();
   const router = useRouter();
+  const t = rosaryTranslations[lang as keyof typeof rosaryTranslations] ?? rosaryTranslations.sk;
 
   const [categoryStats, setCategoryStats] = useState<CategoryStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,27 +145,27 @@ export default function RosaryPage() {
             
             {/* Main heading */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white drop-shadow-2xl">
-              Lectio Divina Ruženec
+              {t.heroTitle}
             </h1>
             
             {/* Subtitle */}
             <p className="text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-8 drop-shadow-lg">
-              Spojte tradičnú modlitbu ruženec s duchovným čítaním Božieho slova
+              {t.heroSubtitle}
             </p>
             
             {/* Feature badges */}
             <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
               <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-white/20">
                 <BookOpen size={18} style={{ color: '#40467b' }} />
-                <span className="text-sm font-medium text-gray-800">5 krokov Lectio Divina</span>
+                <span className="text-sm font-medium text-gray-800">{t.fiveSteps}</span>
               </div>
               <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-white/20">
                 <Headphones size={18} style={{ color: '#40467b' }} />
-                <span className="text-sm font-medium text-gray-800">Audio nahrávky</span>
+                <span className="text-sm font-medium text-gray-800">{t.audioRecordings}</span>
               </div>
               <div className="flex items-center gap-2 bg-white/90 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-white/20">
                 <Heart size={18} style={{ color: '#40467b' }} />
-                <span className="text-sm font-medium text-gray-800">4 kategórie tajomstiev</span>
+                <span className="text-sm font-medium text-gray-800">{t.fourCategories}</span>
               </div>
             </div>
 
@@ -179,7 +181,7 @@ export default function RosaryPage() {
                 <h3 className="text-3xl font-bold mb-2 text-white drop-shadow-lg">
                   {totalDecades}
                 </h3>
-                <p className="text-white/90 font-medium">Tajomstiev</p>
+                <p className="text-white/90 font-medium">{t.mysteries}</p>
               </div>
 
               <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20 hover:bg-white/20 transition-all">
@@ -192,7 +194,7 @@ export default function RosaryPage() {
                 <h3 className="text-3xl font-bold mb-2 text-white drop-shadow-lg">
                   {totalAudio}
                 </h3>
-                <p className="text-white/90 font-medium">S audio</p>
+                <p className="text-white/90 font-medium">{t.withAudio}</p>
               </div>
 
               <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20 hover:bg-white/20 transition-all">
@@ -205,7 +207,7 @@ export default function RosaryPage() {
                 <h3 className="text-3xl font-bold mb-2 text-white drop-shadow-lg">
                   15-20
                 </h3>
-                <p className="text-white/90 font-medium">Minút/tajomstvo</p>
+                <p className="text-white/90 font-medium">{t.minutesPerMystery}</p>
               </div>
             </div>
           </div>
@@ -217,10 +219,10 @@ export default function RosaryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-white">
-              Vyberte si kategóriu tajomstiev
+              {t.selectCategory}
             </h2>
             <p className="text-lg text-white/80 max-w-2xl mx-auto">
-              Každá kategória obsahuje 5 tajomstiev sprevádzaných krokmi Lectio Divina
+              {t.selectCategoryDesc}
             </p>
           </div>
 
@@ -273,7 +275,7 @@ export default function RosaryPage() {
                       <div className="flex items-center justify-center gap-2">
                         <BookOpen size={14} className="text-white/70" />
                         <span className="text-sm text-white/90">
-                          {stats.count} tajomstiev
+                          {stats.count} {t.mysteriesCount}
                         </span>
                       </div>
                       
@@ -281,7 +283,7 @@ export default function RosaryPage() {
                         <div className="flex items-center justify-center gap-2">
                           <Headphones size={14} className="text-white/70" />
                           <span className="text-sm text-white/90">
-                            {stats.hasAudio} s audio
+                            {stats.hasAudio} {t.withAudioCount}
                           </span>
                         </div>
                       )}
@@ -290,7 +292,7 @@ export default function RosaryPage() {
                   
                   {/* CTA */}
                   <div className="inline-flex items-center gap-2 font-semibold text-sm text-white group-hover:gap-3 transition-all">
-                    Začať
+                    {t.start}
                     <ChevronRight size={16} />
                   </div>
                 </div>
@@ -339,18 +341,18 @@ export default function RosaryPage() {
                 <Sparkles size={24} />
               </div>
               <h3 className="text-2xl font-bold text-gray-800">
-                Duchovné prínosy
+                {t.spiritualBenefits}
               </h3>
             </div>
             
             <div className="space-y-4">
               {[
-                'Hlbšie pochopenie Božieho slova',
-                'Pokojná a sústredená modlitba',
-                'Osobný dialóg s Bohom',
-                'Duchovný rast a zrenie',
-                'Praktické uplatnenie v každodennom živote',
-                'Spojenie tradície s kontempláciou'
+                t.benefits.deeper,
+                t.benefits.peaceful,
+                t.benefits.personal,
+                t.benefits.growth,
+                t.benefits.practical,
+                t.benefits.tradition
               ].map((benefit, index) => (
                 <div 
                   key={index}
@@ -368,19 +370,19 @@ export default function RosaryPage() {
         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 sm:p-12 mt-16">
           <div className="text-center mb-10">
             <h3 className="text-2xl sm:text-3xl font-bold mb-3" style={{ color: '#40467b' }}>
-              Funkcie aplikácie
+              {t.appFeatures}
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Moderné nástroje pre starobylú tradíciu modlitby
+              {t.appFeaturesDesc}
             </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: <Headphones size={24} />, title: 'Audio nahrávky', desc: 'Profesionálne nahrané texty', color: '#40467b' },
-              { icon: <BookOpen size={24} />, title: 'Biblické texty', desc: 'Kompletné čítania', color: '#545a94' },
-              { icon: <Eye size={24} />, title: 'Krokovanie', desc: 'Vedenie krok za krokom', color: '#686ea3' },
-              { icon: <Heart size={24} />, title: 'Interaktívne', desc: 'Moderné rozhranie', color: '#7c82b2' }
+              { icon: <Headphones size={24} />, title: t.features.audio.title, desc: t.features.audio.desc, color: '#40467b' },
+              { icon: <BookOpen size={24} />, title: t.features.biblical.title, desc: t.features.biblical.desc, color: '#545a94' },
+              { icon: <Eye size={24} />, title: t.features.stepByStep.title, desc: t.features.stepByStep.desc, color: '#686ea3' },
+              { icon: <Heart size={24} />, title: t.features.interactive.title, desc: t.features.interactive.desc, color: '#7c82b2' }
             ].map((feature, index) => (
               <div 
                 key={index}
@@ -414,7 +416,7 @@ export default function RosaryPage() {
               }}
             />
             <span className="text-lg font-semibold" style={{ color: '#40467b' }}>
-              Načítavam ruženec...
+              {t.loading}
             </span>
           </div>
         </div>

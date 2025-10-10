@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 import { useSupabase } from "../../components/SupabaseProvider"; // ← ZMENA: náš provider
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { useLanguage } from "@/app/components/LanguageProvider";
+import { callbackTranslations } from "./translations";
 
 export default function AuthCallbackPage() {
   const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = callbackTranslations[lang];
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
@@ -44,12 +48,12 @@ export default function AuthCallbackPage() {
               }]);
 
             if (insertError) {
-              throw new Error("Chyba pri vytváraní používateľského záznamu");
+              throw new Error(t.userRecordError);
             }
 
             // Nový používateľ s user rolou - presmeruj na hlavnú stránku
             setStatus('success');
-            setMessage('Váš účet bol úspešne vytvorený! Presmerovávame vás na hlavnú stránku.');
+            setMessage(t.accountCreatedDesc);
             
             setTimeout(() => {
               router.push('/');
@@ -59,7 +63,7 @@ export default function AuthCallbackPage() {
 
           // Úspešné prihlásenie - presmeruj podľa roly
           setStatus('success');
-          setMessage(`Vitajte späť, ${userData.full_name || userData.role}! Presmerovávame vás...`);
+          setMessage(`${t.welcomeBack}, ${userData.full_name || userData.role}! ${t.redirecting}`);
           
           setTimeout(() => {
             if (userData.role === 'admin') {
@@ -70,12 +74,12 @@ export default function AuthCallbackPage() {
           }, 2000);
 
         } else {
-          throw new Error("Nepodarilo sa získať informácie o používateľovi");
+          throw new Error(t.userInfoError);
         }
 
       } catch (error: any) {
         setStatus('error');
-        setMessage(error.message || "Chyba pri prihlasovaní");
+        setMessage(error.message || t.loginError);
         
         setTimeout(() => {
           router.push('/login');
@@ -84,7 +88,7 @@ export default function AuthCallbackPage() {
     };
 
     handleAuthCallback();
-  }, [supabase, router]);
+  }, [supabase, router, t]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
@@ -100,10 +104,10 @@ export default function AuthCallbackPage() {
             
             <div className="space-y-2">
               <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Dokončovanie prihlásenia
+                {t.completingLogin}
               </h2>
               <p className="text-gray-600 text-sm">
-                Overujeme vaše oprávnenia...
+                {t.verifyingPermissions}
               </p>
             </div>
             
@@ -123,14 +127,14 @@ export default function AuthCallbackPage() {
             
             <div className="space-y-2">
               <h2 className="text-xl font-bold text-green-600">
-                Prihlásenie úspešné! ✅
+                {t.loginSuccessful}
               </h2>
               <p className="text-gray-600 text-sm">{message}</p>
             </div>
             
             <div className="flex items-center justify-center space-x-2">
               <Loader2 size={16} className="text-green-600 animate-spin" />
-              <span className="text-sm text-green-600">Presmerovávame...</span>
+              <span className="text-sm text-green-600">{t.redirecting}</span>
             </div>
           </div>
         )}
@@ -143,7 +147,7 @@ export default function AuthCallbackPage() {
             
             <div className="space-y-2">
               <h2 className="text-xl font-bold text-red-600">
-                Prístup zamietnutý ❌
+                {t.accessDenied}
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed">{message}</p>
             </div>
@@ -152,11 +156,11 @@ export default function AuthCallbackPage() {
               <div className="flex items-start space-x-2">
                 <AlertCircle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-amber-700 text-left">
-                  <p className="font-medium mb-1">Čo môžete robiť:</p>
+                  <p className="font-medium mb-1">{t.whatYouCanDo}</p>
                   <ul className="space-y-1">
-                    <li>• Kontaktujte správcu systému</li>
-                    <li>• Požiadajte o pridelenie admin role</li>
-                    <li>• Overte, že používate správny účet</li>
+                    <li>• {t.contactAdmin}</li>
+                    <li>• {t.requestAdminRole}</li>
+                    <li>• {t.verifyCorrectAccount}</li>
                   </ul>
                 </div>
               </div>
@@ -164,7 +168,7 @@ export default function AuthCallbackPage() {
             
             <div className="flex items-center justify-center space-x-2">
               <Loader2 size={16} className="text-gray-400 animate-spin" />
-              <span className="text-sm text-gray-500">Presmerovávame na login...</span>
+              <span className="text-sm text-gray-500">{t.redirectingToLogin}</span>
             </div>
           </div>
         )}

@@ -181,7 +181,7 @@ export default function IntroPage() {
                       </div>
                       <div className="text-center mb-4">
                         <div className="text-sm font-semibold text-gray-500 mb-1">
-                          Krok {step.number} • {step.duration}
+                          {t.step} {step.number} • {step.duration}
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">
                           {step.title}

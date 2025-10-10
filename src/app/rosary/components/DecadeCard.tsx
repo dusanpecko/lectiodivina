@@ -6,6 +6,8 @@
 import { useState } from 'react';
 import { RosaryDecade } from '@/app/types/rosary';
 import { getCategoryInfo, hasAudio, hasImage } from '@/app/lib/rosary-utils';
+import { useLanguage } from '@/app/components/LanguageProvider';
+import { rosaryTranslations } from '../translations';
 import { 
   ChevronRight, 
   Play, 
@@ -34,6 +36,8 @@ export default function DecadeCard({
   const categoryInfo = getCategoryInfo(decade.category);
   const hasAudioContent = hasAudio(decade);
   const hasImageContent = hasImage(decade);
+  const { lang } = useLanguage();
+  const t = rosaryTranslations[lang];
 
   return (
     <div
@@ -101,7 +105,7 @@ export default function DecadeCard({
             className="text-sm font-medium transition-colors duration-300"
             style={{ color: categoryInfo.color }}
           >
-            Začať Lectio Divina
+            {t.startLectioDivina}
           </span>
           <ChevronRight 
             size={18} 

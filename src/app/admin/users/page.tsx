@@ -225,66 +225,130 @@ export default function UsersAdminPage() {
   }, {} as Record<string, number>);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
-                <span className="mr-3">👥</span>
-                Správa používateľov
-              </h1>
-              <p className="text-gray-600 flex items-center">
-                <span className="mr-2">📊</span>
-                Celkom {total} registrovaných používateľov
-              </p>
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header with Stats */}
+        <header className="mb-8">
+          <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] rounded-2xl shadow-xl p-8 text-white">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <Users size={28} />
+                  <h1 className="text-3xl font-bold">Správa používateľov</h1>
+                </div>
+                <p className="text-white/90">Správa používateľských účtov a oprávnení</p>
+              </div>
             </div>
-            <div className="text-5xl">🧑‍💼</div>
+
+            {/* Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users size={20} className="text-white/80" />
+                  <span className="text-sm font-medium text-white/80">Celkom</span>
+                </div>
+                <div className="text-2xl font-bold">{total}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown size={20} className="text-white/80" />
+                  <span className="text-sm font-medium text-white/80">Admini</span>
+                </div>
+                <div className="text-2xl font-bold">{usersByRole.admin || 0}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield size={20} className="text-white/80" />
+                  <span className="text-sm font-medium text-white/80">Moderátori</span>
+                </div>
+                <div className="text-2xl font-bold">{usersByRole.moderator || 0}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Pencil size={20} className="text-white/80" />
+                  <span className="text-sm font-medium text-white/80">Editori</span>
+                </div>
+                <div className="text-2xl font-bold">{usersByRole.editor || 0}</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <UserCheck size={20} className="text-white/80" />
+                  <span className="text-sm font-medium text-white/80">Používatelia</span>
+                </div>
+                <div className="text-2xl font-bold">{usersByRole.user || 0}</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Control Panels */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Import Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Upload size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Import dát</h3>
+            </div>
+            <label className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all cursor-pointer w-full">
+              <Upload size={16} />
+              <span className="font-medium text-sm">
+                {importLoading ? "Importujem..." : "Import Excel"}
+              </span>
+              <input
+                type="file"
+                accept=".xlsx"
+                onChange={handleExcelImport}
+                className="hidden"
+                disabled={importLoading}
+              />
+            </label>
           </div>
 
-          {/* Controls */}
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-3 ml-auto">
-              <label className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-md">
-                <Upload size={18} />
-                <span className="font-medium">
-                  {importLoading ? "Importujem..." : "Import Excel"}
-                </span>
-                <input
-                  type="file"
-                  accept=".xlsx"
-                  onChange={handleExcelImport}
-                  className="hidden"
-                  disabled={importLoading}
-                />
-              </label>
-              
+          {/* Export Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Download size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Export dát</h3>
+            </div>
+            <button
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all w-full"
+              onClick={handleExportExcel}
+              type="button"
+            >
+              <Download size={16} />
+              <span className="font-medium text-sm">Export Excel</span>
+            </button>
+          </div>
+
+          {/* Add User Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <PlusCircle size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Nový používateľ</h3>
+            </div>
+            <Link href="/admin/users/new">
               <button
-                className="inline-flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-md"
-                onClick={handleExportExcel}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#40467b] to-[#5a5f8f] text-white px-4 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all w-full"
                 type="button"
               >
-                <Download size={18} />
-                <span className="font-medium">Export Excel</span>
+                <PlusCircle size={16} />
+                <span className="font-medium text-sm">Pridať používateľa</span>
               </button>
-              
-              <Link href="/admin/users/new">
-                <button
-                  className="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition shadow-md font-medium"
-                  type="button"
-                >
-                  <PlusCircle size={18} />
-                  Pridať používateľa
-                </button>
-              </Link>
-            </div>
+            </Link>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Search size={20} className="text-gray-600" />
+            <h3 className="font-semibold text-gray-900">Vyhľadávanie a filtre</h3>
+          </div>
+
           {/* Global Search */}
           <div className="flex items-center space-x-4 mb-4">
             <div className="flex-1 relative">
@@ -293,17 +357,17 @@ export default function UsersAdminPage() {
                 type="text"
                 value={globalSearch}
                 onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Hľadať používateľov..."
               />
             </div>
             
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`inline-flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition ${
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
                 showFilters || activeFiltersCount > 0
-                  ? "bg-purple-100 text-purple-700 border border-purple-300"
-                  : "bg-gray-100 text-gray-700 border border-gray-300"
+                  ? "bg-indigo-50 text-indigo-700"
+                  : "bg-gray-50 text-gray-700 hover:bg-gray-100"
               }`}
               type="button"
             >
@@ -314,94 +378,94 @@ export default function UsersAdminPage() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="border-t pt-4">
+            <div className="border-t border-gray-200 pt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    ✉️ Email
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Email
                   </label>
                   <input
                     type="text"
                     value={filter.email}
                     onChange={e => { setFilter(f => ({ ...f, email: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     placeholder="Hľadať v emailoch..."
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    👤 Meno
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Meno
                   </label>
                   <input
                     type="text"
                     value={filter.full_name}
                     onChange={e => { setFilter(f => ({ ...f, full_name: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     placeholder="Hľadať v menách..."
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    🏷️ Rola
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Rola
                   </label>
                   <select
                     value={filter.role}
                     onChange={e => { setFilter(f => ({ ...f, role: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900"
                     disabled={!!globalSearch}
                   >
                     <option value="">Všetky roly</option>
-                    <option value="admin">👑 Admin</option>
-                    <option value="moderator">🛡️ Moderátor</option>
-                    <option value="editor">✏️ Editor</option>
-                    <option value="user">👤 Používateľ</option>
+                    <option value="admin">Admin</option>
+                    <option value="moderator">Moderátor</option>
+                    <option value="editor">Editor</option>
+                    <option value="user">Používateľ</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    🔐 Provider
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Provider
                   </label>
                   <select
                     value={filter.provider}
                     onChange={e => { setFilter(f => ({ ...f, provider: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900"
                     disabled={!!globalSearch}
                   >
                     <option value="">Všetky providery</option>
-                    <option value="google">🔴 Google</option>
-                    <option value="facebook">🔵 Facebook</option>
-                    <option value="github">⚫ GitHub</option>
-                    <option value="email">✉️ Email</option>
+                    <option value="google">Google</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="github">GitHub</option>
+                    <option value="email">Email</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📅 Od dátumu
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Od dátumu
                   </label>
                   <input
                     type="date"
                     value={filter.dateFrom}
                     onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     disabled={!!globalSearch}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
-                    📅 Do dátumu
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Do dátumu
                   </label>
                   <input
                     type="date"
                     value={filter.dateTo}
                     onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     disabled={!!globalSearch}
                   />
                 </div>
@@ -409,66 +473,62 @@ export default function UsersAdminPage() {
               
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-all"
                 type="button"
               >
                 <Eraser size={16} />
-                Vymazać filtre
+                Vymazať filtre
               </button>
             </div>
           )}
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">👤</span>
-                      Používateľ
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <User size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Používateľ</span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">✉️</span>
-                      Email
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">🔐</span>
-                      Provider
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Shield size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Provider</span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">🏷️</span>
-                      Rola
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Crown size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Rola</span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    <div className="flex items-center">
-                      <span className="mr-2">📅</span>
-                      Vytvorené
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Vytvorené</span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-center font-semibold">
-                    <div className="flex items-center justify-center">
-                      <span className="mr-2">⚙️</span>
-                      Akcie
-                    </div>
+                  <th className="px-6 py-4 text-center">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Akcie</span>
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200">
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center space-y-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                         <span className="text-gray-500 font-medium">Načítavam používateľov...</span>
                       </div>
                     </td>
@@ -477,7 +537,7 @@ export default function UsersAdminPage() {
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center space-y-4">
-                        <div className="text-6xl">👥</div>
+                        <Users size={48} className="text-gray-300" />
                         <div className="text-xl font-semibold text-gray-600">Žiadni používatelia</div>
                         <p className="text-gray-500">Skúste zmeniť filtre alebo pridajte nového používateľa.</p>
                       </div>
@@ -485,7 +545,7 @@ export default function UsersAdminPage() {
                   </tr>
                 ) : (
                   users.map(u => (
-                    <tr key={u.id} className="border-b hover:bg-purple-50 transition-colors">
+                    <tr key={u.id} className="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all duration-200">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
                           {u.avatar_url ? (
@@ -514,8 +574,8 @@ export default function UsersAdminPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center text-gray-700">
-                          <Mail size={16} className="mr-2 text-gray-400" />
+                        <div className="flex items-center text-gray-900">
+                          <Mail size={16} className="mr-2 text-gray-600" />
                           {u.email}
                         </div>
                       </td>
@@ -526,8 +586,8 @@ export default function UsersAdminPage() {
                         {getRoleBadge(u.role || 'user')}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Calendar size={16} className="mr-2 text-gray-400" />
+                        <div className="flex items-center text-sm text-gray-900">
+                          <Calendar size={16} className="mr-2 text-gray-600" />
                           {formatDate(u.created_at || '')}
                         </div>
                       </td>
@@ -535,22 +595,22 @@ export default function UsersAdminPage() {
                         <div className="flex gap-2 items-center justify-center">
                           <Link href={`/admin/users/${u.id}`}>
                             <button
-                              className="p-2 rounded-lg hover:bg-purple-100 transition group"
+                              className="p-2 rounded-lg bg-gradient-to-r from-[#40467b] to-[#5a5f8f] text-white hover:shadow-lg hover:scale-105 transition-all"
                               title="Upraviť používateľa"
                             >
-                              <Pencil size={18} className="text-purple-600 group-hover:text-purple-700" />
+                              <Pencil size={16} />
                             </button>
                           </Link>
                           <button
                             onClick={() => handleDelete(u.id!)}
                             disabled={deletingId === u.id}
-                            className="p-2 rounded-lg hover:bg-red-100 transition group disabled:opacity-50"
+                            className="p-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50"
                             title="Vymazať používateľa"
                           >
                             {deletingId === u.id ? (
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                             ) : (
-                              <Trash2 size={18} className="text-red-500 group-hover:text-red-600" />
+                              <Trash2 size={16} />
                             )}
                           </button>
                         </div>
@@ -563,8 +623,8 @@ export default function UsersAdminPage() {
           </div>
 
           {/* Pagination */}
-          {!loading && users.length > 0 && (
-            <div className="border-t bg-gray-50 px-6 py-4">
+          {!loading && users.length > 0 && Math.ceil(total / PAGE_SIZE) > 1 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mt-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
                   Zobrazené <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
@@ -574,7 +634,7 @@ export default function UsersAdminPage() {
                 
                 <div className="flex items-center space-x-2">
                   <button
-                    className="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:shadow-md hover:scale-105 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
                   >
@@ -590,10 +650,10 @@ export default function UsersAdminPage() {
                         <button
                           key={pageNum}
                           onClick={() => setPage(pageNum)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                             pageNum === page
-                              ? "bg-purple-600 text-white"
-                              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                              ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md"
+                              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                           }`}
                         >
                           {pageNum}
@@ -603,7 +663,7 @@ export default function UsersAdminPage() {
                   </div>
                   
                   <button
-                    className="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:shadow-md hover:scale-105 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
                     disabled={page * PAGE_SIZE >= total}
                   >
@@ -615,50 +675,7 @@ export default function UsersAdminPage() {
           )}
         </div>
 
-        {/* Stats Cards */}
-        {!loading && users.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Celkom používateľov</p>
-                  <p className="text-3xl font-bold text-gray-900">{total}</p>
-                </div>
-                <div className="text-3xl">👥</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Administrátori</p>
-                  <p className="text-3xl font-bold text-red-600">{usersByRole.admin || 0}</p>
-                </div>
-                <div className="text-3xl">👑</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Google účty</p>
-                  <p className="text-3xl font-bold text-blue-600">{usersByProvider.google || 0}</p>
-                </div>
-                <div className="text-3xl">🔴</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Email registrácie</p>
-                  <p className="text-3xl font-bold text-green-600">{usersByProvider.email || 0}</p>
-                </div>
-                <div className="text-3xl">✉️</div>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Role Distribution Chart */}
         {!loading && users.length > 0 && Object.keys(usersByRole).length > 0 && (

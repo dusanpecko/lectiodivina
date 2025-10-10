@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSupabase } from "../components/SupabaseProvider"; // Náš nový provider
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSupabase } from "../components/SupabaseProvider";
+import { useLanguage } from "../components/LanguageProvider";
+import { loginTranslations } from "./translations";
 import { 
   Mail, 
   Lock, 
@@ -18,8 +20,12 @@ import {
 } from "lucide-react";
 
 export default function LoginPage() {
-  const { supabase, session } = useSupabase(); // Používame náš provider
+  const { supabase, session } = useSupabase();
+  const { lang } = useLanguage();
+  const t = loginTranslations[lang];
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/admin';
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +59,8 @@ export default function LoginPage() {
           .maybeSingle();
 
         if (userData?.role === "admin") {
-          router.replace("/admin");
+          // Použiť redirect parameter ak existuje, inak predvolené /admin
+          router.replace(redirectPath);
         } else {
           // Bežný používateľ ide na hlavnú stránku
           router.replace("/");
@@ -62,7 +69,7 @@ export default function LoginPage() {
     };
 
     checkSessionAndRedirect();
-  }, [session, router, isCheckingSession, supabase]);
+  }, [session, router, isCheckingSession, supabase, redirectPath]);
 
   // Loading screen počas kontroly session
   if (isCheckingSession) {
@@ -76,9 +83,9 @@ export default function LoginPage() {
           </div>
           <div className="space-y-2">
             <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Načítavam prihlásenie
+              {t.loadingLogin}
             </h2>
-            <p className="text-gray-600 text-sm">Kontrolujem váš účet...</p>
+            <p className="text-gray-600 text-sm">{t.checkingAccount}</p>
           </div>
         </div>
       </div>
@@ -98,20 +105,20 @@ export default function LoginPage() {
 
     // Validácia
     if (password !== confirmPassword) {
-      setError("Heslá sa nezhodujú");
+      setError(t.passwordMismatch);
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError("Heslo musí mať minimálne 6 znakov");
+      setError(t.passwordMinLength);
       setLoading(false);
       return;
     }
 
     try {
       if (!supabase) {
-        throw new Error("Supabase client nie je dostupný");
+        throw new Error(t.supabaseUnavailable);
       }
 
       // Registrácia používateľa
@@ -160,7 +167,7 @@ export default function LoginPage() {
         
         setLoading(false);
         setError(null);
-        setSuccessMessage("Registrácia bola úspešná! Skontrolujte si email pre overenie účtu.");
+        setSuccessMessage(t.registrationSuccess);
         
         // Po 3 sekundách prepneme na prihlásenie
         setTimeout(() => {
@@ -175,7 +182,7 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Register error:", err);
       setLoading(false);
-      setError(err instanceof Error ? err.message : "Neznáma chyba");
+      setError(err instanceof Error ? err.message : t.unknownError);
     }
   };
 
@@ -189,7 +196,7 @@ export default function LoginPage() {
       console.log("Attempting login with:", { email, supabase: !!supabase });
 
       if (!supabase) {
-        throw new Error("Supabase client nie je dostupný");
+        throw new Error(t.supabaseUnavailable);
       }
 
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -228,8 +235,8 @@ export default function LoginPage() {
 
         // Presmerovanie podľa role
         if (userData?.role === "admin") {
-          console.log("Login successful, redirecting to admin");
-          router.push("/admin");
+          console.log("Login successful, redirecting to:", redirectPath);
+          router.push(redirectPath);
         } else {
           // Bežný používateľ alebo neexistujúci záznam v users tabuľke
           console.log("Login successful, redirecting to homepage");
@@ -237,13 +244,13 @@ export default function LoginPage() {
         }
       } else {
         setLoading(false);
-        setError("Nepodarilo sa overiť používateľa.");
+        setError(t.userVerificationFailed);
         await supabase.auth.signOut();
       }
     } catch (err) {
       console.error("Login error:", err);
       setLoading(false);
-      setError(err instanceof Error ? err.message : "Neznáma chyba");
+      setError(err instanceof Error ? err.message : t.unknownError);
     }
   };
 
@@ -253,7 +260,7 @@ export default function LoginPage() {
 
     try {
       if (!supabase) {
-        throw new Error("Supabase client nie je dostupný");
+        throw new Error(t.supabaseUnavailable);
       }
 
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -271,7 +278,7 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Social login error:", err);
       setLoading(false);
-      setError(err instanceof Error ? err.message : "Neznáma chyba");
+      setError(err instanceof Error ? err.message : t.unknownError);
     }
   };
 
@@ -283,10 +290,10 @@ export default function LoginPage() {
           <Shield size={24} className="text-white" />
         </div>
         <h1 className="text-xl font-bold text-white mb-0.5">
-          {isRegister ? "Vytvorte si účet" : "Vitajte späť"}
+          {isRegister ? t.createAccount : t.welcomeBack}
         </h1>
         <p className="text-white/70 text-xs">
-          {isRegister ? "Zaregistrujte sa a začnite svoju duchovnú cestu" : "Prihláste sa do vášho účtu"}
+          {isRegister ? t.registerSubtitle : t.loginSubtitle}
         </p>
       </div>
 
@@ -302,7 +309,7 @@ export default function LoginPage() {
             }`}
           >
             <Mail size={14} className="inline mr-1.5" />
-            Email
+            {t.emailTab}
           </button>
           <button
             onClick={() => setLoginType('social')}
@@ -313,7 +320,7 @@ export default function LoginPage() {
             }`}
           >
             <Chrome size={14} className="inline mr-1.5" />
-            Sociálne siete
+            {t.socialTab}
           </button>
         </div>
       </div>
@@ -323,7 +330,7 @@ export default function LoginPage() {
         <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center space-x-2">
             <CheckCircle2 size={18} className="text-green-600" />
-            <span className="text-green-800 font-medium text-sm">Úspech!</span>
+            <span className="text-green-800 font-medium text-sm">{t.success}</span>
           </div>
           <p className="text-green-700 text-xs mt-1">{successMessage}</p>
         </div>
@@ -334,7 +341,7 @@ export default function LoginPage() {
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <div className="flex items-center space-x-2">
             <AlertCircle size={18} className="text-red-600" />
-            <span className="text-red-800 font-medium text-sm">Chyba prihlásenia</span>
+            <span className="text-red-800 font-medium text-sm">{t.loginError}</span>
           </div>
           <p className="text-red-700 text-xs mt-1">{error}</p>
         </div>
@@ -348,13 +355,13 @@ export default function LoginPage() {
             <div className="space-y-1">
               <label className="text-xs font-semibold text-white flex items-center">
                 <Shield size={14} className="mr-1.5" />
-                Celé meno
+                {t.fullName}
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
-                  placeholder="Ján Novák"
+                  placeholder={t.fullNamePlaceholder}
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                   className="w-full px-3 py-2 pl-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
@@ -371,13 +378,13 @@ export default function LoginPage() {
           <div className="space-y-1">
             <label className="text-xs font-semibold text-white flex items-center">
               <Mail size={14} className="mr-1.5" />
-              Emailová adresa
+              {t.email}
             </label>
             <div className="relative">
               <input
                 type="email"
                 required
-                placeholder="admin@example.com"
+                placeholder={t.emailPlaceholder}
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full px-3 py-2 pl-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
@@ -392,13 +399,13 @@ export default function LoginPage() {
           <div className="space-y-1">
             <label className="text-xs font-semibold text-white flex items-center">
               <Lock size={14} className="mr-1.5" />
-              Heslo
+              {t.password}
             </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                placeholder="••••••••"
+                placeholder={t.passwordPlaceholder}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full px-3 py-2 pl-9 pr-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
@@ -421,13 +428,13 @@ export default function LoginPage() {
             <div className="space-y-1">
               <label className="text-xs font-semibold text-white flex items-center">
                 <Lock size={14} className="mr-1.5" />
-                Potvrďte heslo
+                {t.confirmPassword}
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  placeholder="••••••••"
+                  placeholder={t.passwordPlaceholder}
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   className="w-full px-3 py-2 pl-9 pr-9 text-sm rounded-lg focus:ring-2 focus:ring-white/50 transition-all duration-200 bg-white/10 border text-white placeholder-white/50"
@@ -449,13 +456,13 @@ export default function LoginPage() {
                 onChange={e => setRememberMe(e.target.checked)}
                 className="w-3.5 h-3.5 text-white border-white/30 rounded focus:ring-white/50 bg-white/10"
               />
-              <span className="text-white">Zapamätať si ma</span>
+              <span className="text-white">{t.rememberMe}</span>
             </label>
             <Link
               href="/auth/forgot-password"
               className="text-white hover:text-white/80 font-medium transition-colors"
             >
-              Zabudli ste heslo?
+              {t.forgotPassword}
             </Link>
           </div>
           )}
@@ -470,12 +477,12 @@ export default function LoginPage() {
             {loading ? (
               <div className="flex items-center justify-center space-x-2">
                 <Loader2 size={18} className="animate-spin" />
-                <span>{isRegister ? "Registrácia..." : "Prihlasovanie..."}</span>
+                <span>{isRegister ? t.registering : t.loggingIn}</span>
               </div>
             ) : (
               <div className="flex items-center justify-center space-x-2">
                 <LogIn size={18} />
-                <span>{isRegister ? "Registrovať sa" : "Prihlásiť sa"}</span>
+                <span>{isRegister ? t.register : t.login}</span>
               </div>
             )}
           </button>
@@ -484,7 +491,7 @@ export default function LoginPage() {
           <div className="text-center text-xs text-white/70">
             {isRegister ? (
               <>
-                Už máte účet?{" "}
+                {t.alreadyHaveAccount}{" "}
                 <button
                   type="button"
                   onClick={() => {
@@ -496,12 +503,12 @@ export default function LoginPage() {
                   }}
                   className="text-white font-semibold hover:text-white/80 underline"
                 >
-                  Prihláste sa
+                  {t.signInHere}
                 </button>
               </>
             ) : (
               <>
-                Nemáte účet?{" "}
+                {t.noAccount}{" "}
                 <button
                   type="button"
                   onClick={() => {
@@ -511,7 +518,7 @@ export default function LoginPage() {
                   }}
                   className="text-white font-semibold hover:text-white/80 underline"
                 >
-                  Zaregistrujte sa
+                  {t.registerHere}
                 </button>
               </>
             )}
@@ -526,7 +533,7 @@ export default function LoginPage() {
             className="w-full flex items-center justify-center space-x-3 py-2.5 px-4 text-sm bg-white text-gray-700 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-white/20 transition-all duration-200 disabled:opacity-50 shadow-md"
           >
             <Chrome size={18} className="text-red-500" />
-            <span className="font-medium">Pokračovať s Google</span>
+            <span className="font-medium">{t.continueWithGoogle}</span>
           </button>
 
           <div className="relative my-4">
@@ -534,7 +541,7 @@ export default function LoginPage() {
               <div className="w-full border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 text-white/70 text-xs" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>alebo</span>
+              <span className="px-2 text-white/70 text-xs" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>{t.or}</span>
             </div>
           </div>
 
@@ -545,7 +552,7 @@ export default function LoginPage() {
           >
             <div className="flex items-center justify-center space-x-2">
               <Mail size={16} className="text-white/80" />
-              <span className="font-medium text-white">Použiť email</span>
+              <span className="font-medium text-white">{t.useEmail}</span>
             </div>
           </button>
         </div>
@@ -555,17 +562,17 @@ export default function LoginPage() {
       <div className="mt-4 text-center">
         <div className="flex items-center justify-center space-x-1.5 mb-2">
           <CheckCircle2 size={14} className="text-green-400" />
-          <span className="text-xs text-white/80">Zabezpečené SSL pripojenie</span>
+          <span className="text-xs text-white/80">{t.securedConnection}</span>
         </div>
         
         <p className="text-[10px] text-white/60 leading-tight">
-          Prihlásením súhlasíte s našimi{" "}
+          {t.byLoggingIn}{" "}
           <button className="text-white hover:text-white/80 underline">
-            podmienkami používania
+            {t.termsOfService}
           </button>{" "}
-          a{" "}
+          {t.and}{" "}
           <button className="text-white hover:text-white/80 underline">
-            ochranou osobných údajov
+            {t.privacyPolicy}
           </button>
         </p>
       </div>

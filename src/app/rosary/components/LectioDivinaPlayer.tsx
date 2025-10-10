@@ -11,6 +11,8 @@ import {
   getNextStep, 
   getPreviousStep 
 } from '@/app/lib/rosary-utils';
+import { useLanguage } from '@/app/components/LanguageProvider';
+import { rosaryTranslations } from '../translations';
 import { 
   Play, 
   Pause, 
@@ -44,6 +46,9 @@ export default function LectioDivinaPlayer({
   const currentStepInfo = getStepInfo(currentStep);
   const currentStepIndex = LECTIO_DIVINA_STEPS.indexOf(currentStep);
   const progress = ((currentStepIndex + 1) / LECTIO_DIVINA_STEPS.length) * 100;
+  
+  const { lang } = useLanguage();
+  const t = rosaryTranslations[lang];
 
   // Inicializácia audio
   useEffect(() => {
@@ -390,7 +395,7 @@ export default function LectioDivinaPlayer({
               onClick={handleStepComplete}
               className="text-green-600 hover:text-green-800 transition-colors"
             >
-              Dokončiť krok
+              {t.completeStep}
             </button>
           </div>
         </div>
@@ -406,21 +411,21 @@ export default function LectioDivinaPlayer({
             🎉 Gratulujeme!
           </h3>
           <p className="text-gray-700 mb-4">
-            Úspešne ste dokončili Lectio Divina pre toto tajomstvo ruženec.
+            {t.successMessage}
           </p>
           <div className="flex justify-center space-x-4">
             <button
               onClick={handleRestart}
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
-              Modliť sa znovu
+              {t.refresh}
             </button>
             {onComplete && (
               <button
                 onClick={onComplete}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Ďalšie tajomstvo
+                {t.nextMystery}
               </button>
             )}
           </div>

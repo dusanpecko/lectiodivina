@@ -275,51 +275,53 @@ export default function CalendarAdminPage() {
   const hasActiveFilters = globalSearch || Object.values(filter).some(f => f !== "");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hlavička */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                <CalendarIcon size={24} className="text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  {t.calendar_admin_title || "Správa kalendára"}
-                </h1>
-                <p className="text-gray-600">Liturgické dni a svätí</p>
-              </div>
-            </div>
-            
-            {/* Štatistiky */}
-            <div className="flex gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{total}</div>
-                <div className="text-sm text-gray-500">Záznamov</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {languageOptions.find(l => l.value === filterLang)?.flag}
+        <header className="mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] px-8 py-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                  <CalendarIcon size={28} className="text-white" />
                 </div>
-                <div className="text-sm text-gray-500">Jazyk</div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-sm">
+                    {t.calendar_admin_title || "Správa kalendára"}
+                  </h1>
+                  <p className="text-indigo-100 mt-1">Liturgické dni a svätí</p>
+                </div>
+              </div>
+              
+              {/* Štatistiky */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{total}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Celkom záznamov</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">
+                    {languageOptions.find(l => l.value === filterLang)?.flag}
+                  </div>
+                  <div className="text-sm text-indigo-100 mt-1">Aktívny jazyk</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Ovládacie panely */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Výber jazyka */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Globe size={20} className="text-blue-600" />
-              <h3 className="font-semibold text-gray-800">Jazyk dát</h3>
+              <Globe size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Filter jazyka</h3>
             </div>
             <select
               value={filterLang}
               onChange={e => { setFilterLang(e.target.value as any); setPage(1); }}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
             >
               {languageOptions.map(option => (
                 <option key={option.value} value={option.value}>
@@ -330,15 +332,15 @@ export default function CalendarAdminPage() {
           </div>
 
           {/* Import/Export */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Download size={20} className="text-green-600" />
-              <h3 className="font-semibold text-gray-800">Import / Export</h3>
+              <Download size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Import / Export</h3>
             </div>
-            <div className="flex gap-2">
-              <label className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2">
-                <Upload size={16} />
-                Import
+            <div className="flex gap-3">
+              <label className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2.5 rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all cursor-pointer font-medium shadow-sm">
+                <Upload size={18} />
+                <span>Import</span>
                 <input
                   type="file"
                   accept=".xlsx"
@@ -348,45 +350,49 @@ export default function CalendarAdminPage() {
               </label>
               <button
                 onClick={handleExportExcel}
-                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center justify-center gap-2"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2.5 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all font-medium shadow-sm"
               >
-                <Download size={16} />
-                Export
+                <Download size={18} />
+                <span>Export</span>
               </button>
             </div>
           </div>
 
           {/* Akcie */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <PlusCircle size={20} className="text-purple-600" />
-              <h3 className="font-semibold text-gray-800">Akcie</h3>
+              <PlusCircle size={20} className="text-gray-600" />
+              <h3 className="font-semibold text-gray-900">Pridať záznam</h3>
             </div>
             <button
               onClick={() => setShowAdd(!showAdd)}
-              className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2"
+              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-sm"
             >
-              <PlusCircle size={16} />
+              <PlusCircle size={18} />
               {showAdd ? "Zrušiť pridanie" : "Pridať záznam"}
             </button>
           </div>
         </div>
 
         {/* Vyhľadávanie a filtre */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Search size={20} className="text-gray-600" />
-              <h3 className="font-semibold text-gray-800">Vyhľadávanie a filtre</h3>
+              <h3 className="font-semibold text-gray-900">Vyhľadávanie a filtre</h3>
               {hasActiveFilters && (
-                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-2 py-1 rounded-full">
                   Aktívne filtre
                 </span>
               )}
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition"
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                showFilters || hasActiveFilters 
+                  ? 'bg-indigo-50 text-indigo-700' 
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
             >
               <Filter size={16} />
               {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -401,7 +407,7 @@ export default function CalendarAdminPage() {
                 type="text"
                 value={globalSearch}
                 onChange={e => { setGlobalSearch(e.target.value); setPage(1); }}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Vyhľadať vo všetkých poliach..."
               />
             </div>
@@ -409,82 +415,78 @@ export default function CalendarAdminPage() {
 
           {/* Detailné filtre */}
           {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <CalendarDays size={16} className="inline mr-1" />
-                  Meno dňa
-                </label>
-                <input
-                  type="text"
-                  value={filter.name_day}
-                  onChange={e => { setFilter(f => ({ ...f, name_day: e.target.value })); setPage(1); }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  placeholder="Filtrovať..."
-                  disabled={!!globalSearch}
-                />
+            <div className="border-t border-gray-200 pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Meno dňa
+                  </label>
+                  <input
+                    type="text"
+                    value={filter.name_day}
+                    onChange={e => { setFilter(f => ({ ...f, name_day: e.target.value })); setPage(1); }}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    placeholder="Filtrovať..."
+                    disabled={!!globalSearch}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Liturgický deň
+                  </label>
+                  <input
+                    type="text"
+                    value={filter.liturgical_day}
+                    onChange={e => { setFilter(f => ({ ...f, liturgical_day: e.target.value })); setPage(1); }}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    placeholder="Filtrovať..."
+                    disabled={!!globalSearch}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                    Svätí
+                  </label>
+                  <input
+                    type="text"
+                    value={filter.saints}
+                    onChange={e => { setFilter(f => ({ ...f, saints: e.target.value })); setPage(1); }}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    placeholder="Filtrovať..."
+                    disabled={!!globalSearch}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Dátum od</label>
+                  <input
+                    type="date"
+                    value={filter.dateFrom}
+                    onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    disabled={!!globalSearch}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Dátum do</label>
+                  <input
+                    type="date"
+                    value={filter.dateTo}
+                    onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    disabled={!!globalSearch}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Sparkles size={16} className="inline mr-1" />
-                  Liturgický deň
-                </label>
-                <input
-                  type="text"
-                  value={filter.liturgical_day}
-                  onChange={e => { setFilter(f => ({ ...f, liturgical_day: e.target.value })); setPage(1); }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  placeholder="Filtrovať..."
-                  disabled={!!globalSearch}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Users2 size={16} className="inline mr-1" />
-                  Svätí
-                </label>
-                <input
-                  type="text"
-                  value={filter.saints}
-                  onChange={e => { setFilter(f => ({ ...f, saints: e.target.value })); setPage(1); }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  placeholder="Filtrovať..."
-                  disabled={!!globalSearch}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum od</label>
-                <input
-                  type="date"
-                  value={filter.dateFrom}
-                  onChange={e => { setFilter(f => ({ ...f, dateFrom: e.target.value })); setPage(1); }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  disabled={!!globalSearch}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Dátum do</label>
-                <input
-                  type="date"
-                  value={filter.dateTo}
-                  onChange={e => { setFilter(f => ({ ...f, dateTo: e.target.value })); setPage(1); }}
-                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  disabled={!!globalSearch}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Vyčistiť filtre */}
-          {hasActiveFilters && (
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-              >
-                <Eraser size={16} />
-                Vyčistiť filtre
-              </button>
+              
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                  <Eraser size={16} />
+                  Vyčistiť filtre
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -575,42 +577,59 @@ export default function CalendarAdminPage() {
         )}
 
         {/* Tabuľka */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-4 text-left">
                     <div className="flex items-center gap-2">
-                      <CalendarIcon size={16} />
-                      Dátum
+                      <CalendarIcon size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Dátum
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-4 text-left">
                     <div className="flex items-center gap-2">
-                      <CalendarDays size={16} />
-                      Meno dňa
+                      <CalendarDays size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Meno dňa
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-4 text-left">
                     <div className="flex items-center gap-2">
-                      <Sparkles size={16} />
-                      Liturgický deň
+                      <Sparkles size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Liturgický deň
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-4 text-left">
                     <div className="flex items-center gap-2">
-                      <Users2 size={16} />
-                      Svätí
+                      <Users2 size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Svätí
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-4 text-left">
                     <div className="flex items-center gap-2">
-                      <Globe size={16} />
-                      Jazyk
+                      <Globe size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Jazyk
+                      </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Akcie</th>
+                  <th className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <Edit3 size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Akcie
+                      </span>
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -704,7 +723,7 @@ export default function CalendarAdminPage() {
                         </td>
                       </tr>
                     ) : (
-                      <tr key={day.id} className="hover:bg-blue-50 transition-colors">
+                      <tr key={day.id} className="border-b border-gray-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all">
                         <td className="px-6 py-4">
                           <div className="font-medium text-gray-900">
                             {new Date(day.date + 'T00:00:00').toLocaleDateString('sk-SK', {
@@ -770,85 +789,85 @@ export default function CalendarAdminPage() {
         </div>
 
         {/* Stránkovanie */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Zobrazujem <span className="font-medium">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
-              <span className="font-medium">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
-              <span className="font-medium">{total}</span> záznamov
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronDown size={16} className="rotate-90" />
-                Predchádzajúca
-              </button>
-              
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const totalPages = Math.ceil(total / PAGE_SIZE);
-                  const maxVisible = 5;
-                  
-                  // Ak je menej stránok ako maxVisible, zobraz všetky
-                  if (totalPages <= maxVisible) {
-                    return Array.from({ length: totalPages }, (_, i) => {
-                      const pageNum = i + 1;
-                      return (
-                        <button
-                          key={`page-${pageNum}`}
-                          onClick={() => setPage(pageNum)}
-                          className={`w-10 h-10 rounded-lg transition ${
-                            page === pageNum
-                              ? "bg-blue-600 text-white"
-                              : "border border-gray-300 hover:bg-gray-50"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    });
-                  }
-                  
-                  // Pre viac stránok, zobraz smart pagination
-                  const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
-                  const endPage = Math.min(totalPages, startPage + maxVisible - 1);
-                  
-                  const pages = [];
-                  for (let i = startPage; i <= endPage; i++) {
-                    pages.push(
-                      <button
-                        key={`page-${i}`}
-                        onClick={() => setPage(i)}
-                        className={`w-10 h-10 rounded-lg transition ${
-                          page === i
-                            ? "bg-blue-600 text-white"
-                            : "border border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {i}
-                      </button>
-                    );
-                  }
-                  
-                  return pages;
-                })()}
+        {!loading && days.length > 0 && Math.ceil(total / PAGE_SIZE) > 1 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600 font-medium">
+                Zobrazené {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, total)} z {total} záznamov
               </div>
               
-              <button
-                onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
-                disabled={page * PAGE_SIZE >= total}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Ďalšia
-                <ChevronDown size={16} className="-rotate-90" />
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 text-gray-700 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:border-indigo-300 hover:bg-indigo-50"
+                >
+                  <ChevronDown size={16} className="rotate-90 inline mr-1" />
+                  Predchádzajúca
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const totalPages = Math.ceil(total / PAGE_SIZE);
+                    const maxVisible = 5;
+                    
+                    // Ak je menej stránok ako maxVisible, zobraz všetky
+                    if (totalPages <= maxVisible) {
+                      return Array.from({ length: totalPages }, (_, i) => {
+                        const pageNum = i + 1;
+                        return (
+                          <button
+                            key={`page-${pageNum}`}
+                            onClick={() => setPage(pageNum)}
+                            className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                              page === pageNum
+                                ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-sm"
+                                : "bg-white border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      });
+                    }
+                    
+                    // Pre viac stránok, zobraz smart pagination
+                    const startPage = Math.max(1, Math.min(page - 2, totalPages - maxVisible + 1));
+                    const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                    
+                    const pages = [];
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <button
+                          key={`page-${i}`}
+                          onClick={() => setPage(i)}
+                          className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                            page === i
+                              ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-sm"
+                              : "bg-white border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      );
+                    }
+                    
+                    return pages;
+                  })()}
+                </div>
+                
+                <button
+                  onClick={() => setPage(p => (p * PAGE_SIZE < total ? p + 1 : p))}
+                  disabled={page * PAGE_SIZE >= total}
+                  className="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 text-gray-700 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:border-indigo-300 hover:bg-indigo-50"
+                >
+                  Ďalšia
+                  <ChevronDown size={16} className="-rotate-90 inline ml-1" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -23,7 +23,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setLoading(false);
       
       if (session === null) {
-        router.replace("/login");
+        // Uložíme aktuálnu URL pre redirect po prihlásení
+        const currentPath = window.location.pathname + window.location.search;
+        router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
         return;
       }
       

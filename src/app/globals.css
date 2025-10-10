@@ -140,3 +140,40 @@ form {
   border-left: 0;
   border-right: 0;
 }
+
+/* News Article Content Styling */
+.prose p {
+  margin-bottom: 1.5rem !important;
+  line-height: 1.8 !important;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose ul, .prose ol {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose li {
+  margin-bottom: 0.5rem !important;
+}
+
+.prose blockquote {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-left: 1rem !important;
+}
+
+.prose img {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.prose hr {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}

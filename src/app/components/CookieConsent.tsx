@@ -14,8 +14,8 @@ type Props = {
 // Language switcher component for cookie dialog
 function LanguageSwitcher({ currentLang, onLanguageChange }: { currentLang: string, onLanguageChange: (lang: Language) => void }) {
   const languages = [
-    { code: 'sk' as Language, flag: '🇸🇰', label: 'Slovenčina' },
-    { code: 'cz' as Language, flag: '🇨🇿', label: 'Čeština' },  
+  { code: 'sk' as Language, flag: '🇸🇰', label: 'Slovenčina' },
+  { code: 'cs' as Language, flag: '🇨🇿', label: 'Čeština' },  
     { code: 'en' as Language, flag: '🇬🇧', label: 'English' },
     { code: 'es' as Language, flag: '🇪🇸', label: 'Español' }
   ];

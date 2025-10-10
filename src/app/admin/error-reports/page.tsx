@@ -123,81 +123,95 @@ export default function ErrorReportsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Celkovo</div>
-          <div className="text-2xl font-bold" style={{ color: '#40467b' }}>{stats.total}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Čaká</div>
-          <div className="text-2xl font-bold" style={{ color: statusConfig.pending.color }}>{stats.pending}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Skontrolované</div>
-          <div className="text-2xl font-bold" style={{ color: statusConfig.reviewed.color }}>{stats.reviewed}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Akceptované</div>
-          <div className="text-2xl font-bold" style={{ color: statusConfig.accepted.color }}>{stats.accepted}</div>
-        </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4">
-          <div className="text-sm text-gray-600 mb-1">Zamietnuté</div>
-          <div className="text-2xl font-bold" style={{ color: statusConfig.rejected.color }}>{stats.rejected}</div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1">
-            <div className="relative">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Hľadať podľa emailu, kroku alebo textu..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#40467b]"
-                style={{ 
-                  borderColor: 'rgba(64, 70, 123, 0.2)'
-                }}
-              />
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hlavička */}
+        <header className="mb-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#40467b] via-[#686ea3] to-[#40467b] px-8 py-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                  <AlertCircle size={28} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-sm">
+                    Správa hlásení chýb
+                  </h1>
+                  <p className="text-indigo-100 mt-1">Opravy a hlásenia od používateľov</p>
+                </div>
+              </div>
+              
+              {/* Štatistiky */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.total}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Celkovo</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.pending}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Čaká</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.reviewed}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Skontrolované</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.accepted}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Akceptované</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow">{stats.rejected}</div>
+                  <div className="text-sm text-indigo-100 mt-1">Zamietnuté</div>
+                </div>
+              </div>
             </div>
           </div>
+        </header>
 
-          {/* Status Filter */}
-          <div className="flex items-center gap-2">
-            <Filter size={20} style={{ color: '#40467b' }} />
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2"
-              style={{ 
-                borderColor: 'rgba(64, 70, 123, 0.2)',
-                color: '#40467b'
-              }}
-            >
-              <option value="all">Všetky stavy</option>
-              <option value="pending">Čaká</option>
-              <option value="reviewed">Skontrolované</option>
-              <option value="accepted">Akceptované</option>
-              <option value="rejected">Zamietnuté</option>
-            </select>
+        {/* Vyhľadávanie a filtre */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Search size={20} className="text-gray-600" />
+            <h3 className="font-semibold text-gray-900">Vyhľadávanie a filtre</h3>
           </div>
 
-          {/* Severity Filter */}
-          <div>
-            <select
-              value={filterSeverity}
-              onChange={(e) => setFilterSeverity(e.target.value)}
-              className="px-4 py-2 rounded-lg border-2 transition-all focus:outline-none focus:ring-2"
-              style={{ 
-                borderColor: 'rgba(64, 70, 123, 0.2)',
-                color: '#40467b'
-              }}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Hľadať podľa emailu, kroku alebo textu..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div className="flex items-center gap-2">
+              <Filter size={20} className="text-gray-600" />
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
+              >
+                <option value="all">Všetky stavy</option>
+                <option value="pending">Čaká</option>
+                <option value="reviewed">Skontrolované</option>
+                <option value="accepted">Akceptované</option>
+                <option value="rejected">Zamietnuté</option>
+              </select>
+            </div>
+
+            {/* Severity Filter */}
+            <div>
+              <select
+                value={filterSeverity}
+                onChange={(e) => setFilterSeverity(e.target.value)}
+                className="px-4 py-2.5 rounded-lg border-2 border-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
             >
               <option value="all">Všetky závažnosti</option>
               <option value="critical">Kritická</option>
@@ -209,130 +223,159 @@ export default function ErrorReportsPage() {
         </div>
       </div>
 
-      {/* Reports Table */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead style={{ backgroundColor: '#40467b' }}>
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Dátum vytvorenia
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Používateľ
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Lectio dátum
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Krok
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Závažnosť
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Stav
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Akcie
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
-              {currentReports.length === 0 ? (
+        {/* Reports Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                    Žiadne hlásenia nenájdené
-                  </td>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Dátum vytvorenia</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <User size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Používateľ</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Lectio dátum</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Eye size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Krok</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Závažnosť</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <Filter size={16} className="text-gray-600" />
+                      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Stav</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Akcie</span>
+                  </th>
                 </tr>
-              ) : (
-                currentReports.map((report) => (
-                  <tr key={report.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <Calendar size={16} className="text-gray-400" />
-                        {formatDate(report.created_at)}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <User size={16} className="text-gray-400" />
-                        {report.user_email}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      {new Date(report.lectio_date).toLocaleDateString('sk-SK')}
-                    </td>
-                    <td className="px-4 py-4 text-sm">
-                      <span className="font-medium" style={{ color: '#40467b' }}>
-                        {report.step_name}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span 
-                        className="px-3 py-1 rounded-full text-xs font-semibold"
-                        style={{
-                          color: severityConfig[report.error_severity].color,
-                          backgroundColor: severityConfig[report.error_severity].bgColor
-                        }}
-                      >
-                        {severityConfig[report.error_severity].label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span 
-                        className="px-3 py-1 rounded-full text-xs font-semibold"
-                        style={{
-                          color: statusConfig[report.status].color,
-                          backgroundColor: statusConfig[report.status].bgColor
-                        }}
-                      >
-                        {statusConfig[report.status].label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <button
-                        onClick={() => router.push(`/admin/error-reports/${report.id}`)}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-white text-sm font-medium transition-all hover:opacity-80"
-                        style={{ backgroundColor: '#40467b' }}
-                      >
-                        <Eye size={16} />
-                        Detail
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {currentReports.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                      Žiadne hlásenia nenájdené
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  currentReports.map((report) => (
+                    <tr 
+                      key={report.id} 
+                      className={`transition-all duration-200 ${
+                        report.status === 'pending' 
+                          ? 'bg-red-50 hover:bg-gradient-to-r hover:from-red-100 hover:to-red-50' 
+                          : 'hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100'
+                      }`}
+                    >
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <Calendar size={16} className="text-gray-600" />
+                          {formatDate(report.created_at)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <User size={16} className="text-gray-600" />
+                          {report.user_email}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {new Date(report.lectio_date).toLocaleDateString('sk-SK')}
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={report.status === 'pending' ? 'font-medium text-red-600' : 'font-medium text-indigo-600'}>
+                          {report.step_name}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span 
+                          className="px-3 py-1 rounded-full text-xs font-semibold"
+                          style={{
+                            color: severityConfig[report.error_severity].color,
+                            backgroundColor: severityConfig[report.error_severity].bgColor
+                          }}
+                        >
+                          {severityConfig[report.error_severity].label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span 
+                          className="px-3 py-1 rounded-full text-xs font-semibold"
+                          style={{
+                            color: statusConfig[report.status].color,
+                            backgroundColor: statusConfig[report.status].bgColor
+                          }}
+                      >
+                          {statusConfig[report.status].label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => router.push(`/admin/error-reports/${report.id}`)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-medium transition-all hover:shadow-lg hover:scale-105 ${
+                            report.status === 'pending'
+                              ? 'bg-gradient-to-r from-red-600 to-red-700'
+                              : 'bg-gradient-to-r from-[#40467b] to-[#5a5f8f]'
+                          }`}
+                        >
+                          <Eye size={16} />
+                          Detail
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-4 py-4 border-t flex items-center justify-between" style={{ borderColor: 'rgba(64, 70, 123, 0.1)' }}>
-            <div className="text-sm text-gray-600">
-              Zobrazené {startIndex + 1}-{Math.min(endIndex, filteredReports.length)} z {filteredReports.length} záznamov
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
-                style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <span className="px-4 py-2 text-sm font-medium" style={{ color: '#40467b' }}>
-                Strana {currentPage} z {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80"
-                style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
-              >
-                <ChevronRight size={20} />
-              </button>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Zobrazené {startIndex + 1}-{Math.min(endIndex, filteredReports.length)} z {filteredReports.length} záznamov
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-md hover:scale-105"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <span className="px-4 py-2 text-sm font-medium text-indigo-600">
+                  Strana {currentPage} z {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-md hover:scale-105"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -5,6 +5,8 @@
 
 import { useState } from 'react';
 import { RosaryCategoryInfo } from '@/app/types/rosary';
+import { useLanguage } from '@/app/components/LanguageProvider';
+import { rosaryTranslations } from '../translations';
 import { 
   ChevronRight, 
   Play, 
@@ -30,6 +32,8 @@ export default function CategoryCard({
   isLoading = false
 }: CategoryCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const { lang } = useLanguage();
+  const t = rosaryTranslations[lang];
 
   return (
     <div
@@ -71,12 +75,12 @@ export default function CategoryCard({
         <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
           <div className="flex items-center">
             <BookOpen size={14} className="mr-1" />
-            <span>{decadeCount} tajomstiev</span>
+            <span>{decadeCount} {t.mysteriesCount}</span>
           </div>
           {audioCount > 0 && (
             <div className="flex items-center">
               <Play size={14} className="mr-1" />
-              <span>{audioCount} s audio</span>
+              <span>{audioCount} {t.withAudioCount}</span>
             </div>
           )}
         </div>
@@ -87,7 +91,7 @@ export default function CategoryCard({
             className="text-sm font-medium transition-colors duration-300"
             style={{ color: category.color }}
           >
-            Začať modlitbu
+            {t.startPrayer}
           </span>
           <ChevronRight 
             size={20} 
