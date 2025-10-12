@@ -1,0 +1,422 @@
+/**
+ * Admin Edit Pages CSS Variables
+ * Používané pre editačné formuláre v admin sekcii
+ * Vzor: rosary/[id]/page.tsx
+ */
+
+:root {
+  /* Firmy farby */
+  --admin-edit-primary: #40467b;
+  --admin-edit-secondary: #686ea3;
+  --admin-edit-primary-rgb: 64, 70, 123;
+  --admin-edit-secondary-rgb: 104, 110, 163;
+
+  /* Gradienty */
+  --admin-edit-gradient-main: linear-gradient(to right, #40467b, #686ea3, #40467b);
+  --admin-edit-gradient-diagonal: linear-gradient(135deg, #40467b 0%, #686ea3 100%);
+  --admin-edit-gradient-button: linear-gradient(to right, #40467b, #686ea3);
+  --admin-edit-gradient-button-hover: linear-gradient(to right, #686ea3, #40467b);
+
+  /* Header */
+  --admin-edit-header-bg: linear-gradient(to right, #40467b, #686ea3, #40467b);
+  --admin-edit-header-text: #ffffff;
+  --admin-edit-header-description: rgba(255, 255, 255, 0.9);
+  
+  /* Form sections */
+  --admin-edit-section-bg: #ffffff;
+  --admin-edit-section-border: #f3f4f6;
+  --admin-edit-section-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Inputs */
+  --admin-edit-input-border: #d1d5db;
+  --admin-edit-input-border-focus: #686ea3;
+  --admin-edit-input-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --admin-edit-input-shadow-focus: 0 0 0 3px rgba(104, 110, 163, 0.1);
+  --admin-edit-input-ring: #686ea3;
+  
+  /* Labels and text */
+  --admin-edit-label-text: #40467b;
+  --admin-edit-icon-color: #686ea3;
+  --admin-edit-text-muted: #6b7280;
+  
+  /* Buttons */
+  --admin-edit-button-primary-bg: linear-gradient(to right, #40467b, #686ea3);
+  --admin-edit-button-primary-hover: linear-gradient(to right, #686ea3, #40467b);
+  --admin-edit-button-primary-text: #ffffff;
+  --admin-edit-button-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  
+  /* Status colors */
+  --admin-edit-success: #10b981;
+  --admin-edit-warning: #f59e0b;
+  --admin-edit-error: #ef4444;
+  --admin-edit-info: #3b82f6;
+  
+  /* Draft indicator */
+  --admin-edit-draft-bg: rgba(59, 130, 246, 0.1);
+  --admin-edit-draft-border: #3b82f6;
+  --admin-edit-draft-text: #3b82f6;
+  
+  /* Unsaved changes indicator */
+  --admin-edit-unsaved-text: #f59e0b;
+  
+  /* Backdrop blur cards */
+  --admin-edit-card-backdrop: rgba(255, 255, 255, 0.1);
+  --admin-edit-card-backdrop-blur: blur(12px);
+  
+  /* Spacing */
+  --admin-edit-spacing-section: 2rem;
+  --admin-edit-spacing-field: 1.5rem;
+  
+  /* Border radius */
+  --admin-edit-radius-sm: 0.5rem;
+  --admin-edit-radius-md: 0.75rem;
+  --admin-edit-radius-lg: 1rem;
+  --admin-edit-radius-xl: 1.5rem;
+  
+  /* Icon sizes */
+  --admin-edit-icon-sm: 16px;
+  --admin-edit-icon-md: 20px;
+  --admin-edit-icon-lg: 24px;
+  
+  /* Transitions */
+  --admin-edit-transition: all 0.2s ease-in-out;
+  --admin-edit-transition-fast: all 0.15s ease-in-out;
+}
+
+/* Utility classes pre admin edit stránky */
+.admin-edit-gradient-header {
+  background: var(--admin-edit-header-bg);
+  color: var(--admin-edit-header-text);
+  border-radius: var(--admin-edit-radius-xl);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--admin-edit-section-shadow);
+}
+
+.admin-edit-section {
+  background: var(--admin-edit-section-bg);
+  border: 1px solid var(--admin-edit-section-border);
+  border-radius: var(--admin-edit-radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--admin-edit-section-shadow);
+}
+
+.admin-edit-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--admin-edit-input-border);
+  border-radius: var(--admin-edit-radius-md);
+  transition: var(--admin-edit-transition);
+  box-shadow: var(--admin-edit-input-shadow);
+}
+
+.admin-edit-input:focus {
+  outline: none;
+  border-color: var(--admin-edit-input-border-focus);
+  box-shadow: var(--admin-edit-input-shadow-focus);
+}
+
+.admin-edit-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--admin-edit-label-text);
+  margin-bottom: 0.5rem;
+}
+
+.admin-edit-button-primary {
+  background: var(--admin-edit-button-primary-bg);
+  color: var(--admin-edit-button-primary-text);
+  padding: 0.625rem 1rem;
+  border-radius: var(--admin-edit-radius-md);
+  transition: var(--admin-edit-transition);
+  box-shadow: var(--admin-edit-button-shadow);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.admin-edit-button-primary:hover {
+  background: var(--admin-edit-button-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.admin-edit-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admin-edit-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-edit-section-title h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--admin-edit-label-text);
+}
+
+.admin-edit-icon-wrapper {
+  padding: 0.5rem;
+  border-radius: var(--admin-edit-radius-md);
+  background: var(--admin-edit-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-edit-backdrop-card {
+  background: var(--admin-edit-card-backdrop);
+  backdrop-filter: var(--admin-edit-card-backdrop-blur);
+  border-radius: var(--admin-edit-radius-xl);
+  padding: 1rem;
+}
+
+/* Action buttons (pre quick actions v topics) */
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--admin-edit-radius-md);
+  border: none;
+  cursor: pointer;
+  transition: var(--admin-edit-transition);
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: var(--admin-edit-button-shadow);
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.action-button.primary {
+  background: var(--admin-edit-button-primary-bg);
+  color: white;
+}
+
+.action-button.primary:hover {
+  background: var(--admin-edit-button-primary-hover);
+}
+
+.action-button.secondary {
+  background: linear-gradient(to right, #10b981, #059669);
+  color: white;
+}
+
+.action-button.secondary:hover {
+  background: linear-gradient(to right, #059669, #10b981);
+}
+
+.action-button.info {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  color: white;
+}
+
+.action-button.info:hover {
+  background: linear-gradient(to right, #2563eb, #3b82f6);
+}
+
+.action-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.action-description {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin-top: 0.125rem;
+}
+
+/* Action buttons v tabuľke */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  padding: 0.375rem 0.75rem;
+  background-color: var(--admin-edit-primary);
+  color: white;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: var(--admin-edit-transition);
+}
+
+.btn-edit:hover {
+  background-color: var(--admin-edit-secondary);
+}
+
+.btn-delete {
+  padding: 0.375rem 0.75rem;
+  background-color: var(--admin-edit-error);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: var(--admin-edit-transition);
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: var(--admin-edit-radius-lg);
+  padding: 1.5rem;
+  max-width: 28rem;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--admin-edit-label-text);
+}
+
+.modal-text {
+  margin-bottom: 1.5rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.375rem;
+  background-color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--admin-edit-transition);
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+}
+
+.btn-danger {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: var(--admin-edit-error);
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--admin-edit-transition);
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+
+/* Table styles */
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--admin-edit-radius-md);
+  border: 1px solid var(--admin-edit-section-border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.data-table thead {
+  background: linear-gradient(to right, rgba(64, 70, 123, 0.05), rgba(104, 110, 163, 0.05));
+}
+
+.data-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--admin-edit-label-text);
+  border-bottom: 2px solid var(--admin-edit-section-border);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid var(--admin-edit-section-border);
+}
+
+.data-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table code {
+  font-size: 0.875rem;
+  padding: 0.125rem 0.375rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--admin-edit-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Dark mode support (pre budúcnosť) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --admin-edit-section-bg: #1f2937;
+    --admin-edit-section-border: #374151;
+    --admin-edit-input-border: #4b5563;
+    --admin-edit-text-muted: #9ca3af;
+  }
+  
+  .modal-content {
+    background-color: #1f2937;
+  }
+  
+  .modal-title {
+    color: #f9fafb;
+  }
+  
+  .modal-text {
+    color: #d1d5db;
+  }
+}

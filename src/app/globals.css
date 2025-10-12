@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+/* HYDRATION-SAFE VERSION - len light mode */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  
+  /* Firmy farby pre použitie cez style={{ color: 'var(--firm-primary)' }} */
+  --firm-primary: #40467b;
+  --firm-secondary: #686ea3;
+}
+
+/* Odstránené dark mode media query pre zabránenie hydration mismatch */
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+*/
+
+/* Základné nastavenie tela stránky */
+html,
+body {
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Vrstvy Tailwind utilít */
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+/* Zabráni autoscroll pri React re-renderoch */
+html {
+  scroll-behavior: auto !important;
+  overflow-anchor: none;
+}
+
+body {
+  overflow-anchor: none;
+}
+
+/* Zabráni scrollovaniu textarea pri focus */
+textarea:focus {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+/* Stabilný layout pre formuláre */
+form {
+  overflow-anchor: none;
+}
+
+/* React Easy Crop - Základné štýly */
+.reactEasyCrop_Container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+  cursor: move;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reactEasyCrop_Image,
+.reactEasyCrop_Video {
+  will-change: transform;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.reactEasyCrop_CropArea {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+  box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+}
+
+.reactEasyCrop_CropAreaRound {
+  border-radius: 50%;
+}
+
+.reactEasyCrop_CropAreaGrid::before {
+  content: " ";
+  box-sizing: border-box;
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  top: 0;
+  bottom: 0;
+  left: 33.33%;
+  right: 33.33%;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.reactEasyCrop_CropAreaGrid::after {
+  content: " ";
+  box-sizing: border-box;
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  top: 33.33%;
+  bottom: 33.33%;
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+/* News Article Content Styling */
+.prose p {
+  margin-bottom: 1.5rem !important;
+  line-height: 1.8 !important;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose ul, .prose ol {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose li {
+  margin-bottom: 0.5rem !important;
+}
+
+.prose blockquote {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-left: 1rem !important;
+}
+
+.prose img {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.prose hr {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}

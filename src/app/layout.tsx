@@ -1,0 +1,137 @@
+'use client'
+
+import { useMetadata } from '@/hooks/useMetadata'
+import { usePathname } from 'next/navigation'
+import Script from 'next/script'
+import BetaFloatingIcon from './components/BetaFloatingIcon'
+import { CookieConsentProvider } from './components/CookieConsentContext'
+import Footer from './components/Footer'
+import { LanguageProvider, useLanguage } from './components/LanguageProvider'
+import ScrollToTopButton from './components/ScrollToTopButton'
+import SupabaseProvider from './components/SupabaseProvider'
+import './globals.css'
+
+// Komponenta pre dynamické metadata
+function DynamicMetadata() {
+  const { lang } = useLanguage();
+  useMetadata(lang);
+  return null;
+}
+
+// Beta komponenty wrapper
+function BetaComponents() {
+  const { lang } = useLanguage();
+
+  return (
+    <>
+      <BetaFloatingIcon 
+        language={lang} 
+      />
+    </>
+  );
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const pathname = usePathname();
+  const isAdminZone = pathname?.startsWith('/admin');
+
+  return (
+    <html lang="sk" suppressHydrationWarning>
+      <head>
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Lectio Divina",
+              "url": "https://lectio.one",
+              "description": "Denné duchovné čítania, modlitby a meditácie",
+              "publisher": {
+                "@type": "Organization",
+                "name": "Lectio Divina"
+              },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://lectio.one/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+        
+        {/* Viewport a mobile meta tagy */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#40467b" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+        
+        {/* Základné meta tagy - budú sa aktualizovať dynamicky */}
+        <meta name="description" content="Lectio Divina - Objavte silu duchovného čítania. Denné biblické čítania, modlitby ruženca, meditácie a sprievodca Lectio Divina pre hlbší duchovný život a vzťah s Bohom." />
+        <meta name="keywords" content="lectio divina, modlitby, duchovné čítanie, biblia, meditácie, ruženec, duchovný život, katolícka modlitba, denné čítania, biblické verše" />
+        
+        {/* SEO meta tagy */}
+        <link rel="canonical" href="https://lectio.one" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta name="author" content="Lectio Divina" />
+        <meta name="language" content="Slovak" />
+        <meta name="geo.region" content="SK" />
+        <meta name="geo.country" content="Slovakia" />
+        
+        {/* Open Graph meta tagy */}
+        <meta property="og:title" content="Lectio Divina - Duchovné čítanie a modlitby" />
+        <meta property="og:description" content="Objavte silu duchovného čítania. Denné biblické čítania, modlitby ruženca, meditácie a sprievodca Lectio Divina pre hlbší duchovný život." />
+        <meta property="og:url" content="https://lectio.one" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Lectio Divina" />
+        <meta property="og:locale" content="sk_SK" />
+        <meta property="og:image" content="https://lectio.one/home_intro.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Lectio Divina - Duchovné čítanie a modlitby" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Lectio Divina - Duchovné čítanie a modlitby" />
+        <meta name="twitter:description" content="Objavte silu duchovného čítania. Denné biblické čítania, modlitby ruženca a meditácie." />
+        <meta name="twitter:image" content="https://lectio.one/home_intro.jpg" />
+        <meta name="twitter:image:alt" content="Lectio Divina - Duchovné čítanie a modlitby" />
+        
+        {/* Favicon - kompletná sada */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Umami Analytics */}
+        <Script
+          src="https://analytics.lectio.one/script.js"
+          data-website-id="c7311d25-b9b7-4c15-9d15-333962066cdb"
+          strategy="afterInteractive"
+        />
+      </head>
+      <body className="min-h-screen overflow-x-hidden bg-white text-black snap-y snap-mandatory overflow-y-auto" suppressHydrationWarning>
+        <LanguageProvider>
+          <CookieConsentProvider>
+            <SupabaseProvider session={null}>
+              <DynamicMetadata />
+              <BetaComponents />
+              {children}
+              {!isAdminZone && <Footer />}
+              <ScrollToTopButton />
+            </SupabaseProvider>
+          </CookieConsentProvider>
+        </LanguageProvider>
+      </body>
+    </html>
+  )
+}

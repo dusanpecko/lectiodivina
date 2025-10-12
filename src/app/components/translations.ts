@@ -1,0 +1,62 @@
+export const voiceTranslations = {
+  sk: {
+    settings: "Nastavenia hlasu a modelu",
+    voice: "Hlas",
+    model: "Model",
+    change: "Zmeniť",
+    hide: "Skryť",
+    selectVoice: "Výber hlasu:",
+    selectModel: "Výber modelu:",
+    default: "Predvolený",
+    best: "⭐ Najlepší",
+    good: "👍 Dobrý",
+    basic: "👌 Základný",
+    tip: "Hlas 'Sam' a model 'Eleven V3' sú predvolené pre všetky jazyky a poskytujú najlepšiu kvalitu.",
+    languages: "Jazyky"
+  },
+  cz: {
+    settings: "Nastavení hlasu a modelu",
+    voice: "Hlas",
+    model: "Model",
+    change: "Změnit",
+    hide: "Skrýt",
+    selectVoice: "Výběr hlasu:",
+    selectModel: "Výběr modelu:",
+    default: "Výchozí",
+    best: "⭐ Nejlepší",
+    good: "👍 Dobrý",
+    basic: "👌 Základní",
+    tip: "Hlas 'Sam' a model 'Eleven V3' jsou výchozí pro všechny jazyky a poskytují nejlepší kvalitu.",
+    languages: "Jazyky"
+  },
+  en: {
+    settings: "Voice and Model Settings",
+    voice: "Voice",
+    model: "Model",
+    change: "Change",
+    hide: "Hide",
+    selectVoice: "Select voice:",
+    selectModel: "Select model:",
+    default: "Default",
+    best: "⭐ Best",
+    good: "👍 Good",
+    basic: "👌 Basic",
+    tip: "Voice 'Sam' and model 'Eleven V3' are default for all languages and provide the best quality.",
+    languages: "Languages"
+  },
+  es: {
+    settings: "Configuración de voz y modelo",
+    voice: "Voz",
+    model: "Modelo",
+    change: "Cambiar",
+    hide: "Ocultar",
+    selectVoice: "Seleccionar voz:",
+    selectModel: "Seleccionar modelo:",
+    default: "Predeterminado",
+    best: "⭐ Mejor",
+    good: "👍 Bueno",
+    basic: "👌 Básico",
+    tip: "La voz 'Sam' y el modelo 'Eleven V3' son predeterminados para todos los idiomas y ofrecen la mejor calidad.",
+    languages: "Idiomas"
+  }
+};
