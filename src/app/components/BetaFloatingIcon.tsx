@@ -2,6 +2,7 @@
 
 import { AlertTriangle, X } from 'lucide-react';
 import { useState } from 'react';
+import packageJson from '../../../package.json';
 import BetaFeedbackModal from './BetaFeedbackModal';
 
 interface BetaFloatingIconTranslations {
@@ -138,6 +139,19 @@ export default function BetaFloatingIcon({ language }: BetaFloatingIconProps) {
                 >
                   {t.close}
                 </button>
+              </div>
+
+              {/* Version Badge - Pod buttonmi */}
+              <div className="pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200/50">
+                    <span className="text-2xl">🚀</span>
+                    <div className="flex flex-col">
+                      <span className="text-xs text-gray-500 font-medium">Version</span>
+                      <span className="text-sm font-bold text-orange-600">{packageJson.version}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
