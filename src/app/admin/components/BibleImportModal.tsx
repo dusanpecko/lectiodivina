@@ -61,13 +61,13 @@ interface VerseWithRelations {
     full_name: string;
     order_number: number;
     locale_id: number;
-  }[];
+  };
   translations: {
     id: number;
     code: string;
     name: string;
     locale_id: number;
-  }[];
+  };
 }
 
 export default function BibleImportModal({ 
@@ -271,24 +271,24 @@ export default function BibleImportModal({
         .order('verse');
 
       if (!error && data) {
-        setVerses(data.map((v: VerseWithRelations) => ({
+        setVerses((data as unknown as VerseWithRelations[]).map((v: VerseWithRelations) => ({
           id: v.id,
           chapter: v.chapter,
           verse: v.verse,
           text: v.text,
           book: {
-            id: v.books[0]?.id || 0,
-            code: v.books[0]?.code || '',
-            name: v.books[0]?.name || '',
-            full_name: v.books[0]?.full_name || '',
-            order_number: v.books[0]?.order_number || 0,
-            locale_id: v.books[0]?.locale_id || 0
+            id: v.books?.id || 0,
+            code: v.books?.code || '',
+            name: v.books?.name || '',
+            full_name: v.books?.full_name || '',
+            order_number: v.books?.order_number || 0,
+            locale_id: v.books?.locale_id || 0
           } as Book,
           translation: {
-            id: v.translations[0]?.id || 0,
-            code: v.translations[0]?.code || '',
-            name: v.translations[0]?.name || '',
-            locale_id: v.translations[0]?.locale_id || 0
+            id: v.translations?.id || 0,
+            code: v.translations?.code || '',
+            name: v.translations?.name || '',
+            locale_id: v.translations?.locale_id || 0
           } as Translation
         })));
       }
@@ -401,24 +401,24 @@ export default function BibleImportModal({
         .order('verse');
 
       if (!error && data) {
-        const loadedVerses = data.map((v: VerseWithRelations) => ({
+        const loadedVerses = (data as unknown as VerseWithRelations[]).map((v: VerseWithRelations) => ({
           id: v.id,
           chapter: v.chapter,
           verse: v.verse,
           text: v.text,
           book: {
-            id: v.books[0]?.id || 0,
-            code: v.books[0]?.code || '',
-            name: v.books[0]?.name || '',
-            full_name: v.books[0]?.full_name || '',
-            order_number: v.books[0]?.order_number || 0,
-            locale_id: v.books[0]?.locale_id || 0
+            id: v.books?.id || 0,
+            code: v.books?.code || '',
+            name: v.books?.name || '',
+            full_name: v.books?.full_name || '',
+            order_number: v.books?.order_number || 0,
+            locale_id: v.books?.locale_id || 0
           } as Book,
           translation: {
-            id: v.translations[0]?.id || 0,
-            code: v.translations[0]?.code || '',
-            name: v.translations[0]?.name || '',
-            locale_id: v.translations[0]?.locale_id || 0
+            id: v.translations?.id || 0,
+            code: v.translations?.code || '',
+            name: v.translations?.name || '',
+            locale_id: v.translations?.locale_id || 0
           } as Translation
         }));
         

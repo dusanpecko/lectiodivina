@@ -16,6 +16,8 @@ import {
   Newspaper, // Pre notifikácie
   Plus // Pre quick actions button
   ,
+
+
   Quote,
   Settings,
   UserPlus,
@@ -31,6 +33,7 @@ const links = [
   { href: "/admin", key: "dashboard", icon: LayoutDashboard, color: "blue" },
   { href: "/admin/lectio-sources", key: "lectio_sources", icon: Book, color: "teal" }, 
   { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" },
+  { href: "/admin/bible-bulk-import", key: "bible_bulk_import", icon: BookOpen, color: "indigo" },
   { href: "/admin/news", key: "news", icon: Newspaper, color: "red" },
   { href: "/admin/notifications/", key: "notifications", icon: Bell, color: "pink" },
   { href: "/admin/notification-topics", key: "notification_topics", icon: Settings, color: "purple" },
@@ -74,9 +77,11 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
     if (key === 'lectio_sources') return adminT.navigation.lectio_sources;
     if (key === 'rosary') return adminT.navigation.rosary;
     if (key === 'error_reports') return adminT.navigation.error_reports;
+    if (key === 'bible_bulk_import') return adminT.navigation.bible_bulk_import;
     // if (key === 'programs') return adminT.navigation.programs; // VO VÝVOJI
     // if (key === 'content_cards') return adminT.navigation.content_cards; // VO VÝVOJI
     if (key === 'notifications') return adminT.navigation.notifications;
+    if (key === 'notification_topics') return adminT.navigation.notification_topics;
     return t[key] || key;
   };
 

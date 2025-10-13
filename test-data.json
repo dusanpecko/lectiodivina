@@ -1,0 +1,24 @@
+{
+  "locale_id": 1,
+  "translation_id": 1,
+  "book_id": 1,
+  "chapter": 999,
+  "verses": [
+    {
+      "verse": 1,
+      "text": "Hoci sa už mnohí pokúšali vyrozprávať rad-radom udalosti, ktoré sa u nás stali,"
+    },
+    {
+      "verse": 2,
+      "text": "ako nám to podali tí, čo boli od začiatku očitými svedkami a služobníkmi slova,"
+    },
+    {
+      "verse": 3,
+      "text": "predsa som aj ja uznal za dobré dôkladne a postupne prebádať všetko od začiatku a napísať ti, vznešený Teofil,"
+    },
+    {
+      "verse": 4,
+      "text": "aby si poznal spoľahlivosť náuky, do ktorej ťa zasvätili."
+    }
+  ]
+}

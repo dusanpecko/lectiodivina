@@ -13,6 +13,8 @@ export const adminTranslations = {
     usersDesc: "Správa účtov",
     quotes: "Citáty",
     quotesDesc: "Denné citáty",
+    bibleBulkImport: "Bible Import",
+    bibleBulkImportDesc: "Bulk import veršov",
     
     // Error Reports
     reportedErrors: "Nahlásené chyby",
@@ -69,6 +71,8 @@ export const adminTranslations = {
     usersDesc: "Správa účtů",
     quotes: "Citáty",
     quotesDesc: "Denní citáty",
+    bibleBulkImport: "Bible Import",
+    bibleBulkImportDesc: "Hromadný import veršů",
     
     // Error Reports
     reportedErrors: "Nahlášené chyby",
@@ -125,6 +129,8 @@ export const adminTranslations = {
     usersDesc: "Account management",
     quotes: "Quotes",
     quotesDesc: "Daily quotes",
+    bibleBulkImport: "Bible Import",
+    bibleBulkImportDesc: "Bulk verse import",
     
     // Error Reports
     reportedErrors: "Reported Errors",
@@ -181,6 +187,8 @@ export const adminTranslations = {
     usersDesc: "Gestión de cuentas",
     quotes: "Citas",
     quotesDesc: "Citas diarias",
+    bibleBulkImport: "Importar Biblia",
+    bibleBulkImportDesc: "Importar versículos",
     
     // Error Reports
     reportedErrors: "Errores Reportados",

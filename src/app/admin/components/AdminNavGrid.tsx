@@ -1,14 +1,15 @@
 "use client";
 
-import React from 'react';
-import Link from "next/link";
-import {
-  Users,
-  Newspaper,
-  BookOpen,
-  Quote,
-} from "lucide-react";
 import { useLanguage } from '@/app/components/LanguageProvider';
+import {
+    BookOpen,
+    Newspaper,
+    Quote,
+    Upload,
+    Users,
+} from "lucide-react";
+import Link from "next/link";
+import React from 'react';
 import { adminTranslations } from '../translations';
 
 interface NavItem {
@@ -66,6 +67,16 @@ export default function AdminNavGrid() {
       bgColor: "bg-purple-100",
       hoverBgColor: "group-hover:bg-purple-200",
       iconColor: "text-purple-600",
+    },
+    {
+      href: "/admin/bible-bulk-import",
+      icon: <Upload size={24} />,
+      titleKey: "bibleBulkImport",
+      descriptionKey: "bibleBulkImportDesc",
+      borderColor: "border-orange-500",
+      bgColor: "bg-orange-100",
+      hoverBgColor: "group-hover:bg-orange-200",
+      iconColor: "text-orange-600",
     },
   ];
   return (

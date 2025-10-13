@@ -11,6 +11,7 @@ export interface AdminSidebarTranslations {
     programs: string;
     notifications: string;
     notification_topics: string;
+    bible_bulk_import: string;
   };
   states: {
     loading: string;
@@ -37,7 +38,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       error_reports: "Správa chýb",
       programs: "Programy",
       notifications: "Notifikácie",
-      notification_topics: "Témy notifikácií"
+      notification_topics: "Témy notifikácií",
+      bible_bulk_import: "Bible Import"
     },
     states: {
       loading: "Načítava..."
@@ -62,7 +64,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       error_reports: "Zpráva chyb",
       programs: "Programy",
       notifications: "Oznámení",
-      notification_topics: "Témata oznámení"
+      notification_topics: "Témata oznámení",
+      bible_bulk_import: "Bible Import"
     },
     states: {
       loading: "Načítá..."
@@ -87,7 +90,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       error_reports: "Error Reports",
       programs: "Programs",
       notifications: "Notifications",
-      notification_topics: "Notification Topics"
+      notification_topics: "Notification Topics",
+      bible_bulk_import: "Bible Import"
     },
     states: {
       loading: "Loading..."
@@ -112,7 +116,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       error_reports: "Reportes de Error",
       programs: "Programas",
       notifications: "Notificaciones",
-      notification_topics: "Temas de Notificaciones"
+      notification_topics: "Temas de Notificaciones",
+      bible_bulk_import: "Importar Biblia"
     },
     states: {
       loading: "Cargando..."
