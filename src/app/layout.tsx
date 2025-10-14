@@ -3,6 +3,7 @@
 import { useMetadata } from '@/hooks/useMetadata'
 import { usePathname } from 'next/navigation'
 import Script from 'next/script'
+import packageJson from '../../package.json'
 import BetaFloatingIcon from './components/BetaFloatingIcon'
 import { CookieConsentProvider } from './components/CookieConsentContext'
 import Footer from './components/Footer'
@@ -80,6 +81,7 @@ export default function RootLayout({
         <link rel="canonical" href="https://lectio.one" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="author" content="Lectio Divina" />
+        <meta name="generator" content={`Lectio.one CMS v${packageJson.version}`} />
         <meta name="language" content="Slovak" />
         <meta name="geo.region" content="SK" />
         <meta name="geo.country" content="Slovakia" />
