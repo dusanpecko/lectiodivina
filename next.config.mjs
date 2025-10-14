@@ -3,6 +3,11 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   
+  // ✅ Environment variables
+  env: {
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://lectio.one',
+  },
+  
   // ✅ Image optimalizácie
   images: {
     formats: ['image/webp', 'image/avif'],
