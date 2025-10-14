@@ -39,7 +39,6 @@ export function HomeNewsSection() {
     if (!supabase || !language) return;
     
     try {
-      console.log("Fetching news for language:", language);
       setLoading(true);
       setError(null);
       
@@ -50,18 +49,15 @@ export function HomeNewsSection() {
         .order("published_at", { ascending: false })
         .limit(3);
 
-      console.log("Supabase response:", { data, error });
-
       if (error) {
-        console.error("Supabase error:", error);
+        console.error("Error fetching news:", error);
         setError(error.message);
         setNews([]);
       } else {
-        console.log("Fetched news:", data);
         setNews(data || []);
       }
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error("Error fetching news:", err);
       setError(err instanceof Error ? err.message : t.homeNewsSection?.error_title || "Chyba pri načítavaní článkov");
       setNews([]);
     } finally {
@@ -77,15 +73,6 @@ export function HomeNewsSection() {
       isInitialMount.current = false;
     }
   }, [appLang, fetchNews]);
-
-  // Debug log iba ak sa skutočne niečo zmenilo
-  const currentState = { loading, error: !!error, newsCount: news.length, appLang };
-  const prevStateRef = useRef(currentState);
-  
-  if (JSON.stringify(currentState) !== JSON.stringify(prevStateRef.current)) {
-    console.log("HomeNewsSection render:", currentState);
-    prevStateRef.current = currentState;
-  }
 
   // Enhanced Loading State
   if (loading) {

@@ -36,7 +36,6 @@ export default function SupabaseProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth event:', event, session?.user?.email || 'no user')
       setCurrentSession(session)
       setIsLoading(false)
     })
@@ -45,10 +44,9 @@ export default function SupabaseProvider({
     supabase.auth.getSession().then(({ data: { session: initialSession }, error }) => {
       if (error) {
         if (error.message.includes('refresh_token_not_found') || error.message.includes('Invalid Refresh Token')) {
-          console.log('No valid session found (expected on first visit)')
           setCurrentSession(null)
         } else {
-          console.warn('Session error:', error.message)
+          console.error('Session error:', error.message)
           setCurrentSession(null)
         }
       } else {
