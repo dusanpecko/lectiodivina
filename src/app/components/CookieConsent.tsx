@@ -20,8 +20,6 @@ function LanguageSwitcher({ currentLang, onLanguageChange }: { currentLang: stri
   ];
 
   const handleLanguageChange = (langCode: Language) => {
-    console.log('🍪 Cookie dialog: Button clicked, changing to', langCode);
-    console.log('🍪 Current lang before change:', currentLang);
     onLanguageChange(langCode);
   };
 
@@ -47,23 +45,17 @@ function LanguageSwitcher({ currentLang, onLanguageChange }: { currentLang: stri
 }
 
 export default function CookieConsent({ visible, onClose }: Props) {
-  const { lang, changeLang, isLoaded } = useLanguage();
+  const { lang, changeLang } = useLanguage();
   
   const cookieT = useMemo(() => {
     return cookieTranslations[lang] || cookieTranslations.sk;
   }, [lang]);
   
   const acceptRef = useRef<HTMLButtonElement>(null);
-
-  // Debug log to track re-renders
-  console.log('🍪 CookieConsent render with lang:', lang, 'title:', cookieT?.title);
   
   // Handle language change from switcher
   const handleLanguageChange = (newLang: Language) => {
-    console.log('🍪 handleLanguageChange called with:', newLang);
-    console.log('🍪 Current lang before:', lang);
     changeLang(newLang);
-    console.log('🍪 changeLang called, waiting for re-render...');
   };
   
   // Debug function - accessible from browser console (only in development)
@@ -82,15 +74,7 @@ export default function CookieConsent({ visible, onClose }: Props) {
   // ✅ KRITICKÁ OPRAVA - Mark as mounted immediately
   useEffect(() => {
     setMounted(true);
-    console.log('🍪 CookieConsent mounted');
   }, []);
-
-  // ✅ KRITICKÁ OPRAVA - Removed dependency on showIfNeeded to prevent blocking
-  useEffect(() => {
-    if (mounted && isLoaded) {
-      console.log('🍪 CookieConsent ready, language loaded');
-    }
-  }, [mounted, isLoaded]);
 
   // Focus management - only after mount
   useEffect(() => {
@@ -138,10 +122,8 @@ export default function CookieConsent({ visible, onClose }: Props) {
   useEffect(() => {
     if (mounted && visible) {
       document.body.style.overflow = 'hidden';
-      console.log('🍪 Body scroll disabled');
       return () => {
         document.body.style.overflow = 'unset';
-        console.log('🍪 Body scroll restored');
       };
     }
   }, [visible, mounted]);
@@ -149,24 +131,22 @@ export default function CookieConsent({ visible, onClose }: Props) {
   const acceptCookies = async () => {
     if (!mounted || isProcessing) return;
     
-    console.log('🍪 Accepting cookies...');
     setIsProcessing(true);
     
     try {
       setCookieConsent("accepted");
-      console.log("✅ Cookies accepted successfully");
       
       await new Promise(resolve => setTimeout(resolve, 200));
       onClose();
       
     } catch (error) {
-      console.error(`❌ ${cookieT.error_accepting}:`, error);
+      console.error(`Error accepting cookies:`, error);
       
       try {
         document.cookie = "cookieConsent=accepted; path=/; SameSite=Strict; Secure";
         onClose();
       } catch (fallbackError) {
-        console.error("❌ Fallback cookie failed:", fallbackError);
+        console.error("Fallback cookie failed:", fallbackError);
         onClose();
       }
     } finally {
@@ -177,7 +157,6 @@ export default function CookieConsent({ visible, onClose }: Props) {
   const declineCookies = async () => {
     if (!mounted || isProcessing) return;
     
-    console.log('🍪 Declining cookies...');
     setIsProcessing(true);
     
     try {
@@ -185,20 +164,18 @@ export default function CookieConsent({ visible, onClose }: Props) {
       removeAppLocalStorage();
       removeAppCookies();
       
-      console.log("✅ Cookies declined successfully");
-      
       await new Promise(resolve => setTimeout(resolve, 200));
       onClose();
       
     } catch (error) {
-      console.error(`❌ ${cookieT.error_declining}:`, error);
+      console.error(`Error declining cookies:`, error);
       
       try {
         document.cookie = "cookieConsent=declined; path=/; SameSite=Strict; Secure";
         removeAppCookies();
         onClose();
       } catch (fallbackError) {
-        console.error("❌ Fallback cookie failed:", fallbackError);
+        console.error("Fallback cookie failed:", fallbackError);
         onClose();
       }
     } finally {
@@ -220,16 +197,12 @@ export default function CookieConsent({ visible, onClose }: Props) {
 
   // ✅ KRITICKÁ OPRAVA - Render immediately after mount, don't wait for isLoaded
   if (!mounted) {
-    console.log('🍪 CookieConsent not mounted yet');
     return null;
   }
 
   if (!visible) {
-    console.log('🍪 CookieConsent not visible');
     return null;
   }
-
-  console.log('🍪 CookieConsent rendering dialog');
 
   return (
     <div
