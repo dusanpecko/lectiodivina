@@ -1,15 +1,15 @@
 "use client";
 import {
-    AlertCircle,
-    CheckCircle2,
-    Chrome,
-    Eye,
-    EyeOff,
-    Loader2,
-    Lock,
-    LogIn,
-    Mail,
-    Shield
+  AlertCircle,
+  CheckCircle2,
+  Chrome,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  LogIn,
+  Mail,
+  Shield
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -133,11 +133,22 @@ function LoginPageContent() {
 
       if (authError) {
         setLoading(false);
-        setError(authError.message);
+        
+        // Špeciálne správy pre rôzne chyby
+        if (authError.message.includes("rate limit")) {
+          setError("Príliš veľa pokusov. Počkajte prosím 2 minúty a skúste znova.");
+        } else if (authError.message.includes("already registered")) {
+          setError("Tento email je už registrovaný. Skúste sa prihlásiť.");
+        } else {
+          setError(authError.message);
+        }
         return;
       }
 
       if (authData?.user) {
+        // DÔLEŽITÉ: Počkáme chvíľu na vytvorenie Auth používateľa
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Skontrolujeme, či používateľ už existuje v users tabuľke
         const { data: existingUser } = await supabase
           .from("users")
@@ -152,12 +163,18 @@ function LoginPageContent() {
             .insert([{
               id: authData.user.id,
               email: authData.user.email,
-              full_name: fullName,
-              role: "user" // Nový používateľ má defaultne rolu "user"
+              full_name: fullName || authData.user.email?.split('@')[0],
+              role: "user"
             }]);
 
           if (userError) {
-            console.error("Error creating user record:", userError);
+            // Ak je to duplicate email, ignoruj (používateľ už existuje)
+            if (userError.code !== '23505') {
+              console.error("Error creating user record:", userError);
+              setError(`Database error: ${userError.message || "Unknown error"}`);
+              setLoading(false);
+              return;
+            }
           }
         }
 
@@ -192,8 +209,6 @@ function LoginPageContent() {
     setLoading(true);
 
     try {
-      console.log("Attempting login with:", { email, supabase: !!supabase });
-
       if (!supabase) {
         throw new Error(t.supabaseUnavailable);
       }
@@ -203,8 +218,6 @@ function LoginPageContent() {
         password,
       });
 
-      console.log("Login response:", { authData, authError });
-
       if (authError) {
         setLoading(false);
         setError(authError.message);
@@ -213,15 +226,11 @@ function LoginPageContent() {
 
       // Kontrola role v databáze a presmerovanie
       if (authData?.user?.email) {
-        console.log("Checking user role for:", authData.user.email);
-        
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("role")
           .eq("email", authData.user.email)
           .maybeSingle();
-
-        console.log("User role response:", { userData, userError });
 
         setLoading(false);
 
@@ -234,11 +243,9 @@ function LoginPageContent() {
 
         // Presmerovanie podľa role
         if (userData?.role === "admin") {
-          console.log("Login successful, redirecting to:", redirectPath);
           router.push(redirectPath);
         } else {
           // Bežný používateľ alebo neexistujúci záznam v users tabuľke
-          console.log("Login successful, redirecting to homepage");
           router.push("/");
         }
       } else {
@@ -359,6 +366,7 @@ function LoginPageContent() {
               <div className="relative">
                 <input
                   type="text"
+                  autoComplete="name"
                   required
                   placeholder={t.fullNamePlaceholder}
                   value={fullName}
@@ -382,6 +390,7 @@ function LoginPageContent() {
             <div className="relative">
               <input
                 type="email"
+                autoComplete="email"
                 required
                 placeholder={t.emailPlaceholder}
                 value={email}
@@ -403,6 +412,7 @@ function LoginPageContent() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                autoComplete={isRegister ? "new-password" : "current-password"}
                 required
                 placeholder={t.passwordPlaceholder}
                 value={password}
@@ -432,6 +442,7 @@ function LoginPageContent() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   required
                   placeholder={t.passwordPlaceholder}
                   value={confirmPassword}

@@ -1,9 +1,9 @@
 // src/app/components/SupabaseProvider.tsx
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/app/lib/supabase/client'
-import type { SupabaseClient, Session } from '@supabase/supabase-js'
+import type { Session, SupabaseClient } from '@supabase/supabase-js'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type SupabaseContext = {
   supabase: SupabaseClient
