@@ -164,7 +164,8 @@ function LoginPageContent() {
               id: authData.user.id,
               email: authData.user.email,
               full_name: fullName || authData.user.email?.split('@')[0],
-              role: "user"
+              role: "user",
+              provider: authData.user.app_metadata?.provider || "email"
             }]);
 
           if (userError) {
