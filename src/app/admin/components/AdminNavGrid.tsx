@@ -3,6 +3,7 @@
 import { useLanguage } from '@/app/components/LanguageProvider';
 import {
     BookOpen,
+    CheckSquare,
     Newspaper,
     Quote,
     Upload,
@@ -77,6 +78,16 @@ export default function AdminNavGrid() {
       bgColor: "bg-orange-100",
       hoverBgColor: "group-hover:bg-orange-200",
       iconColor: "text-orange-600",
+    },
+    {
+      href: "/admin/launch-checklist",
+      icon: <CheckSquare size={24} />,
+      titleKey: "launchChecklist",
+      descriptionKey: "launchChecklistDesc",
+      borderColor: "border-indigo-500",
+      bgColor: "bg-indigo-100",
+      hoverBgColor: "group-hover:bg-indigo-200",
+      iconColor: "text-indigo-600",
     },
   ];
   return (

@@ -149,7 +149,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       controller: {
         title: "Kto je správca osobných údajov",
         content: {
-          intro: "Správcom osobných údajov účastníkov podujatí (najmä seminárov a konferencií) organizovaných KROK – Pastoračný fond Žilinskej diecézy, odberateľov newslettera, dobrovoľníkov a podporovateľov, dodávateľov služieb a korešpondentov s našou organizáciou, získaných prostredníctvom registračných formulárov na jednotlivé podujatia, prostredníctvom formulára na odoberanie newslettera uverejnenom na našej webovej stránke www.lectiodivina.sk, objednávkového formulára na knihy alebo prostredníctvom osobnej korešpondencie, je:",
+          intro: "Správcom osobných údajov účastníkov podujatí (najmä seminárov a konferencií) organizovaných KROK – Pastoračný fond Žilinskej diecézy, odberateľov newslettera, dobrovoľníkov a podporovateľov, dodávateľov služieb a korešpondentov s našou organizáciou, získaných prostredníctvom registračných formulárov na jednotlivé podujatia, prostredníctvom formulára na odoberanie newslettera uverejnenom na našej webovej stránke www.lectio.one, objednávkového formulára na knihy alebo prostredníctvom osobnej korešpondencie, je:",
           companyTitle: "KROK – Pastoračný fond Žilinskej diecézy",
           address: {
             street: "Jána Kalinčiaka 1",
@@ -251,7 +251,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       cookies: {
         title: "Cookies",
         content: {
-          intro: "Pri prehliadaní webových stránok www.lectiodivina.sk zaznamenávame vašu IP adresu, časový interval strávený na stránke a to, z ktorej stránky prichádzate.",
+          intro: "Pri prehliadaní webových stránok www.lectio.one zaznamenávame vašu IP adresu, časový interval strávený na stránke a to, z ktorej stránky prichádzate.",
           usage: {
             title: "🍪 Použitie cookies",
             desc: "Cookies používame na meranie návštevnosti webu a prispôsobenie zobrazenia webových stránok ako svoj oprávnený záujem správcu, lebo vďaka tomu môžeme ponúknuť lepšie služby. Cookies pre cielenie reklamy KROK nepoužívalo a ani v budúcnosti nebudú spracúvané na tento účel."
@@ -287,7 +287,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
           intro: "V súvislosti s ochranou osobných údajov máte viacero práv. Ak budete niektoré z týchto práv chcieť využiť, prosíme, kontaktujte nás na",
           contactEmails: {
             first: "mojkrok@dcza.sk",
-            second: "info@lectiodivina.sk"
+            second: "info@lectio.one"
           },
           rightsList: [
             {
@@ -333,7 +333,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
             },
             {
               title: "Odhlásenie zo zasielania informačných e-mailov",
-              desc: "zaslaním krátkej správy v znení: 'Odhlasujem sa zo zasielania informačných e-mailov' na adresu: mojkrok@dcza.sk alebo info@lectiodivina.sk"
+              desc: "zaslaním krátkej správy v znení: 'Odhlasujem sa zo zasielania informačných e-mailov' na adresu: mojkrok@dcza.sk alebo info@lectio.one"
             }
           ]
         }
@@ -357,7 +357,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       controller: {
         title: "Who is the personal data controller",
         content: {
-          intro: "The controller of personal data of event participants (especially seminars and conferences) organized by KROK – Pastoral Fund of the Diocese of Žilina, newsletter subscribers, volunteers and supporters, service providers and correspondents with our organization, obtained through registration forms for individual events, through the newsletter subscription form published on our website www.lectiodivina.sk, book order form or through personal correspondence, is:",
+          intro: "The controller of personal data of event participants (especially seminars and conferences) organized by KROK – Pastoral Fund of the Diocese of Žilina, newsletter subscribers, volunteers and supporters, service providers and correspondents with our organization, obtained through registration forms for individual events, through the newsletter subscription form published on our website www.lectio.one, book order form or through personal correspondence, is:",
           companyTitle: "KROK – Pastoral Fund of the Diocese of Žilina",
           address: {
             street: "Jána Kalinčiaka 1",
@@ -459,7 +459,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       cookies: {
         title: "Cookies",
         content: {
-          intro: "When browsing the website www.lectiodivina.sk, we record your IP address, the time interval spent on the page and where you come from.",
+          intro: "When browsing the website www.lectio.one, we record your IP address, the time interval spent on the page and where you come from.",
           usage: {
             title: "🍪 Use of cookies",
             desc: "We use cookies to measure website traffic and customize the display of web pages as our legitimate interest as a controller, because this allows us to offer better services. KROK has not used cookies for advertising targeting and will not process them for this purpose in the future."
@@ -495,7 +495,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
           intro: "In connection with the protection of personal data, you have several rights. If you want to exercise any of these rights, please contact us at",
           contactEmails: {
             first: "mojkrok@dcza.sk",
-            second: "info@lectiodivina.sk"
+            second: "info@lectio.one"
           },
           rightsList: [
             {
@@ -541,7 +541,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
             },
             {
               title: "Unsubscribe from informational emails",
-              desc: "by sending a short message saying: 'I unsubscribe from receiving informational emails' to: mojkrok@dcza.sk or info@lectiodivina.sk"
+              desc: "by sending a short message saying: 'I unsubscribe from receiving informational emails' to: mojkrok@dcza.sk or info@lectio.one"
             }
           ]
         }
@@ -565,7 +565,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       controller: {
         title: "Kdo je správce osobních údajů",
         content: {
-          intro: "Správcem osobních údajů účastníků akcí (zejména seminářů a konferencí) organizovaných KROK – Pastorační fond Žilinské diecéze, odběratelů newsletteru, dobrovolníků a podporovatelů, dodavatelů služeb a korespondentů s naší organizací, získaných prostřednictvím registračních formulářů na jednotlivé akce, prostřednictvím formuláře pro odběr newsletteru zveřejněném na našich webových stránkách www.lectiodivina.sk, objednávkového formuláře na knihy nebo prostřednictvím osobní korespondence, je:",
+          intro: "Správcem osobních údajů účastníků akcí (zejména seminářů a konferencí) organizovaných KROK – Pastorační fond Žilinské diecéze, odběratelů newsletteru, dobrovolníků a podporovatelů, dodavatelů služeb a korespondentů s naší organizací, získaných prostřednictvím registračních formulářů na jednotlivé akce, prostřednictvím formuláře pro odběr newsletteru zveřejněném na našich webových stránkách www.lectio.one, objednávkového formuláře na knihy nebo prostřednictvím osobní korespondence, je:",
           companyTitle: "KROK – Pastorační fond Žilinské diecéze",
           address: {
             street: "Jána Kalinčiaka 1",
@@ -667,7 +667,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       cookies: {
         title: "Cookies",
         content: {
-          intro: "Při prohlížení webových stránek www.lectiodivina.sk zaznamenáváme vaši IP adresu, časový interval strávený na stránce a to, z které stránky přicházíte.",
+          intro: "Při prohlížení webových stránek www.lectio.one zaznamenáváme vaši IP adresu, časový interval strávený na stránce a to, z které stránky přicházíte.",
           usage: {
             title: "🍪 Použití cookies",
             desc: "Cookies používáme k měření návštěvnosti webu a přizpůsobení zobrazení webových stránek jako svůj oprávněný zájem správce, protože díky tomu můžeme nabídnout lepší služby. Cookies pro cílení reklamy KROK nepoužíval a ani v budoucnosti nebudou zpracovávány za tímto účelem."
@@ -703,7 +703,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
           intro: "V souvislosti s ochranou osobních údajů máte několik práv. Pokud budete některé z těchto práv chtít využít, prosíme, kontaktujte nás na",
           contactEmails: {
             first: "mojkrok@dcza.sk",
-            second: "info@lectiodivina.sk"
+            second: "info@lectio.one"
           },
           rightsList: [
             {
@@ -749,7 +749,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
             },
             {
               title: "Odhlášení ze zasílání informačních e-mailů",
-              desc: "zasláním krátké zprávy ve znění: 'Odhlašuji se ze zasílání informačních e-mailů' na adresu: mojkrok@dcza.sk nebo info@lectiodivina.sk"
+              desc: "zasláním krátké zprávy ve znění: 'Odhlašuji se ze zasílání informačních e-mailů' na adresu: mojkrok@dcza.sk nebo info@lectio.one"
             }
           ]
         }
@@ -773,7 +773,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       controller: {
         title: "Quién es el responsable del tratamiento de datos personales",
         content: {
-          intro: "El responsable del tratamiento de datos personales de los participantes de eventos (especialmente seminarios y conferencias) organizados por KROK – Fondo Pastoral de la Diócesis de Žilina, suscriptores de newsletters, voluntarios y seguidores, proveedores de servicios y corresponsales con nuestra organización, obtenidos a través de formularios de registro para eventos individuales, a través del formulario de suscripción al newsletter publicado en nuestro sitio web www.lectiodivina.sk, formulario de pedido de libros o a través de correspondencia personal, es:",
+          intro: "El responsable del tratamiento de datos personales de los participantes de eventos (especialmente seminarios y conferencias) organizados por KROK – Fondo Pastoral de la Diócesis de Žilina, suscriptores de newsletters, voluntarios y seguidores, proveedores de servicios y corresponsales con nuestra organización, obtenidos a través de formularios de registro para eventos individuales, a través del formulario de suscripción al newsletter publicado en nuestro sitio web www.lectio.one, formulario de pedido de libros o a través de correspondencia personal, es:",
           companyTitle: "KROK – Fondo Pastoral de la Diócesis de Žilina",
           address: {
             street: "Jána Kalinčiaka 1",
@@ -875,7 +875,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
       cookies: {
         title: "Cookies",
         content: {
-          intro: "Al navegar por el sitio web www.lectiodivina.sk, registramos su dirección IP, el intervalo de tiempo pasado en la página y de dónde viene.",
+          intro: "Al navegar por el sitio web www.lectio.one, registramos su dirección IP, el intervalo de tiempo pasado en la página y de dónde viene.",
           usage: {
             title: "🍪 Uso de cookies",
             desc: "Utilizamos cookies para medir el tráfico del sitio web y personalizar la visualización de páginas web como nuestro interés legítimo como responsable del tratamiento, porque esto nos permite ofrecer mejores servicios. KROK no ha utilizado cookies para orientación publicitaria y no las procesará para este propósito en el futuro."
@@ -911,7 +911,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
           intro: "En relación con la protección de datos personales, tiene varios derechos. Si desea ejercer alguno de estos derechos, por favor contáctenos en",
           contactEmails: {
             first: "mojkrok@dcza.sk",
-            second: "info@lectiodivina.sk"
+            second: "info@lectio.one"
           },
           rightsList: [
             {
@@ -957,7 +957,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
             },
             {
               title: "Cancelar suscripción a correos informativos",
-              desc: "enviando un mensaje corto que diga: 'Me doy de baja de recibir correos informativos' a: mojkrok@dcza.sk o info@lectiodivina.sk"
+              desc: "enviando un mensaje corto que diga: 'Me doy de baja de recibir correos informativos' a: mojkrok@dcza.sk o info@lectio.one"
             }
           ]
         }

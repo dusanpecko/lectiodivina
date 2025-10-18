@@ -1,6 +1,7 @@
 'use client'
 
 import { useMetadata } from '@/hooks/useMetadata'
+import { Inter } from 'next/font/google'
 import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import packageJson from '../../package.json'
@@ -11,6 +12,13 @@ import { LanguageProvider, useLanguage } from './components/LanguageProvider'
 import ScrollToTopButton from './components/ScrollToTopButton'
 import SupabaseProvider from './components/SupabaseProvider'
 import './globals.css'
+
+// Configure Inter font
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 // Komponenta pre dynamické metadata
 function DynamicMetadata() {
@@ -121,7 +129,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body className="min-h-screen overflow-x-hidden bg-white text-black snap-y snap-mandatory overflow-y-auto" suppressHydrationWarning>
+      <body className={`${inter.className} min-h-screen overflow-x-hidden bg-white text-black snap-y snap-mandatory overflow-y-auto`} suppressHydrationWarning>
         <LanguageProvider>
           <CookieConsentProvider>
             <SupabaseProvider session={null}>

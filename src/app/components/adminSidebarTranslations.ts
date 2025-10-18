@@ -7,6 +7,7 @@ export interface AdminSidebarTranslations {
     tasks: string;
     lectio_sources: string;
     rosary: string;
+    launch_checklist: string;
     error_reports: string;
     programs: string;
     notifications: string;
@@ -35,6 +36,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       tasks: "Úlohy",
       lectio_sources: "Lectio Zdroje",
       rosary: "Ruženec",
+      launch_checklist: "Launch Checklist",
       error_reports: "Správa chýb",
       programs: "Programy",
       notifications: "Notifikácie",
@@ -61,6 +63,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       tasks: "Úkoly",
       lectio_sources: "Lectio Zdroje",
       rosary: "Růženec",
+      launch_checklist: "Launch Checklist",
       error_reports: "Zpráva chyb",
       programs: "Programy",
       notifications: "Oznámení",
@@ -87,6 +90,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       tasks: "Tasks",
       lectio_sources: "Lectio Sources",
       rosary: "Rosary",
+      launch_checklist: "Launch Checklist",
       error_reports: "Error Reports",
       programs: "Programs",
       notifications: "Notifications",
@@ -113,6 +117,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       tasks: "Tareas",
       lectio_sources: "Fuentes Lectio",
       rosary: "Rosario",
+      launch_checklist: "Launch Checklist",
       error_reports: "Reportes de Error",
       programs: "Programas",
       notifications: "Notificaciones",

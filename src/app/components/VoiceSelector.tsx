@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { Volume2 } from 'lucide-react';
+import { useState } from 'react';
 import { useLanguage } from "./LanguageProvider";
 import { voiceTranslations } from "./translations";
-import { Volume2 } from 'lucide-react';
 
 // Dostupné hlasy z ElevenLabs
 const AVAILABLE_VOICES = [
@@ -9,7 +9,7 @@ const AVAILABLE_VOICES = [
   { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel", description: "Žena - anglický prízvuk", gender: "female", languages: "en" },
   { id: "jsCqWAovK2LkecY7zXl4", name: "Freya", description: "Žena - nemecký prízvuk", gender: "female", languages: "de" },
   { id: "XB0fDUnXU5powFXDhCwa", name: "Chiara/Charlotte", description: "Žena - taliančina/francúzština", gender: "female", languages: "it, fr" },
-  { id: "EXAVITQu4vr4xnSDxMaL", name: "Bella", description: "Žena - španielčina/portugalčina", gender: "female", languages: "es, pt" },
+  { id: "6bNjXphfWPUDHuFkgDt3", name: "Efrayn", description: "Muž - španielčina/portugalčina", gender: "female", languages: "es, pt" },
   { id: "onwK4e9ZLuTAKqWW03F9", name: "Daniel", description: "Muž - maďarčina", gender: "male", languages: "hu" }
 ];
 

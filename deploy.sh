@@ -5,7 +5,7 @@ echo "🚀 Starting Lectio Divina deployment..."
 # Configuration
 PROJECT_DIR="/www/wwwroot/lectio.one"
 APP_NAME="lectio"
-DOMAIN="lectiodivina.sk"  # ✅ OPRAVENÉ: .sk namiesto .org
+DOMAIN="lectio.one"  # ✅ OPRAVENÉ: .sk namiesto .org
 
 # Farby pre výstup
 RED='\033[0;31m'

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     ]
   },
   alternates: {
-    canonical: "https://www.lectiodivina.sk/profile"
+    canonical: "https://www.lectio.one/profile"
   },
   other: {
     "admin-panel": "Lectio Divina",
@@ -59,11 +59,11 @@ export default function ProfileLayout({
             "@type": "WebPage",
             "name": "Profil používateľa - Administrácia",
             "description": "Administračné rozhranie pre správu používateľského profilu",
-            "url": "https://www.lectiodivina.sk/profile",
+            "url": "https://www.lectio.one/profile",
             "isPartOf": {
               "@type": "WebSite",
               "name": "Lectio Divina Admin",
-              "url": "https://www.lectiodivina.sk"
+              "url": "https://www.lectio.one"
             },
             "about": {
               "@type": "WebApplication",
@@ -86,8 +86,8 @@ export default function ProfileLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+421902575575",
-                "email": "admin@lectiodivina.sk",
+                "telephone": "+421902982982",
+                "email": "admin@lectio.one",
                 "contactType": "technical support"
               }
             },

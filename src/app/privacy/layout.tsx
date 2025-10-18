@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     ]
   },
   alternates: {
-    canonical: "https://www.lectiodivina.sk/privacy"
+    canonical: "https://www.lectio.one/privacy"
   },
   other: {
     "mobile-app": "Lectio Divina",
@@ -59,11 +59,11 @@ export default function MobilePrivacyLayout({
             "@type": "WebPage",
             "name": "Ochrana osobných údajov - Mobilná aplikácia",
             "description": "Zásady ochrany osobných údajov pre mobilnú aplikáciu Lectio Divina",
-            "url": "https://www.lectiodivina.sk/privacy",
+            "url": "https://www.lectio.one/privacy",
             "isPartOf": {
               "@type": "WebSite",
               "name": "Lectio Divina",
-              "url": "https://www.lectiodivina.sk"
+              "url": "https://www.lectio.one"
             },
             "about": {
               "@type": "MobileApplication",
@@ -93,8 +93,8 @@ export default function MobilePrivacyLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+421902575575",
-                "email": "info@lectiodivina.sk",
+                "telephone": "+421902982982",
+                "email": "info@lectio.one",
                 "contactType": "customer service"
               }
             },

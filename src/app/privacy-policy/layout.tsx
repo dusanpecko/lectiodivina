@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "Lectio Divina"
   },
   alternates: {
-    canonical: "https://www.lectiodivina.sk/privacy-policy"
+    canonical: "https://www.lectio.one/privacy-policy"
   }
 };
 
@@ -46,11 +46,11 @@ export default function PrivacyPolicyLayout({
             "@type": "WebPage",
             "name": "Ochrana osobných údajov",
             "description": "Zásady ochrany osobných údajov KROK – Pastoračný fond Žilinskej diecézy",
-            "url": "https://www.lectiodivina.sk/privacy-policy",
+            "url": "https://www.lectio.one/privacy-policy",
             "isPartOf": {
               "@type": "WebSite",
               "name": "Lectio Divina",
-              "url": "https://www.lectiodivina.sk"
+              "url": "https://www.lectio.one"
             },
             "publisher": {
               "@type": "Organization",
@@ -64,8 +64,8 @@ export default function PrivacyPolicyLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+421902575575",
-                "email": "info@lectiodivina.sk",
+                "telephone": "+421902982982",
+                "email": "info@lectio.one",
                 "contactType": "customer service"
               }
             },

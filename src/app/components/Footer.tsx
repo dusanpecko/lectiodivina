@@ -200,7 +200,7 @@ export default function Footer() {
                   <div className="flex space-x-2">
                     {/* Facebook */}
                     <a
-                      href="https://www.facebook.com/lectiodivinaorg"
+                      href="https://www.facebook.com/lectio.one"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative p-2 rounded-lg transition-all duration-300 hover:scale-110"
@@ -221,7 +221,7 @@ export default function Footer() {
                     
                     {/* Instagram */}
                     <a
-                      href="https://www.instagram.com/lectiodivinaorg"
+                      href="https://www.instagram.com/lectio.one"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative p-2 rounded-lg transition-all duration-300 hover:scale-110"

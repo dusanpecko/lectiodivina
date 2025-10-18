@@ -389,7 +389,7 @@ export default function ContactPage() {
               <h3 className="text-lg font-bold text-white mb-4">{t.social.title}</h3>
               <div className="flex space-x-4 mb-6">
                 <a 
-                  href="https://www.facebook.com/SKLectioDivina"
+                  href="https://www.facebook.com/lectio.one"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -401,7 +401,7 @@ export default function ContactPage() {
                 </a>
                 
                 <a 
-                  href="https://www.instagram.com/sklectiodivina/"
+                  href="https://www.instagram.com/lectio.one/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors"

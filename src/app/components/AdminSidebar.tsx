@@ -3,25 +3,27 @@
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 import {
-  AlertCircle, // Pre error reports
-  Bell,
-  Book,
-  BookOpen,
-  Calendar,
-  ChevronLeft,
-  ChevronRight, // Pre lectio-sources
-  Crown,
-  Kanban,
-  LayoutDashboard,
-  Newspaper, // Pre notifikácie
-  Plus // Pre quick actions button
-  ,
+    AlertCircle, // Pre error reports
+    Bell,
+    Book,
+    BookOpen,
+    Calendar,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight, // Pre lectio-sources
+    Crown,
+    Kanban,
+    LayoutDashboard,
+    Newspaper, // Pre notifikácie
+    Plus // Pre quick actions button
+    ,
 
 
-  Quote,
-  Settings,
-  UserPlus,
-  Users
+
+    Quote,
+    Settings,
+    UserPlus,
+    Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,6 +43,7 @@ const links = [
   { href: "/admin/daily_quotes", key: "daily_quotes", icon: Quote, color: "purple" },
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
   { href: "/admin/rosary", key: "rosary", icon: Crown, color: "violet" },
+  { href: "/admin/launch-checklist", key: "launch_checklist", icon: CheckCircle2, color: "green" },
   // { href: "/admin/content_cards", key: "content_cards", icon: CreditCard, color: "indigo" }, // VO VÝVOJI
   // { href: "/admin/programs", key: "programs", icon: Kanban, color: "pink" }, // VO VÝVOJI
   { href: "/admin/tasks", key: "tasks", icon: Kanban, color: "pink" },
@@ -76,6 +79,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
     if (key === 'tasks') return adminT.navigation.tasks;
     if (key === 'lectio_sources') return adminT.navigation.lectio_sources;
     if (key === 'rosary') return adminT.navigation.rosary;
+    if (key === 'launch_checklist') return adminT.navigation.launch_checklist;
     if (key === 'error_reports') return adminT.navigation.error_reports;
     if (key === 'bible_bulk_import') return adminT.navigation.bible_bulk_import;
     // if (key === 'programs') return adminT.navigation.programs; // VO VÝVOJI

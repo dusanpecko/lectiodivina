@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     ]
   },
   alternates: {
-    canonical: "https://www.lectiodivina.sk/terms"
+    canonical: "https://www.lectio.one/terms"
   },
   other: {
     "mobile-app": "Lectio Divina",
@@ -59,11 +59,11 @@ export default function TermsLayout({
             "@type": "WebPage",
             "name": "Podmienky používania - Mobilná aplikácia",
             "description": "Všeobecné obchodné podmienky a pravidlá používania mobilnej aplikácie Lectio Divina",
-            "url": "https://www.lectiodivina.sk/terms",
+            "url": "https://www.lectio.one/terms",
             "isPartOf": {
               "@type": "WebSite",
               "name": "Lectio Divina",
-              "url": "https://www.lectiodivina.sk"
+              "url": "https://www.lectio.one"
             },
             "about": {
               "@type": "MobileApplication",
@@ -93,8 +93,8 @@ export default function TermsLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+421902575575",
-                "email": "info@lectiodivina.sk",
+                "telephone": "+421902982982",
+                "email": "info@lectio.one",
                 "contactType": "customer service"
               }
             },

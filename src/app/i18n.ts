@@ -1,4 +1,4 @@
-import { useContext, createContext } from "react";
+import { createContext, useContext } from "react";
 
 // 1. Definícia typov jazykov, ktoré podporuješ
 export type Language = "sk" | "cz" | "en" | "es";
@@ -261,7 +261,7 @@ export const translations: Record<Language, any> = {
       p2: "Pozývame vás stiahnuť si našu novú aplikáciu Lectio Divina a dať Božiemu Slovu priestor vo vašom srdci. Či už sa rozhodnete pre Lectio osamote, v rodine, alebo v malej skupine, prostredníctvom čítania Božieho Slova sa váš život s Bohom začne prehlbovať a rozkvitať.",
       p3: "Stiahnite si aplikáciu Lectio Divina ešte dnes a začnite svoju cestu k hlbšiemu vzťahu s Bohom!",
       note: "Aplikácia je momentálne dostupná v slovenčine.",
-      more: "Viac o Lectio Divina na www.lectiodivina.sk",
+      more: "Viac o Lectio Divina na www.lectio.one",
       alt: "Ilustrácia mobilnej aplikácie",
       apple_store_alt: "Stiahnuť z App Store",
       google_play_alt: "Stiahnuť z Google Play",
@@ -838,7 +838,7 @@ export const translations: Record<Language, any> = {
       p2: "Zveme vás ke stažení naší nové aplikace Lectio Divina a k tomu, abyste dali Božímu Slovu prostor ve svém srdci. Ať už se rozhodnete pro Lectio sami, v rodině nebo v malé skupině, skrze čtení Božího Slova se váš život s Bohem začne prohlubovat a rozkvétat.",
       p3: "Stáhněte si aplikaci Lectio Divina ještě dnes a začněte svou cestu k hlubšímu vztahu s Bohem!",
       note: "Aplikace je momentálně dostupná v slovenštině.",
-      more: "Více o Lectio Divina na www.lectiodivina.sk",
+      more: "Více o Lectio Divina na www.lectio.one",
       alt: "Ilustrace mobilní aplikace",
       apple_store_alt: "Stáhnout z App Store",
       google_play_alt: "Stáhnout z Google Play",
@@ -1342,7 +1342,7 @@ export const translations: Record<Language, any> = {
       p2: "Download our new Lectio Divina app and give God's Word space in your heart. Whether you choose Lectio alone, with your family, or in a small group, through reading God's Word your life with God will deepen and blossom.",
       p3: "Download the Lectio Divina app today and begin your journey to a deeper relationship with God!",
       note: "The app is currently available in Slovak.",
-      more: "More about Lectio Divina at www.lectiodivina.sk",
+      more: "More about Lectio Divina at www.lectio.one",
       alt: "Illustration of the mobile app",
       apple_store_alt: "Download on the App Store",
       google_play_alt: "Get it on Google Play",
@@ -1902,7 +1902,7 @@ export const translations: Record<Language, any> = {
       p2: "Descarga nuestra nueva aplicación Lectio Divina y dale un espacio a la Palabra de Dios en tu corazón. Ya sea que elijas Lectio a solas, en familia o en un pequeño grupo, a través de la lectura de la Palabra de Dios tu vida con Él empezará a profundizarse y florecer.",
       p3: "¡Descarga la aplicación Lectio Divina hoy y comienza tu camino hacia una relación más profunda con Dios!",
       note: "La aplicación está disponible actualmente en eslovaco.",
-      more: "Más sobre Lectio Divina en www.lectiodivina.sk",
+      more: "Más sobre Lectio Divina en www.lectio.one",
       alt: "Ilustración de la aplicación móvil",
       apple_store_alt: "Descargar en App Store",
       google_play_alt: "Obtener en Google Play",

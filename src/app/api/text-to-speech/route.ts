@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from "next/server";
 
 // Direct fetch approach since ElevenLabs SDK has compatibility issues
 const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1";
@@ -60,17 +60,17 @@ const VOICE_MAPPING = {
     similarity_boost: 0.8,
     style: 0.15
   },
-  // Španielčina - Bella (Spanish female)
+  // Španielčina - Efrayn (Spanish male)
   es: {
-    voice_id: "EXAVITQu4vr4xnSDxMaL", // Bella
+    voice_id: "6bNjXphfWPUDHuFkgDt3", // Efrayn 
     model: "eleven_v3",
-    stability: 0.4,
-    similarity_boost: 0.9,
+    stability: 0.5,
+    similarity_boost: 0.8,
     style: 0.2
   },
-  // Portugalčina - Bella (works for PT too)
+  // Portugalčina - Efrayn (works for PT too)
   pt: {
-    voice_id: "EXAVITQu4vr4xnSDxMaL", // Bella
+    voice_id: "6bNjXphfWPUDHuFkgDt3", // Efrayn
     model: "eleven_v3",
     stability: 0.5,
     similarity_boost: 0.85,
@@ -260,7 +260,6 @@ export async function POST(request: NextRequest) {
 
     // Generate filename and path
     const filename = generateAudioFilename(lectioId, fieldName, detectedLang);
-    const storagePath = `audio-files/lectio/${filename}`;
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -303,25 +302,27 @@ export async function POST(request: NextRequest) {
       storagePath: uploadData.path
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("TTS Generation error:", error);
+    
+    const err = error as { status?: number; message?: string };
 
     // Handle specific ElevenLabs errors
-    if (error?.status === 401) {
+    if (err?.status === 401) {
       return NextResponse.json(
         { error: "Neplatný ElevenLabs API kľúč" },
         { status: 401 }
       );
     }
     
-    if (error?.status === 429) {
+    if (err?.status === 429) {
       return NextResponse.json(
         { error: "Prekročený limit API požiadaviek ElevenLabs. Skúste neskôr." },
         { status: 429 }
       );
     }
 
-    if (error?.status === 422) {
+    if (err?.status === 422) {
       return NextResponse.json(
         { error: "Neplatný text alebo parametre pre TTS generáciu" },
         { status: 422 }
@@ -329,7 +330,7 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { error: "Chyba pri generovaní audio: " + (error?.message || "Neznáma chyba") },
+      { error: "Chyba pri generovaní audio: " + (err?.message || "Neznáma chyba") },
       { status: 500 }
     );
   }

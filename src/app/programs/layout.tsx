@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     ]
   },
   alternates: {
-    canonical: "https://www.lectiodivina.sk/programs"
+    canonical: "https://www.lectio.one/programs"
   }
 };
 
@@ -71,11 +71,11 @@ export default function ProgramsLayout({
             "@type": "WebPage",
             "name": "Duchovné programy a kurzy",
             "description": "Kolekcia duchovných programov, meditácií, modlitieb a biblických štúdií",
-            "url": "https://www.lectiodivina.sk/programs",
+            "url": "https://www.lectio.one/programs",
             "isPartOf": {
               "@type": "WebSite",
               "name": "Lectio Divina",
-              "url": "https://www.lectiodivina.sk"
+              "url": "https://www.lectio.one"
             },
             "mainEntity": {
               "@type": "Course",
@@ -132,13 +132,13 @@ export default function ProgramsLayout({
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Domov",
-                  "item": "https://www.lectiodivina.sk"
+                  "item": "https://www.lectio.one"
                 },
                 {
                   "@type": "ListItem", 
                   "position": 2,
                   "name": "Programy",
-                  "item": "https://www.lectiodivina.sk/programs"
+                  "item": "https://www.lectio.one/programs"
                 }
               ]
             },
@@ -147,18 +147,18 @@ export default function ProgramsLayout({
               "name": "KROK – Pastoračný fond Žilinskej diecézy",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://www.lectiodivina.sk/logo.png"
+                "url": "https://www.lectio.one/logo.png"
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+421902575575",
-                "email": "info@lectiodivina.sk",
+                "telephone": "+421902982982",
+                "email": "info@lectio.one",
                 "contactType": "customer service"
               }
             },
             "potentialAction": {
               "@type": "SearchAction",
-              "target": "https://www.lectiodivina.sk/programs?search={search_term_string}",
+              "target": "https://www.lectio.one/programs?search={search_term_string}",
               "query-input": "required name=search_term_string"
             },
             "dateModified": new Date().toISOString(),
