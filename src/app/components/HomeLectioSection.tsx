@@ -70,7 +70,7 @@ export default function HomeLectioSection() {
     if (session) {
       router.push('/lectio');
     } else {
-      router.push('/auth?redirect=/lectio');
+      router.push('/login?redirect=/lectio');
     }
   };
 
