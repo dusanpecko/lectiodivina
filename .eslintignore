@@ -1,0 +1,14 @@
+# Ignore backup and utility scripts
+backup-lectio-sources.js
+full-backup.js
+
+# Ignore backup directory
+backup/
+
+# Ignore test files
+test-*.js
+
+# Node.js specific
+node_modules/
+*.log
+npm-debug.log*

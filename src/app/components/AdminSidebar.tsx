@@ -3,27 +3,30 @@
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 import {
-    AlertCircle, // Pre error reports
-    Bell,
-    Book,
-    BookOpen,
-    Calendar,
-    CheckCircle2,
-    ChevronLeft,
-    ChevronRight, // Pre lectio-sources
-    Crown,
-    Kanban,
-    LayoutDashboard,
-    Newspaper, // Pre notifikácie
-    Plus // Pre quick actions button
-    ,
+  AlertCircle, // Pre error reports
+  Bell,
+  Book,
+  BookOpen,
+  Calendar,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight, // Pre lectio-sources
+  Crown,
+  Kanban,
+  LayoutDashboard,
+  Newspaper, // Pre notifikácie
+  Plus // Pre quick actions button
+  ,
 
 
 
-    Quote,
-    Settings,
-    UserPlus,
-    Users
+
+
+
+  Quote,
+  Settings,
+  UserPlus,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,11 +37,12 @@ import { adminSidebarTranslations } from "./adminSidebarTranslations";
 const links = [
   { href: "/admin", key: "dashboard", icon: LayoutDashboard, color: "blue" },
   { href: "/admin/lectio-sources", key: "lectio_sources", icon: Book, color: "teal" }, 
-  { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" },
+  // { href: "/admin/lectio", key: "lectio", icon: BookOpen, color: "emerald" }, // DOČASNE ZAKOMENTOVANÉ - používame hlavné /lectio
+  { href: "/admin/liturgical-calendar", key: "liturgical_calendar", icon: Calendar, color: "cyan" },
   { href: "/admin/bible-bulk-import", key: "bible_bulk_import", icon: BookOpen, color: "indigo" },
   { href: "/admin/news", key: "news", icon: Newspaper, color: "red" },
   { href: "/admin/notifications/", key: "notifications", icon: Bell, color: "pink" },
-  { href: "/admin/notification-topics", key: "notification_topics", icon: Settings, color: "purple" },
+  //{ href: "/admin/notification-topics", key: "notification_topics", icon: Settings, color: "purple" },
   { href: "/admin/calendar", key: "calendar", icon: Calendar, color: "green" },
   { href: "/admin/daily_quotes", key: "daily_quotes", icon: Quote, color: "purple" },
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
@@ -85,7 +89,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
     // if (key === 'programs') return adminT.navigation.programs; // VO VÝVOJI
     // if (key === 'content_cards') return adminT.navigation.content_cards; // VO VÝVOJI
     if (key === 'notifications') return adminT.navigation.notifications;
-    if (key === 'notification_topics') return adminT.navigation.notification_topics;
+    //if (key === 'notification_topics') return adminT.navigation.notification_topics;
     return t[key] || key;
   };
 

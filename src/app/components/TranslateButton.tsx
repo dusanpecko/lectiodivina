@@ -85,20 +85,12 @@ export default function TranslateButton({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={disabled || isTextEmpty || isTranslating}
-        className={`
-          inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border
-          ${isTextEmpty 
-            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
-            : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
-          }
-          ${disabled || isTranslating ? 'opacity-50 cursor-not-allowed' : ''}
-          ${className}
-        `}
+        className={`admin-edit-button-primary text-sm ${className}`}
         title={isTextEmpty ? "Najprv zadajte text" : "Preložiť text"}
       >
         {isTranslating ? (
           <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
             Prekladám...
           </>
         ) : (

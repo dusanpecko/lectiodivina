@@ -489,7 +489,10 @@ export const translations: Record<Language, any> = {
     newsDetail: {
       article_badge: "ČLÁNOK",
       reading_time: "min čítania",
-      published_on: "Publikované"
+      published_on: "Publikované",
+      listen_article: "Počúvať článok",
+      audio_generated: "Profesionálny TTS od ElevenLabs",
+      audio_not_supported: "Váš prehliadač nepodporuje audio prehrávač."
     },
     homeNewsSection: {
       title: "Najnovšie články",
@@ -1004,7 +1007,10 @@ export const translations: Record<Language, any> = {
     newsDetail: {
       article_badge: "ČLÁNEK", 
       reading_time: "min čtení",
-      published_on: "Publikováno"
+      published_on: "Publikováno",
+      listen_article: "Poslouchat článek",
+      audio_generated: "Profesionální TTS od ElevenLabs",
+      audio_not_supported: "Váš prohlížeč nepodporuje audio přehrávač."
     },
     homeNewsSection: {
       title: "Nejnovější články",
@@ -1565,7 +1571,10 @@ export const translations: Record<Language, any> = {
     newsDetail: {
       article_badge: "ARTICLE",
       reading_time: "min read", 
-      published_on: "Published on"
+      published_on: "Published on",
+      listen_article: "Listen to article",
+      audio_generated: "Professional TTS by ElevenLabs",
+      audio_not_supported: "Your browser does not support the audio player."
     },
     homeNewsSection: {
       title: "Latest Articles",
@@ -2068,7 +2077,10 @@ export const translations: Record<Language, any> = {
     newsDetail: {
       article_badge: "ARTÍCULO",
       reading_time: "min de lectura",
-      published_on: "Publicado el"
+      published_on: "Publicado el",
+      listen_article: "Escuchar artículo",
+      audio_generated: "TTS profesional de ElevenLabs",
+      audio_not_supported: "Su navegador no admite el reproductor de audio."
     },
     homeNewsSection: {
       title: "Últimos Artículos",

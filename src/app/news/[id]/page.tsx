@@ -16,6 +16,7 @@ interface News {
   content: string;
   published_at: string;
   lang: string;
+  audio_url?: string;
 }
 
 // Typ pre "ďalší/predchádzajúci článok" (stačí id + title)
@@ -116,7 +117,7 @@ export default function NewsDetailPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-100/10 via-purple-100/10 to-pink-100/10 rounded-full blur-3xl"></div>
       </div>
 
-      <main className="relative pt-6 pb-16">
+      <main className="relative pt-20 sm:pt-24 pb-16">
         {/* ZJEDNODUŠENÉ - NewsDetailArticle si načíta preklady sám */}
         <NewsDetailArticle
           news={news}

@@ -5,24 +5,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-// Liturgické slovníky pre rôzne jazyky
-const liturgicalTerms = {
-  sk: {
-    'Cezročné obdobie': 'Ordinary Time',
-    'Pôstne obdobie': 'Lenten Season',
-    'Veľkonočné obdobie': 'Easter Season',
-    'Adventné obdobie': 'Advent Season',
-    'Vianočné obdobie': 'Christmas Season'
-  },
-  en: {
-    'Ordinary Time': 'Tiempo Ordinario',
-    'Lenten Season': 'Cuaresma',
-    'Easter Season': 'Tiempo Pascual',
-    'Advent Season': 'Adviento',
-    'Christmas Season': 'Navidad'
-  }
-};
-
 // Rozoznanie liturgického obsahu
 function isLiturgicalText(text: string): boolean {
   const liturgicalKeywords = [
@@ -50,13 +32,58 @@ const languageNames: Record<string, string> = {
 };
 
 // Vytvorenie špecializovaného promptu
-function createPrompt(text: string, targetLanguageCode: string, fieldType?: string): string {
-  const isLiturgical = isLiturgicalText(text);
+function createPrompt(text: string, targetLanguageCode: string, fieldType?: string, sourceLanguageCode?: string): string {
+  const isLiturgical = isLiturgicalText(text) || fieldType === 'liturgical';
   const targetLanguageName = languageNames[targetLanguageCode] || targetLanguageCode;
   
   let basePrompt = '';
   
-  if (isLiturgical || fieldType === 'hlava') {
+  // Špeciálny handling pre česko-slovenský liturgický preklad
+  if (isLiturgical && sourceLanguageCode === 'cs' && targetLanguageCode === 'sk') {
+    basePrompt = `Preložte tento ČESKÝ liturgický text do SLOVENČINY podľa pravidiel katolíckej cirkvi.
+
+DÔLEŽITÉ PRAVIDLÁ PRE ČESKO-SLOVENSKÝ PREKLAD:
+1. Dodržujte slovenské liturgické pravidlá:
+   - "neděle" → "nedeľa"
+   - "pondělí" → "pondelok"
+   - "úterý" → "utorok"
+   - "středa" → "streda"
+   - "čtvrtek" → "štvrtok"
+   - "pátek" → "piatok"
+   - "sobota" → "sobota"
+
+2. Poradie slov v slovenčine:
+   - "1. neděle postní" → "1. pôstna nedeľa"
+   - "Pondělí po 1. neděli postní" → "Pondelok po 1. pôstnej nedeli"
+   - "2. týden v Cezročním období" → "2. týždeň v Cezročnom období"
+
+3. Liturgické obdobia - VŽDY používajte plný slovenský názov:
+   - "postní" → "pôstna/pôstne/pôstnej" (podľa pádu)
+   - "velikonoční" → "veľkonočná/veľkonočné/veľkonočnej"
+   - "adventní" → "adventná/adventné/adventnej"
+   
+   KRITICKY DÔLEŽITÉ - Cezročné obdobie:
+   - "v Cezročním období" → "v Cezročnom období" (NIKDY nie "v medziobdobí")
+   - "Cezročním období" → "Cezročnom období" (NIKDY nie "medziobdobí")
+   - "1. týden v Cezročním období" → "1. týždeň v Cezročnom období"
+   - "Středa 2. týdne v Cezročním období" → "Streda 2. týždňa v Cezročnom období"
+   - Cezročné obdobie je OFICIÁLNY slovenský liturgický termín
+
+4. Sviatky:
+   - "Narození Páně" → "Narodenie Pána"
+   - "Zjevení Páně" → "Zjavenie Pána"
+   - "Nanebevstoupení Páně" → "Nanebovstúpenie Pána"
+
+KONKRÉTNE PRÍKLADY CELÝCH PREKLADOV:
+✓ "Středa 1. týdne v Cezročním období" → "Streda 1. týždňa v Cezročnom období"
+✓ "Pátek 10. týdne v Cezročním období" → "Piatok 10. týždňa v Cezročnom období"  
+✓ "2. neděle v Cezročním období" → "2. nedeľa v Cezročnom období"
+✗ NEPOUŽÍVAŤ: "medziobdobie", "v medziobdobí" - toto je NESPRÁVNE
+
+VRÁTITE VÝHRADNE PRELOŽENÝ TEXT BEZ PREFIXOV, ÚVODZOVIEK ALEBO VYSVETLENÍ.
+
+Preložte: "${text}"`;
+  } else if (isLiturgical || fieldType === 'hlava') {
     // Liturgický prompt
     basePrompt = `Preložte tento liturgický text do jazyka ${targetLanguageName}.
 
@@ -94,7 +121,7 @@ Preložte: "${text}"`;
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, targetLanguage, fieldType } = await request.json();
+    const { text, targetLanguage, fieldType, sourceLanguage } = await request.json();
 
     if (!text || !targetLanguage) {
       return NextResponse.json(
@@ -111,7 +138,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vytvor prompt na základe typu obsahu
-    const prompt = createPrompt(text, targetLanguage, fieldType);
+    const prompt = createPrompt(text, targetLanguage, fieldType, sourceLanguage);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini", // Používam gpt-4o-mini pre lepšiu efektivitu
@@ -170,25 +197,26 @@ export async function POST(request: NextRequest) {
       isLiturgical: isLiturgicalText(text) || fieldType === 'hlava'
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chyba pri preklade:", error);
     
     // Špecifické error handling pre OpenAI
-    if (error?.status === 401) {
+    const err = error as { status?: number; message?: string };
+    if (err?.status === 401) {
       return NextResponse.json(
         { error: "Neplatný OpenAI API kľúč" },
         { status: 401 }
       );
     }
     
-    if (error?.status === 429) {
+    if (err?.status === 429) {
       return NextResponse.json(
         { error: "Prekročený limit API požiadaviek. Skúste neskôr." },
         { status: 429 }
       );
     }
     
-    if (error?.status === 503) {
+    if (err?.status === 503) {
       return NextResponse.json(
         { error: "OpenAI služba momentálne nie je dostupná" },
         { status: 503 }
@@ -196,7 +224,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: "Chyba pri preklade: " + (error?.message || "Neznáma chyba") },
+      { error: "Chyba pri preklade: " + (err?.message || "Neznáma chyba") },
       { status: 500 }
     );
   }

@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "table": "locales",
+    "backup_date": "2025-10-21T19:42:13.049Z",
+    "total_records": 5,
+    "version": "1.0"
+  },
+  "data": [
+    {
+      "id": 1,
+      "code": "sk",
+      "name": "Slovak",
+      "native_name": "Slovenčina",
+      "is_active": true,
+      "created_at": "2025-07-08T13:08:19.730582+00:00",
+      "updated_at": "2025-07-08T13:08:19.730582+00:00"
+    },
+    {
+      "id": 2,
+      "code": "en",
+      "name": "English",
+      "native_name": "English",
+      "is_active": true,
+      "created_at": "2025-07-08T13:08:19.730582+00:00",
+      "updated_at": "2025-07-08T13:08:19.730582+00:00"
+    },
+    {
+      "id": 3,
+      "code": "cz",
+      "name": "Czech",
+      "native_name": "Čeština",
+      "is_active": true,
+      "created_at": "2025-07-08T13:08:19.730582+00:00",
+      "updated_at": "2025-07-08T13:08:19.730582+00:00"
+    },
+    {
+      "id": 4,
+      "code": "es",
+      "name": "Spanish",
+      "native_name": "Español",
+      "is_active": true,
+      "created_at": "2025-07-08T13:08:19.730582+00:00",
+      "updated_at": "2025-07-08T13:08:19.730582+00:00"
+    },
+    {
+      "id": 5,
+      "code": "de",
+      "name": "German",
+      "native_name": "Deutsch",
+      "is_active": true,
+      "created_at": "2025-08-10T10:21:00.405159+00:00",
+      "updated_at": "2025-08-10T10:21:00.405159+00:00"
+    }
+  ]
+}

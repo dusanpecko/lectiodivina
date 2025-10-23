@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from '@/utils/dateFormatter';
 import { User } from '@supabase/supabase-js';
 import { motion } from 'framer-motion';
 import NextImage from 'next/image';
@@ -603,11 +604,6 @@ export default function ProfilePage() {
     setShowLogoutDialog(true);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const localeMap = { sk: 'sk-SK', cz: 'cs-CZ', en: 'en-US', es: 'es-ES' };
-    return date.toLocaleDateString(localeMap[lang]);
-  };
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -734,7 +730,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <div className="font-medium" style={{ color: '#40467b' }}>{t.sections.account_info.registration_date}</div>
-                  <div className="text-gray-700">{formatDate(profile.created_at)}</div>
+                  <div className="text-gray-700">{formatDate(profile.created_at, lang as 'sk' | 'cz' | 'en' | 'es')}</div>
                 </div>
               </div>
             </div>
@@ -860,7 +856,7 @@ export default function ProfilePage() {
                                   )}
                                   {topic.is_enabled && topic.subscribed_at && (
                                     <p className="text-xs text-green-600 mt-1">
-                                      {t.sections.notifications.topic_card.subscribed}: {formatDate(topic.subscribed_at)}
+                                      {t.sections.notifications.topic_card.subscribed}: {formatDate(topic.subscribed_at, lang as 'sk' | 'cz' | 'en' | 'es')}
                                     </p>
                                   )}
                                 </div>

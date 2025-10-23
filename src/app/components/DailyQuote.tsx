@@ -5,13 +5,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Translations } from "../i18n";
 import { useLanguage } from "./LanguageProvider";
-import { useSupabase } from "./SupabaseProvider";
 
-type DailyQuoteRow = {
-  date: string;
-  quote: string;
+type ActioData = {
+  actio_text: string;
   reference: string;
-  lang: string;
 };
 
 type DailyQuoteProps = {
@@ -21,8 +18,7 @@ type DailyQuoteProps = {
 
 export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
   const { lang, isLoaded } = useLanguage();
-  const { supabase } = useSupabase();
-  const [quote, setQuote] = useState<DailyQuoteRow | null>(null);
+  const [actio, setActio] = useState<ActioData | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -34,49 +30,39 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
     setMounted(true);
   }, []);
 
-  // Fetch quote only after mount and language is loaded
+  // Fetch actio from today's lectio
   useEffect(() => {
     if (!mounted || !isLoaded) return;
 
-    async function fetchQuote() {
+    async function fetchActio() {
       setLoading(true);
       
-      // SAFE: Date sa vytvorí len na client-side
-      const today = new Date().toISOString().slice(0, 10);
-      
-      const { data, error } = await supabase
-        .from("daily_quotes")
-        .select("date,quote,reference,lang")
-        .eq("date", today)
-        .eq("lang", lang)
-        .maybeSingle(); // Use maybeSingle() instead of single() to handle no results gracefully
-
-      if (!error && data) {
-        setQuote(data);
-      } else {
-        // Try fallback to Slovak if current language doesn't have quote
-        if (lang !== 'sk') {
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from("daily_quotes")
-            .select("date,quote,reference,lang")
-            .eq("date", today)
-            .eq("lang", 'sk')
-            .maybeSingle();
-          
-          if (!fallbackError && fallbackData) {
-            setQuote(fallbackData);
+      try {
+        // Fetch from API endpoint (same as HomeLectioSection)
+        const response = await fetch(`/api/lectio/today?lang=${lang}`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result?.lectio?.actio_text) {
+            setActio({
+              actio_text: result.lectio.actio_text,
+              reference: result.lectio.reference || result.liturgicalDay.celebration_title || ''
+            });
           } else {
-            setQuote(null);
+            setActio(null);
           }
         } else {
-          setQuote(null);
+          setActio(null);
         }
+      } catch (error) {
+        console.error('Error fetching actio:', error);
+        setActio(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
-    fetchQuote();
-  }, [lang, supabase, mounted, isLoaded]);
+    fetchActio();
+  }, [lang, mounted, isLoaded]);
 
   // Minimal loading state
   if (!mounted || !isLoaded || loading) {
@@ -165,15 +151,15 @@ export default function DailyQuote({ t: tProp, router }: DailyQuoteProps) {
             </div>
 
             <div className="max-w-2xl mx-auto">
-              {quote ? (
+              {actio ? (
                 <>
                   <blockquote className="mb-4">
                     <p className="text-lg sm:text-xl font-semibold leading-relaxed text-gray-700 text-center">
-                      &ldquo;{quote.quote}&rdquo;
+                      &ldquo;{actio.actio_text}&rdquo;
                     </p>
                   </blockquote>
                   <cite className="block text-center text-sm text-gray-500 italic">
-                    — {quote.reference}
+                    — {actio.reference}
                   </cite>
                 </>
               ) : (

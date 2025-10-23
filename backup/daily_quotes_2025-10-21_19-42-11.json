@@ -1,0 +1,4194 @@
+{
+  "metadata": {
+    "table": "daily_quotes",
+    "backup_date": "2025-10-21T19:42:15.206Z",
+    "total_records": 523,
+    "version": "1.0"
+  },
+  "data": [
+    {
+      "id": "01983e27-7d76-4503-839c-16e83d07f898",
+      "date": "2026-10-02",
+      "quote": "Odpusť, Pane, že sme z ľahkomyseľnosti nepočúvali Tvoj hlas. (porov.)",
+      "reference": "(Bar 1,19)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "01dfaddc-767a-4836-a757-18e487adfd40",
+      "date": "2025-12-26",
+      "quote": "\"V tom sa mu rozviazali ústa a jazyk i prehovoril a velebil Boha.\"",
+      "reference": "(Lk 1,64)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "022e7af7-5ec3-4e78-a296-67a804ab9534",
+      "date": "2026-05-09",
+      "quote": "\"Ak mňa prenasledovali, budú prenasledovať aj vás\"",
+      "reference": "(Jn 15,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "023112cc-34e5-4d35-bc27-a154630d24d2",
+      "date": "2026-06-06",
+      "quote": "A teraz velebte Pána na zemi a ďakujte Bohu.",
+      "reference": "(Tob 12,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0284cd8e-e829-4377-a576-ed825a7e8439",
+      "date": "2025-12-01",
+      "quote": "\"Pane, nie som hoden, aby si vošiel pod moju strechu, ale povedz iba slovo a moja duša bude uzdravená.\" (porov.)",
+      "reference": "(Mt 8,8)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "030d68c4-03aa-44e4-b103-855e7caa67f7",
+      "date": "2027-01-05",
+      "quote": "Podľa toho poznáme, že sme z pravdy, a upokojíme si pred ním srdce. 20 Lebo keby nám srdce niečo vyčítalo, Boh je väčší ako naše srdce a vie všetko.",
+      "reference": "(1Jan 3,19-20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "032bbea8-eacb-4005-b2aa-e39b49237afe",
+      "date": "2026-04-14",
+      "quote": "Pán kraľuje, velebou sa zaodel (porov.)",
+      "reference": "(Ž 93,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "03bd4074-991c-4afe-9ed3-39a3cd3ecd4a",
+      "date": "2025-12-18",
+      "quote": "\"Večným zmilovaním som sa nad tebou zľutoval, hovorí tvoj vykupiteľ, Pán.\"",
+      "reference": "(Iz 54,8)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "04d01294-c9c0-4104-b734-fea0b6d281a4",
+      "date": "2025-10-30",
+      "quote": "Nech hľadám silu v Tebe, Pane! (porov.)",
+      "reference": "(Ef 6,10)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "063978d1-e4ec-48c3-95b3-13d22886b0fc",
+      "date": "2026-11-26",
+      "quote": "\"Blahoslavení sú tí, čo sú pozvaní na Baránkovu svadobnú hostinu!\"",
+      "reference": "(Zjv 19,9)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "08247fbe-fa19-4bc5-a5c1-6c063350bbdc",
+      "date": "2025-08-01",
+      "quote": "Vraciam sa k tebe, Bože, ty si môj Pán.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "083b5946-91c8-41ce-a691-3fe1ea062ed7",
+      "date": "2027-01-01",
+      "quote": "Ale Mária zachovávala všetky tieto slová vo svojom srdci a premýšľala o nich.",
+      "reference": "(Lk 2,19)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0857292a-b802-4352-9fe3-7cdcbd9921a2",
+      "date": "2026-12-26",
+      "quote": "\"V tom sa mu rozviazali ústa a jazyk i prehovoril a velebil Boha.\"",
+      "reference": "(Lk 1,64)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "087a5f03-fa07-4f45-b333-385e7a11644c",
+      "date": "2026-01-06",
+      "quote": "Vstaň, zasvieť, Jeruzalem, veď prišlo tvoje svetlo.",
+      "reference": "(Iz 60,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "08936c9f-b3d4-4682-b1f8-ebf0ee392cf3",
+      "date": "2026-08-23",
+      "quote": "\"Ty si Mesiáš, Syn živého Boha.\"",
+      "reference": "(Mt 16,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "09175500-432f-4ca0-98ea-b966adafda38",
+      "date": "2026-08-24",
+      "quote": "\"Ale Pán je opravdivý Boh, on je Boh živý\"",
+      "reference": "(Jer 10,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "09c8d4f6-85cd-4371-90a1-bf241929ce84",
+      "date": "2026-05-11",
+      "quote": "\"Duch pravdy, ktorý vychádza od Otca, on o mne vydá svedectvo.\"",
+      "reference": "(Jn 15,26)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0a7dc8a7-7017-480b-9cee-e6b508ac1a90",
+      "date": "2026-02-03",
+      "quote": "\"A vytrvalo bežme v závode, ktorý máme pred sebou, s očami upretými na Ježiša\"",
+      "reference": "(Hebr 12,1b-2a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0ab4a791-d492-4fd1-abfa-e650df09cd8e",
+      "date": "2026-01-25",
+      "quote": "\"Pán je moje svetlo a moja spása, koho sa mám báť? Pán je ochranca môjho života, pred kým sa mám strachovať?\"",
+      "reference": "(Ž 27,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0bbb7942-0c9b-437b-bdfa-365b5090297a",
+      "date": "2026-02-22",
+      "quote": "Buďme pevní v skúške: našou silou je Kristova láska.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0cd755ba-4868-4ac4-a4fe-3019877b1e88",
+      "date": "2025-09-14",
+      "quote": "\"Daj nám, Otče, radosť z odpustenia.\"",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "0ddf0b87-0d58-4b87-b41a-16e2152caaa4",
+      "date": "2025-09-08",
+      "quote": "\"Veď bol obetovaný náš veľkonočný Baránok, Kristus.\"",
+      "reference": "(1Kor 5,7)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "105226a0-919c-4b06-af29-f62be44affea",
+      "date": "2026-12-19",
+      "quote": "\"V tom sa mu rozviazali ústa a jazyk i prehovoril a velebil Boha.\"",
+      "reference": "(Lk 1,64)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "10fe3b19-ea9e-4f40-bb26-e8ec8b4ad3b3",
+      "date": "2026-11-03",
+      "quote": "Ježiš Kristus je Pán!",
+      "reference": "(Flp 2,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "115c5ec9-6b86-4cd5-a291-b6e528aedf12",
+      "date": "2026-01-12",
+      "quote": "\"Priblížilo sa Božie kráľovstvo.\"",
+      "reference": "(Mk 1,15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "126b305c-e02b-45fa-95b8-cef12e866eaf",
+      "date": "2026-03-30",
+      "quote": "\"Žite v láske tak, ako aj Kristus miluje nás a vydal seba samého Bohu za nás ako dar a obetu ľúbeznej vône!\"",
+      "reference": "(Ef 5,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "12cb629c-a89d-426d-93ab-ec751d3d7943",
+      "date": "2025-11-14",
+      "quote": "\"A to je láska: žiť podľa jeho prikázaní.\"",
+      "reference": "(2Jn 1,6)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "12f90471-6c75-4149-bb5e-03af7e2258b2",
+      "date": "2025-09-10",
+      "quote": "\"Čas je krátky.\"",
+      "reference": "(1Kor 7,29)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "13115749-29fa-4790-b4cc-f3330750f6d1",
+      "date": "2025-10-08",
+      "quote": "test",
+      "reference": "test",
+      "created_at": "2025-10-08T15:42:41.037101+00:00",
+      "lang": "en"
+    },
+    {
+      "id": "1319583a-c68a-4608-a4de-fd6979975f3f",
+      "date": "2026-06-23",
+      "quote": "Ukáž mi, Pane, svoje cesty a pouč ma o svojich chodníkoch.",
+      "reference": "(Ž 25,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "133db2d6-c54d-4cc2-adde-85466cb420d7",
+      "date": "2026-08-09",
+      "quote": "\"Blahoslavený sluha, ktorého pán pri svojom príchode nájde tak robiť.\"",
+      "reference": "(Lk 12,43)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "13452d27-feb1-44a9-9730-e2e68a1cab2e",
+      "date": "2026-04-11",
+      "quote": "\"Lepšie je utiekať sa k Pánovi, ako sa spoliehať na človeka\"",
+      "reference": "(Ž 118,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1395e443-2555-4a17-aecf-cdaa37438182",
+      "date": "2026-08-14",
+      "quote": "Uzavriem s tebou večnú zmluvu",
+      "reference": "(Ez 16,60)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "13be4b70-d3ec-4fe3-be9e-6cd0820d1a4c",
+      "date": "2026-07-15",
+      "quote": "\"Po Bohu žízni moja duša, po Bohu živom\"",
+      "reference": "(Ž 42,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "14516f0b-10a9-49fd-89ff-595575fd2823",
+      "date": "2026-07-06",
+      "quote": "Kristus ... nám priniesol svetlo večného života. (porov.)",
+      "reference": "(2Tim 1,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "149265ca-f580-4a19-90e9-2195f60035fb",
+      "date": "2025-10-15",
+      "quote": "Príď, Duch lásky! Bez tvojho pôsobenia nie je v človeku nič bez viny.",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "14c827ea-00ec-475d-b76f-d5ae5db33523",
+      "date": "2025-08-07",
+      "quote": "\"Budem im Bohom a oni budú mojím ľudom\"",
+      "reference": "(Jer 31,33)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "14ce62e1-2a9a-4eee-813f-5354508fd8ad",
+      "date": "2026-11-28",
+      "quote": "\"Áno, prídem čoskoro\"",
+      "reference": "(Zjv 22,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "14ee0d36-4d34-4c09-89fa-1c3ef3587865",
+      "date": "2026-06-08",
+      "quote": "Blahoslavení chudobní v duchu",
+      "reference": "(Mt 5,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "152a8ce5-f736-4390-8602-8804449f069e",
+      "date": "2026-10-12",
+      "quote": "\"Milosť vám a pokoj od Boha, nášho Otca, i od Pána Ježiša Krista.\"",
+      "reference": "(Rim 1,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "15a5dec9-1606-4412-a682-bb4fa1a48e7f",
+      "date": "2026-12-21",
+      "quote": "V tom sa mu rozviazali ústa a jazyk i prehovoril a velebil Boha.",
+      "reference": "(Lk 1,64)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "161add1d-63da-40d1-84d3-c6cadb6a1c3a",
+      "date": "2025-12-23",
+      "quote": "\"Hľa, služobnica Pána, nech sa mi stane podľa tvojho slova.\"",
+      "reference": "(Lk 1,38)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1643dae5-9657-4c8f-b54c-7ca6d3e46480",
+      "date": "2026-06-30",
+      "quote": "\"Pán je moje svetlo a moja spása, koho sa mám báť?\"",
+      "reference": "(Ž 27,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "169e840e-1692-4f2f-bef5-13d3e701d2b9",
+      "date": "2026-11-07",
+      "quote": "\"Všetko môžem v tom, ktorý ma posilňuje.\"",
+      "reference": "(Flp 4,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "180074f8-9c76-4a3a-a2f2-5087bfd3c041",
+      "date": "2026-03-04",
+      "quote": "\"Do tvojich rúk porúčam svojho ducha, Pane\"",
+      "reference": "(Ž 31,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1806cb6e-bc91-4d37-b657-17736a160de6",
+      "date": "2026-06-22",
+      "quote": "Nesúďte, aby ste neboli súdení.",
+      "reference": "(Mt 7,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1824f4c5-2814-47b2-abac-6a54d2316960",
+      "date": "2026-10-14",
+      "quote": "\"Alebo pohŕdaš bohatstvom jeho láskavosti, trpezlivosti a zhovievavosti a nevieš, že Božia láskavosť ťa chce priviesť k pokániu?\"",
+      "reference": "(Rim 2,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "199749bb-df94-4c3c-828e-b4474f82e1e9",
+      "date": "2026-01-17",
+      "quote": "\"Lekára nepotrebujú zdraví, ale chorí. Neprišiel som volať spravodlivých, ale hriešnikov.\"",
+      "reference": "(Mk 2,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "19c3658d-4d0a-48fc-be83-51b33e4c1123",
+      "date": "2026-10-03",
+      "quote": "\"Dôvera, deti! A volajte k Bohu, ten, čo dopustil, spomenie si na vás.\"",
+      "reference": "(Bar 4,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1a8e075b-01c2-424b-a4cc-f899da5e4fde",
+      "date": "2026-03-31",
+      "quote": "\"On vlastného Syna neušetril, ale vydal ho za nás všetkých\"",
+      "reference": "(Rim 8,32)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1aa7e390-b501-4718-b0e2-e7430072c05e",
+      "date": "2026-04-30",
+      "quote": "\"Neste si vzájomne bremená\"",
+      "reference": "(Gal 6,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1b12631e-4030-4bf5-b5b0-178e4e418de2",
+      "date": "2025-09-11",
+      "quote": "\"Keď takto hrešíte proti bratom, hrešíte proti Kristovi.\"",
+      "reference": "(1Kor 8,12)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1b29d0d7-4176-402e-b878-e7c33eeb7cc6",
+      "date": "2026-06-27",
+      "quote": "Velebí moja duša Pána a môj duch jasá v Bohu, mojom spasiteľovi",
+      "reference": "(Lk 1,46-47)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1ba6ce0a-2349-4c29-a0fe-cd937bd6a992",
+      "date": "2025-11-19",
+      "quote": "\"Svätý, svätý, svätý Pán Boh všemohúci\"",
+      "reference": "(Zjv 4,8)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1bc7a444-7db8-4dc3-90b5-01493ca85d6d",
+      "date": "2025-08-03",
+      "quote": "Náš život nezávisí od toho, čo máme (porov.)",
+      "reference": "(Lk 12,15)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1c33331c-4952-44eb-a49b-9b59fb8edbe8",
+      "date": "2026-05-28",
+      "quote": "\"Ak sme s ním zomreli, s ním budeme aj žiť.\"",
+      "reference": "(2Tim 2,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1c3ca114-1a29-48f5-8f10-185f2a3a73fc",
+      "date": "2025-12-02",
+      "quote": "\"Zvelebujem ťa, Otče, Pán neba i zeme, že si tieto veci zjavil maličkým.\"",
+      "reference": "(Lk 10,21)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1ca4996c-8229-496f-b8aa-43364f2df822",
+      "date": "2025-12-05",
+      "quote": "\"Syn Dávidov, zmiluj sa nad nami!\"",
+      "reference": "(Mt 9,27)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1d0e7783-1af5-4949-a1fa-e491e328fb67",
+      "date": "2026-06-13",
+      "quote": "Hlásaj slovo, naliehaj vhod i nevhod",
+      "reference": "(2Tim 4,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1d602866-5143-48f9-8571-950fd627a3bb",
+      "date": "2025-10-04",
+      "quote": "\"To ste nemohli ani hodinu bdieť so mnou?\"",
+      "reference": "(Mt 26,40)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1e20732b-2810-4181-bfe0-13f4f12b473a",
+      "date": "2026-10-21",
+      "quote": "\"A oslobodení od hriechu stali ste sa služobníkmi spravodlivosti.\"",
+      "reference": "(Rim 6,18)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1e6c0bb4-732a-45ae-bcdf-46a39647192a",
+      "date": "2025-08-16",
+      "quote": "Stvor vo mne, Bože, čisté srdce, srdce dieťaťa.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1e891740-9c5d-4b11-bc2b-d2ba27164fef",
+      "date": "2025-11-05",
+      "quote": "Svieťte ako svetlá na svete tým, že sa budete pevne držať Slova života (porov.)",
+      "reference": "(Flp 2,15n)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1ea12b97-3307-4206-8138-9958543d821b",
+      "date": "2026-09-29",
+      "quote": "“Zoberme sa, poďme udobriť Pánovu tvár a hľadať Pána zástupov\"",
+      "reference": "(Zach 8,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1f1fb97e-4504-4536-88dc-06bfeb671f8f",
+      "date": "2025-11-09",
+      "quote": "\"Pozrite na moje ruky a nohy, že som to ja!\"",
+      "reference": "(Lk 24,39)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1f5f767f-f4c2-4820-88a7-55813e572c29",
+      "date": "2026-07-19",
+      "quote": "\"Milostivý a milosrdný je Pán, zhovievavý a veľmi láskavý.\"",
+      "reference": "(Ž 145,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1f93a3c5-6200-44c2-ac7d-35044be6762d",
+      "date": "2026-01-26",
+      "quote": "\"A aby každý jazyk vyznával: \"Ježiš Kristus je Pán!\" na slávu Boha Otca.\"",
+      "reference": "(Flp 2,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "1fce1f5b-4830-459d-847d-18e89cd3e30f",
+      "date": "2026-01-30",
+      "quote": "\"A nádej nezahanbuje, lebo Božia láska je rozliata v našich srdciach skrze Ducha Svätého, ktorého sme dostali.\"",
+      "reference": "(Rim 5,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "202db375-73ef-4157-898e-f42bbba4cf04",
+      "date": "2026-08-31",
+      "quote": "\"Dnes sa splnilo toto Písmo, ktoré ste práve počuli.\"",
+      "reference": "(Lk 4,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2078db91-bbdd-42ba-897e-69ac9063a3f7",
+      "date": "2026-10-20",
+      "quote": "\"A nezapochyboval nedôverčivo o Božom prisľúbení, ale posilnený vierou vzdával Bohu slávu\"",
+      "reference": "(Rim 5,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "20a1e87d-4bed-43d2-9b82-eb0283dd8bd8",
+      "date": "2025-10-31",
+      "quote": "Dokonči svoje dielo, ktoré si vo mne začal (porov.)",
+      "reference": "(Flp 1,6)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "20cac132-cf45-4a8c-bda2-e8ffba181446",
+      "date": "2026-01-20",
+      "quote": "\"Túto slobodu nám vydobyl Kristus. Stojte teda pevne a nedávajte sa znova zapriahnuť do jarma otroctva.\"",
+      "reference": "(Gal 5,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "21681a8c-a15e-4356-8118-5e48fdc3bb85",
+      "date": "2026-06-19",
+      "quote": "\"Ak sa už treba chváliť, budem sa chváliť svojou slabosťou.\"",
+      "reference": "(2 Kor 11,30)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "21c79228-48f5-456b-9664-34e0db87a185",
+      "date": "2025-12-19",
+      "quote": "\"Toto hovorí Pán: „Zachovajte právo, konajte spravodlivo\"",
+      "reference": "(Iz 56,1)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2274fd3c-f4c0-435e-b3c6-2205674acfe6",
+      "date": "2026-10-31",
+      "quote": "\"Lebo Božie dary a povolanie sú neodvolateľné.\"",
+      "reference": "(Rim 11,29)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "22f932b2-ff50-4e52-a4ba-4fe65981ee23",
+      "date": "2025-08-18",
+      "quote": "Boh \"Zhliadol na poníženosť svojej služobnice\"",
+      "reference": "(Lk 1,48)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "232b9254-e223-4443-9bb4-612884bdb455",
+      "date": "2025-11-21",
+      "quote": "Vezmi zvitok a zjedz ho ... Musíš znova prorokovať (porov.)",
+      "reference": "(Zjv 10,9-11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "23cf21bd-d551-48b9-8dcc-76b1fe8efc08",
+      "date": "2025-10-08",
+      "quote": "\"Príď tvoje kráľovstvo.\"",
+      "reference": "(Lk 11,2c)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "249a7865-9d89-4766-9b1c-904f5ef6ed1f",
+      "date": "2026-12-29",
+      "quote": "\"Pane, nezapočítaj im tento hriech.\"",
+      "reference": "(Sk 7,60)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "249c4754-2df3-407f-b6bd-41d1eaa65a77",
+      "date": "2025-12-03",
+      "quote": "\"Ľúto mi je zástupu.\"",
+      "reference": "(Mt 15,32)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "25735782-7bf6-435e-bcd1-f9a903443343",
+      "date": "2026-05-18",
+      "quote": "\"Nie som sám, lebo Otec je so mnou.\"",
+      "reference": "(Jn 16,32b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "26eff7d0-3c9b-4e72-9e49-af31f26be522",
+      "date": "2026-07-16",
+      "quote": "\"Každý, kto bude vzývať Pánovo meno, bude spasený.\"",
+      "reference": "(Sk 2,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2837c1d2-2c26-4795-9349-7c53b6a7a549",
+      "date": "2025-09-29",
+      "quote": "\"Ukáž svoje predivné milosrdenstvo\"",
+      "reference": "(Ž 17,7a)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "28bc475c-d36b-496d-ba55-98d293ea5861",
+      "date": "2026-05-25",
+      "quote": "Vzkriesením Ježiša Krista z mŕtvych nás znovuzrodil (porov.)",
+      "reference": "(1Pt 1,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2963ea45-df9a-4366-b83a-b3c81fe27d26",
+      "date": "2026-05-04",
+      "quote": "\"Prídeme k nemu a urobíme si uňho príbytok.\"",
+      "reference": "(Jn 14,23)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "29688135-ab46-4fff-bd3a-c8d9f6546871",
+      "date": "2026-03-21",
+      "quote": "\"Veď Boh tak miloval svet, že dal svojho jednorodeného Syna\"",
+      "reference": "(Jn 3,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "29a31659-2713-44b7-add1-9dfe5f29fbad",
+      "date": "2026-12-11",
+      "quote": "\"Ja som Pán, tvoj Boh, čo ťa učím, aby si mal úspech\"",
+      "reference": "(Iz 48,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "29e67246-f343-4ef9-93f9-fc0caa8356eb",
+      "date": "2025-10-19",
+      "quote": "\"Z hlbín volám k tebe, Pane\"",
+      "reference": "(Ž 130,1)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2a16fa19-c5a8-4b35-9615-550981d0d08d",
+      "date": "2026-07-28",
+      "quote": "\"Ten, kto rozsieva dobré semeno, je Syn človeka. Kto ho nájde, má večný život.\" (porov.)",
+      "reference": "(Mt 13,37)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2ab3c6b1-0db0-49aa-9e48-f076d733ad45",
+      "date": "2026-12-07",
+      "quote": "\"Nebojte sa, hľa, váš Boh! Sám príde a spasí vás.\"",
+      "reference": "(Iz 35,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2b4bcee9-d7d5-494c-be49-2325bb4b7228",
+      "date": "2026-11-14",
+      "quote": "\"A Boh neobráni svojich vyvolených, čo k nemu volajú dňom i nocou, a bude k nim nevšímavý?\"",
+      "reference": "(Lk 18,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2b7e2b02-bd2f-434b-9ba9-122ecbadc756",
+      "date": "2026-02-01",
+      "quote": "\"Hľadajte Pána, všetci pokorní zeme, ktorí konáte podľa jeho práva, hľadajte spravodlivosť, hľadajte pokoru, možno, že sa schováte v deň Pánovho hnevu.\"",
+      "reference": "(Sof 2,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2c371d2e-310e-4843-a00d-8cfc874c124e",
+      "date": "2025-09-02",
+      "quote": "\"My však máme Kristovo zmýšľanie\"",
+      "reference": "(1Kor 2,16)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2c4f4a75-6a69-49e1-b4a5-25fe1a643485",
+      "date": "2026-01-14",
+      "quote": "\"Hovor, tvoj sluha počúva.\"",
+      "reference": "(1 Sam 3,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2c8ce407-3213-4b23-90b9-c16acf520000",
+      "date": "2026-02-02",
+      "quote": "A chlapcov otec hneď vykríkol: \"Verím. Pomôž mojej nevere!\"",
+      "reference": "(Mk 9,24)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2d17db1d-e7b8-40b1-8317-fa2c0a144a4a",
+      "date": "2026-04-26",
+      "quote": "\"Pán je môj pastier, nič mi nechýba\"",
+      "reference": "(Ž 23,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2d28e23c-2d3a-4c4b-ab03-76b63358e3af",
+      "date": "2026-12-06",
+      "quote": "\"Ukáž mi, Pane, svoje cesty a pouč ma o svojich chodníkoch.\"",
+      "reference": "(Ž 25,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2d563680-c29f-40fe-a3bb-e8522ca32cb3",
+      "date": "2025-11-07",
+      "quote": "\"Naša vlasť je v nebi\"",
+      "reference": "(Flp 3,20)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2de96af7-002d-4746-be0b-a348305b3827",
+      "date": "2025-09-26",
+      "quote": "Velebím ťa, Pane, za čas milosti!",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2e7c16e9-0f7a-44b8-acee-0d5df13039de",
+      "date": "2025-08-19",
+      "quote": "\"Blahoslavení chudobní v duchu, lebo ich je nebeské kráľovstvo\"",
+      "reference": "(Mt 5,3)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2eb14a39-8954-45bd-b269-c1ba7ee37c3b",
+      "date": "2025-10-07",
+      "quote": "Spolieham sa na teba, Pane: urob ma svojím nástrojom.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2ed9089c-fd68-4b06-860b-0c61c7e181dc",
+      "date": "2026-03-14",
+      "quote": "\"Pane, ty ma skúmaš a vieš o mne všetko.\"",
+      "reference": "(Ž 139,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "2ff410b1-58fb-407f-bccf-a7b28b7249a2",
+      "date": "2026-02-05",
+      "quote": "\"Či Pavol alebo Apollo, Kéfas, svet, život i smrť, prítomnosť aj budúcnosť - všetko je vaše, ale vy ste Kristovi a Kristus Boží.\"",
+      "reference": "(1 Kor 3,22-23)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "31be442c-89be-485d-a8a9-cc07880f9c73",
+      "date": "2026-08-08",
+      "quote": "Milujem ťa, Pane, moja sila;",
+      "reference": "(Ž 18, 2b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "32933d9d-1f36-4fc5-b116-eeef19849a04",
+      "date": "2025-08-11",
+      "quote": "\"K čomu vás povolal skrze naše evanjelium, aby ste získali slávu nášho Pána Ježiša Krista\"",
+      "reference": "(2Sol 2,14)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "32cfc6f9-5b0a-44e6-8bfb-f24111eb146c",
+      "date": "2025-09-04",
+      "quote": "\"Ale vy ste Kristovi a Kristus Boží.\"",
+      "reference": "(1Kor 3,23)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3349a3ed-4bd7-4bb7-9b55-e7568d677725",
+      "date": "2026-10-16",
+      "quote": "\"Blahoslavený človek, ktorému Pán hriech nepripočíta.\"",
+      "reference": "(Rim 4,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "33c60a8c-62c8-4de4-8c54-f69f5edcdcdc",
+      "date": "2026-01-04",
+      "quote": "\"V ňom si nás vyvolil ešte pred stvorením sveta\"",
+      "reference": "(Ef 1,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "350343e7-7269-469e-b82a-3978c1283f3c",
+      "date": "2026-01-21",
+      "quote": "\"Po nedlhom treste prijmú veľké dobrodenie, pretože ich skúšal Boh a zistil, že sú ho hodni.\"",
+      "reference": "(Múd 3,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3508c1e3-3dc7-42fe-a51b-51e2619836f4",
+      "date": "2026-12-23",
+      "quote": "\"Požehnaná si medzi ženami a požehnaný je plod tvojho života.\"",
+      "reference": "(Lk 1,42)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "355b0d15-c423-44c6-9b05-4750a9e2222c",
+      "date": "2026-04-22",
+      "quote": "\"Veľké sú diela Pánove\"",
+      "reference": "(Ž 111,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "35dbdc4c-a055-471c-8e22-f10f5027f660",
+      "date": "2025-10-28",
+      "quote": "\"Podriaďujte sa jedni druhým v bázni pred Kristom\"",
+      "reference": "(Ef 5,21)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "36ca598f-2546-44e9-81eb-d707f0e54282",
+      "date": "2026-07-24",
+      "quote": "\"Milovať budeš Pána, svojho Boha, celým svojím srdcom, celou svojou dušou a celou svojou mysľou!\"",
+      "reference": "(Mt 22,37)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3788aac4-a75c-422a-8283-f9f9513dcbe8",
+      "date": "2026-08-04",
+      "quote": "\"Hľa, obrátim osud Jakubových stanov, nad jeho šiatrami sa zľutujem, mesto sa zbuduje na svojich kopcoch\"\"",
+      "reference": "(Jer 30,18)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "37ed2223-080c-4db3-b125-375e69156cc7",
+      "date": "2026-08-20",
+      "quote": "\"Blahoslavení sú tí, čo sú pozvaní na Baránkovu svadobnú hostinu!\"",
+      "reference": "(Zj 19,9)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3819ddc1-bee2-46d5-9f3a-12110d035e93",
+      "date": "2025-11-04",
+      "quote": "\"Blahoslavení ste ... lebo máte hojnú odmenu v nebi\"",
+      "reference": "(Mt 5,11n)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3850f1f1-d756-4f68-a990-5a7e19d8d9f4",
+      "date": "2026-04-15",
+      "quote": "\"Ako strážca sa utáborí anjel Pánov okolo bohabojných a vyslobodí ich\"",
+      "reference": "(Ž 34,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "38fd313a-6904-471c-a3fe-1a6b197a7fc2",
+      "date": "2026-06-24",
+      "quote": "Akou mierou budete merať vy, takou sa nameria aj vám (porov.)",
+      "reference": "(Mt 7,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "395b81f2-9268-49ee-833b-046aa29efe0c",
+      "date": "2025-11-08",
+      "quote": "\"Všetko môžem v tom, ktorý ma posilňuje.\"",
+      "reference": "(Flp 4,13)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "396c362f-c9d2-4126-9a86-a15a401ba5d6",
+      "date": "2025-10-25",
+      "quote": "Daj, Pane, nech žijem podľa pravdy a v láske.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3993f270-fc7e-48d5-85e9-fee68f6b3ccb",
+      "date": "2026-01-16",
+      "quote": "\"Odkryli strechu tam, kde bol, a otvorom spustili lôžko, na ktorom ležal ochrnutý.\"",
+      "reference": "(Mk 2,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "399f0049-86b9-4c24-80a1-a5236af53604",
+      "date": "2025-11-10",
+      "quote": "\"Milosť a pokoj od Boha Otca i od Krista Ježiša\"",
+      "reference": "(Tít 1,4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3a4e3fe6-8a59-4e24-a90b-0020aae52319",
+      "date": "2026-12-04",
+      "quote": "\"Syn Dávidov, zmiluj sa nad nami!\"",
+      "reference": "(Mt 9,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3a5d037e-639b-4b9f-990a-e90a1a1cc3af",
+      "date": "2026-05-08",
+      "quote": "\"Ustanovil som vás, aby ste išli a prinášali ovocie\"",
+      "reference": "(Jn 15,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3a9cf179-9b02-48b6-af03-071559ecfa94",
+      "date": "2025-12-25",
+      "quote": "\"Velebí moja duša Pána a môj duch jasá v Bohu, mojom spasiteľovi.\"",
+      "reference": "(Lk 1,46)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3b26517c-3883-433b-99d2-500e30795a7e",
+      "date": "2026-04-01",
+      "quote": "\"Buď verný až do smrti a dám ti veniec života.\"",
+      "reference": "(Zj 2,10b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3c12d830-b68e-438a-b27e-0b222434a188",
+      "date": "2025-12-09",
+      "quote": "\"Tak ani váš Otec, ktorý je na nebesiach, nechce, aby zahynul čo len jediný z týchto maličkých.\"",
+      "reference": "(Mt 18,14)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3c98d383-30d6-4134-9e9b-fdc21d23b90b",
+      "date": "2026-05-13",
+      "quote": "\"Z môjho vezme a zvestuje vám.\"",
+      "reference": "(Jn 16,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3d2d845d-074f-420a-8b4a-47da579d195a",
+      "date": "2026-09-11",
+      "quote": "\"Lebo veľké veci mi urobil ten, ktorý je mocný, a sväté je jeho meno\"",
+      "reference": "(Lk 1,49)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3e098d9a-dc41-4241-8599-757db9af9bbc",
+      "date": "2027-01-06",
+      "quote": "Vstaň, zasvieť, Jeruzalem, veď prišlo tvoje svetlo.",
+      "reference": "(Iz 60,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3e3d7acc-be10-4bd4-8ba2-1fdf293fef6f",
+      "date": "2026-06-04",
+      "quote": "\"Kto bude jesť z tohoto chleba, bude žiť naveky.\"",
+      "reference": "(Jn 6,51)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3f19c484-6e11-4d63-bc05-e7b30d8d69ca",
+      "date": "2026-06-20",
+      "quote": "\"Nebuďte teda ustarostení a nehovorte: “Čo budeme jesť?” alebo: “Čo budeme piť?” alebo: “Čo si oblečieme?”! Veď po tomto všetkom sa zháňajú pohania. Váš nebeský Otec predsa vie, že toto všetko potrebujete.\"",
+      "reference": "(Mt 6,31-32)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "3f62e1cd-a76b-43e8-b634-2bb831d5f0ae",
+      "date": "2026-12-18",
+      "quote": "\"Velebí moja duša Pána a môj duch jasá v Bohu, mojom spasiteľovi.\"",
+      "reference": "(Lk 1,46)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "405ac875-3ce0-48d3-84ff-9fce88a4a0a7",
+      "date": "2026-11-21",
+      "quote": "\"A on nie je Bohom mŕtvych, ale živých, lebo pre neho všetci žijú.\"",
+      "reference": "(Lk 20,38)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "40bf9e89-0012-432c-bc82-b82ec998e7bb",
+      "date": "2025-12-06",
+      "quote": "\"Zadarmo ste dostali, zadarmo dávajte!\"",
+      "reference": "(Mt 10,8)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4108853c-8fe4-4274-81cb-7c3d0f7e1e15",
+      "date": "2026-04-13",
+      "quote": "Príď tvoje kráľovstvo, Pane! (porov.)",
+      "reference": "(Mt 6,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "411ee42a-1fd8-4d93-a88d-ef090583c0b6",
+      "date": "2026-06-11",
+      "quote": "A choď sa najprv zmieriť so svojím bratom",
+      "reference": "(Mt 5,24)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4151bf3d-ebcc-4b9c-970d-517a599fa35a",
+      "date": "2026-07-08",
+      "quote": "\"Veď Boh privedie Izrael s rozkošou v žiare svojej slávy, s milosrdenstvom a spravodlivosťou, ktorú vlastní.\"",
+      "reference": "(Bar 5,9)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4170bc45-50e0-49b4-b67c-88e8b98446f5",
+      "date": "2026-05-23",
+      "quote": "\"Ty poď za mnou!\"",
+      "reference": "(Jn 21,22b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "425aca25-a8c6-4b62-b4fd-3028e938013c",
+      "date": "2026-09-02",
+      "quote": "\"Duch Pána je nado mnou, lebo ma pomazal, aby som hlásal evanjelium chudobným.\"",
+      "reference": "(Lk 4,18)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "42808187-03f8-420e-a6ac-f1556cd648c9",
+      "date": "2026-03-11",
+      "quote": "\"Srdce som si upriamil tak, aby plnilo tvoje príkazy navždy a naveky\"",
+      "reference": "(Ž 119,112)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4295bec4-91c9-4bce-9c89-2bf83952259d",
+      "date": "2026-09-07",
+      "quote": "V Pánovi je moja spása a moja sláva.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "42fd9ec0-fd14-4f73-9e18-afeb641bc6a0",
+      "date": "2026-02-21",
+      "quote": "\"Jeho ranami sme uzdravení.\"",
+      "reference": "(Iz 53,5c)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "439d95b9-6d75-40ca-a33d-56cf40cc8c1f",
+      "date": "2026-10-10",
+      "quote": "\"Hľa, od tejto chvíle blahoslaviť ma budú všetky pokolenia\"",
+      "reference": "(Lk 1,48)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4487fa9d-b148-4730-9b8a-f8a79656a64d",
+      "date": "2025-09-19",
+      "quote": "\"Ale Kristus vstal z mŕtvych, prvotina zosnulých\"",
+      "reference": "(1Kor 15,20)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4490f0dc-f868-4324-8abb-6c5c5533d7ab",
+      "date": "2025-12-08",
+      "quote": "\"Nebojte sa, hľa, váš Boh! Sám príde a spasí vás.\"",
+      "reference": "(Iz 35,4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "44ca7b64-d095-4fe6-9a62-a6510c9a2939",
+      "date": "2025-09-09",
+      "quote": "\"Obmyli ste sa, boli ste posvätení, boli ste ospravedlnení v mene Pána Ježiša Krista a v Duchu nášho Boha.\"",
+      "reference": "(1Kor 6,11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "455495ce-f929-4580-8638-ae64fdb24197",
+      "date": "2025-08-29",
+      "quote": "\"Ty, Pane, si môj podiel na dedičstve a na kalichu...\"",
+      "reference": "(Ž 16,5)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "46505dd5-dc65-4b37-a20d-152c9a189bd3",
+      "date": "2025-11-15",
+      "quote": "Dobrota Pána žiari v srdciach spravodlivých.",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4677dda5-8c8c-4fd2-8296-efe62b984428",
+      "date": "2026-02-11",
+      "quote": "\"Ty im ho dávaš a ony ho zbierajú; otváraš svoju ruku, sýtia sa dobrotami.\"",
+      "reference": "(Ž 104,28)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "47334d0b-46f3-4156-8781-fb9778b17b17",
+      "date": "2026-04-03",
+      "quote": "\"Uponížil sa, stal sa poslušným až na smrť, až na smrť na kríži. Preto ho Boh nad všetko povýšil\"",
+      "reference": "(Flp 2,8-9a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "476a6cbf-9074-43b8-b745-b0b086eecf86",
+      "date": "2025-11-11",
+      "quote": "\"Zjavila sa Božia milosť\"",
+      "reference": "(Tít 2,11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4771980e-4361-4659-a98d-951707f95d54",
+      "date": "2026-04-08",
+      "quote": "\"Striebro a zlato nemám, ale čo mám, to ti dám: V mene Ježiša Krista Nazaretského vstaň a choď!\"",
+      "reference": "(Sk 3,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "47aca693-3191-4850-b809-40964eb3e46d",
+      "date": "2026-09-19",
+      "quote": "\"Ale Mária zachovávala všetky tieto slová vo svojom srdci a premýšľala o nich.\"",
+      "reference": "(Lk 2,19)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "47b6be16-1278-418f-b7da-f0839a699d52",
+      "date": "2026-07-04",
+      "quote": "\"Nech je zvelebený Boh a Otec nášho Pána Ježiša Krista, ktorý nás v Kristovi požehnal všetkým nebeským duchovným požehnaním.\"",
+      "reference": "(Ef 1,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "47d1860a-cead-4000-9a65-9fe8ec8e0b4d",
+      "date": "2026-04-05",
+      "quote": "\"Ak ste teda s Kristom vstali z mŕtvych, hľadajte, čo je hore\"",
+      "reference": "(Kol 3,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "483233c2-2b54-473c-98d3-be6a9411a1a3",
+      "date": "2026-12-08",
+      "quote": "\"Milovaní, teraz sme Božími deťmi\"",
+      "reference": "(1 Jn 3,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4861cfe8-d302-4901-acc9-ab3ded012552",
+      "date": "2026-05-01",
+      "quote": "\"Ja som cesta, pravda a život.\"",
+      "reference": "(Jn 14,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "48f39710-e314-4140-a8d0-3a67b7f0e17a",
+      "date": "2026-09-13",
+      "quote": "\"Mysli na koniec (všetkého) a zanechaj nepriateľstvo\"",
+      "reference": "(Sir 28,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4a9ac7d7-689f-47dc-98d7-4006d60773ab",
+      "date": "2026-03-10",
+      "quote": "\"Lebo ty, Pane, si dobrý a láskavý''",
+      "reference": "(Ž 86,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4aeb9fcd-ce1b-4f9a-9119-5cc25ede9fcc",
+      "date": "2026-01-09",
+      "quote": "\"Robte pokánie, lebo sa priblížilo nebeské kráľovstvo.\"",
+      "reference": "(Mt 4,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4af8099e-1a83-49b1-8e9e-5a7ace7a7353",
+      "date": "2026-04-10",
+      "quote": "\"Pane, a ku komu by sme išli? Ty máš slová večného života\"",
+      "reference": "(Jn 6,68)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4b668fd4-56b8-413a-b35e-956123d8af7c",
+      "date": "2025-09-21",
+      "quote": "\"Všetci majú mať rovnakú účasť na stvorených dobrách.\"",
+      "reference": "Gaudium et spes, 69",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4bda858f-4af0-4c1b-ad70-ed5447194dfc",
+      "date": "2026-03-28",
+      "quote": "\"On z oboch urobil jedno\"",
+      "reference": "(Ef 2,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4c640398-4496-4d6e-8a9d-6c94df448d33",
+      "date": "2026-07-01",
+      "quote": "\"Do tvojich rúk porúčam svojho ducha; ty si ma vykúpil, Pane, Bože verný.\"",
+      "reference": "(Ž 31,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4cb47ee6-f994-487c-bdf5-67110209684f",
+      "date": "2025-10-20",
+      "quote": "Daj, nech si ťa zamilujem, Pane a budem zbavený všetkej žiadostivosti.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4ced7e8b-fede-4252-861c-f5ffade3bc09",
+      "date": "2025-08-15",
+      "quote": "\"Uzavriem s tebou večnú zmluvu\"",
+      "reference": "(Ez 16,60)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4cfb6401-65ae-417c-92ea-bfc6cab0a578",
+      "date": "2026-03-13",
+      "quote": "\"Každý, kto miluje, narodil sa z Boha a pozná Boha.\"",
+      "reference": "(1Jn 4,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4d4344fd-a5b0-41ac-b6b1-7218d0d66538",
+      "date": "2026-10-25",
+      "quote": "\"Milovať budeš Pána, svojho Boha, celým svojím srdcom, celou svojou dušou a celou svojou mysľou! ... Milovať budeš svojho blížneho ako seba samého!\"",
+      "reference": "(Mt 22,37-39)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4dfbd9e6-82d4-4263-88ae-07af05eff9d2",
+      "date": "2026-01-01",
+      "quote": "Ale Mária zachovávala všetky tieto slová vo svojom srdci a premýšľala o nich.",
+      "reference": "(Lk 2,19)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4e479cd0-d45d-4956-8b52-e6abdd4a26e2",
+      "date": "2025-09-23",
+      "quote": "\"Mojou matkou a mojimi bratmi sú tí, čo počúvajú Božie slovo a uskutočňujú ho.\"",
+      "reference": "(Lk 8,21)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4ebc000b-2cad-4d7d-9c2a-d3e9c5111cf8",
+      "date": "2026-06-26",
+      "quote": "Preto ťa, Pane, budem velebiť medzi národmi a ospevovať tvoje meno žalmami.",
+      "reference": "(Ž 18,50)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "4f8a0009-43e6-4bd2-b64a-f49594ebdd76",
+      "date": "2025-10-05",
+      "quote": "\"Verím. Pomôž mojej nevere!\"",
+      "reference": "(Mk 9,24)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "50c74947-9749-49dc-aaf1-f83ca1b2b559",
+      "date": "2026-09-22",
+      "quote": "\"Ponáhľam sa a neváham zachovávať tvoje prikázania.\"",
+      "reference": "(Ž 119,60)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "513a878d-8754-4b24-933e-b63c4914fb00",
+      "date": "2026-03-09",
+      "quote": "\"Zošli svoje svetlo a svoju pravdu!\"",
+      "reference": "(Ž 43,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "51b38d3e-bcc3-444b-ac08-2864dcfc7c05",
+      "date": "2026-02-10",
+      "quote": "\"Čože je človek, že naň pamätáš, a syn človeka, že sa ho ujímaš?\"",
+      "reference": "(Ž 8,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "52aed4a6-3c6f-4413-8ffb-ca98ccf9475b",
+      "date": "2026-03-23",
+      "quote": "\"V tvojom svetle uvidíme svetlo.\"",
+      "reference": "(Ž 36,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5477b1a1-5f76-47e7-8bca-2f620a4fb297",
+      "date": "2026-11-05",
+      "quote": "Kto hľadá Pána, nájde radosť.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "54c7b9a1-fb7f-49df-a711-c28018827be7",
+      "date": "2025-09-24",
+      "quote": "\"Na cestu si neberte nič.\"",
+      "reference": "(Lk 9,3)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "554e6d14-e684-4100-af78-d1b468c85807",
+      "date": "2027-01-10",
+      "quote": "\"On vás bude krstiť Duchom svätým a ohňom.\"",
+      "reference": "(Lk 3,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "55552cbf-39f6-4536-b07c-0414a7706513",
+      "date": "2026-10-08",
+      "quote": "Spravodlivý slúži Pánovi a prináša ovocie v pravý čas, ako stromy zasadené pri vode.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "55fffcf1-b4d9-4b54-b298-bde533cb714a",
+      "date": "2026-03-01",
+      "quote": "\"Zošli svoje svetlo a svoju pravdu; ony nech ma sprevádzajú a privedú na tvoj svätý vrch a do tvojich stánkov.\"",
+      "reference": "(Ž 43,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "565f9a1f-525e-48f2-8dde-db1b24c0c2e3",
+      "date": "2025-10-12",
+      "quote": "\"Tvoje meno budem oslavovať, pretože si milosrdný a verný\"",
+      "reference": "(Ž 138,2a)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "56d0452a-c4ee-43cb-8448-8c5cacfcd17b",
+      "date": "2026-02-18",
+      "quote": "\"Vráťme sa k Pánovi\"",
+      "reference": "(Oz 6,1a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "56de65e0-d1ce-4dee-9998-53d42826b455",
+      "date": "2025-11-27",
+      "quote": "\"Blahoslavení sú tí, čo sú pozvaní na Baránkovu svadobnú hostinu!\"",
+      "reference": "(Zjv 19,9)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "577a6d66-ccc3-407c-8b70-a4b8dec818ea",
+      "date": "2026-03-26",
+      "quote": "\"Ja sa budem tešiť v Pánovi\"",
+      "reference": "(Ž 104,34)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "583752b9-b190-497d-ad7a-c5eda3574249",
+      "date": "2027-01-09",
+      "quote": "\"Každý, kto miluje, narodil sa z Boha a pozná Boha, lebo Boh je láska.\"",
+      "reference": "(1 Jn 4,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "585b981c-4de3-462a-969c-b7bcf365ab1c",
+      "date": "2026-07-20",
+      "quote": "\"Z hlbín volám k tebe, Pane; Pane, počuj môj hlas.\"",
+      "reference": "(Ž 130,1-2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "586785fa-8ff8-43b3-818a-36a1db665d23",
+      "date": "2026-09-09",
+      "quote": "Sláva tebe, Pane, spása národov.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5898f34c-ae42-47a8-ad40-d6cf6fe0fbf0",
+      "date": "2026-02-14",
+      "quote": "\"Nielen z chleba žije človek, ale z každého slova, ktoré vychádza z Božích úst.\"",
+      "reference": "(Mt 4,4 porov. Dt 8,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "59777649-5340-411c-965b-520ae76de1f4",
+      "date": "2026-01-07",
+      "quote": "\"Podľa toho poznáme, že sme z pravdy, a upokojíme si pred ním srdce. Lebo keby nám srdce niečo vyčítalo, Boh je väčší ako naše srdce a vie všetko.\"",
+      "reference": "(1 Jn 3,19-20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5be1ed41-d927-4015-8f93-4d6cb9e51abe",
+      "date": "2025-08-20",
+      "quote": "\"Nech Otec osvieti oči vášho srdca, aby ste vedeli, aká je nádej z jeho povolania.\"",
+      "reference": "(Ef 1,17n)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5c43c23e-3271-4feb-8e93-aeba8b1b1fbc",
+      "date": "2026-04-25",
+      "quote": "\"Pane, som tvoj sluha!\"",
+      "reference": "(Ž 116,16a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5c7ae26b-521f-4698-bac0-09ddfb68724c",
+      "date": "2026-11-16",
+      "quote": "\"Ježišu, Syn Dávidov, zmiluj sa nado mnou!\"",
+      "reference": "(Lk 18,38)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5cc942b3-f467-4e38-8a9c-9df1db62769e",
+      "date": "2026-10-06",
+      "quote": "\"Mária si vybrala lepší podiel, ktorý sa jej neodníme.\"",
+      "reference": "(Lk 10,42)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5d082cf4-34dd-4fb4-a773-d69afa16f19e",
+      "date": "2026-11-19",
+      "quote": "\"Nech je od nás ďaleko, aby sme opustili zákon a nariadenia!\"",
+      "reference": "(1 Mach 2,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5d535b56-d3a7-44b7-aa69-7cded7e71612",
+      "date": "2025-10-17",
+      "quote": "Neboj sa, maličké stádo. Váš Otec predsa vie, čo potrebujete (porov.)",
+      "reference": "(Lk 12, 32.30)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5da0df7b-2087-45e5-991f-e23fa334fee2",
+      "date": "2025-12-16",
+      "quote": "\"Nechám však v tvojom strede ľud chudobný a biedny\"",
+      "reference": "(Sof 3,12)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5da18dda-926b-4e8d-bd49-cdd443d29ef6",
+      "date": "2026-03-24",
+      "quote": "\"Naše oči hľadia na Pána\"",
+      "reference": "(Ž 123,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "5efaaa51-4641-41d7-9430-0b1df517e894",
+      "date": "2026-01-22",
+      "quote": "Pane, v jednoduchosti srdca a s radosťou ti obetujem všetko. (porov.)",
+      "reference": "(1 Krn 29,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "605fd852-be3c-4e08-8c50-329f5a2c747b",
+      "date": "2026-03-07",
+      "quote": "\"Môj nárek si obrátil na tanec.\"",
+      "reference": "(Ž 30,12)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "60ef9f5a-090e-45c9-ad4c-e778ed7f83ce",
+      "date": "2025-12-24",
+      "quote": "\"Požehnaná si medzi ženami a požehnaný je plod tvojho života.\"",
+      "reference": "(Lk 1,42)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "60f7e397-386a-4f7c-a8ff-e94529e118a1",
+      "date": "2026-11-11",
+      "quote": "\"Duše spravodlivých sú však v Božích rukách, muka sa ich nedotkne.\"",
+      "reference": "(Múd 3,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "61b1f381-1a15-488c-b65d-d879b95194ce",
+      "date": "2026-12-27",
+      "quote": "Nevedeli ste, že mám byť tam, kde ide o môjho Otca?",
+      "reference": "(Lk 2,49)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "62ca71a3-59bc-4cbf-873b-d4218da92a40",
+      "date": "2026-05-26",
+      "quote": "\"Celú svoju nádej uprite na milosť, ktorú dostanete, keď sa zjaví Ježiš Kristus.\"",
+      "reference": "(1Pt 1,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "645edd82-8cf3-4167-95c7-ace9c1f6bb6b",
+      "date": "2026-04-02",
+      "quote": "\"Toto robte na moju pamiatku!\"",
+      "reference": "(1Kor 11,24)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "649255b7-2837-4c70-b712-e9875b93a59e",
+      "date": "2025-11-28",
+      "quote": "\"Videl som sväté mesto ... vystrojené ako nevesta, ozdobená pre svojho ženícha.\"",
+      "reference": "(Zjv 21,2)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "64f44d59-b67c-40e2-bc3e-3e550a84b689",
+      "date": "2026-08-05",
+      "quote": "Láskou odvekou som ťa miloval",
+      "reference": "(Jer 31,3b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "64f83a8b-32fc-4504-810d-4463133347c3",
+      "date": "2026-04-28",
+      "quote": "\"Tvoja náuka je mojím večným dedičstvom, lebo je slasťou môjmu srdcu\"",
+      "reference": "(Ž 119,111)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "65078b3d-1e32-4f1f-a4f1-0ee683c18c01",
+      "date": "2026-04-09",
+      "quote": "\"Vy ste toho svedkami\"",
+      "reference": "(Lk 24,48)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6622255d-df18-4212-a3e0-835fa8a66e22",
+      "date": "2026-11-09",
+      "quote": "\"Milujte spravodlivosť, panovníci zeme! Premýšľajte o Pánovi s dobromyseľnosťou, hľadajte ho v úprimnosti srdca!\"",
+      "reference": "(Múd 1,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "66566c2a-8c76-4c6a-a17f-0a33880d0edc",
+      "date": "2026-03-16",
+      "quote": "\"Bože, príď mi na pomoc; Pane, ponáhľaj sa mi pomáhať!\"",
+      "reference": "(Ž 70,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "66b47bbc-53a2-4978-a181-1be2643fc08b",
+      "date": "2026-07-31",
+      "quote": "\"A blahoslavený je, kto sa na mne nepohorší.\"",
+      "reference": "(Lk 7,23)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6703b60f-7d46-4113-a392-6232cb4270da",
+      "date": "2026-01-02",
+      "quote": "On prichádza po mne a ja nie som hoden rozviazať mu remienok na obuvi.",
+      "reference": "(Jn 1,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "67d5a3d3-1b3d-401c-ba05-01cbfae12ed0",
+      "date": "2026-04-17",
+      "quote": "\"Očakávaj Pána a buď statočný\"",
+      "reference": "(Ž 27,14a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "68b39a7a-884f-4f14-99f1-1d3a82f10892",
+      "date": "2026-09-14",
+      "quote": "\"Pane, neunúvaj sa, lebo nie som hoden, aby si vošiel pod moju strechu. Preto som sa ani nepokladal za hodného ísť k tebe. Ale povedz slovo a môj sluha ozdravie!\"",
+      "reference": "(Lk 7,6-7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "68d77d70-3577-46ab-a870-7ac2aace5e52",
+      "date": "2026-04-21",
+      "quote": "\"Vidím otvorené nebo\"",
+      "reference": "(Sk 7,56)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "69353534-ab37-4cda-877d-bb9f084c9ef0",
+      "date": "2026-08-19",
+      "quote": "\"Nech vám Boh nášho Pána Ježiša Krista, Otec slávy, dá Ducha múdrosti a zjavenia, aby ste ho poznali.\"",
+      "reference": "(Ef 1,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "69621b34-6aae-4c6f-be55-05f565cc978a",
+      "date": "2026-08-30",
+      "quote": "\"Zmýšľajte tak ako Kristus Ježiš\"",
+      "reference": "(Flp 2,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "69946366-a25a-42fa-9756-c9d49c57280b",
+      "date": "2026-01-23",
+      "quote": "\"Ukáž nám, Pane, svoje milosrdenstvo a daj nám svoju spásu.\"",
+      "reference": "(Ž 85,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6a5d26fb-c4de-4f10-883c-afccd4a3520b",
+      "date": "2026-01-08",
+      "quote": "\"Vstaň, zasvieť, Jeruzalem, veď prišlo tvoje svetlo.\"",
+      "reference": "(Iz 60,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6aafe6a8-abdd-4966-bed6-12122bb8aa17",
+      "date": "2026-04-06",
+      "quote": "\"Srdce mi plesá v Pánovi\"",
+      "reference": "(1Sam 2,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6afd7731-0744-41bb-a349-7c43668a3bf0",
+      "date": "2026-10-01",
+      "quote": "Pane, daj, aby som dnes počúval tvoj hlas. (porov.)",
+      "reference": "(Neh 8,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6b5a4822-64cc-4f79-8535-14df9f845ca0",
+      "date": "2025-11-29",
+      "quote": "\"Áno, prídem čoskoro\"",
+      "reference": "(Zjv 22,7)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6b9fd810-ba78-49d7-bf6f-83dfc8580f67",
+      "date": "2026-12-03",
+      "quote": "\"Nie každý, kto mi hovorí: »Pane, Pane!« vojde do nebeského kráľovstva, ale iba ten, kto plní vôľu môjho Otca, ktorý je na nebesiach.\"",
+      "reference": "(Mt 7,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6ca4b9bd-76a7-4be1-9759-b0e50af2b956",
+      "date": "2026-05-16",
+      "quote": "\"Proste a dostanete, aby vaša radosť bola úplná.\"",
+      "reference": "(Jn 16,24b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6d25a742-c9f6-4507-b464-ef6666fa87ad",
+      "date": "2026-10-09",
+      "quote": "\"Bdejte a modlite sa, aby ste neprišli do pokušenia.\"",
+      "reference": "(Mk 14,38)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6d72d87a-dba3-426d-8d15-342d4fb8ccea",
+      "date": "2025-09-03",
+      "quote": "\"my sme Boží spolupracovníci\"",
+      "reference": "(1Kor 3,9)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6d90ca57-9709-4d69-97d5-2f3c494d871b",
+      "date": "2026-03-20",
+      "quote": "\"Spravodliví majú utrpení veľa, ale Pán ich vyslobodí zo všetkých\"",
+      "reference": "(Ž 34,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6ec0f05a-3073-4e5d-b575-15d1627f5c37",
+      "date": "2026-10-30",
+      "quote": "\"... Kristus; on je nad všetkým Boh, zvelebený naveky.\"",
+      "reference": "(Rim 9,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6ef1e0b7-be2a-444f-8d86-19fbe54a9065",
+      "date": "2026-02-09",
+      "quote": "\"Dobroreč, duša moja, Pánovi; Pane, Bože môj, ty si nesmierne veľký.\"",
+      "reference": "(Ž 104,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6f66b20a-2181-4973-9beb-b216a7e86951",
+      "date": "2026-11-02",
+      "quote": "\"Poď rýchlo dolu, lebo dnes musím zostať v tvojom dome\"",
+      "reference": "(Lk 19,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6fa2cb2d-c41b-44cf-a521-cc4628e746e1",
+      "date": "2026-03-03",
+      "quote": "\"Učte sa odo mňa, lebo som tichý a pokorný srdcom\"",
+      "reference": "(Mt 11,29)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "6fb32005-bcf7-4b80-a0f9-a87cf4553a02",
+      "date": "2026-09-20",
+      "quote": "\"Lebo moje myšlienky nie sú vaše myšlienky\"",
+      "reference": "(Iz 55,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7090c572-cd87-4f0f-a7d5-9a52b3ab8be5",
+      "date": "2025-08-10",
+      "quote": "\"Blahoslavený sluha, ktorého pán pri svojom príchode nájde tak robiť.\"",
+      "reference": "(Lk 12,43)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "70d3dc15-37fd-4871-854d-4e758020d3a7",
+      "date": "2026-09-12",
+      "quote": "\"Každý strom možno poznať po ovocí.\"",
+      "reference": "(Lk 6,44)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "71fc0368-c302-4a62-a356-2c7ff60da766",
+      "date": "2026-06-03",
+      "quote": "Nie si Bohom mŕtvych, ale živých (porov.)",
+      "reference": "(Mk 12,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "72468572-4a6b-4b64-bea1-e74d65258e32",
+      "date": "2026-05-07",
+      "quote": "\"Ostaňte v mojej láske!\"",
+      "reference": "(Jn 15,9b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7378c784-8869-4801-8702-902a1d4a385b",
+      "date": "2026-10-07",
+      "quote": "Pane, ty si trpezlivý a máš zľutovanie s každým človekom.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "73978d9c-d3cd-4516-8abc-ac5aa7eebae2",
+      "date": "2026-10-13",
+      "quote": "Evanjelium je Božia moc. (porov.)",
+      "reference": "(Rim 1,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "73f31324-619c-401d-b70d-71a6b4a5bdf2",
+      "date": "2026-09-08",
+      "quote": "Bez prestania budem ospevovať dobrotivosť Pána.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "73f9308d-f557-4414-9f51-69ee7af1d1d7",
+      "date": "2025-08-23",
+      "quote": "\"Ja som medzi vami ako ten, čo obsluhuje.\"",
+      "reference": "(Lk 22,27)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "73fb73c0-3c14-4b02-9280-829c27f1274c",
+      "date": "2025-09-13",
+      "quote": "\"Keďže je jeden chlieb, my mnohí sme jedno telo, lebo všetci máme podiel na jednom chlebe.\"",
+      "reference": "(1Kor 10,17)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7400bef9-20d4-4ae6-b9f1-838ccae5c774",
+      "date": "2026-02-24",
+      "quote": "Abba, Otče! Nie čo ja chcem, ale čo ty. (porov.)",
+      "reference": "(Mk 14,36)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "755cc1ec-4252-439e-9592-f2d7fda08aaf",
+      "date": "2025-10-16",
+      "quote": "Božia láska objíma svet.",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "75f99d9b-e156-4467-8378-4b9ff52dd1a9",
+      "date": "2025-11-24",
+      "quote": "\"Tí nasledujú Baránka, kamkoľvek ide\"",
+      "reference": "(Zjv 14,4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "762816a5-6cdc-4cba-a80e-bda12b4d6f7b",
+      "date": "2026-02-15",
+      "quote": "\"Pán je Duch; a kde je Pánov Duch, tam je sloboda.\"",
+      "reference": "(2 Kor 3,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "76b46dc9-5355-42a0-8783-4958e01d8ea6",
+      "date": "2026-02-23",
+      "quote": "\"Veď kto nemiluje brata, ktorého vidí, nemôže milovať Boha, ktorého nevidí.\"",
+      "reference": "(1Jn 4,20b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "77022ecc-86e3-4448-94d5-5bb5dafcf172",
+      "date": "2026-05-20",
+      "quote": "\"Nie sú zo sveta, ako ani ja nie som zo sveta.\"",
+      "reference": "(Jn 17,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "770b1256-f67e-4be7-9f00-317f55337f00",
+      "date": "2026-06-09",
+      "quote": "Vy ste soľ zeme... vy ste svetlo",
+      "reference": "(Mt 5,13n)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "775832c1-a64f-465d-9733-d6ac0e0408b8",
+      "date": "2026-11-06",
+      "quote": "Naša vlasť je v nebi",
+      "reference": "(Flp 3,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "77d44da0-00dc-4d69-ad18-8c8a193c7a4d",
+      "date": "2026-12-15",
+      "quote": "\"Neboj sa, lebo je vyslyšaná tvoja modlitba.\"",
+      "reference": "(Lk 1,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7803dccc-7bf1-4519-bf5b-dff343517833",
+      "date": "2026-07-03",
+      "quote": "\"Hľa, teraz je milostivý čas, teraz je deň spásy!\"",
+      "reference": "(2 Kor 6,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "784b7046-3b9e-41a6-af53-e70c4f5a7512",
+      "date": "2025-10-10",
+      "quote": "S tebou, Ježiš, s tebou prekonám zlo.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "78b36d9d-2d81-47a0-ba01-dc87235723b3",
+      "date": "2026-03-12",
+      "quote": "\"Pane, a ku komu by sme išli? Ty máš slová večného života\"",
+      "reference": "(Jn 6,68)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "78b944d5-ed9c-4280-94ea-de80d1217bba",
+      "date": "2026-07-27",
+      "quote": "\"A tak ani ten, čo sadí, nie je nič, ani ten, čo polieva, ale Boh, ktorý dáva vzrast.\"",
+      "reference": "(1 Kor 3,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "79dee977-0fe1-48cc-b3ad-7741afc5899c",
+      "date": "2026-10-15",
+      "quote": "\"Ale teraz sa zjavila Božia spravodlivosť bez zákona a dosvedčujú ju Zákon i Proroci: Božia spravodlivosť skrze vieru v Ježiša Krista pre všetkých, čo veria. Lebo niet rozdielu\"",
+      "reference": "(Rim 3,21-22)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7a832b5e-76eb-4aab-b4db-649720c1dfbc",
+      "date": "2025-12-10",
+      "quote": "\"Poďte ku mne všetci, ktorí sa namáhate a ste preťažení, a ja vás posilním.\"",
+      "reference": "(Mt 11,28)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7ac74eb1-3fbd-4b58-984f-1e79887ba48c",
+      "date": "2026-04-04",
+      "quote": "\"Dobré je ticho čakať Pánovo spasenie.\"",
+      "reference": "(Nár 3,26)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7bafe83e-b188-4e3e-b03f-940b1b584fe3",
+      "date": "2026-06-25",
+      "quote": "Blahoslavení tí, čo počúvajú Božie slovo a zachovávajú ho.",
+      "reference": "(Lk 11,28)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7c193d81-6378-4bbf-911f-9e091fa18d69",
+      "date": "2025-09-15",
+      "quote": "\"Toto je moje telo, ktoré je pre vás.\"",
+      "reference": "(1Kor 11,24)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7c75a90a-6d04-4888-b136-dfb642924d8f",
+      "date": "2025-10-11",
+      "quote": "Nech som blahoslavený tým, že ťa poslúcham a žijem podľa tvojho slova.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7d5dc32d-d64b-4f1b-ac00-8ce9d85b42bf",
+      "date": "2026-09-21",
+      "quote": "Tí, čo sejú v slzách, s jasotom budú žať.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7d6c5a31-e38e-4265-bfea-c5278f4d5c70",
+      "date": "2026-01-03",
+      "quote": "\"Šli teda, videli, kde býva, a zostali v ten deň u neho.\"",
+      "reference": "(Jn 1,39)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7d9b8f2e-585c-46a7-9731-c6cdb8f3eda0",
+      "date": "2026-09-06",
+      "quote": "\"Láska nerobí zle blížnemu\"",
+      "reference": "(Rim 13,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7de68d32-7a65-4c0a-8cce-35ff3e8acce0",
+      "date": "2026-07-18",
+      "quote": "\"A oslobodil nás od našich nepriateľov, lebo jeho milosrdenstvo je večné.\"",
+      "reference": "(Ž 136,24)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "7f7f5b88-6687-4106-805c-49402859bbd4",
+      "date": "2026-02-20",
+      "quote": "Pane, rozviaž všetky moje nespravodlivé putá (porov.)",
+      "reference": "(Iz 58,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "811d4bce-cbdd-4bea-bfeb-a1f2b9ccd8c6",
+      "date": "2026-10-28",
+      "quote": "\"Podriaďujte sa jedni druhým v bázni pred Kristom\"",
+      "reference": "(Ef 5,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8239d779-ba0e-4a90-8ceb-b48d9bd7053e",
+      "date": "2026-02-07",
+      "quote": "\"Pán je môj pastier, nič mi nechýba ... Tvoj prút a tvoja palica, tie sú mi útechou.\"",
+      "reference": "(Ž 23,1-4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8291b67d-684e-49cc-bda0-232447f9980d",
+      "date": "2025-11-20",
+      "quote": "\"Kto je hoden otvoriť knihu a rozlomiť jej pečate?\"",
+      "reference": "(Zjv 5,2)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8294ad6a-74d1-4198-9bff-81740a11870a",
+      "date": "2025-08-05",
+      "quote": "\"Hľa, obrátim osud Jakubových stanov, nad jeho šiatrami sa zľutujem, mesto sa zbuduje na svojich kopcoch\"\"",
+      "reference": "(Jer 30,18)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "835cca69-5ac7-460f-b881-12a1aa74a0c4",
+      "date": "2025-10-01",
+      "quote": "\"Prečo ma, Pane, odháňaš? Prečo predo mnou skrývaš svoju tvár?\"",
+      "reference": "(Ž 88,15)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "84c1e96f-d01a-47c9-8647-630e06f4f84c",
+      "date": "2026-12-31",
+      "quote": "\"Krv Ježiša Krista nás očisťuje od každého hriechu.\"",
+      "reference": "(1Jn 1,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "84d5f2b2-7638-4264-8352-850e24ea843b",
+      "date": "2027-01-03",
+      "quote": "\"V ňom si nás vyvolil ešte pred stvorením sveta\"",
+      "reference": "(Ef 1,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "86950c8e-951a-4bde-b36c-f381047d8279",
+      "date": "2026-03-02",
+      "quote": "\"Zhliadni na mňa a vyslyš ma, Pane, Bože môj!\"",
+      "reference": "(Ž 13,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "86e3fa9c-4019-4361-8e9c-2bda550ad2cd",
+      "date": "2026-07-29",
+      "quote": "Vy, ktorí ste opustili všetko, dostane stonásobne viac a budete dedičmi večného života. (porov.)",
+      "reference": "(Mt 19,27-29)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "872f7861-2263-45a0-9c00-2e07591147cb",
+      "date": "2025-09-06",
+      "quote": "\"Syn človeka je pánom aj nad sobotou.\"",
+      "reference": "(Lk 6,5)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8748da94-0729-4ba5-9f57-5ec92cf21459",
+      "date": "2026-02-19",
+      "quote": "\"Ak sme s ním zomreli, s ním budeme aj žiť.\"",
+      "reference": "(2Tim 2,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "877b6d99-023e-4893-8120-b1460961ad81",
+      "date": "2026-08-28",
+      "quote": "\"Preto bdejte, lebo neviete ani dňa, ani hodiny.\"",
+      "reference": "(Mt 25,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "87ca670d-1c26-4929-9220-374908b02bf1",
+      "date": "2026-12-12",
+      "quote": "\"Blahoslavení, ktorí ťa videli a ktorých si vyznačil svojím priateľstvom\"",
+      "reference": "(Sir 48,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "888a9a18-50a5-4074-8a84-04e6b4c32230",
+      "date": "2026-03-08",
+      "quote": "\"Bože, ty si môj Boh, už od úsvitu sa viniem k tebe.\"",
+      "reference": "(Ž 63,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "88a03990-fa05-4768-92a7-c9b3fbcf8843",
+      "date": "2025-08-14",
+      "quote": "Pane, odpusť nevernosť svojmu ľudu! (porov.)",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "88a8218f-ad4a-41f5-8467-6a5b1b6f6dde",
+      "date": "2025-10-27",
+      "quote": "Kristus ma miloval a vydal seba samého za mňa (porov.)",
+      "reference": "(Ef 5,2)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "88c06f17-c016-4122-8b42-b431ccf3e030",
+      "date": "2026-09-18",
+      "quote": "\"Množstvo veriacich malo jedno srdce a jednu dušu. A nik z nich nehovoril, že niečo z toho, čo mal, je jeho, ale všetko mali spoločné.\"",
+      "reference": "(Sk 4,32)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "896eaefe-3253-4a53-958e-f826cbfcbdb6",
+      "date": "2025-09-22",
+      "quote": "\"Dávajte teda pozor, ako počúvate!\"",
+      "reference": "(Lk 8,18)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "89afe04c-2fce-4db5-9273-477dd0a146f0",
+      "date": "2025-08-22",
+      "quote": "Nech nad nami zažiari tvoja sláva, Pane!",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8a7454a8-61db-48d5-893c-0d5f3a9620e1",
+      "date": "2026-07-02",
+      "quote": "\"Viem, komu som uveril\"",
+      "reference": "(2 Tim 1,12)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8afcf367-3e79-48a2-bf62-03a3698286dc",
+      "date": "2026-01-10",
+      "quote": "\"Každý, kto miluje, narodil sa z Boha a pozná Boha, lebo Boh je láska.\"",
+      "reference": "(1 Jn 4,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8b1d264f-f940-4170-ab4e-b3140948d59f",
+      "date": "2026-06-14",
+      "quote": "\"Zadarmo ste dostali, zadarmo dávajte.\"",
+      "reference": "(Mt 10,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8b588ac8-7f84-4bcc-8e76-f51218666a1c",
+      "date": "2026-12-17",
+      "quote": "\"Požehnaná si medzi ženami a požehnaný je plod tvojho života.\"",
+      "reference": "(Lk 1,42)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8b6c90d8-55bf-4552-8dc2-a78ecb33c81a",
+      "date": "2027-01-07",
+      "quote": "\"Vstaň, zasvieť, Jeruzalem, veď prišlo tvoje svetlo.\"",
+      "reference": "(Iz 60,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8b890a9c-03fa-4da7-8920-5e55f4203387",
+      "date": "2025-10-02",
+      "quote": "Priblížilo sa k nám Božie kráľovstvo (porov.)",
+      "reference": "(Lk 10,9)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8c69588b-6281-4a7d-a3c0-d443dd3e4227",
+      "date": "2025-11-16",
+      "quote": "\"Tak nás Vychádzajúci z výsosti navštívi\"",
+      "reference": "(Lk 1,78)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8e067abf-79b5-4454-98a6-db2985c71a3e",
+      "date": "2025-08-26",
+      "quote": "\"Slová, ktoré som vám povedal, sú Duch a život.\"",
+      "reference": "(Jn 6,63)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "8f1919e5-4f1d-4b6a-bd4e-d3104dedfdfe",
+      "date": "2026-11-22",
+      "quote": "\"Ježišu, spomeň si na mňa, keď prídeš do svojho kráľovstva!\"",
+      "reference": "(Lk 23,42)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "907fe2c8-5631-474d-b634-c486974543ef",
+      "date": "2025-10-26",
+      "quote": "\"Bože, buď milostivý mne hriešnemu!\"",
+      "reference": "(Lk 18,13)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "90825e29-3b8d-4dc7-b54b-aa4000e0ad69",
+      "date": "2026-03-25",
+      "quote": "\"Túto slobodu nám vydobyl Kristus. Stojte teda pevne\"",
+      "reference": "(Gal 5,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "90cb008d-d88a-44fa-b5b7-980a905e7743",
+      "date": "2026-04-07",
+      "quote": "\"Keď to počuli, bolesť im prenikla srdce\"",
+      "reference": "(Sk 2,37)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "90ddcdee-eae8-44f4-83fb-b27caa549e1e",
+      "date": "2026-05-19",
+      "quote": "\"A večný život je v tom, aby poznali teba, jediného pravého Boha, a toho, ktorého si poslal, Ježiša Krista.\"",
+      "reference": "(Jn 17,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "915104d8-1aa1-478e-b80d-f2074309a7f5",
+      "date": "2026-02-04",
+      "quote": "\"Dobroreč, duša moja, Pánovi a nezabúdaj na jeho dobrodenia.\"",
+      "reference": "(Ž 103,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9181e101-e421-4a25-b39c-51317a4db42f",
+      "date": "2026-09-17",
+      "quote": "\"Odpúšťajú sa jej mnohé hriechy, lebo veľmi miluje.\"",
+      "reference": "(Lk 7,47)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "91c71776-8dc4-4106-81c3-dd127b74be67",
+      "date": "2026-07-05",
+      "quote": "\"Vezmite na seba moje jarmo a učte sa odo mňa, lebo som tichý a pokorný srdcom\"",
+      "reference": "(Mt 11,29)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "91ec65c5-c497-4422-a655-90e7c3cf7e4f",
+      "date": "2025-09-16",
+      "quote": "\"Vy ste Kristovo telo a jednotlivo ste údy.\"",
+      "reference": "(1Kor 12,27)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "92eb42b2-c07b-4743-98e7-a824b0d7278c",
+      "date": "2026-10-05",
+      "quote": "Z hlbín si ma vyviedol k novému životu.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "931cf5a9-9af6-4778-970a-93db26601487",
+      "date": "2026-05-27",
+      "quote": "\"Vráťme sa k Pánovi\"",
+      "reference": "(Oz 6,1a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "94ea9bdf-9700-4cc7-ab16-ace3d2339429",
+      "date": "2025-09-30",
+      "quote": "\"Priateľov aj rodinu si odohnal odo mňa, len tma je mi dôverníkom.\"",
+      "reference": "(Ž 88,19)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "950e09ce-70ca-47ff-9c6d-e5240c4ca7b8",
+      "date": "2026-12-05",
+      "quote": "\"Zadarmo ste dostali, zadarmo dávajte!\"",
+      "reference": "(Mt 10,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "958f7b5d-7b11-4d3f-ae10-ad3e21e34a43",
+      "date": "2026-07-10",
+      "quote": "\"Keď príde on, Duch pravdy, uvedie vás do plnej pravdy, lebo nebude hovoriť sám zo seba, ale bude hovoriť, čo počuje, a zvestuje vám, čo má prísť.\"",
+      "reference": "(Jn 16,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "95f6a74c-0b89-41d2-80b6-4eadbddc97ad",
+      "date": "2027-01-04",
+      "quote": "\"Šli teda, videli, kde býva, a zostali v ten deň u neho.\"",
+      "reference": "(Jn 1,39)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "96f3acf3-b1b2-480f-99c9-4c37c42c1737",
+      "date": "2026-09-28",
+      "quote": "\"Budú mojím ľudom a ja budem ich Bohom v pravde a spravodlivosti.\"",
+      "reference": "(Zach 8,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9712a289-b117-402b-b08e-5a6fd52a52cb",
+      "date": "2026-01-24",
+      "quote": "\"Ako mňa miluje Otec, tak ja milujem vás. Ostaňte v mojej láske!\"",
+      "reference": "(Jn 15,9)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "99e7ae1c-8cae-420c-9dab-1ecbf8280084",
+      "date": "2026-08-26",
+      "quote": "\"Nezatvrdzujte svoje srdcia\"",
+      "reference": "(Ž 95,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9a3afa0c-0531-43bb-8aea-8c2d5b16c2b6",
+      "date": "2026-08-16",
+      "quote": "\"Zmiluj sa nado mnou, Pane, syn Dávidov!\"",
+      "reference": "(Mt 15,22)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9a3fce2d-9983-44c3-9c48-ec5590a8e2cc",
+      "date": "2025-09-17",
+      "quote": "\"A tak teraz ostáva viera, nádej, láska, tieto tri; no najväčšia z nich je láska.\"",
+      "reference": "(1Kor 13,13)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9a596b0a-00d8-4b6d-9c5a-51e91f01decc",
+      "date": "2025-12-17",
+      "quote": "\"Ku mne sa obráťte, spasené budete\"",
+      "reference": "(Iz 45,22)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9aeaf587-3114-4e01-bbf7-d1353a0dd1a9",
+      "date": "2026-11-29",
+      "quote": "\"Príď, Pane Ježišu!\"",
+      "reference": "(Zjv 22,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9b569c53-f03f-4e36-a0da-ff93d9dd5ccb",
+      "date": "2026-04-12",
+      "quote": "\"A nebuď neveriaci, ale veriaci!\"",
+      "reference": "(Jn 20,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9c250c5d-a8c5-4ff0-bcc1-7d2b7051cd0b",
+      "date": "2026-12-28",
+      "quote": "Krv Ježiša Krista nás očisťuje od každého hriechu.",
+      "reference": "(1Jn 1,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9d713d96-c484-4ff9-8b70-86486d942f1d",
+      "date": "2025-12-22",
+      "quote": "\"Neboj sa, lebo je vyslyšaná tvoja modlitba.\"",
+      "reference": "(Lk 1,13)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9dafd6af-7a65-4732-8739-9de488594a6b",
+      "date": "2026-08-02",
+      "quote": "Náš život nezávisí od toho, čo máme (porov.)",
+      "reference": "(Lk 12,15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "9ea51eea-f227-44bb-a569-45998951010c",
+      "date": "2026-11-12",
+      "quote": "\"Múdrosť ... je výdych Božej moci ... v každom pokolení prenáša sa v duše svätých a robí z nich Božích priateľov a prorokov.\"",
+      "reference": "(Múd 7,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a02449a2-140e-4c0a-a70a-6aed0b4dc0ae",
+      "date": "2026-06-02",
+      "quote": "Očakávame nové nebo a novú zem",
+      "reference": "(2Pet 3,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a061dd97-a233-48ea-8451-a2e4d6e8e0f1",
+      "date": "2026-08-13",
+      "quote": "Pane, odpusť nevernosť svojmu ľudu! (porov.)",
+      "reference": "z liturg. textov",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a0ecbbf1-a5ce-4d48-94c2-5c8d61cef3da",
+      "date": "2025-09-20",
+      "quote": "\"A ako sme nosili obraz pozemského, tak budeme nosiť aj obraz nebeského.\"",
+      "reference": "(1Kor 15,49)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a17d4892-2047-4ec9-b37b-7ed2b8754401",
+      "date": "2026-10-22",
+      "quote": "\"Ale teraz, keď ste oslobodení od hriechu a stali ste sa Božími služobníkmi\"",
+      "reference": "(Rim 6,22)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a1f1ec7e-74df-48f1-897d-c232eb011360",
+      "date": "2026-06-28",
+      "quote": "\"Krstom sme teda s ním boli pochovaní v smrť, aby sme tak, ako bol Kristus vzkriesený z mŕtvych Otcovou slávou, aj my žili novým životom.\"",
+      "reference": "(Rim 6,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a2ae4a8a-83bf-4857-9ddf-da6de92f025d",
+      "date": "2025-09-01",
+      "quote": "\"Veľký prorok povstal medzi nami\"",
+      "reference": "(Lk 7,16)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a39b0a15-8994-41fa-8c7a-0ccf13b4cbe2",
+      "date": "2025-08-21",
+      "quote": "\"Nevesta sa pripravila ... Blahoslavení sú tí, čo sú pozvaní na Baránkovu svadobnú hostinu\"",
+      "reference": "(Zj 19,7.9)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a3d97a4e-befd-4d12-a5f5-a5b613b02d89",
+      "date": "2026-01-18",
+      "quote": "\"Vo zvitku knihy je napísané o mne, že mám plniť tvoju vôľu.\"",
+      "reference": "(Ž 40,8b-9a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a4197fa6-d016-422b-ab0b-cb7598354e24",
+      "date": "2025-08-30",
+      "quote": "\"Čakal som, čakal na Pána a on sa ku mne sklonil. Vyslyšal môj nárek.\"",
+      "reference": "(Ž 40,2)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a49d1448-4d0b-427d-9155-21a9d08d9f28",
+      "date": "2026-08-11",
+      "quote": "Tvoje slová, Pane, ma napĺňajú nevysloviteľnou radosťou (porov.)",
+      "reference": "z liturg. textov",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a59d1d40-37e9-4612-894d-0e31cc9ac943",
+      "date": "2025-10-06",
+      "quote": "Ježišu, prebuď moje srdce a nauč ho milovať.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a608e472-bf2f-41ff-9e6e-e4483de24f63",
+      "date": "2025-12-29",
+      "quote": "\"Pane, nezapočítaj im tento hriech.\"",
+      "reference": "(Sk 7,60)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a63e4b6b-c514-41ae-a19b-7bde04254429",
+      "date": "2025-11-22",
+      "quote": "\"Tak je to aj so zmŕtvychvstaním: seje sa porušiteľné, vstáva neporušiteľné.\"",
+      "reference": "(1Kor 15,42)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a6773966-219f-4dc9-a84b-370fa55a59a8",
+      "date": "2026-05-10",
+      "quote": "\"Veľké sú diela Pánove; nech ich skúmajú všetci, čo majú v nich záľubu.\"",
+      "reference": "(Ž 111,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a6f5d198-7400-4b9b-a1bb-3737f7914c0d",
+      "date": "2025-08-28",
+      "quote": "\"Naše oči hľadia na Pána, nášho Boha, kým sa nezmiluje nad nami.\"",
+      "reference": "(Ž 123,2)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a74aafa1-3aa8-4802-9190-5083b4d2af8d",
+      "date": "2025-11-03",
+      "quote": "\"Nech nik nehľadí iba na svoje vlastné záujmy, ale aj na záujmy iných\"",
+      "reference": "(Flp 2,4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a7ea89eb-f6f5-4528-9770-a82c5fa598c3",
+      "date": "2025-08-06",
+      "quote": "\"Láskou odvekou som ťa miloval\"",
+      "reference": "(Jer 31,3b)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a85e855d-c29f-4bcd-9364-a37a4b523e33",
+      "date": "2026-09-10",
+      "quote": "\"Milujte svojich nepriateľov, robte dobre tým, čo vás nenávidia\"",
+      "reference": "(Lk 6,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a8bc6c64-a906-4866-be88-8446a0b5f04d",
+      "date": "2026-06-12",
+      "quote": "Ale ty vytrvaj v tom, čo si sa naučil...",
+      "reference": "(2Tim 3,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a9059482-a70a-4017-a81c-65bd50072a6c",
+      "date": "2025-11-06",
+      "quote": "Kto hľadá Pána, nájde radosť.",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a9456965-7954-4c7b-b71a-0806d3d51b29",
+      "date": "2026-08-12",
+      "quote": "\"Lebo kde sú dvaja alebo traja zhromaždení v mojom mene, tam som ja medzi nimi.\"",
+      "reference": "(Mt 18,20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a96fd053-4ad2-4177-aeb8-d9ef09b5e4fc",
+      "date": "2026-09-01",
+      "quote": "\"Preto sa navzájom potešujte a povzbudzujte jeden druhého, ako to aj robíte.\"",
+      "reference": "(1 Sol 5,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "a9e47cc4-2fa3-4b41-8e31-12045f21acf5",
+      "date": "2026-07-22",
+      "quote": "\"Lebo Boží chlieb je ten, ktorý zostúpil z neba a dáva svetu život.\"",
+      "reference": "(Jn 6,33)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "aa2b450c-f6b1-4fa5-903f-7577dd25d6c1",
+      "date": "2026-09-15",
+      "quote": "\"Veľký prorok povstal medzi nami\" a: \"Boh navštívil svoj ľud.\"",
+      "reference": "(Lk 7,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "aa5c2ff1-5290-44b7-a779-c5b049f18f0d",
+      "date": "2025-09-12",
+      "quote": "Beda mi, keby som evanjelium nehlásal! (porov.)",
+      "reference": "(1Kor 9,16)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ac326aba-cf0a-4f88-876f-6233a796f67f",
+      "date": "2025-08-27",
+      "quote": "\"Čuj, Pane, a zmiluj sa nado mnou; Pane, buď mi na pomoci!\"",
+      "reference": "(Ž 30,11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "acd0e478-2dcb-4a60-8c4f-43cbe4450e5d",
+      "date": "2026-06-16",
+      "quote": "Pane, nech ťa oslavujeme celým svojím životom.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "adec3870-5bb9-4035-8908-679095ec23ee",
+      "date": "2026-08-17",
+      "quote": "\"Lebo kde je tvoj poklad, tam bude aj tvoje srdce.\"",
+      "reference": "(Mt 6,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ae5c35ff-c8b6-4cd7-a8eb-a70055b9cbb5",
+      "date": "2026-12-10",
+      "quote": "\"Lebo ja som Pán, tvoj Boh, čo ťa za pravicu držím, ktorý ti hovorím: \"Neboj sa, ja ti pomáham.\"",
+      "reference": "(Iz 41,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "aef2eb5f-7da5-4942-8528-3c0729f21deb",
+      "date": "2026-06-07",
+      "quote": "Pane, opora moja, útočište moje, osloboditeľ môj. Bože môj, moja pomoc, tebe dôverujem; ty si môj štít, sila mojej spásy a môj ochranca.",
+      "reference": "(Ž 18,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "af21aa39-3714-419e-9836-f2487483b212",
+      "date": "2026-06-21",
+      "quote": "Ty si, Pane, môj záchranca. (porov.)",
+      "reference": "(Jer 20,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "afa733e0-f41c-4251-b191-e2cd53f2942e",
+      "date": "2026-12-13",
+      "quote": "\"S jasotom sa chcem tešiť v Pánovi, duša mi zaplesá v mojom Bohu\"",
+      "reference": "(Iz 61,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "afee0cc2-7bf0-4b5d-a677-4408f5619fca",
+      "date": "2026-05-21",
+      "quote": "\"Aby aj oni boli v nás, aby svet uveril, že si ma ty poslal.\"",
+      "reference": "(Jn 17,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b1156eb3-9146-4827-a1b9-033957fb3906",
+      "date": "2025-10-13",
+      "quote": "\"Hľa, služobnica Pána, nech sa mi stane podľa tvojho slova.\"",
+      "reference": "(Lk 1,38)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b13b2f6e-96f2-4755-a562-9c7848955b31",
+      "date": "2026-12-16",
+      "quote": "\"Hľa, služobnica Pána, nech sa mi stane podľa tvojho slova.\"",
+      "reference": "(Lk 1,38)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b1df2df5-cc4c-4bf4-b12e-038d6f8a805c",
+      "date": "2026-01-29",
+      "quote": "\"Chorých uzdravujte, mŕtvych krieste, malomocných očisťujte, zlých duchov vyháňajte. Zadarmo ste dostali, zadarmo dávajte.\"",
+      "reference": "(Mt 10,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b2251b5f-2820-4cbd-8e6f-1f521664dd8a",
+      "date": "2026-08-01",
+      "quote": "\"Bože, buď nám milostivý a žehnaj nás; a tvoja tvár nech žiari nad nami\"",
+      "reference": "(Ž 67,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b2f053c6-35f8-4783-83d8-01f14c8ffc44",
+      "date": "2026-02-28",
+      "quote": "\"Buďte milosrdní, ako je milosrdný váš Otec!\"",
+      "reference": "(Lk 6,36)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b35ab0d6-9a9b-4836-8591-8d9d401ef5f1",
+      "date": "2026-02-12",
+      "quote": "\"Krása ženy privábi veselosť na tvár jej muža a túžba (po nej) prevyšuje každú inú túžbu mužovu.\"",
+      "reference": "(Sir 36,24)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b3854d2d-fd7f-4538-872f-96f9e1da5300",
+      "date": "2026-08-22",
+      "quote": "\"A ja som medzi vami ako ten, čo obsluhuje.\"",
+      "reference": "(Lk 22,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b5685d8c-5ebc-45a0-a17d-53716f221af7",
+      "date": "2026-04-23",
+      "quote": "\"Choďte do celého sveta a hlásajte evanjelium všetkému stvoreniu.\"",
+      "reference": "(Mk 16,15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b58076bd-48ed-4487-9170-d7abc84629f9",
+      "date": "2026-11-24",
+      "quote": "\"Hoď svoj kosák a žni, lebo prišla hodina žatvy.\"",
+      "reference": "(Zjv 14,15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b5c66791-366d-4676-9f44-2e6f42432ac3",
+      "date": "2025-11-30",
+      "quote": "\"Ukáž nám, Pane, svoje milosrdenstvo.\"",
+      "reference": "(Ž 85,8)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b7a03241-7ffa-491f-8b86-5ea3cd5f7799",
+      "date": "2025-08-24",
+      "quote": "\"Usilujte sa vojsť tesnou bránou!\"",
+      "reference": "(Lk 13,24)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b81f5e58-607a-4110-8fca-5a586e94a5a2",
+      "date": "2026-10-27",
+      "quote": "\"A myslím, že utrpenia tohoto času nie sú hodny porovnávania s budúcou slávou, ktorá sa na nás má zjaviť.\"",
+      "reference": "(Rim 8,18)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b8fdea0e-b7ab-4683-a090-821c991edd2e",
+      "date": "2026-09-24",
+      "quote": "\"Ustavične sa radujte v Pánovi!\"",
+      "reference": "(Flp 4,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b910ea6d-f70b-4fef-8c62-84a2a4d6a0d6",
+      "date": "2025-11-01",
+      "quote": "\"Pre mňa žiť je Kristus\"",
+      "reference": "(Flp 1,21)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b927b78f-ee81-4268-8ba7-4bf3614a836a",
+      "date": "2026-06-17",
+      "quote": "\"Ale keď sa ty ideš modliť, vojdi do svojej izby, zatvor za sebou dvere a modli sa k svojmu Otcovi, ktorý je v skrytosti.\"",
+      "reference": "(Mt 6,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b943d3e7-a636-4f3b-97ab-d893a67cd46a",
+      "date": "2026-08-06",
+      "quote": "\"Tebe, záštita moja, chcem spievať, lebo ty, Bože, si môj ochranca, môj Boh, moje milosrdenstvo.\"",
+      "reference": "(Ž 59,18)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b96c71e0-5342-4b49-b871-41d217fe35f4",
+      "date": "2026-09-16",
+      "quote": "\"No múdrosť ospravedlňujú všetky jej deti.\"",
+      "reference": "(Lk 7,35)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b98abc2b-8e35-41f6-bc2d-f893fbb1678a",
+      "date": "2026-11-08",
+      "quote": "\"Ženích prichádza, vyjdite mu v ústrety!\"",
+      "reference": "(Mt 25,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "b9ab88b1-7b6f-4f4d-ad21-7dec5c26a92d",
+      "date": "2026-05-03",
+      "quote": "\"Nech sa vám srdce nevzrušuje!\"",
+      "reference": "(Jn 14,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bac0108d-444b-49f1-9502-f43e208d272a",
+      "date": "2025-10-09",
+      "quote": "Ježišu, spolieham sa na teba. Vyžiadaj mi od Otca Ducha Svätého.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bb460973-9d33-4373-9759-79dd0c8cacb8",
+      "date": "2026-06-15",
+      "quote": "\"No ja vám hovorím: Neodporujte zlému.\"",
+      "reference": "(Mt 5,39)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bb4f27a0-f056-407f-98cf-3eb0b597848a",
+      "date": "2026-02-17",
+      "quote": "\"On pamätal na nás v našom ponížení, lebo jeho milosrdenstvo je večné.\"",
+      "reference": "(Ž 136,25)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bbbdc38a-5e33-44a4-bc72-05dd1c294a20",
+      "date": "2025-08-12",
+      "quote": "Tvoje slová, Pane, ma napĺňajú nevysloviteľnou radosťou (porov.)",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bd528971-bb9a-4815-af3d-e4e766733117",
+      "date": "2026-08-18",
+      "quote": "\"Blahoslavení chudobní v duchu, lebo ich je nebeské kráľovstvo.\"",
+      "reference": "(Mt 5,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bea21ac7-74b8-494f-945c-50b8365ebfdd",
+      "date": "2026-05-05",
+      "quote": "\"Svoj pokoj vám dávam. Nech sa vám srdce nevzrušuje a nestrachuje.\"",
+      "reference": "(Jn 14,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bec48f04-846d-425b-bb11-25ddd60f46e6",
+      "date": "2025-10-14",
+      "quote": "Tvoj zákon, Pane, je mojou radosťou.",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bf7421c0-96ca-4659-b39d-2836c2c0e8ca",
+      "date": "2026-07-17",
+      "quote": "\"Túto slobodu nám vydobyl Kristus. Stojte teda pevne a nedávajte sa znova zapriahnuť do jarma otroctva.\"",
+      "reference": "(Gal 5,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "bff94c0b-80d3-478e-9424-0eb58fc5026f",
+      "date": "2026-08-10",
+      "quote": "Spravodlivý však bude žiť pre svoju vernosť.",
+      "reference": "(Hab 2,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c1163dec-b36a-40c2-ad0d-e11a071147e8",
+      "date": "2026-09-04",
+      "quote": "\"Ale nové víno treba naliať do nových mechov.\"",
+      "reference": "(Lk 5,38)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c150c0bf-d33d-4fd8-b024-35510604d952",
+      "date": "2026-09-03",
+      "quote": "\"Ale na tvoje slovo spustím siete.\"",
+      "reference": "(Lk 5,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c19c52b2-48ba-4e13-a9cc-7ceeeceb3dcb",
+      "date": "2025-11-02",
+      "quote": "\"Poď rýchlo dolu, lebo dnes musím zostať v tvojom dome\"",
+      "reference": "(Lk 19,5)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c19f0c4c-b7d3-46f1-a43d-a3f70149ab2a",
+      "date": "2026-11-01",
+      "quote": "\"Milovaní, teraz sme Božími deťmi\"",
+      "reference": "(1 Jn 3,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c1b3e8ed-366c-4121-a9f9-115f38a8cc34",
+      "date": "2026-11-23",
+      "quote": "\"Tí nasledujú Baránka, kamkoľvek ide\"",
+      "reference": "(Zjv 14,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c1cfe565-cb63-4952-8bb6-d0a94edaca90",
+      "date": "2025-12-20",
+      "quote": "\"Múdrosť Najvyššieho, príď a nauč nás ceste rozumnosti.\"",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c204fc4e-5dbc-4187-a348-01378b928228",
+      "date": "2025-12-13",
+      "quote": "\"Blahoslavení, ktorí ťa videli a ktorých si vyznačil svojím priateľstvom\"",
+      "reference": "(Sir 48,11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c29101ed-00d7-49a6-9a77-e41899518ca2",
+      "date": "2025-12-07",
+      "quote": "\"Robte pokánie, lebo sa priblížilo nebeské kráľovstvo.\"",
+      "reference": "(Mt 3,2)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c29ed323-ee83-4208-8bc4-7cd1995aa87b",
+      "date": "2025-08-13",
+      "quote": "\"Lebo kde sú dvaja alebo traja zhromaždení v mojom mene, tam som ja medzi nimi.\"",
+      "reference": "(Mt 18,20)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c2ceeb29-8059-46e1-918d-c8f39040ea53",
+      "date": "2025-11-17",
+      "quote": "\"Blahoslavený, kto číta, aj tí, čo počúvajú slová proroctva\"",
+      "reference": "(Zjv 1,3)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c2da1bbe-d313-468f-a76c-b1d2227fa502",
+      "date": "2025-09-05",
+      "quote": "\"Sme Kristoví služobníci a správcovia Božích tajomstiev.\"",
+      "reference": "(1Kor 4,1)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c3f9144a-66d0-4e93-bfab-ff593097b5b6",
+      "date": "2026-06-01",
+      "quote": "Jeho božská moc nám darovala všetko",
+      "reference": "(2 Pt 1,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c4072af8-38b7-4160-b0cc-e0189d932536",
+      "date": "2026-11-10",
+      "quote": "\"Duše spravodlivých sú však v Božích rukách, muka sa ich nedotkne.\"",
+      "reference": "(Múd 3,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c48d052e-c54b-4e27-9963-cb80fa4927ac",
+      "date": "2026-10-23",
+      "quote": "\"Ja nešťastný človek! Kto ma vyslobodí z tohoto tela smrti?\"",
+      "reference": "(Rim 7,24)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c5242b31-9625-4574-8beb-0509e5e9115a",
+      "date": "2025-12-15",
+      "quote": "\"Blahoslavený, kto načúva slová Božie a hľadí na tvár Všemohúceho.\"",
+      "reference": "(Nm 24,4.16)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c534b454-eb30-49e3-86fd-aee7303484f9",
+      "date": "2026-12-20",
+      "quote": "\"Zdravas, milosti plná, Pán s tebou.\"",
+      "reference": "(Lk 1,28)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c588530c-4161-42c1-b637-4e33fb0ab50f",
+      "date": "2026-03-18",
+      "quote": "\"Rozpomeň sa, Pane, na svoje zľutovanie\"",
+      "reference": "(Ž 25,6a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c5aa19b4-888c-4f61-af16-e6823a37b030",
+      "date": "2026-12-22",
+      "quote": "Nech je zvelebený Pán, Boh Izraela, lebo navštívil a vykúpil svoj ľud.",
+      "reference": "(Lk 1,68)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c5de7602-af24-4e40-9038-c27b92889b0f",
+      "date": "2026-01-11",
+      "quote": "\"On vás bude krstiť Duchom svätým a ohňom.\"",
+      "reference": "(Lk 3,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c667f399-64b5-4dea-9d5d-a517d71a2fb8",
+      "date": "2026-12-24",
+      "quote": "\"Nech je zvelebený Pán, Boh Izraela, lebo navštívil a vykúpil svoj ľud.\"",
+      "reference": "(Lk 1, 68)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c6b9c337-9881-406c-8b84-956bcc3b8990",
+      "date": "2026-10-18",
+      "quote": "\"Ja som Pán a iného niet.\"",
+      "reference": "(Iz 45,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c6c13a5e-b360-4635-ba65-93a6b9a5ad18",
+      "date": "2026-11-30",
+      "quote": "\"Pane, nie som hoden, aby si vošiel pod moju strechu, ale povedz iba slovo a môj sluha ozdravie.\"",
+      "reference": "(Mt 8,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c7cede39-7bcd-45f0-b913-a8a0f63cad47",
+      "date": "2025-12-27",
+      "quote": "\"Nech je zvelebený Pán, Boh Izraela, lebo navštívil a vykúpil svoj ľud.\"",
+      "reference": "(Lk 1,68)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c7e93b1b-c46d-4c42-9de8-3f9aacdd3971",
+      "date": "2026-07-26",
+      "quote": "\"Človeka možno definovať ako toho, kto hľadá pravdu,\"",
+      "reference": "(Ján Pavol II.)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c8632c4c-19af-4153-aa9e-b66e32e14ddd",
+      "date": "2026-02-13",
+      "quote": "\"Lebo on je náš Boh a my sme ľud jeho pastviny a ovce, ktoré vedie svojou rukou.\"",
+      "reference": "(Ž 95,7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c872d85d-23e6-4147-bc6d-b462c57e78f6",
+      "date": "2026-01-19",
+      "quote": "\"Môj nárek si obrátil na tanec, roztrhol si moje rúcho kajúcne a radosťou si ma opásal\"",
+      "reference": "(Ž 30,12)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c9125e19-c3b5-485f-837d-249860006afc",
+      "date": "2026-09-23",
+      "quote": "\"Šťastný budem, ak ostane niekto z môjho rodu a uvidí tvoju slávu a bude velebiť nebeského Kráľa!\"",
+      "reference": "(Tob 13,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "c9f5df7b-dce0-4163-a165-45a1e0ad3eeb",
+      "date": "2025-12-31",
+      "quote": "\"Krv Ježiša Krista nás očisťuje od každého hriechu.\"",
+      "reference": "(1Jn 1,7)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ca92b963-59fd-4972-bdc8-2ac9ff5f1b15",
+      "date": "2026-04-18",
+      "quote": "\"Ako Boží služobníci, všetkých si ctite, bratov milujte, Boha sa bojte\"",
+      "reference": "(1 Pt 2, 16b-17a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cb8f3575-43c0-4307-891c-0681a782ce2e",
+      "date": "2026-06-18",
+      "quote": "\"Otče náš, ktorý si na nebesiach ...\"",
+      "reference": "(Mt 6,9-13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cbcf546f-d5bb-4169-aeff-635517453d25",
+      "date": "2025-09-27",
+      "quote": "Daruj mi, Pane, pravú múdrosť!",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cbdd9bf4-4ea1-4ea9-b0c5-7c68aa0c812a",
+      "date": "2026-04-29",
+      "quote": "\"Pane, ukáž nám svetlo svojej tváre\"",
+      "reference": "(Ž 4,7b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cc1c4d24-e2ca-41e0-ac96-0eb1ff56a4c5",
+      "date": "2026-12-02",
+      "quote": "\"Ľúto mi je zástupu.\"",
+      "reference": "(Mt 15,32)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cc926401-595e-4050-9e4f-7865f0a923ea",
+      "date": "2026-07-21",
+      "quote": "\"Moja sila a moja udatnosť je Pán a stal sa mi spásou.\"",
+      "reference": "(Ex 15,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cd576107-7952-4f6a-85cb-8e63d0c21269",
+      "date": "2026-09-05",
+      "quote": "\"On nás vytrhol z moci tmy a preniesol do kráľovstva svojho milovaného Syna\"",
+      "reference": "(Kol 1,13)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ce1eee4e-431e-4674-b268-28dc030709f5",
+      "date": "2026-04-20",
+      "quote": "\"Keď idem cestou tvojich zákonov, mám väčšiu radosť ako zo všetkého bohatstva\"",
+      "reference": "(Ž 119,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ce3ae0f2-b4d0-4a3a-858b-e8922ccea232",
+      "date": "2026-08-03",
+      "quote": "\"Povieš všetko, čo ti prikážem. Neboj sa ich, veď ja som s tebou, aby som ťa vyslobodil\"",
+      "reference": "(Jer 1,7-8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ceb3e6ff-70ea-4ec5-8870-c098bd067d5f",
+      "date": "2026-03-22",
+      "quote": "\"To ma utešuje v ponížení, že mi tvoje slovo vracia život.\"",
+      "reference": "(Ž 119,50)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cf304404-3363-4741-bbd0-64e07cda06ca",
+      "date": "2026-08-29",
+      "quote": "“Správne, dobrý a verný sluha; bol si verný nad málom, ustanovím ťa nad mnohým: vojdi do radosti svojho pána.”",
+      "reference": "(Mt 25,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cf890cc8-60fd-4155-aeae-2231b98dd9c0",
+      "date": "2025-10-18",
+      "quote": "Tvojou slávou, Pane, je živý človek.",
+      "reference": "z liturgie",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "cfbfed5e-cbde-4e3b-8901-4844e4fe6184",
+      "date": "2026-02-26",
+      "quote": "\"Na neho hľaďte a budete žiariť a tvár vám nesčervenie hanbou. Úbožiak zavolal a Pán ho vyslyšal a vyslobodil ho zo všetkých tiesní.\"",
+      "reference": "(Ž 34,6-7)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d049fd57-1b1f-4ee3-a5e4-b95320659e7b",
+      "date": "2025-08-04",
+      "quote": "\"Povieš všetko, čo ti prikážem. Neboj sa ich, veď ja som s tebou, aby som ťa vyslobodil\"",
+      "reference": "(Jer 1,7-8)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d1978fa7-857b-4351-bce1-dc988b606e37",
+      "date": "2025-10-22",
+      "quote": "Nech v mojich skutkoch, Pane, zažiari tvoje tajomstvo života a spásy.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d1b153a9-4076-49a0-bc8e-815f425964f0",
+      "date": "2026-08-21",
+      "quote": "Veď celý zákon sa spĺňa v jedinom slove, v tomto: \"Milovať budeš svojho blížneho ako seba samého!\"",
+      "reference": "(Gal 5,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d323576e-0b49-4150-9639-fe1646f9162b",
+      "date": "2026-03-29",
+      "quote": "\"Obetoval sa, pretože sám chcel, a neotvoril ústa\"",
+      "reference": "(Iz 53,7a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d3dde9b8-e536-41c9-9a0e-ad503aa77748",
+      "date": "2026-05-02",
+      "quote": "\"Ukáž mi, Pane, svoje cesty\"",
+      "reference": "(Ž 25,4a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d4087dca-8497-4757-b3e4-54af935bb0f8",
+      "date": "2026-07-07",
+      "quote": "\"Duch Pána, Jahveho, je na mne, pretože ma Pán pomazal, poslal ma hlásať radosť ubitým, obviazať zlomených srdcom, zajatcom ohlásiť slobodu a spútaným oslobodenie.\"",
+      "reference": "(Iz 61,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d4193535-86c2-42ef-bdcb-46e96712e64c",
+      "date": "2026-05-15",
+      "quote": "\"A vašu radosť vám nik nevezme.\"",
+      "reference": "(Jn 16,22b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d43a0324-949e-4b02-8f46-131238f1c267",
+      "date": "2025-09-28",
+      "quote": "\"Utláčaným prisudzuje právo, hladujúcim dáva chlieb\"",
+      "reference": "(Ž 146,7)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d48f0b0f-2116-470e-afb0-420c60245e8d",
+      "date": "2026-09-26",
+      "quote": "\"Áno, Pán vykúpi Jakuba, vyslobodí ho z ruky, čo ho premohla.\"",
+      "reference": "(Jer 31,11)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d52a6baa-7b3e-4803-a5c7-f5f8b6f9072b",
+      "date": "2026-05-12",
+      "quote": "\"A keď príde on, ukáže svetu, čo je hriech\"",
+      "reference": "(Jn 16,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d5984a59-e7ac-4948-8ac7-6d54e924b990",
+      "date": "2025-11-26",
+      "quote": "\"Veď ty jediný si Svätý!\"",
+      "reference": "(Zjv 15,4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d6a8aaa3-71bf-4935-b887-85577ef6a5a9",
+      "date": "2026-03-15",
+      "quote": "\"Veď u teba je zdroj života a v tvojom svetle uvidíme svetlo.\"",
+      "reference": "(Ž 36,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d6b4270a-149d-479a-b89f-dbdfc01a18a5",
+      "date": "2026-01-28",
+      "quote": "\"Výklad tvojich slov osvecuje, maličkým dáva chápavosť.\"",
+      "reference": "(Ž 119,130)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d83b0762-9fb6-4532-8045-c255cd59febe",
+      "date": "2025-12-28",
+      "quote": "\"Mária zachovávala všetky tieto slová vo svojom srdci a premýšľala o nich.\"",
+      "reference": "(Lk2,19)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d863098d-d99a-4db3-ae64-181ea536be47",
+      "date": "2025-10-24",
+      "quote": "Daj, nech sa putom pokoja spojím s tebou, so sebou a so všetkými.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d87b8ea6-b114-4a9a-ae99-6d60ae6a9e4d",
+      "date": "2026-01-05",
+      "quote": "Podľa toho poznáme, že sme z pravdy, a upokojíme si pred ním srdce. Lebo keby nám srdce niečo vyčítalo, Boh je väčší ako naše srdce a vie všetko.",
+      "reference": "(1Jan 3,19-20)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d8c19d54-a2bd-40b3-8b8b-cd0a64db4944",
+      "date": "2027-01-08",
+      "quote": "\"Robte pokánie, lebo sa priblížilo nebeské kráľovstvo.\"",
+      "reference": "(Mt 4,17)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d912eedc-30e4-41b0-a366-00f7d3d6191e",
+      "date": "2025-08-02",
+      "quote": "Ty, Pane, vidíš všetko (porov.)",
+      "reference": "(Jer 7,11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d9179151-1c43-4194-8be4-d9355ad59aaa",
+      "date": "2026-08-27",
+      "quote": "\"A tak nás nauč rátať naše dni, aby sme našli múdrosť srdca.\"",
+      "reference": "(Ž 90,12)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d972868b-eb48-463e-9591-3efafa1bdd64",
+      "date": "2026-05-30",
+      "quote": "\"Jeho ranami sme uzdravení.\"",
+      "reference": "(Iz 53,5c)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "d992919b-0c61-4bf6-a902-94742fd422ff",
+      "date": "2026-04-24",
+      "quote": "\"Prejav, Bože, svoju moc, upevni, Bože, čo si v nás vykonal\"",
+      "reference": "(Ž 68,29)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dad0d9db-845b-41a1-9e4a-41f51b77874e",
+      "date": "2026-10-24",
+      "quote": "\"Lebo kto nemá Kristovho Ducha, ten nie je jeho.\"",
+      "reference": "(Rim 8,9)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dbaaf24f-e422-4196-8835-228fdb84d90d",
+      "date": "2025-11-18",
+      "quote": "\"Hľa, stojím pri dverách a klopem\"",
+      "reference": "(Zjv 3,20)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dbace335-d195-4197-810e-8a33842023ed",
+      "date": "2025-09-18",
+      "quote": "\"Kristus zomrel za naše hriechy podľa Písem ... bol pochovaný a ... bol tretieho dňa vzkriesený podľa Písem.\"",
+      "reference": "(1Kor 15,3-4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dc4ebe28-c9de-4a41-851a-16a056a2818f",
+      "date": "2025-12-12",
+      "quote": "\"Ja som Pán, tvoj Boh, čo ťa učím, aby si mal úspech\"",
+      "reference": "(Iz 48,17)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dc5ab9c9-b4ce-49d6-9352-db5e779e2b85",
+      "date": "2026-03-06",
+      "quote": "Zaodial si ma rúchom spásy (porov.)",
+      "reference": "(Iz 61,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dc83507c-669a-4ca8-9315-c2d8fcf20c18",
+      "date": "2025-09-25",
+      "quote": "Daj mi, Pane, múdre srdce!",
+      "reference": "z liturg. textov",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dc9fc065-fc6c-4bc8-aa93-053426a09de4",
+      "date": "2026-08-07",
+      "quote": "Pane, pošli svojho zvestovateľa pokoja! (porov.)",
+      "reference": "(Nah2,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dd450082-da9d-491d-a094-9ad20be1d5c1",
+      "date": "2026-01-15",
+      "quote": "\"Chcem, buď čistý!\"",
+      "reference": "(Mk 1,41)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "dd78e560-9fc6-4fb9-b13e-95d662499cf0",
+      "date": "2026-11-13",
+      "quote": "\"Kto sa bude usilovať zachrániť si život, stratí ho, a kto ho stratí, získa ho.\"",
+      "reference": "(Lk 17,33)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ddb81970-ac7f-4314-91e6-f627fa191e83",
+      "date": "2026-02-06",
+      "quote": "\"Veď pre mňa žiť je Kristus a umrieť je zisk.\"",
+      "reference": "(Flp 1,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "de40d40f-0592-4555-8471-df9e154cdc80",
+      "date": "2026-02-27",
+      "quote": "\"Buďte svätí, lebo ja som svätý.\"",
+      "reference": "(Lev 11,44)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "de4133f2-e1e2-433a-82fe-91bc773a7ae4",
+      "date": "2025-08-25",
+      "quote": "\"Pán je ochranca môjho života, pred kým sa mám strachovať?\"",
+      "reference": "(Ž 27,1)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "de67cd1e-b05b-4b46-800d-4f89586c594e",
+      "date": "2026-03-27",
+      "quote": "\"Milujem ťa, Pane, moja sila!\"",
+      "reference": "(Ž 18,2b)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "deb34377-acb7-44ed-8b0c-2744c5233cbb",
+      "date": "2026-07-13",
+      "quote": "\"Blahoslavení prenasledovaní pre spravodlivosť, lebo ich je nebeské kráľovstvo.\"",
+      "reference": "(Mt 5,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "df16fe00-43ab-4e7b-8ccb-f6c25cf0b2ea",
+      "date": "2026-11-25",
+      "quote": "\"Veď ty jediný si Svätý!\"",
+      "reference": "(Zjv 15,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "df9d7e90-a948-4371-ba8e-6c4d64128aa9",
+      "date": "2026-04-16",
+      "quote": "Šťastní sú všetci, čo sa spoliehajú na Pána (porov.)",
+      "reference": "(Ž 2,12c)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e001b288-5259-449e-b8ab-af0152932ae9",
+      "date": "2026-12-09",
+      "quote": "\"Poďte ku mne všetci, ktorí sa namáhate a ste preťažení, a ja vás posilním.\"",
+      "reference": "(Mt 11,28)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e00d7919-7cbf-43df-90da-0b95ec47665c",
+      "date": "2026-07-11",
+      "quote": "\"Neboj sa, maličké stádo, lebo vášmu Otcovi sa zapáčilo dať vám kráľovstvo.\"",
+      "reference": "(Lk 12,32)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e019516f-34fc-43c4-ac71-d4b22ecdcaae",
+      "date": "2026-02-25",
+      "quote": "\"Naplnil sa čas a priblížilo sa Božie kráľovstvo. Kajajte sa a verte evanjeliu.\"",
+      "reference": "(Mk 1,15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e04e51c4-a6e3-4371-9c0e-1e067c9dfaf7",
+      "date": "2026-09-30",
+      "quote": "\" Kráľ mi vyhovel i v tomto, lebo bola nado mnou dobrotivá ruka môjho Boha.\"",
+      "reference": "(Neh 2,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e055a264-c8db-4baf-adb1-6236d6729b11",
+      "date": "2026-07-30",
+      "quote": "\"Blažení tí, čo idú cestou života bez poškvrny, čo kráčajú podľa zákona Pánovho.\"",
+      "reference": "(Ž 119,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e1089723-6da6-42ad-b54b-31a38724b4c7",
+      "date": "2026-07-09",
+      "quote": "\"Naplnil sa čas a priblížilo sa Božie kráľovstvo. Kajajte sa a verte evanjeliu.\"",
+      "reference": "(Mk 1,15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e268e85e-788b-40d1-b636-54296a8e6ff9",
+      "date": "2026-08-15",
+      "quote": "Boh \"Zhliadol na poníženosť svojej služobnice\"",
+      "reference": "(Lk 1,48)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e2c5a468-6b88-4773-932a-501e2df49439",
+      "date": "2026-05-24",
+      "quote": "Príď, Duchu Svätý, naplň srdcia svojich veriacich a zapáľ v nás oheň svojej lásky.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e3250e1f-c199-4359-9921-8096d8fd88b5",
+      "date": "2025-12-21",
+      "quote": "\"Hľa, panna počne a porodí syna a dajú mu meno Emanuel,“ čo v preklade znamená: Boh s nami.\"",
+      "reference": "(Mt 1,23)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e47f14eb-6e2d-4a2c-a609-364c1930194a",
+      "date": "2026-07-14",
+      "quote": "\"Čo je svetu slabé, vyvolil si Boh, aby zahanbil silných\"",
+      "reference": "(1Kor 1,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e58595c3-4a97-41f6-bfd1-c696b0be9163",
+      "date": "2025-08-08",
+      "quote": "Pane, pošli svojho zvestovateľa pokoja! (porov.)",
+      "reference": "(Nah2,1)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e5f32609-6fbb-4da2-bc33-e032f57b80f2",
+      "date": "2026-07-12",
+      "quote": "\"Skôr sú blahoslavení tí, čo počúvajú Božie slovo a zachovávajú ho.\"",
+      "reference": "(Lk 11,28)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e692fd1a-0237-4b5d-9a76-b21ad876e5a7",
+      "date": "2026-02-08",
+      "quote": "\"Pánovi zver svoje cesty a jemu dôveruj, on sa už postará.\"",
+      "reference": "(Ž 37,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e7b90b54-8178-4a90-b25f-983106b22bb3",
+      "date": "2027-01-02",
+      "quote": "On prichádza po mne a ja nie som hoden rozviazať mu remienok na obuvi.",
+      "reference": "(Jn 1,27)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e7bdc22f-f7ac-4df1-9ea2-67a95382e9c9",
+      "date": "2026-10-26",
+      "quote": "\"Veď všetci, ktorých vedie Boží Duch, sú Božími synmi.\"",
+      "reference": "(Rim 8,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e848749b-d383-4abc-81e9-89061f677946",
+      "date": "2025-11-12",
+      "quote": "Spasil nás pre svoje milosrdenstvo (porov.)",
+      "reference": "(Tít 2,11)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e89fa036-3fe0-42ae-b068-b82522487a87",
+      "date": "2026-11-27",
+      "quote": "\"Videl som sväté mesto ... vystrojené ako nevesta, ozdobená pre svojho ženícha.\"",
+      "reference": "(Zjv 21,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e9149189-4065-4458-bf23-73c622a2707e",
+      "date": "2025-08-09",
+      "quote": "\"Spravodlivý však bude žiť pre svoju vernosť.\"",
+      "reference": "(Hab2,4)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e99619fe-167f-45d3-be4f-52ac06deeb6f",
+      "date": "2026-01-27",
+      "quote": "\"Pobežím po ceste tvojich príkazov, lebo ty dávaš môjmu srdcu odvahu.\"",
+      "reference": "(Ž 119,32)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e9c474ef-61ea-46f6-9d93-3c42913b9123",
+      "date": "2025-12-30",
+      "quote": "\"Slovo sa telom stalo... A my sme uvideli jeho slávu.\"",
+      "reference": "(Jn 1,14)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "e9e151a3-ed79-4ee3-851c-5a717ec7a59e",
+      "date": "2026-03-19",
+      "quote": "\"Kto verí, má večný život\"",
+      "reference": "(Jn 6,47)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ea527cb4-413c-45cb-81e0-456e4020555d",
+      "date": "2025-12-04",
+      "quote": "\"Nie každý, kto mi hovorí: »Pane, Pane!« vojde do nebeského kráľovstva, ale iba ten, kto plní vôľu môjho Otca, ktorý je na nebesiach.\"",
+      "reference": "(Mt 7,21)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "eb9bb588-d9ea-407b-ac67-24f6ce6d3623",
+      "date": "2025-08-31",
+      "quote": "\"A budeš blahoslavený, lebo oni sa ti nemajú čím odplatiť.\"",
+      "reference": "(Lk 14,14)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ec5150d6-17eb-4483-84a9-daf9e95e4d98",
+      "date": "2026-11-17",
+      "quote": "\"Lebo Syn človeka prišiel hľadať a zachrániť, čo sa stratilo.\"",
+      "reference": "(Lk 19,10)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ec9b4cea-9029-4de5-a278-21038d7903a0",
+      "date": "2026-12-25",
+      "quote": "\"Velebí moja duša Pána a môj duch jasá v Bohu, mojom spasiteľovi.\"",
+      "reference": "(Lk 1,46)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "eec630a0-830c-4246-bfdc-b6b2005af6c5",
+      "date": "2026-07-25",
+      "quote": "\"Tvoje slovo je svetlo pre moje nohy a pochodeň na mojich chodníkoch.\"",
+      "reference": "(Ž 119,105)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "eed0e680-01d4-4696-a7da-0976fbaca2cf",
+      "date": "2026-06-29",
+      "quote": "\"Skôr sú blahoslavení tí, čo počúvajú Božie slovo a zachovávajú ho.\"",
+      "reference": "(Lk 11,28)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ef91961b-ca1a-4555-a79f-e52040627255",
+      "date": "2026-08-25",
+      "quote": "\"Nie aby sme sa ľuďom páčili, ale Bohu, ktorý skúma naše srdcia.\"",
+      "reference": "(1 Sol 2,4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f0d58d01-20cc-4b51-a2e5-69626520f630",
+      "date": "2025-09-07",
+      "quote": "Ak stratím život pre Ježiša, budem s ním kraľovať naveky.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f19dbd86-26a6-4269-be42-034c518b9c30",
+      "date": "2026-12-30",
+      "quote": "\"Slovo sa telom stalo... A my sme uvideli jeho slávu.\"",
+      "reference": "(Jn 1,14)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f1ab8744-8a45-4bd7-bc8d-de51251105df",
+      "date": "2026-04-27",
+      "quote": "\"Pán je môj pastier, nič mi nechýba\"",
+      "reference": "(Ž 23,1)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f1b49b2a-8bc7-4d0f-900c-8db7fa625877",
+      "date": "2026-04-19",
+      "quote": "\"Zostaň s nami, lebo sa zvečerieva a deň sa už schýlil!\"",
+      "reference": "(Lk 24,29)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f2867948-e799-41c8-8790-60456d4dead7",
+      "date": "2025-12-14",
+      "quote": "\"Blažený... kto sa spolieha na Pána, svojho Boha. On zachováva vernosť naveky\"",
+      "reference": "(Ž 146,5-6)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f2cbab25-249f-47e1-b3e0-b946ad321d97",
+      "date": "2026-02-16",
+      "quote": "\"Bože, Boh mojej spásy, zbav ma škvrny krvipreliatia a môj jazyk zajasá nad tvojou spravodlivosťou.\"",
+      "reference": "(Ž 51,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f39654b6-01b9-45d4-bb59-4179b215d1f2",
+      "date": "2025-10-23",
+      "quote": "Rozmnož moju vieru, Pane. Daj, nech sa účinne prejaví v láske.",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f592ba8e-837b-4352-b0e5-51aa3bdec172",
+      "date": "2025-11-13",
+      "quote": "\"Mal som totiž veľkú radosť z tvojej lásky\"",
+      "reference": "(Flm 1,7)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f625f3f3-3797-4a2b-b58f-01dc4efa9920",
+      "date": "2026-05-14",
+      "quote": "\"Teraz nech hovorí Izrael, že Pán je dobrý, že jeho milosrdenstvo trvá naveky.\"",
+      "reference": "(Ž 117,2)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f6bdcfa7-e80d-4d5f-9294-9fd077b1e203",
+      "date": "2026-01-31",
+      "quote": "\"Ujmi sa ma podľa svojho prísľubu a budem žiť; a nezahanbi ma v mojej nádeji.\"",
+      "reference": "(Ž 119,116)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f75f40d9-914a-4c08-8f51-cc5d0ec22194",
+      "date": "2025-11-23",
+      "quote": "\"Ježišu, spomeň si na mňa, keď prídeš do svojho kráľovstva!\"",
+      "reference": "(Lk 23,42)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f7e081cb-2a06-45bf-b223-12c6f4a0637b",
+      "date": "2025-11-25",
+      "quote": "\"Hoď svoj kosák a žni, lebo prišla hodina žatvy.\"",
+      "reference": "(Zjv 14,15)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f84bcbe3-306a-4134-857e-dc0619722840",
+      "date": "2026-05-29",
+      "quote": "Pane, rozviaž všetky moje nespravodlivé putá (porov.)",
+      "reference": "(Iz 58,6)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f87f4573-f722-4e0c-acc9-2f58784cb645",
+      "date": "2026-03-17",
+      "quote": "\"Navráť mi radosť z tvojej spásy\"",
+      "reference": "(Ž 51,14a)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f96c2510-f900-4eba-aa08-77eb620e40e6",
+      "date": "2026-09-25",
+      "quote": "\"Súď ma, Bože, a rozhodni môj spor s neverným ľudom ... I pristúpim k Božiemu oltáru, k Bohu, ktorý ma napĺňa radosťou i plesaním, a citarou ťa, Bože, môj Bože, zvelebím.\"",
+      "reference": "(Ž 43,1-4)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "f9e49ea6-7e5c-4468-8f2c-4814bc6427fe",
+      "date": "2026-03-05",
+      "quote": "\"Blažení tí, čo sú pozvaní na hostinu baránkovu.\"",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fa33a0f5-6f5f-4d47-aa00-49fe49411dfc",
+      "date": "2026-10-29",
+      "quote": "\"Ale v tomto všetkom slávne víťazíme skrze toho, ktorý nás miluje.\"",
+      "reference": "(Rim 8,37)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fb3c3418-31d5-4dc7-b3c2-52ccc0dd1179",
+      "date": "2025-08-17",
+      "quote": "Myslíte si, že som prišiel darovať pokoj zemi? Nie, hovorím vám, ale rozdelenie. (porov.)",
+      "reference": "(Lk 12,51)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fb9b851b-da7f-4b9f-9a80-aa06b1276e02",
+      "date": "2026-07-23",
+      "quote": "\"Blahoslavení čistého srdca, lebo oni uvidia Boha.\"",
+      "reference": "(Mt 5,8)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fcac71c9-f792-46e7-a4d9-733ac9b13ebb",
+      "date": "2026-12-01",
+      "quote": "\"Zvelebujem ťa, Otče, Pán neba i zeme, že si tieto veci skryl pred múdrymi a rozumnými a zjavil si ich maličkým\"",
+      "reference": "(Lk 10,21)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fceda8ff-dc71-44a5-a0c2-88defdd8fd86",
+      "date": "2026-05-06",
+      "quote": "\"Ja som vinič, vy ste ratolesti.\"",
+      "reference": "(Jn 15,5)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fcffd055-f8a9-4594-9ee5-9a8b99dd8cfc",
+      "date": "2026-10-19",
+      "quote": "\"Vydaného za naše hriechy a vzkrieseného pre naše ospravedlnenie.\"",
+      "reference": "(Rim 4,25)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fd447f9d-a924-4fa6-9d52-7e820fbdd64e",
+      "date": "2026-11-20",
+      "quote": "\"Môj dom bude domom modlitby.\"",
+      "reference": "(Lk 19,46)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fd94ba3c-e8ae-4eb9-a5cb-b99eb779928b",
+      "date": "2026-05-22",
+      "quote": "\"Miluješ ma?\"",
+      "reference": "(Jn 21,16)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fda29982-96cd-4a3f-97e7-971fff1b0d78",
+      "date": "2025-10-03",
+      "quote": "\"Položím si iba ruku na ústa... znovu nezačnem\"",
+      "reference": "(Job 40,4n)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fda9b85f-162c-4894-a2fd-d56426363142",
+      "date": "2025-10-21",
+      "quote": "Príď, Ježišu! Buď mojím pokojom a radosťou!",
+      "reference": "",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fddf0bca-73c0-4bde-9a9f-0467dcebadf4",
+      "date": "2026-11-15",
+      "quote": "\"Chválu si zasluhuje žena, čo sa bojí Pána.\"",
+      "reference": "(Prís 31,30)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fe60fb0e-8ae7-4cfb-9b7a-c9d2ce3eb021",
+      "date": "2026-10-17",
+      "quote": "\"On proti nádeji v nádeji uveril\"",
+      "reference": "(Rim 4,18)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fe7d5904-afb4-4e5c-a12a-d57d181bfd50",
+      "date": "2026-12-14",
+      "quote": "Príď a vysloboď nás s veľkou mocou.",
+      "reference": "z liturgie",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fe9cd996-fc57-4db8-b447-197c0effa74b",
+      "date": "2026-01-13",
+      "quote": "\"Anna vstala a išla pred Pána... modlila sa k Pánovi\"",
+      "reference": "(1 Sam 1,9)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ff575e6c-f9c6-46cb-9d4e-f7bc75ae832e",
+      "date": "2025-12-11",
+      "quote": "\"Zdravas’, Mária, milosti plná, Pán s tebou!\"",
+      "reference": "(Lk 1,28)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ff7d9646-e484-433d-89e0-36f327523a5f",
+      "date": "2026-06-05",
+      "quote": "Nech je zvelebený Boh! Nech je zvelebené jeho veľké meno! ... Lebo on ma udrel, ale potom sa nado mnou zmiloval. A teraz vidím",
+      "reference": "(Tob 11,14-15)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ff883f42-bb92-4e39-a43b-0798b9a0e81e",
+      "date": "2026-11-18",
+      "quote": "\"Preto Stvoriteľ sveta ... vám dá dych i život zo svojho milosrdenstva, ako si vy teraz neceníte seba samých pre jeho zákony.\"",
+      "reference": "(2 Mach 7,23)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "ffa300bd-b290-4f68-926d-b817a76aa7a1",
+      "date": "2026-05-17",
+      "quote": "\"A večný život je v tom, aby poznali teba, jediného pravého Boha, a toho, ktorého si poslal, Ježiša Krista.\"",
+      "reference": "(Jn 17,3)",
+      "created_at": "2025-08-10T19:26:54.209272+00:00",
+      "lang": "sk"
+    },
+    {
+      "id": "fff2a50e-2c97-4964-9ce9-facb7efed3d2",
+      "date": "2025-10-29",
+      "quote": "Ty si Pán všetkých. (porov.)",
+      "reference": "(Ef 6,9)",
+      "created_at": "2025-05-29T22:00:44.172028+00:00",
+      "lang": "sk"
+    }
+  ]
+}

@@ -1,14 +1,27 @@
 // src/app/components/programs/SessionPlayer.tsx
-import { useState, useEffect, useCallback } from "react";
 import { useSupabase } from "@/app/components/SupabaseProvider";
-import MediaPlayer from "./MediaPlayer";
-import { 
-  ChevronLeft, ChevronRight, List, BookOpen,
-  Clock, FileText, ImageIcon, Video, Headphones, Eye, EyeOff,
-  Bookmark, BookmarkCheck, Share, Save, Plus, Edit3, ExternalLink,
-  ArrowLeft, ArrowRight, Maximize2, Minimize2
+import { formatDateMedium } from "@/utils/dateFormatter";
+import {
+  ArrowLeft, ArrowRight,
+  Bookmark, BookmarkCheck,
+  BookOpen,
+  ChevronLeft, ChevronRight,
+  Clock,
+  Edit3, ExternalLink,
+  Eye, EyeOff,
+  FileText,
+  Headphones,
+  ImageIcon,
+  List,
+  Maximize2, Minimize2,
+  Plus,
+  Save,
+  Share,
+  Video
 } from "lucide-react";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import MediaPlayer from "./MediaPlayer";
 
 interface Session {
   id: string;
@@ -268,12 +281,10 @@ const MediaNavigation = ({
 const SessionNavigation = ({ 
   session, 
   allSessions, 
-  program, 
   onSessionChange 
 }: {
   session: Session;
   allSessions: Session[];
-  program: Program;
   onSessionChange?: (sessionOrder: number) => void;
 }) => {
   const currentIndex = allSessions.findIndex(s => s.id === session.id);
@@ -347,11 +358,9 @@ const SessionNavigation = ({
 
 // Enhanced Notes Section Component
 const NotesSection = ({ 
-  session, 
-  program 
+  session
 }: {
   session: Session;
-  program: Program;
 }) => {
   const { supabase, session: authSession } = useSupabase();
   const [notes, setNotes] = useState<Note[]>([]);
@@ -415,16 +424,6 @@ const NotesSection = ({
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('sk-SK', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   return (
@@ -494,7 +493,7 @@ const NotesSection = ({
                 </p>
                 
                 <p className="text-xs text-gray-400">
-                  {formatDate(note.created_at)}
+                  {formatDateMedium(note.created_at, 'sk')}
                 </p>
               </div>
             ))}
@@ -725,7 +724,6 @@ export default function SessionPlayer({
         <SessionNavigation
           session={session}
           allSessions={allSessions}
-          program={program}
           onSessionChange={onSessionChange}
         />
       )}
@@ -734,7 +732,6 @@ export default function SessionPlayer({
       {showNotes && (
         <NotesSection 
           session={session}
-          program={program}
         />
       )}
 
@@ -753,7 +750,7 @@ export default function SessionPlayer({
             </div>
             
             <div className="space-y-3">
-              {allSessions.map((s, index) => (
+              {allSessions.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => {

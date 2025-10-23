@@ -2,9 +2,13 @@
 
 import { ActionButton, EditPageHeader, FormSection } from "@/app/admin/components";
 import BibleImportModal from "@/app/admin/components/BibleImportModal";
+import { LectioTemplate } from "@/app/admin/components/LectioTemplates";
+import TemplateSelector from "@/app/admin/components/TemplateSelector";
+import AITextField from "@/app/components/AITextField";
 import AudioGenerateButton from "@/app/components/AudioGenerateButton";
 import BulkTranslateSection from "@/app/components/BulkTranslateSection";
 import { useLanguage } from "@/app/components/LanguageProvider";
+import LectioAIGenerator from "@/app/components/LectioAIGenerator";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import TranslateButton from "@/app/components/TranslateButton";
 import VoiceSelector from "@/app/components/VoiceSelector";
@@ -53,6 +57,7 @@ interface LectioSource {
   modlitba_zaver: string;
   audio_5_min: string;
   reference: string;
+  source_material?: string; // Nový stĺpec pre zdrojový materiál
   checked?: number; // 0 = nezaškrtnuté, 1 = zaškrtnuté
 }
 
@@ -81,6 +86,8 @@ export default function LectioSourceEditPage() {
   const [isDraftAvailable, setIsDraftAvailable] = useState(false);
   const [showBibleImport, setShowBibleImport] = useState(false);
   const [currentBibleField, setCurrentBibleField] = useState<number>(1);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   
   // Voice and model settings
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>("scOwDtmlUjD3prqpp97I"); // Sam ako predvolený
@@ -156,6 +163,33 @@ export default function LectioSourceEditPage() {
     showTempMessage(`Audio bolo vygenerované: ${fieldName}`, "success");
   }, [updateFormField]);
 
+  // AI Lectio Divina generation handler
+  const handleLectioAIGenerated = useCallback((data: {
+    lectio: string;
+    meditatio: string;
+    oratio: string;
+    contemplatio: string;
+  }) => {
+    updateFormField('lectio_text', data.lectio);
+    updateFormField('meditatio_text', data.meditatio);
+    updateFormField('oratio_text', data.oratio);
+    updateFormField('contemplatio_text', data.contemplatio);
+    showTempMessage('✨ AI vygenerovalo všetky sekcie Lectio Divina', 'success', 4000);
+  }, [updateFormField]);
+
+  // Template selection handler
+  const handleTemplateSelect = useCallback((template: LectioTemplate) => {
+    // Aplikuj template fields do formData
+    Object.entries(template.fields).forEach(([fieldName, fieldValue]) => {
+      if (fieldValue) {
+        updateFormField(fieldName, fieldValue);
+      }
+    });
+    
+    setShowTemplateSelector(false);
+    showTempMessage(`✨ Šablóna "${template.name}" bola aplikovaná`, 'success', 3000);
+  }, [updateFormField]);
+
   // Load data
   useEffect(() => {
     const loadData = async () => {
@@ -202,6 +236,8 @@ export default function LectioSourceEditPage() {
               audio_5_min: "",
               checked: 0,
             });
+            // Otvor template selector iba ak nie je draft
+            setShowTemplateSelector(true);
           }
         } catch (error) {
           console.error('Chyba pri načítaní draft:', error);
@@ -287,6 +323,8 @@ export default function LectioSourceEditPage() {
     updateFormField(`biblia_${fieldNumber}`, cleaned);
     showTempMessage("Čísla veršov boli odstránené.", "success");
   };
+
+
 
   // Save handler
   const handleSave = async (e: React.FormEvent) => {
@@ -433,6 +471,31 @@ export default function LectioSourceEditPage() {
         )}
 
         <form ref={formRef} onSubmit={handleSave} className="space-y-8">
+          {/* Template selector button - len pri novom zázname */}
+          {isNew && (
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">📋</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Šablóny Lectio Divina</h3>
+                    <p className="text-sm text-gray-600">Vyberte si hotovú šablónu pre rýchlejší štart</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowTemplateSelector(true)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition shadow-md hover:shadow-lg"
+                >
+                  <span>✨</span>
+                  Vybrať šablónu
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Základné informácie */}
           <FormSection title="Základné informácie" icon={FileText}>
             <div className="space-y-6">
@@ -566,29 +629,6 @@ export default function LectioSourceEditPage() {
                   required
                 />
               </div>
-
-              <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="checked"
-                    name="checked"
-                    checked={formData.checked === 1}
-                    onChange={(e) => updateFormField('checked', e.target.checked ? 1 : 0)}
-                    className="w-5 h-5 text-emerald-600 bg-gray-100 border-emerald-300 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
-                  />
-                  <label 
-                    htmlFor="checked" 
-                    className="ml-3 text-sm font-semibold text-emerald-800 cursor-pointer flex items-center"
-                  >
-                    <span className="mr-2">✅</span>
-                    Označiť ako skontrolované
-                  </label>
-                </div>
-                <p className="text-xs text-emerald-600 ml-8 mt-1">
-                  Označte keď je obsah skontrolovaný a pripravený na publikovanie
-                </p>
-              </div>
             </div>
           </FormSection>
 
@@ -601,6 +641,46 @@ export default function LectioSourceEditPage() {
             language={formData.lang}
             className="mb-8"
           />
+
+          {/* AI Lectio Divina Generator */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowAIGenerator(!showAIGenerator)}
+              className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen className="text-purple-600" size={24} />
+                <h2 className="text-xl font-bold text-gray-900">
+                  🤖 AI Generátor Lectio Divina
+                </h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">
+                  {showAIGenerator ? 'Zbaliť' : 'Rozbaliť'}
+                </span>
+                <svg
+                  className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${showAIGenerator ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+            
+            {showAIGenerator && (
+              <div className="p-6 pt-0 border-t border-gray-100">
+                <LectioAIGenerator
+                  bibliaText={formData.biblia_1 || ""}
+                  suradnicePismo={formData.suradnice_pismo || ""}
+                  onGenerated={handleLectioAIGenerated}
+                  disabled={saving}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Biblické texty s import funkciou */}
           <FormSection title="Biblické texty" icon={BookOpen}>
@@ -630,7 +710,7 @@ export default function LectioSourceEditPage() {
                         className="admin-edit-button-primary text-sm"
                         title="Odstráni čísla veršov (1, 7, 8, 9...)"
                       >
-                        <span className="mr-2">🧹</span>
+                        <span className="mr-2">✂️</span>
                         Odstrániť čísla veršov
                       </button>
                     </div>
@@ -708,97 +788,65 @@ export default function LectioSourceEditPage() {
           {/* Hlavný obsah lectio divina */}
           <FormSection title="Hlavný obsah lectio divina" icon={BookOpen}>
             <div className="space-y-8">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Lectio – text
-                  </label>
-                  <TranslateButton
-                    text={formData.lectio_text || ""}
-                    fieldType="spiritual"
-                    onTranslated={(translatedText) => handleSingleFieldTranslation('lectio_text', translatedText)}
-                    disabled={saving}
-                  />
-                </div>
-                <textarea
-                  name="lectio_text"
-                  value={formData.lectio_text || ""}
-                  onChange={(e) => updateFormField('lectio_text', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                  placeholder="Napíšte text pre Lectio..."
-                  rows={12}
-                  style={{ height: '18rem' }}
-                />
-              </div>
+              <AITextField
+                label="Lectio – text"
+                name="lectio_text"
+                value={formData.lectio_text || ""}
+                onChange={(value) => updateFormField('lectio_text', value)}
+                placeholder="Napíšte text pre Lectio..."
+                rows={12}
+                height="18rem"
+                fieldType="spiritual"
+                disabled={saving}
+                showGrammarCheck={true}
+                enableAISuggestions={true}
+                enableRichText={true}
+              />
               
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Meditatio – text
-                  </label>
-                  <TranslateButton
-                    text={formData.meditatio_text || ""}
-                    fieldType="spiritual"
-                    onTranslated={(translatedText) => handleSingleFieldTranslation('meditatio_text', translatedText)}
-                    disabled={saving}
-                  />
-                </div>
-                <textarea
-                  name="meditatio_text"
-                  value={formData.meditatio_text || ""}
-                  onChange={(e) => updateFormField('meditatio_text', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                  placeholder="Napíšte text pre Meditatio..."
-                  rows={10}
-                  style={{ height: '15rem' }}
-                />
-              </div>
+              <AITextField
+                label="Meditatio – text"
+                name="meditatio_text"
+                value={formData.meditatio_text || ""}
+                onChange={(value) => updateFormField('meditatio_text', value)}
+                placeholder="Napíšte text pre Meditatio..."
+                rows={10}
+                height="15rem"
+                fieldType="spiritual"
+                disabled={saving}
+                showGrammarCheck={true}
+                enableAISuggestions={true}
+                enableRichText={true}
+              />
               
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Oratio – text
-                  </label>
-                  <TranslateButton
-                    text={formData.oratio_text || ""}
-                    fieldType="spiritual"
-                    onTranslated={(translatedText) => handleSingleFieldTranslation('oratio_text', translatedText)}
-                    disabled={saving}
-                  />
-                </div>
-                <textarea
-                  name="oratio_text"
-                  value={formData.oratio_text || ""}
-                  onChange={(e) => updateFormField('oratio_text', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                  placeholder="Napíšte text pre Oratio..."
-                  rows={10}
-                  style={{ height: '15rem' }}
-                />
-              </div>
+              <AITextField
+                label="Oratio – text"
+                name="oratio_text"
+                value={formData.oratio_text || ""}
+                onChange={(value) => updateFormField('oratio_text', value)}
+                placeholder="Napíšte text pre Oratio..."
+                rows={10}
+                height="15rem"
+                fieldType="prayer"
+                disabled={saving}
+                showGrammarCheck={true}
+                enableAISuggestions={true}
+                enableRichText={true}
+              />
               
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Contemplatio – text
-                  </label>
-                  <TranslateButton
-                    text={formData.contemplatio_text || ""}
-                    fieldType="spiritual"
-                    onTranslated={(translatedText) => handleSingleFieldTranslation('contemplatio_text', translatedText)}
-                    disabled={saving}
-                  />
-                </div>
-                <textarea
-                  name="contemplatio_text"
-                  value={formData.contemplatio_text || ""}
-                  onChange={(e) => updateFormField('contemplatio_text', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                  placeholder="Napíšte text pre Contemplatio..."
-                  rows={10}
-                  style={{ height: '15rem' }}
-                />
-              </div>
+              <AITextField
+                label="Contemplatio – text"
+                name="contemplatio_text"
+                value={formData.contemplatio_text || ""}
+                onChange={(value) => updateFormField('contemplatio_text', value)}
+                placeholder="Napíšte text pre Contemplatio..."
+                rows={10}
+                height="15rem"
+                fieldType="spiritual"
+                disabled={saving}
+                showGrammarCheck={true}
+                enableAISuggestions={true}
+                enableRichText={true}
+              />
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -812,14 +860,13 @@ export default function LectioSourceEditPage() {
                     disabled={saving}
                   />
                 </div>
-                <textarea
+                <input
+                  type="text"
                   name="actio_text"
                   value={formData.actio_text || ""}
                   onChange={(e) => updateFormField('actio_text', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Napíšte text pre Actio..."
-                  rows={10}
-                  style={{ height: '15rem' }}
                 />
               </div>
 
@@ -835,14 +882,13 @@ export default function LectioSourceEditPage() {
                     disabled={saving}
                   />
                 </div>
-                <textarea
+                <input
+                  type="text"
                   name="reference"
                   value={formData.reference || ""}
                   onChange={(e) => updateFormField('reference', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Odkazy a referencie..."
-                  rows={6}
-                  style={{ height: '9rem' }}
                 />
               </div>
 
@@ -1026,8 +1072,31 @@ export default function LectioSourceEditPage() {
             </div>
           </FormSection>
 
-          {/* Save Button */}
-          <div className="flex gap-4 justify-end">
+          {/* Save Button with Checkbox */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+            <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200 flex-1">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="checked"
+                  name="checked"
+                  checked={formData.checked === 1}
+                  onChange={(e) => updateFormField('checked', e.target.checked ? 1 : 0)}
+                  className="w-5 h-5 text-emerald-600 bg-gray-100 border-emerald-300 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
+                />
+                <label 
+                  htmlFor="checked" 
+                  className="ml-3 text-sm font-semibold text-emerald-800 cursor-pointer flex items-center"
+                >
+                  <span className="mr-2">✅</span>
+                  Označiť ako skontrolované
+                </label>
+              </div>
+              <p className="text-xs text-emerald-600 ml-8 mt-1">
+                Označte keď je obsah skontrolovaný a pripravený na publikovanie
+              </p>
+            </div>
+            
             <ActionButton
               type="submit"
               icon={Save}
@@ -1045,6 +1114,13 @@ export default function LectioSourceEditPage() {
           onClose={() => setShowBibleImport(false)}
           onImport={handleBibleImport}
           currentLocaleId={currentLocale?.id || 1}
+        />
+
+        {/* Template Selector Modal */}
+        <TemplateSelector
+          isOpen={showTemplateSelector}
+          onClose={() => setShowTemplateSelector(false)}
+          onSelect={handleTemplateSelect}
         />
       </div>
     </div>

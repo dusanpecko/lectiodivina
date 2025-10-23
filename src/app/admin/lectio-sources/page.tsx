@@ -1,5 +1,6 @@
 "use client";
 
+import BulkBibleImportModal from "@/app/admin/components/BulkBibleImportModal";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import {
   AlertCircle,
@@ -300,6 +301,9 @@ export default function LectioSourcesAdminPage() {
     isOpen: boolean;
     lectioSource: LectioSource | null;
   }>({ isOpen: false, lectioSource: null });
+
+  // Bulk Bible Import state
+  const [showBulkBibleImport, setShowBulkBibleImport] = useState(false);
 
   // Filtre a stránkovanie - inicializuj page z URL
   const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
@@ -892,24 +896,35 @@ export default function LectioSourcesAdminPage() {
               </div>
               <h3 className="font-semibold text-gray-800">Import / Export</h3>
             </div>
-            <div className="flex gap-2">
-              <label className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-800 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2 shadow-sm">
-                {importing ? <LoadingSpinner size={4} /> : <Upload size={16} />}
-                {importing ? "Importujem..." : "Import"}
-                <input
-                  type="file"
-                  accept=".xlsx"
-                  onChange={handleExcelImport}
-                  className="hidden"
-                  disabled={importing}
-                />
-              </label>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <label className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-800 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2 shadow-sm">
+                  {importing ? <LoadingSpinner size={4} /> : <Upload size={16} />}
+                  {importing ? "Importujem..." : "Import"}
+                  <input
+                    type="file"
+                    accept=".xlsx"
+                    onChange={handleExcelImport}
+                    className="hidden"
+                    disabled={importing}
+                  />
+                </label>
+                <button
+                  onClick={handleExportExcel}
+                  className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-800 transition text-sm flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <Download size={16} />
+                  Export
+                </button>
+              </div>
               <button
-                onClick={handleExportExcel}
-                className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg hover:from-green-700 hover:to-green-800 transition text-sm flex items-center justify-center gap-2 shadow-sm"
+                onClick={() => setShowBulkBibleImport(true)}
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-2.5 rounded-lg hover:from-purple-700 hover:to-purple-800 transition text-sm flex items-center justify-center gap-2 shadow-sm"
+                title="Automaticky vyplní prázdne biblické polia na základe súradníc"
               >
-                <Download size={16} />
-                Export
+                <BookOpen size={16} />
+                <span className="hidden sm:inline">Import biblických textov</span>
+                <span className="sm:hidden">Biblia Import</span>
               </button>
             </div>
           </div>
@@ -1279,6 +1294,17 @@ export default function LectioSourcesAdminPage() {
             </div>
           </div>
         )}
+
+        {/* Bulk Bible Import Modal */}
+        <BulkBibleImportModal
+          isOpen={showBulkBibleImport}
+          onClose={() => setShowBulkBibleImport(false)}
+          onImportsCompleted={() => {
+            fetchLectioSources();
+            fetchDetailedStats();
+          }}
+          currentLang={filterLang}
+        />
       </div>
     </div>
   );

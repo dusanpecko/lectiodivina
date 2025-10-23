@@ -2,71 +2,106 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useUserRole } from '../../hooks/useUserRole';
 import { useLanguage } from '../components/LanguageProvider';
 import { useSupabase } from '../components/SupabaseProvider';
 import { lectioTranslations } from './translations';
 
+import { formatDateShort } from '@/utils/dateFormatter';
 import {
-  AlertCircle,
-  BookOpen,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Headphones,
-  Heart,
-  MessageCircle,
-  Pause,
-  Play,
-  Plus,
-  Quote,
-  RefreshCw,
-  SkipBack,
-  SkipForward,
-  Volume,
-  Volume2,
-  VolumeX
+    AlertCircle,
+    BookOpen,
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    Eye,
+    Headphones,
+    Heart,
+    MessageCircle,
+    Pause,
+    Play,
+    Plus,
+    Quote,
+    RefreshCw,
+    SkipBack,
+    SkipForward,
+    Volume,
+    Volume2,
+    VolumeX
 } from 'lucide-react';
 import ErrorReportModal, { ErrorReportData } from '../components/ErrorReportModal';
 
-interface LectioData {
+// Interface pre liturgical_calendar
+interface LiturgicalCalendarDay {
   id: number;
   datum: string;
-  lang: string;
-  hlava: string;
-  suradnice_pismo: string;
-  uvod: string;
-  uvod_audio: string;
-  video: string;
-  modlitba_uvod: string;
-  modlitba_audio: string;
-  nazov_biblia_1: string;
-  biblia_1: string;
-  biblia_1_audio: string;
-  nazov_biblia_2: string;
-  biblia_2: string;
-  biblia_2_audio: string;
-  nazov_biblia_3: string;
-  biblia_3: string;
-  biblia_3_audio: string;
-  lectio_text: string;
-  lectio_audio: string;
-  meditatio_text: string;
-  meditatio_audio: string;
-  oratio_text: string;
-  oratio_audio: string;
-  contemplatio_text: string;
-  contemplatio_audio: string;
-  actio_text: string;
-  actio_audio: string;
-  modlitba_zaver: string;
-  audio_5_min: string;
-  zaver: string;
-  pozehnanie: string;
+  locale_code: string;
+  season: string;
+  season_week: number;
+  weekday: string;
+  celebration_title: string;
+  celebration_rank: string;
+  celebration_rank_num: number | null;
+  celebration_colour: string;
+  lectio_hlava: string | null;
+  liturgical_year_id: number;
 }
 
+// Interface pre liturgical_years
+interface LiturgicalYear {
+  id: number;
+  year: number;
+  lectionary_cycle: string; // A, B, C
+  ferial_lectionary: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  is_generated: boolean | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Interface pre lectio_sources
+interface LectioSource {
+  id: number;
+  lang: string;
+  kniha: string;
+  kapitola: string;
+  hlava: string | null;
+  suradnice_pismo: string | null;
+  nazov_biblia_1: string | null;
+  biblia_1: string | null;
+  biblia_1_audio: string | null;
+  nazov_biblia_2: string | null;
+  biblia_2: string | null;
+  biblia_2_audio: string | null;
+  nazov_biblia_3: string | null;
+  biblia_3: string | null;
+  biblia_3_audio: string | null;
+  lectio_text: string | null;
+  lectio_audio: string | null;
+  meditatio_text: string | null;
+  meditatio_audio: string | null;
+  oratio_text: string | null;
+  oratio_audio: string | null;
+  contemplatio_text: string | null;
+  contemplatio_audio: string | null;
+  actio_text: string | null;
+  actio_audio: string | null;
+  modlitba_zaver: string | null;
+  audio_5_min: string | null;
+  created_at: string;
+  updated_at: string;
+  rok: string | null; // N, A, B, C
+  id_cislo: string | null;
+  reference: string | null;
+  locale_id: number | null;
+  checked: number;
+}
+
+
+
 interface AudioSection {
-  key: keyof LectioData;
+  key: string; // Zmena z keyof LectioSource na string
   label: string;
   icon: React.ReactNode;
   color: string;
@@ -75,8 +110,15 @@ interface AudioSection {
 export default function LectioPage() {
   const { supabase, session } = useSupabase();
   const { lang } = useLanguage();
+  const { isAdmin } = useUserRole();
   const t = lectioTranslations[lang];
-  const [lectioData, setLectioData] = useState<LectioData | null>(null);
+  const [lectioData, setLectioData] = useState<LectioSource | null>(null);
+  const [celebrationTitle, setCelebrationTitle] = useState<string | null>(null);
+  // Utility funkcia pre bezpečný prístup k poliam LectioSource
+  const getLectioField = (data: LectioSource, key: string): string | undefined => {
+    return (data as unknown as Record<string, string>)[key];
+  };
+
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedBible, setSelectedBible] = useState<'biblia_1' | 'biblia_2' | 'biblia_3'>('biblia_1');
@@ -100,42 +142,215 @@ export default function LectioPage() {
     return `${year}-${month}-${day}`;
   };
 
+  // Helper funkcie pre kalendárne obmedzenia
+  const getCalendarLimits = () => {
+    // Pre adminov žiadne obmedzenia
+    if (isAdmin) {
+      return {
+        min: undefined,
+        max: undefined
+      };
+    }
+    
+    const today = new Date();
+    
+    // 3 mesiace dozadu
+    const minDate = new Date(today);
+    minDate.setMonth(minDate.getMonth() - 3);
+    
+    // 1 mesiac dopredu
+    const maxDate = new Date(today);
+    maxDate.setMonth(maxDate.getMonth() + 1);
+    
+    return {
+      min: formatDateToLocalString(minDate),
+      max: formatDateToLocalString(maxDate)
+    };
+  };
+
+  // Pomocná funkcia na načítanie lectio na základe kalendárneho dňa
+  const loadLectioFromCalendar = useCallback(async (calendarDay: LiturgicalCalendarDay, currentLang: string) => {
+    if (!calendarDay.lectio_hlava) {
+      console.log('⚠️ Kalendárny deň nemá priradené lectio_hlava');
+      setLectioData(null);
+      return;
+    }
+
+    console.log(`🔍 Hľadám lectio_sources pre hlavu: "${calendarDay.lectio_hlava}", jazyk: ${currentLang}`);
+
+    // 1. Získame liturgical_year_id a zistíme rok (A, B, C)
+    const { data: liturgicalYear, error: yearError } = await supabase
+      .from('liturgical_years')
+      .select('*')
+      .eq('id', calendarDay.liturgical_year_id)
+      .single() as { data: LiturgicalYear | null, error: Error | null };
+
+    if (yearError || !liturgicalYear) {
+      console.error('❌ Liturgický rok nenájdený:', yearError);
+      setLectioData(null);
+      return;
+    }
+
+    console.log(`📅 Liturgický rok ID: ${liturgicalYear.id}, cyklus: ${liturgicalYear.lectionary_cycle}`);
+
+    // 2. Určíme či použiť cyklus (A/B/C) alebo 'N' pre všedné dni
+    // Pre všedné dni (pondelok-sobota v cezročnom období) používame 'N'
+    // Pre nedele a sviatky používame A/B/C
+    const isWeekday = calendarDay.celebration_title?.match(/(Pondelok|Utorok|Streda|Štvrtok|Piatok|Sobota).+týždňa v Cezročnom období/);
+    const isSpecialDay = !isWeekday && (
+      calendarDay.celebration_title?.includes('nedeľa') || 
+      calendarDay.celebration_title?.includes('Nedeľa') ||
+      calendarDay.celebration_title?.includes('Sunday') ||
+      (calendarDay.celebration_rank_num !== null && calendarDay.celebration_rank_num > 1)
+    );
+    
+    const rokToSearch = isSpecialDay ? liturgicalYear.lectionary_cycle : 'N';
+    
+    console.log(`🔍 Hľadám rok: "${rokToSearch}" (je to všedný deň: ${isWeekday ? 'ÁNO' : 'NIE'}, špeciálny deň: ${isSpecialDay})`);
+
+    // 3. Nájdi zodpovedajúci záznam v lectio_sources
+    const { data: lectioSource, error: lectioError } = await supabase
+      .from('lectio_sources')
+      .select('*')
+      .eq('hlava', calendarDay.lectio_hlava)
+      .eq('lang', currentLang)
+      .eq('rok', rokToSearch)
+      .single();
+
+    if (lectioError) {
+      console.error('❌ Lectio source nenájdený:', lectioError);
+      
+      // Pre sviatky: ak sa nenašiel záznam s A/B/C, skús N
+      if (isSpecialDay && rokToSearch !== 'N') {
+        console.log('🔄 Sviatok nenájdený s rokom A/B/C, skúšam rok N...');
+        const { data: fallbackSource, error: fallbackError } = await supabase
+          .from('lectio_sources')
+          .select('*')
+          .eq('hlava', calendarDay.lectio_hlava)
+          .eq('lang', currentLang)
+          .eq('rok', 'N')
+          .single();
+          
+        if (!fallbackError && fallbackSource) {
+          console.log('✅ Lectio source nájdený s rokom N:', fallbackSource.hlava);
+          setLectioData(fallbackSource);
+          setCelebrationTitle(calendarDay.celebration_title);
+          return;
+        }
+      }
+      
+      // Fallback na slovenčinu ak aktuálny jazyk nie je SK
+      if (currentLang !== 'sk') {
+        console.log('🔄 Skúšam načítať lectio source pre slovenčinu...');
+        const { data: skLectioSource, error: skLectioError } = await supabase
+          .from('lectio_sources')
+          .select('*')
+          .eq('hlava', calendarDay.lectio_hlava)
+          .eq('lang', 'sk')
+          .eq('rok', rokToSearch)
+          .single();
+          
+        if (!skLectioError && skLectioSource) {
+          setLectioData(skLectioSource);
+          setCelebrationTitle(calendarDay.celebration_title);
+          return;
+        }
+        
+        // Pre sviatky: aj pri slovenčine skús N ako fallback
+        if (isSpecialDay && rokToSearch !== 'N') {
+          console.log('🔄 Skúšam slovenčinu s rokom N...');
+          const { data: skFallbackSource, error: skFallbackError } = await supabase
+            .from('lectio_sources')
+            .select('*')
+            .eq('hlava', calendarDay.lectio_hlava)
+            .eq('lang', 'sk')
+            .eq('rok', 'N')
+            .single();
+            
+          if (!skFallbackError && skFallbackSource) {
+            console.log('✅ Lectio source nájdený v slovenčine s rokom N:', skFallbackSource.hlava);
+            setLectioData(skFallbackSource);
+            setCelebrationTitle(calendarDay.celebration_title);
+            return;
+          }
+        }
+      }
+      
+      console.error('❌ Lectio source neexistuje pre žiadny jazyk');
+      setLectioData(null);
+      setCelebrationTitle(null);
+      return;
+    }
+
+    console.log('✅ Lectio source nájdený:', lectioSource.hlava);
+    setLectioData(lectioSource);
+    setCelebrationTitle(calendarDay.celebration_title);
+  }, [supabase]);
+
   const fetchLectioData = useCallback(async () => {
     setIsLoading(true);
     try {
       const dateStr = formatDateToLocalString(selectedDate);
+      console.log(`🔍 Načítavam lectio pre dátum: ${dateStr}, jazyk: ${lang}`);
       
-      // Skúsiť načítať pre aktuálny jazyk
-      const { data: initialData, error } = await supabase
-        .from('lectio')
+      // 1. Nájdi deň v liturgical_calendar pre zadaný dátum a jazyk
+      const { data: calendarDay, error: calendarError } = await supabase
+        .from('liturgical_calendar')
         .select('*')
         .eq('datum', dateStr)
-        .eq('lang', lang)
+        .eq('locale_code', lang)
         .single();
 
-      let finalData = initialData;
-
-      // Ak nenájde pre aktuálny jazyk, skúsiť slovenčinu
-      if (error && lang !== 'sk') {
-        const { data: skData, error: skError } = await supabase
-          .from('lectio')
-          .select('*')
-          .eq('datum', dateStr)
-          .eq('lang', 'sk')
-          .single();
+      if (calendarError) {
+        console.error('❌ Kalendárny deň nenájdený:', calendarError);
         
-        if (!skError) {
-          finalData = skData;
+        // Fallback na slovenčinu ak aktuálny jazyk nie je SK
+        if (lang !== 'sk') {
+          console.log('🔄 Skúšam načítať pre slovenčinu...');
+          const { data: skCalendarDay, error: skCalendarError } = await supabase
+            .from('liturgical_calendar')
+            .select('*')
+            .eq('datum', dateStr)
+            .eq('locale_code', 'sk')
+            .single();
+            
+          if (!skCalendarError && skCalendarDay) {
+            await loadLectioFromCalendar(skCalendarDay, 'sk');
+            return;
+          }
         }
+        
+        console.error('❌ Kalendárny deň neexistuje pre žiadny jazyk');
+        setLectioData(null);
+        setCelebrationTitle(null);
+        return;
       }
 
-      setLectioData(finalData);
+      console.log('✅ Kalendárny deň nájdený:', calendarDay.celebration_title);
+      console.log('🔍 Debug kalendárny deň:', {
+        celebration_title: calendarDay.celebration_title,
+        celebration_rank_num: calendarDay.celebration_rank_num,
+        lectio_hlava: calendarDay.lectio_hlava,
+        liturgical_year_id: calendarDay.liturgical_year_id
+      });
+      await loadLectioFromCalendar(calendarDay, lang);
+      
     } catch (error) {
-      console.error('Error fetching lectio data:', error);
+      console.error('❌ Chyba pri načítaní lectio:', error);
+      setLectioData(null);
+      setCelebrationTitle(null);
     } finally {
       setIsLoading(false);
     }
-  }, [supabase, selectedDate, lang]);
+  }, [supabase, selectedDate, lang, loadLectioFromCalendar]);
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     fetchLectioData();
@@ -178,6 +393,21 @@ export default function LectioPage() {
     setSelectedDate(prev => {
       const newDate = new Date(prev);
       newDate.setDate(newDate.getDate() - 1);
+      
+      // Pre adminov žiadne obmedzenia
+      if (isAdmin) {
+        return newDate;
+      }
+      
+      // Skontroluj obmedzenia pre bežných používateľov
+      const limits = getCalendarLimits();
+      if (limits.min) {
+        const minDate = new Date(limits.min);
+        if (newDate < minDate) {
+          return prev; // Vráť pôvodný dátum ak je mimo rozsahu
+        }
+      }
+      
       return newDate;
     });
   };
@@ -186,6 +416,21 @@ export default function LectioPage() {
     setSelectedDate(prev => {
       const newDate = new Date(prev);
       newDate.setDate(newDate.getDate() + 1);
+      
+      // Pre adminov žiadne obmedzenia
+      if (isAdmin) {
+        return newDate;
+      }
+      
+      // Skontroluj obmedzenia pre bežných používateľov
+      const limits = getCalendarLimits();
+      if (limits.max) {
+        const maxDate = new Date(limits.max);
+        if (newDate > maxDate) {
+          return prev; // Vráť pôvodný dátum ak je mimo rozsahu
+        }
+      }
+      
       return newDate;
     });
   };
@@ -221,8 +466,8 @@ export default function LectioPage() {
             color: 'text-red-500'
           },
           {
-            key: `${selectedBible}_audio` as keyof LectioData,
-            label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.fallback_title,
+            key: `${selectedBible}_audio`,
+            label: lectioData[`nazov_${selectedBible}` as keyof LectioSource] as string || t.bible.fallback_title,
             icon: <BookOpen size={16} />,
             color: 'text-purple-500'
           },
@@ -259,7 +504,7 @@ export default function LectioPage() {
         ];
         
         const availableAudios = dynamicAudioSections.filter(section => 
-          lectioData[section.key]
+          getLectioField(lectioData, section.key)
         );
         
         const currentIndex = availableAudios.findIndex(section => section.key === sectionKey);
@@ -290,7 +535,7 @@ export default function LectioPage() {
           
           if (audioMode === 'none') {
             // Žiadne pozadie - priamo ďalšia sekcia
-            playAudio(lectioData[nextSection.key] as string, nextSection.key);
+            playAudio(getLectioField(lectioData, nextSection.key) as string, nextSection.key);
             return;
           } else if (audioMode === 'short') {
             // Krátke meditačné pozadie
@@ -310,7 +555,7 @@ export default function LectioPage() {
           const interludeAudio = new Audio(interludeUrl);
           
           interludeAudio.addEventListener('ended', () => {
-            playAudio(lectioData[nextSection.key] as string, nextSection.key);
+            playAudio(getLectioField(lectioData, nextSection.key) as string, nextSection.key);
           });
           
           interludeAudio.play();
@@ -387,8 +632,8 @@ export default function LectioPage() {
         color: 'text-red-500'
       },
       {
-        key: `${selectedBible}_audio` as keyof LectioData,
-        label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text,
+        key: `${selectedBible}_audio`,
+        label: lectioData[`nazov_${selectedBible}` as keyof LectioSource] as string || t.bible.biblical_text,
         icon: <BookOpen size={16} />,
         color: 'text-purple-500'
       },
@@ -425,7 +670,7 @@ export default function LectioPage() {
     ];
     
     const availableAudios = dynamicAudioSections.filter(section => 
-      lectioData[section.key]
+      getLectioField(lectioData, section.key)
     );
     
     return (
@@ -502,7 +747,7 @@ export default function LectioPage() {
           {availableAudios.map(section => (
             <button
               key={section.key}
-              onClick={() => playAudio(lectioData[section.key] as string, section.key)}
+              onClick={() => playAudio(getLectioField(lectioData, section.key) as string, section.key)}
               className="w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left"
               style={{
                 backgroundColor: currentSection === section.key ? 'rgba(64, 70, 123, 0.15)' : 'transparent',
@@ -546,10 +791,10 @@ export default function LectioPage() {
                 // Biblický text ako prvý slide
                 {
                   key: 'bible',
-                  title: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text.toUpperCase(),
+                  title: getLectioField(lectioData, `nazov_${selectedBible}`) || t.bible.biblical_text.toUpperCase(),
                   subtitle: lectioData.suradnice_pismo || t.bible.holy_scripture,
                   text: lectioData[selectedBible],
-                  audioKey: `${selectedBible}_audio` as keyof LectioData,
+                  audioKey: `${selectedBible}_audio`,
                   icon: <Quote size={24} />,
                   color: '#2d3561',
                   step: '0/5'
@@ -559,7 +804,7 @@ export default function LectioPage() {
                   title: t.sections.lectio,
                   subtitle: t.sections.reading,
                   text: lectioData.lectio_text,
-                  audioKey: 'lectio_audio' as keyof LectioData,
+                  audioKey: 'lectio_audio',
                   icon: <BookOpen size={24} />,
                   color: '#40467b',
                   step: '1/5'
@@ -569,7 +814,7 @@ export default function LectioPage() {
                   title: t.sections.meditatio,
                   subtitle: t.sections.meditation,
                   text: lectioData.meditatio_text,
-                  audioKey: 'meditatio_audio' as keyof LectioData,
+                  audioKey: 'meditatio_audio',
                   icon: <Eye size={24} />,
                   color: '#545a94',
                   step: '2/5'
@@ -579,7 +824,7 @@ export default function LectioPage() {
                   title: t.sections.oratio,
                   subtitle: t.sections.prayer,
                   text: lectioData.oratio_text,
-                  audioKey: 'oratio_audio' as keyof LectioData,
+                  audioKey: 'oratio_audio',
                   icon: <Heart size={24} />,
                   color: '#686ea3',
                   step: '3/5'
@@ -589,7 +834,7 @@ export default function LectioPage() {
                   title: t.sections.contemplatio,
                   subtitle: t.sections.contemplation,
                   text: lectioData.contemplatio_text,
-                  audioKey: 'contemplatio_audio' as keyof LectioData,
+                  audioKey: 'contemplatio_audio',
                   icon: <MessageCircle size={24} />,
                   color: '#7c82b2',
                   step: '4/5'
@@ -599,7 +844,7 @@ export default function LectioPage() {
                   title: t.sections.actio,
                   subtitle: t.sections.action,
                   text: lectioData.actio_text,
-                  audioKey: 'actio_audio' as keyof LectioData,
+                  audioKey: 'actio_audio',
                   icon: <Play size={24} />,
                   color: '#9096c1',
                   step: '5/5'
@@ -618,8 +863,8 @@ export default function LectioPage() {
                   color: 'text-red-500'
                 },
                 {
-                  key: `${selectedBible}_audio` as keyof LectioData,
-                  label: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text,
+                  key: `${selectedBible}_audio`,
+                  label: lectioData[`nazov_${selectedBible}` as keyof LectioSource] as string || t.bible.biblical_text,
                   icon: <BookOpen size={16} />,
                   color: 'text-purple-500'
                 },
@@ -656,7 +901,7 @@ export default function LectioPage() {
               ];
               
               const availableAudios = dynamicAudioSections.filter(section => 
-                lectioData[section.key]
+                getLectioField(lectioData, section.key)
               );
 
               return (
@@ -672,7 +917,19 @@ export default function LectioPage() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={goToPreviousDay}
-                              className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
+                              disabled={(() => {
+                                // Pre adminov žiadne obmedzenia
+                                if (isAdmin) return false;
+                                
+                                const limits = getCalendarLimits();
+                                if (!limits.min) return false;
+                                
+                                const minDate = new Date(limits.min);
+                                const prevDay = new Date(selectedDate);
+                                prevDay.setDate(prevDay.getDate() - 1);
+                                return prevDay < minDate;
+                              })()}
+                              className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
                               style={{ backgroundColor: '#686ea3' }}
                               title={t.navigation.previous_day}
                             >
@@ -684,13 +941,15 @@ export default function LectioPage() {
                                 backgroundColor: 'rgba(64, 70, 123, 0.1)',
                                 color: '#40467b'
                               }}>
-                                {selectedDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric', year: 'numeric' })}
+                                {formatDateShort(selectedDate.toISOString())}
                               </div>
                               
                               <div className="relative">
                                 <input
                                   type="date"
                                   value={formatDateToLocalString(selectedDate)}
+                                  {...(!isAdmin && getCalendarLimits().min ? { min: getCalendarLimits().min } : {})}
+                                  {...(!isAdmin && getCalendarLimits().max ? { max: getCalendarLimits().max } : {})}
                                   onChange={(e) => {
                                     const [year, month, day] = e.target.value.split('-').map(Number);
                                     const newDate = new Date(year, month - 1, day);
@@ -722,7 +981,19 @@ export default function LectioPage() {
 
                             <button
                               onClick={goToNextDay}
-                              className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
+                              disabled={(() => {
+                                // Pre adminov žiadne obmedzenia
+                                if (isAdmin) return false;
+                                
+                                const limits = getCalendarLimits();
+                                if (!limits.max) return false;
+                                
+                                const maxDate = new Date(limits.max);
+                                const nextDay = new Date(selectedDate);
+                                nextDay.setDate(nextDay.getDate() + 1);
+                                return nextDay > maxDate;
+                              })()}
+                              className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
                               style={{ backgroundColor: '#686ea3' }}
                               title={t.navigation.next_day}
                             >
@@ -731,11 +1002,11 @@ export default function LectioPage() {
                           </div>
                         </div>
 
-                        {/* Hlava (Title) */}
-                        {lectioData.hlava && (
+                        {/* Celebration Title */}
+                        {celebrationTitle && (
                           <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(64, 70, 123, 0.05)' }}>
-                            <h2 className="text-base font-bold leading-tight" style={{ color: '#40467b' }}>
-                              {lectioData.hlava}
+                            <h2 className="text-sm font-bold leading-tight" style={{ color: '#40467b' }}>
+                              {celebrationTitle}
                             </h2>
                             {lectioData.suradnice_pismo && (
                               <p className="text-sm text-gray-600 mt-2 font-medium">
@@ -771,7 +1042,7 @@ export default function LectioPage() {
                                   }}
                                 >
                                   {availableBibles.map((bible) => {
-                                    const title = lectioData[`nazov_${bible}` as keyof LectioData] as string;
+                                    const title = getLectioField(lectioData, `nazov_${bible}`) || '';
                                     
                                     return (
                                       <option key={bible} value={bible}>
@@ -980,7 +1251,7 @@ export default function LectioPage() {
                             {availableAudios.map(section => (
                               <button
                                 key={section.key}
-                                onClick={() => playAudio(lectioData[section.key] as string, section.key)}
+                                onClick={() => playAudio(getLectioField(lectioData, section.key) as string, section.key)}
                                 className="w-full flex items-center gap-2 p-2 rounded-lg transition-all text-left hover:shadow-sm"
                                 style={{
                                   backgroundColor: currentSection === section.key ? 'rgba(64, 70, 123, 0.15)' : 'rgba(64, 70, 123, 0.03)',
@@ -1237,7 +1508,19 @@ export default function LectioPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={goToPreviousDay}
-                        className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
+                        disabled={(() => {
+                          // Pre adminov žiadne obmedzenia
+                          if (isAdmin) return false;
+                          
+                          const limits = getCalendarLimits();
+                          if (!limits.min) return false;
+                          
+                          const minDate = new Date(limits.min);
+                          const prevDay = new Date(selectedDate);
+                          prevDay.setDate(prevDay.getDate() - 1);
+                          return prevDay < minDate;
+                        })()}
+                        className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
                         style={{ backgroundColor: '#686ea3' }}
                         title="Predchádzajúci deň"
                       >
@@ -1249,13 +1532,15 @@ export default function LectioPage() {
                           backgroundColor: 'rgba(64, 70, 123, 0.1)',
                           color: '#40467b'
                         }}>
-                          {selectedDate.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric', year: 'numeric' })}
+                          {formatDateShort(selectedDate.toISOString())}
                         </div>
                         
                         <div className="relative">
                           <input
                             type="date"
                             value={formatDateToLocalString(selectedDate)}
+                            {...(!isAdmin && getCalendarLimits().min ? { min: getCalendarLimits().min } : {})}
+                            {...(!isAdmin && getCalendarLimits().max ? { max: getCalendarLimits().max } : {})}
                             onChange={(e) => {
                               const [year, month, day] = e.target.value.split('-').map(Number);
                               const newDate = new Date(year, month - 1, day);
@@ -1287,7 +1572,19 @@ export default function LectioPage() {
 
                       <button
                         onClick={goToNextDay}
-                        className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0"
+                        disabled={(() => {
+                          // Pre adminov žiadne obmedzenia
+                          if (isAdmin) return false;
+                          
+                          const limits = getCalendarLimits();
+                          if (!limits.max) return false;
+                          
+                          const maxDate = new Date(limits.max);
+                          const nextDay = new Date(selectedDate);
+                          nextDay.setDate(nextDay.getDate() + 1);
+                          return nextDay > maxDate;
+                        })()}
+                        className="p-2 rounded-lg transition-all hover:opacity-80 text-white shadow-sm flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
                         style={{ backgroundColor: '#686ea3' }}
                         title="Nasledujúci deň"
                       >
@@ -1337,9 +1634,9 @@ export default function LectioPage() {
         const slides = [
           {
             key: 'bible',
-            title: lectioData[`nazov_${selectedBible}` as keyof LectioData] as string || t.bible.biblical_text.toUpperCase(),
+            title: getLectioField(lectioData, `nazov_${selectedBible}`) || t.bible.biblical_text.toUpperCase(),
             subtitle: lectioData.suradnice_pismo || t.bible.holy_scripture,
-            text: lectioData[selectedBible],
+            text: getLectioField(lectioData, selectedBible),
           },
           {
             key: 'lectio',

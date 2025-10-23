@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useLanguage } from "@/app/components/LanguageProvider";
-import { useParams, useRouter } from "next/navigation";
-import { 
-  ArrowLeft, Video
+import { useSupabase } from "@/app/components/SupabaseProvider";
+import { formatDate } from "@/utils/dateFormatter";
+import {
+    ArrowLeft, Video
 } from "lucide-react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // Import new components
 import ProgramHero from "@/app/components/programs/ProgramHero";
@@ -129,7 +130,7 @@ const ProgramInfo = ({ program }: { program: Program }) => (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Publikované</span>
                   <span className="font-semibold">
-                    {new Date(program.published_at).toLocaleDateString('sk-SK')}
+                    {formatDate(program.published_at, 'sk')}
                   </span>
                 </div>
               )}

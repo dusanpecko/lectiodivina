@@ -3,6 +3,7 @@
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import { translations } from "@/app/i18n";
+import { formatDate } from "@/utils/dateFormatter";
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, Clock, Filter, Grid, Heart, List, Search } from "lucide-react";
 import Link from "next/link";
@@ -61,17 +62,6 @@ export default function NewsListPage() {
 
     setFilteredNews(filtered);
   }, [news, searchTerm, sortBy]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(
-      appLang === 'sk' ? 'sk-SK' : 
-      appLang === 'cz' ? 'cs-CZ' :
-      appLang === 'es' ? 'es-ES' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   const getReadingTime = (content: string) => {
     const wordsPerMinute = 200;
@@ -343,7 +333,7 @@ export default function NewsListPage() {
                   <div className="flex items-center space-x-4 mb-4 text-sm text-slate-500">
                     <div className="flex items-center space-x-1">
                       <Calendar size={14} />
-                      <span>{formatDate(n.published_at)}</span>
+                      <span>{formatDate(n.published_at, appLang as 'sk' | 'cz' | 'en' | 'es')}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock size={14} />

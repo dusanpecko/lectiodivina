@@ -1,11 +1,18 @@
 // src/app/components/programs/SessionList.tsx
+import { formatDate } from "@/utils/dateFormatter";
+import {
+    Bookmark, BookmarkCheck,
+    Calendar,
+    ChevronRight,
+    Clock,
+    FileText,
+    Headphones,
+    ImageIcon,
+    Play,
+    Video
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { 
-  Play, Clock, Video, Headphones, FileText, ImageIcon,
-  ChevronRight, Bookmark, BookmarkCheck,
-  Calendar
-} from "lucide-react";
 
 interface Program {
   id: string;
@@ -297,7 +304,7 @@ const SessionCard = ({
             {session.created_at && variant === 'detailed' && (
               <div className="flex items-center gap-1">
                 <Calendar size={12} />
-                <span>{new Date(session.created_at).toLocaleDateString('sk-SK')}</span>
+                <span>{formatDate(session.created_at, 'sk')}</span>
               </div>
             )}
           </div>

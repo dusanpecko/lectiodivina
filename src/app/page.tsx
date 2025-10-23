@@ -1,4 +1,5 @@
 "use client";
+import HomeLectioSection from "@/app/components/HomeLectioSection";
 import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, FileText, Globe, Heart, LogOut, Menu, Settings, User, X } from "lucide-react";
@@ -699,6 +700,9 @@ export default function HomePage() {
       <AppSection t={t} />
       {/* Lectio Guide Section */}
       <LectioGuideSection t={t} />
+      
+      {/* Lectio Divina Preview Section - NEW */}
+      <HomeLectioSection />
       
       {/* Daily Actio with Team Section */}
       <DailyQuote t={t} router={router} />

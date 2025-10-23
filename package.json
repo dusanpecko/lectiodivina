@@ -1,20 +1,26 @@
 {
   "name": "lectiodivina",
-  "version": "0.1.0-beta.3",
+  "version": "0.2.0-beta.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build --no-lint",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "backup:lectio": "node backup-lectio-sources.js",
+    "backup:full": "node full-backup.js"
   },
   "dependencies": {
     "@google-cloud/recaptcha-enterprise": "^6.2.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.56.1",
     "@tinymce/tinymce-react": "^6.2.1",
+    "@tiptap/extension-underline": "^3.7.2",
+    "@tiptap/react": "^3.7.2",
+    "@tiptap/starter-kit": "^3.7.2",
     "@types/nodemailer": "^6.4.17",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.19.1",
     "lucide-react": "^0.513.0",
@@ -24,6 +30,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.5.3",
+    "sharp": "^0.34.4",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -181,3 +181,93 @@ form {
   margin-top: 2rem !important;
   margin-bottom: 2rem !important;
 }
+
+/* AI Suggestions Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Simple Rich Text Editor Styles */
+.simple-rich-editor .ProseMirror {
+  padding: 1rem;
+  min-height: 200px;
+  outline: none;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.simple-rich-editor .ProseMirror p {
+  margin-bottom: 0.75rem;
+}
+
+.simple-rich-editor .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.simple-rich-editor .ProseMirror strong {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.simple-rich-editor .ProseMirror em {
+  font-style: italic;
+  color: #4b5563;
+}
+
+.simple-rich-editor .ProseMirror u {
+  text-decoration: underline;
+}
+
+.simple-rich-editor .ProseMirror ul,
+.simple-rich-editor .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.simple-rich-editor .ProseMirror ul {
+  list-style-type: disc;
+}
+
+.simple-rich-editor .ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.simple-rich-editor .ProseMirror li {
+  margin-bottom: 0.25rem;
+}
+
+.simple-rich-editor .ProseMirror li p {
+  margin-bottom: 0;
+}
+
+/* Placeholder for empty editor */
+.simple-rich-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Focus styles */
+.simple-rich-editor .ProseMirror:focus {
+  outline: none;
+}
+
+/* Disabled state */
+.simple-rich-editor .ProseMirror[contenteditable="false"] {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
