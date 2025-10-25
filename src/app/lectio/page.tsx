@@ -9,25 +9,25 @@ import { lectioTranslations } from './translations';
 
 import { formatDateShort } from '@/utils/dateFormatter';
 import {
-    AlertCircle,
-    BookOpen,
-    Calendar,
-    ChevronLeft,
-    ChevronRight,
-    Eye,
-    Headphones,
-    Heart,
-    MessageCircle,
-    Pause,
-    Play,
-    Plus,
-    Quote,
-    RefreshCw,
-    SkipBack,
-    SkipForward,
-    Volume,
-    Volume2,
-    VolumeX
+  AlertCircle,
+  BookOpen,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Headphones,
+  Heart,
+  MessageCircle,
+  Pause,
+  Play,
+  Plus,
+  Quote,
+  RefreshCw,
+  SkipBack,
+  SkipForward,
+  Volume,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import ErrorReportModal, { ErrorReportData } from '../components/ErrorReportModal';
 
@@ -178,20 +178,24 @@ export default function LectioPage() {
 
     console.log(`🔍 Hľadám lectio_sources pre hlavu: "${calendarDay.lectio_hlava}", jazyk: ${currentLang}`);
 
-    // 1. Získame liturgical_year_id a zistíme rok (A, B, C)
+    // 1. Získame správny liturgický rok na základe dátumu (nie calendar year!)
+    // Liturgický rok začína prvou adventnou nedeľou, nie 1.1.
+    const currentDate = calendarDay.datum;
+    
     const { data: liturgicalYear, error: yearError } = await supabase
       .from('liturgical_years')
       .select('*')
-      .eq('id', calendarDay.liturgical_year_id)
+      .lte('start_date', currentDate) // start_date <= currentDate
+      .gte('end_date', currentDate)   // end_date >= currentDate
       .single() as { data: LiturgicalYear | null, error: Error | null };
 
     if (yearError || !liturgicalYear) {
-      console.error('❌ Liturgický rok nenájdený:', yearError);
+      console.error('❌ Liturgický rok nenájdený pre dátum:', currentDate, yearError);
       setLectioData(null);
       return;
     }
 
-    console.log(`📅 Liturgický rok ID: ${liturgicalYear.id}, cyklus: ${liturgicalYear.lectionary_cycle}`);
+    console.log(`📅 Liturgický rok ${liturgicalYear.year} (${liturgicalYear.start_date} - ${liturgicalYear.end_date}), cyklus: ${liturgicalYear.lectionary_cycle}`);
 
     // 2. Určíme či použiť cyklus (A/B/C) alebo 'N' pre všedné dni
     // Pre všedné dni (pondelok-sobota v cezročnom období) používame 'N'
@@ -328,6 +332,7 @@ export default function LectioPage() {
 
       console.log('✅ Kalendárny deň nájdený:', calendarDay.celebration_title);
       console.log('🔍 Debug kalendárny deň:', {
+        datum: calendarDay.datum,
         celebration_title: calendarDay.celebration_title,
         celebration_rank_num: calendarDay.celebration_rank_num,
         lectio_hlava: calendarDay.lectio_hlava,
@@ -951,9 +956,23 @@ export default function LectioPage() {
                                   {...(!isAdmin && getCalendarLimits().min ? { min: getCalendarLimits().min } : {})}
                                   {...(!isAdmin && getCalendarLimits().max ? { max: getCalendarLimits().max } : {})}
                                   onChange={(e) => {
-                                    const [year, month, day] = e.target.value.split('-').map(Number);
-                                    const newDate = new Date(year, month - 1, day);
-                                    setSelectedDate(newDate);
+                                    // Kontrola či sa hodnota skutočne zmenila (nie len navigácia medzi mesiacmi)
+                                    const newValue = e.target.value;
+                                    const currentValue = formatDateToLocalString(selectedDate);
+                                    
+                                    if (newValue && newValue !== currentValue) {
+                                      const [year, month, day] = newValue.split('-').map(Number);
+                                      const newDate = new Date(year, month - 1, day);
+                                      setSelectedDate(newDate);
+                                    }
+                                  }}
+                                  onBlur={(e) => {
+                                    // Fallback: ak používateľ zavrie kalendár bez výberu, necháme pôvodný dátum
+                                    if (e.target.value && e.target.value !== formatDateToLocalString(selectedDate)) {
+                                      const [year, month, day] = e.target.value.split('-').map(Number);
+                                      const newDate = new Date(year, month - 1, day);
+                                      setSelectedDate(newDate);
+                                    }
                                   }}
                                   style={{ position: 'absolute', width: 0, height: 0, opacity: 0, zIndex: -1 }}
                                   id="datePickerInput"
@@ -1542,9 +1561,23 @@ export default function LectioPage() {
                             {...(!isAdmin && getCalendarLimits().min ? { min: getCalendarLimits().min } : {})}
                             {...(!isAdmin && getCalendarLimits().max ? { max: getCalendarLimits().max } : {})}
                             onChange={(e) => {
-                              const [year, month, day] = e.target.value.split('-').map(Number);
-                              const newDate = new Date(year, month - 1, day);
-                              setSelectedDate(newDate);
+                              // Kontrola či sa hodnota skutočne zmenila (nie len navigácia medzi mesiacmi)
+                              const newValue = e.target.value;
+                              const currentValue = formatDateToLocalString(selectedDate);
+                              
+                              if (newValue && newValue !== currentValue) {
+                                const [year, month, day] = newValue.split('-').map(Number);
+                                const newDate = new Date(year, month - 1, day);
+                                setSelectedDate(newDate);
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // Fallback: ak používateľ zavrie kalendár bez výberu, necháme pôvodný dátum
+                              if (e.target.value && e.target.value !== formatDateToLocalString(selectedDate)) {
+                                const [year, month, day] = e.target.value.split('-').map(Number);
+                                const newDate = new Date(year, month - 1, day);
+                                setSelectedDate(newDate);
+                              }
                             }}
                             style={{ position: 'absolute', width: 0, height: 0, opacity: 0, zIndex: -1 }}
                             id="datePickerInputError"

@@ -295,9 +295,12 @@ export function HomeNewsSection() {
                     {n.title}
                   </motion.h3>
                   
-                  <p className="text-white/80 text-sm leading-relaxed flex-1 mb-4 line-clamp-3">
-                    {n.summary}
-                  </p>
+                  <p 
+                    className="text-white/80 text-sm leading-relaxed flex-1 mb-4 line-clamp-3"
+                    dangerouslySetInnerHTML={{ 
+                      __html: n.summary 
+                    }}
+                  />
                   
                   {/* Enhanced button */}
                   <Link

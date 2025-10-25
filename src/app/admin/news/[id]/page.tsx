@@ -101,7 +101,8 @@ export default function NewsEditPage() {
   const [aiArticleType, setAiArticleType] = useState("lectio_divina_practice");
   const [aiLength, setAiLength] = useState("medium");
   const [aiBibleRefs, setAiBibleRefs] = useState("");
-  const [aiGenerateImage, setAiGenerateImage] = useState(true); // Nová option
+  const [aiGenerateImage, setAiGenerateImage] = useState(true);
+  const [aiProvider, setAiProvider] = useState<"openai" | "magisterium">("openai"); // Výber AI providera
 
   // Načítanie z databázy
   useEffect(() => {
@@ -190,8 +191,12 @@ export default function NewsEditPage() {
     setMessageType(null);
 
     try {
-      // 1. Generovanie článku
-      const articleResponse = await fetch("/api/ai-generate-article", {
+      // 1. Generovanie článku - použiť vybraný AI provider
+      const endpoint = aiProvider === "magisterium" 
+        ? "/api/ai-generate-article-magisterium" 
+        : "/api/ai-generate-article";
+
+      const articleResponse = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -246,7 +251,7 @@ export default function NewsEditPage() {
       }));
 
       setMessage(
-        `✨ Článok ${aiGenerateImage && imageUrl !== news.image_url ? "a obrázok " : ""}vygenerovaný! (${articleData.usage.totalTokens} tokenov)`
+        `✨ Článok ${aiGenerateImage && imageUrl !== news.image_url ? "a obrázok " : ""}vygenerovaný ${aiProvider === "magisterium" ? "pomocou ⛪ Magisterium AI" : "pomocou OpenAI"}! (${articleData.usage.totalTokens} tokenov)`
       );
       setMessageType("success");
       setShowAiPanel(false);
@@ -594,6 +599,78 @@ export default function NewsEditPage() {
               </h3>
               
               <div className="space-y-4">
+                {/* AI Provider Selection */}
+                <div className="bg-white rounded-lg p-4 border-2 border-purple-300">
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    🤖 Vyber AI Model:
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setAiProvider("openai")}
+                      disabled={aiGenerating}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        aiProvider === "openai"
+                          ? "border-blue-500 bg-blue-50 shadow-md"
+                          : "border-gray-300 bg-white hover:border-blue-300"
+                      } disabled:opacity-50`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          aiProvider === "openai" 
+                            ? "border-blue-500 bg-blue-500" 
+                            : "border-gray-400"
+                        }`}>
+                          {aiProvider === "openai" && (
+                            <div className="w-2 h-2 bg-white rounded-full m-auto mt-0.5"></div>
+                          )}
+                        </div>
+                        <div className="text-left flex-1">
+                          <div className="font-bold text-gray-800">OpenAI GPT-4</div>
+                          <div className="text-xs text-gray-600">Všeobecný AI asistent</div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAiProvider("magisterium")}
+                      disabled={aiGenerating}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        aiProvider === "magisterium"
+                          ? "border-purple-500 bg-purple-50 shadow-md"
+                          : "border-gray-300 bg-white hover:border-purple-300"
+                      } disabled:opacity-50`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          aiProvider === "magisterium" 
+                            ? "border-purple-500 bg-purple-500" 
+                            : "border-gray-400"
+                        }`}>
+                          {aiProvider === "magisterium" && (
+                            <div className="w-2 h-2 bg-white rounded-full m-auto mt-0.5"></div>
+                          )}
+                        </div>
+                        <div className="text-left flex-1">
+                          <div className="font-bold text-gray-800">⛪ Magisterium AI</div>
+                          <div className="text-xs text-gray-600">Katolícka teológia & učenie</div>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                  
+                  {aiProvider === "magisterium" && (
+                    <div className="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <p className="text-xs text-purple-800">
+                        💡 <strong>Magisterium AI</strong> je špecializovaná na katolícku teológiu, 
+                        cirkevné učenie a biblickú exegézu podľa tradície Cirkvi. 
+                        Ideálne pre teologické články a biblické výklady.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     🎯 Téma článku (po slovensky):

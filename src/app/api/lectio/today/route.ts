@@ -30,18 +30,62 @@ export async function GET(request: Request) {
       );
     }
     
-    // 2. Ak existuje lectio_hlava, nájdi lectio source
+    // 2. Ak existuje lectio_hlava, nájdi správny lectio source
     let lectioSource = null;
     if (calendarDay.lectio_hlava) {
+      // 2.1 Najprv zistíme liturgický rok na základe dátumu
+      const { data: liturgicalYear } = await supabase
+        .from('liturgical_years')
+        .select('*')
+        .lte('start_date', today)
+        .gte('end_date', today)
+        .single();
+      
+      if (!liturgicalYear) {
+        console.error('Liturgický rok nebol nájdený pre dátum:', today);
+        return NextResponse.json(
+          { error: 'Liturgický rok nebol nájdený' },
+          { status: 404 }
+        );
+      }
+      
+      // 2.2 Určíme či je to všedný deň alebo sviatok (A/B/C vs N)
+      const isWeekday = calendarDay.celebration_title?.match(/(Pondelok|Utorok|Streda|Štvrtok|Piatok|Sobota|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday).+(týždňa|Week)/i);
+      const isSpecialDay = !isWeekday && (
+        calendarDay.celebration_title?.match(/(nedeľa|Nedeľa|Sunday)/i) ||
+        (calendarDay.celebration_rank_num !== null && calendarDay.celebration_rank_num > 1)
+      );
+      
+      const rokToSearch = isSpecialDay ? liturgicalYear.lectionary_cycle : 'N';
+      
+      console.log(`🔍 Hľadám lectio pre rok: ${rokToSearch}, hlava: ${calendarDay.lectio_hlava}, lang: ${lang}`);
+      
+      // 2.3 Nájdi lectio source s správnym rokom
       const { data: source } = await supabase
         .from('lectio_sources')
         .select('*')
         .eq('hlava', calendarDay.lectio_hlava)
         .eq('lang', lang)
-        .eq('checked', 1) // Len skontrolované
+        .eq('rok', rokToSearch)
+        .eq('checked', 1)
         .single();
       
-      lectioSource = source;
+      // 2.4 Ak nenájdeme s A/B/C, skúsime N (fallback pre sviatky)
+      if (!source && isSpecialDay && rokToSearch !== 'N') {
+        console.log('🔄 Nenájdené s rokom A/B/C, skúšam N...');
+        const { data: fallbackSource } = await supabase
+          .from('lectio_sources')
+          .select('*')
+          .eq('hlava', calendarDay.lectio_hlava)
+          .eq('lang', lang)
+          .eq('rok', 'N')
+          .eq('checked', 1)
+          .single();
+        
+        lectioSource = fallbackSource;
+      } else {
+        lectioSource = source;
+      }
     }
     
     return NextResponse.json({

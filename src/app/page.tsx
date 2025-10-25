@@ -1,41 +1,61 @@
 "use client";
-import HomeLectioSection from "@/app/components/HomeLectioSection";
-import { HomeNewsSection } from "@/app/components/HomeNewsSection";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, FileText, Globe, Heart, LogOut, Menu, Settings, User, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useUserRole } from "../hooks/useUserRole";
-import AppSection from "./components/AppSection";
-import CommunitySection from "./components/CommunitySection";
 import ConfirmDialog from "./components/ConfirmDialog";
-import DailyQuote from "./components/DailyQuote";
 import type { Language } from "./components/LanguageProvider";
 import { useLanguage } from "./components/LanguageProvider";
-import LectioGuideSection from "./components/LectioGuideSection";
 import Logo from "./components/Logo";
 import { useSupabase } from "./components/SupabaseProvider";
 import { translations } from "./i18n";
 
+// Lazy load components pod fold pre lepší LCP
+const AppSection = dynamic(() => import("./components/AppSection"), {
+  loading: () => <div className="min-h-screen" />
+});
+const LectioGuideSection = dynamic(() => import("./components/LectioGuideSection"), {
+  loading: () => <div className="min-h-screen" />
+});
+const HomeLectioSection = dynamic(() => import("@/app/components/HomeLectioSection"), {
+  loading: () => <div className="min-h-screen" />
+});
+const DailyQuote = dynamic(() => import("./components/DailyQuote"), {
+  loading: () => <div className="min-h-screen" />
+});
+const HomeNewsSection = dynamic(() => import("./components/HomeNewsSection").then(mod => ({ default: mod.HomeNewsSection })), {
+  loading: () => <div className="min-h-screen" />
+});
+const RoadmapSection = dynamic(() => import("./components/RoadmapSection"), {
+  loading: () => <div className="min-h-screen" />
+});
+const CommunitySection = dynamic(() => import("./components/CommunitySection"), {
+  loading: () => <div className="min-h-screen" />
+});
+
+
 function LoadingSpinner() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      <section className="relative min-h-screen w-full overflow-hidden flex flex-col bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
-        <div className="relative px-4 sm:px-8 pt-6 sm:pt-8 flex justify-between items-center">
-          <div className="h-12 w-32 bg-white/20 rounded-lg animate-pulse"></div>
-          <div className="h-12 w-48 bg-white/20 rounded-2xl animate-pulse"></div>
+      <section className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center">
+        {/* Background Image - rovnaký ako v hlavnej sekcii */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/hero-background.webp)',
+          }}
+        >
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
         
-        <div className="relative flex flex-col justify-center min-h-[60vh] sm:h-[70vh] max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-16">
-          <div className="space-y-6">
-            <div className="h-8 w-32 bg-white/20 rounded-full animate-pulse"></div>
-            <div className="space-y-4">
-              <div className="h-16 w-3/4 bg-white/20 rounded-lg animate-pulse"></div>
-              <div className="h-12 w-1/2 bg-white/20 rounded-lg animate-pulse"></div>
-            </div>
-            <div className="h-6 w-2/3 bg-white/20 rounded-lg animate-pulse"></div>
-          </div>
+        {/* Simple loading spinner v strede */}
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
+          <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <p className="text-white/60 text-sm font-medium">Loading...</p>
         </div>
       </section>
     </div>
@@ -136,15 +156,21 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col relative">
       {/* Hero sekcia s obrazkom pozadia */}
       <section className="relative min-h-screen w-full overflow-hidden flex flex-col snap-start">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url(/hero-background.webp)',
-          }}
-        >
+        {/* Background Image - Optimized with Next.js Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero-background.webp"
+            alt="Hero Background"
+            fill
+            priority
+            quality={85}
+            sizes="100vw"
+            className="object-cover object-center"
+            placeholder="blur"
+            blurDataURL="data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA="
+          />
           {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/40"></div>
+          <div className="absolute inset-0 bg-black/40 z-10"></div>
         </div>
 
         {/* Fixed Navigation */}
@@ -630,7 +656,7 @@ export default function HomePage() {
         </nav>
 
         {/* Hero Content */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-20 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -701,7 +727,7 @@ export default function HomePage() {
       {/* Lectio Guide Section */}
       <LectioGuideSection t={t} />
       
-      {/* Lectio Divina Preview Section - NEW */}
+      {/* Lectio Divina Preview Section */}
       <HomeLectioSection />
       
       {/* Daily Actio with Team Section */}
@@ -709,6 +735,9 @@ export default function HomePage() {
       
       {/* News Section */}
       <HomeNewsSection />
+      
+      {/* Roadmap Section */}
+      <RoadmapSection />
       
       {/* Community Section */}
       <CommunitySection translations={translations[lang]} />

@@ -3,27 +3,19 @@
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 import {
-  AlertCircle, // Pre error reports
+  AlertCircle,
   Bell,
   Book,
   BookOpen,
   Calendar,
   CheckCircle2,
   ChevronLeft,
-  ChevronRight, // Pre lectio-sources
+  ChevronRight,
   Crown,
   Kanban,
   LayoutDashboard,
-  Newspaper, // Pre notifikácie
-  Plus // Pre quick actions button
-  ,
-
-
-
-
-
-
-  Quote,
+  Newspaper,
+  Plus,
   Settings,
   UserPlus,
   Users
@@ -43,8 +35,8 @@ const links = [
   { href: "/admin/news", key: "news", icon: Newspaper, color: "red" },
   { href: "/admin/notifications/", key: "notifications", icon: Bell, color: "pink" },
   //{ href: "/admin/notification-topics", key: "notification_topics", icon: Settings, color: "purple" },
-  { href: "/admin/calendar", key: "calendar", icon: Calendar, color: "green" },
-  { href: "/admin/daily_quotes", key: "daily_quotes", icon: Quote, color: "purple" },
+  //{ href: "/admin/calendar", key: "calendar", icon: Calendar, color: "green" },
+  // { href: "/admin/daily_quotes", key: "daily_quotes", icon: Quote, color: "purple" }, // DEPRECATED - používame actio_text z lectio_sources
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
   { href: "/admin/rosary", key: "rosary", icon: Crown, color: "violet" },
   { href: "/admin/launch-checklist", key: "launch_checklist", icon: CheckCircle2, color: "green" },
@@ -86,6 +78,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
     if (key === 'launch_checklist') return adminT.navigation.launch_checklist;
     if (key === 'error_reports') return adminT.navigation.error_reports;
     if (key === 'bible_bulk_import') return adminT.navigation.bible_bulk_import;
+    if (key === 'liturgical_calendar') return adminT.navigation.liturgical_calendar;
     // if (key === 'programs') return adminT.navigation.programs; // VO VÝVOJI
     // if (key === 'content_cards') return adminT.navigation.content_cards; // VO VÝVOJI
     if (key === 'notifications') return adminT.navigation.notifications;
