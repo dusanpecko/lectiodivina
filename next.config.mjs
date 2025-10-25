@@ -123,7 +123,11 @@ const nextConfig = {
   
   // ✅ Experimental features pre performance
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion']
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@supabase/supabase-js'],
+    // Vypneme strict mode aby framer-motion nevolal useEffect 2x
+    reactStrictMode: false,
+    // Optimalizácia CSS
+    optimizeCss: true
   },
   
   // ✅ Webpack optimalizácie - opravené

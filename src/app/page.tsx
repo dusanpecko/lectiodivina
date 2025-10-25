@@ -6,35 +6,22 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useUserRole } from "../hooks/useUserRole";
+import AppSection from "./components/AppSection";
+import CommunitySection from "./components/CommunitySection";
 import ConfirmDialog from "./components/ConfirmDialog";
+import DailyQuote from "./components/DailyQuote";
 import type { Language } from "./components/LanguageProvider";
 import { useLanguage } from "./components/LanguageProvider";
+import LectioGuideSection from "./components/LectioGuideSection";
 import Logo from "./components/Logo";
 import { useSupabase } from "./components/SupabaseProvider";
 import { translations } from "./i18n";
 
-// Lazy load components pod fold pre lepší LCP
-const AppSection = dynamic(() => import("./components/AppSection"), {
-  loading: () => <div className="min-h-screen" />
-});
-const LectioGuideSection = dynamic(() => import("./components/LectioGuideSection"), {
-  loading: () => <div className="min-h-screen" />
-});
-const HomeLectioSection = dynamic(() => import("@/app/components/HomeLectioSection"), {
-  loading: () => <div className="min-h-screen" />
-});
-const DailyQuote = dynamic(() => import("./components/DailyQuote"), {
-  loading: () => <div className="min-h-screen" />
-});
-const HomeNewsSection = dynamic(() => import("./components/HomeNewsSection").then(mod => ({ default: mod.HomeNewsSection })), {
-  loading: () => <div className="min-h-screen" />
-});
-const RoadmapSection = dynamic(() => import("./components/RoadmapSection"), {
-  loading: () => <div className="min-h-screen" />
-});
-const CommunitySection = dynamic(() => import("./components/CommunitySection"), {
-  loading: () => <div className="min-h-screen" />
-});
+// Lazy load IBA komponenty ďaleko od fold (pod 3. sekciou)
+const HomeLectioSection = dynamic(() => import("@/app/components/HomeLectioSection"));
+const HomeNewsSection = dynamic(() => import("./components/HomeNewsSection").then(mod => ({ default: mod.HomeNewsSection })));
+const RoadmapSection = dynamic(() => import("./components/RoadmapSection"));
+
 
 
 function LoadingSpinner() {
@@ -181,7 +168,7 @@ export default function HomePage() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               >
                 <Logo className="h-12 w-auto text-white drop-shadow-lg" />
               </motion.div>
@@ -190,7 +177,7 @@ export default function HomePage() {
               <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
                 className="hidden lg:flex items-center space-x-8"
               >
                 {/* Explore Dropdown */}
@@ -457,7 +444,7 @@ export default function HomePage() {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
                 className="lg:hidden flex items-center space-x-4"
               >
                 <select
@@ -658,19 +645,19 @@ export default function HomePage() {
         {/* Hero Content */}
         <div className="relative z-20 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             className="space-y-8"
           >
             {/* Badge */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
               className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold tracking-widest text-sm px-6 py-3 rounded-full shadow-lg"
             >
-              <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-white rounded-full opacity-90"></span>
               <span>{t.preparing}</span>
             </motion.div>
 
@@ -693,9 +680,9 @@ export default function HomePage() {
             
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
+              transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8"
             >
               <a 
@@ -786,101 +773,6 @@ export default function HomePage() {
           </div>
         </div>
       )}
-
-      {/* Custom Styles */}
-      <style jsx>{`
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        
-        .nav-dropdown {
-          position: relative;
-          z-index: 9999;
-        }
-        
-        .backdrop-blur-md {
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-        }
-        
-        /* Ensure dropdown colors work */
-        .hover\\:bg-blue-50:hover {
-          background-color: rgb(239 246 255);
-        }
-        .hover\\:text-blue-700:hover {
-          color: rgb(29 78 216);
-        }
-        .hover\\:bg-green-50:hover {
-          background-color: rgb(240 253 244);
-        }
-        .hover\\:text-green-700:hover {
-          color: rgb(21 128 61);
-        }
-        .hover\\:bg-amber-50:hover {
-          background-color: rgb(255 251 235);
-        }
-        .hover\\:text-amber-700:hover {
-          color: rgb(180 83 9);
-        }
-        .hover\\:bg-red-50:hover {
-          background-color: rgb(254 242 242);
-        }
-        .hover\\:text-red-700:hover {
-          color: rgb(185 28 28);
-        }
-        .hover\\:bg-purple-50:hover {
-          background-color: rgb(250 245 255);
-        }
-        .hover\\:text-purple-700:hover {
-          color: rgb(126 34 206);
-        }
-        .hover\\:bg-indigo-50:hover {
-          background-color: rgb(238 242 255);
-        }
-        .hover\\:text-indigo-700:hover {
-          color: rgb(67 56 202);
-        }
-        .hover\\:bg-rose-50:hover {
-          background-color: rgb(255 241 242);
-        }
-        .hover\\:text-rose-700:hover {
-          color: rgb(190 18 60);
-        }
-        .hover\\:bg-gray-50:hover {
-          background-color: rgb(249 250 251);
-        }
-        .hover\\:text-gray-900:hover {
-          color: rgb(17 24 39);
-        }
-        
-        .bg-blue-400 {
-          background-color: rgb(96 165 250);
-        }
-        .bg-green-400 {
-          background-color: rgb(74 222 128);
-        }
-        .bg-amber-400 {
-          background-color: rgb(251 191 36);
-        }
-        .bg-red-400 {
-          background-color: rgb(248 113 113);
-        }
-        .bg-purple-400 {
-          background-color: rgb(196 181 253);
-        }
-        .bg-indigo-400 {
-          background-color: rgb(129 140 248);
-        }
-        .bg-rose-400 {
-          background-color: rgb(251 113 133);
-        }
-        .bg-gray-400 {
-          background-color: rgb(156 163 175);
-        }
-      `}</style>
 
       {/* Logout Confirmation Dialog */}
       <ConfirmDialog
