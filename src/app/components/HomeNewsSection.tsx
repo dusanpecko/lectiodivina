@@ -307,6 +307,7 @@ export function HomeNewsSection() {
                     href={`/news/${n.id}`}
                     className="group/btn relative inline-flex items-center justify-center mt-auto text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
                     style={{ background: 'rgba(255, 255, 255, 0.25)', backdropFilter: 'blur(5px)', border: '1px solid rgba(255, 255, 255, 0.3)' }}
+                    aria-label={`Zobraziť článok: ${n.title}`}
                   >
                     {/* Button glow effect */}
                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>

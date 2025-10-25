@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
+import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { ChevronUp } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -27,25 +27,16 @@ export default function ScrollToTopButton() {
   };
 
   return (
-    <motion.button
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ 
-        opacity: isVisible ? 1 : 0,
-        scale: isVisible ? 1 : 0
-      }}
-      transition={{ 
-        duration: 0.3, 
-        type: "spring", 
-        stiffness: 300 
-      }}
+    <button
       onClick={scrollToTop}
-      whileHover={{ 
-        scale: 1.1, 
-        y: -2 
+      className="fixed bottom-8 right-8 z-50 group transition-all duration-300"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'scale(1)' : 'scale(0)',
+        pointerEvents: isVisible ? 'auto' : 'none'
       }}
-      whileTap={{ scale: 0.9 }}
-      className="fixed bottom-8 right-8 z-50 group"
       aria-label="Scroll to top"
+      aria-hidden={!isVisible}
     >
       <div className="relative">
         {/* Glow effect */}
@@ -56,21 +47,12 @@ export default function ScrollToTopButton() {
         
         {/* Button */}
         <div 
-          className="relative text-white p-4 rounded-full shadow-2xl hover:shadow-xl transition-shadow duration-300"
+          className="relative text-white p-4 rounded-full shadow-2xl hover:shadow-xl transition-all duration-300 group-hover:scale-110"
           style={{ backgroundColor: '#40467b' }}
         >
-          <motion.div
-            animate={{ y: [-1, 1, -1] }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-          >
-            <ChevronUp className="w-6 h-6" />
-          </motion.div>
+          <ChevronUp className="w-6 h-6" />
         </div>
       </div>
-    </motion.button>
+    </button>
   );
 }

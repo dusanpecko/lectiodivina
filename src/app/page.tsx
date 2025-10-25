@@ -285,10 +285,13 @@ export default function HomePage() {
                   {/* Language Selector */}
                   <div className="flex items-center space-x-1 px-4 h-10 border border-white/30 rounded-lg">
                     <Globe className="w-4 h-4 text-white" />
+                    <label htmlFor="language-select-desktop" className="sr-only">Select language</label>
                     <select
+                      id="language-select-desktop"
                       value={lang.toUpperCase()}
                       onChange={e => changeLang(e.target.value.toLowerCase() as Language)}
                       className="bg-transparent text-white font-medium cursor-pointer focus:outline-none text-sm"
+                      aria-label="Language selector"
                     >
                       <option value="SK" className="text-black">SK</option>
                       <option value="CZ" className="text-black">CZ</option>
@@ -447,10 +450,13 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
                 className="lg:hidden flex items-center space-x-4"
               >
+                <label htmlFor="language-select-mobile" className="sr-only">Select language</label>
                 <select
+                  id="language-select-mobile"
                   value={lang}
                   onChange={e => changeLang(e.target.value as Language)}
                   className="bg-transparent text-white text-sm font-medium cursor-pointer focus:outline-none"
+                  aria-label="Language selector"
                 >
                   <option value="sk" className="text-black">🇸🇰</option>
                   <option value="cz" className="text-black">🇨🇿</option>

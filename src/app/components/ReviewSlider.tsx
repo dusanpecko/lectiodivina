@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 type Review = {
   author: string;
   text: string;
@@ -39,6 +39,8 @@ export default function ReviewSlider({ reviews, ariaLabel }: ReviewSliderProps) 
   return (
     <div
       className="w-full flex flex-col items-center"
+      role="region"
+      aria-label={ariaLabel || "Recenzie používateľov"}
       style={{
         minHeight: '400px',
         padding: '24px 20px',
@@ -69,22 +71,37 @@ export default function ReviewSlider({ reviews, ariaLabel }: ReviewSliderProps) 
         </div>
       </motion.div>
       
-      {/* Dot indicators */}
-      <div className="flex gap-2 mt-4">
+      {/* Dot indicators - improved touch targets */}
+      <div className="flex gap-3 mt-4">
         {reviews.map((_review, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
-            className="rounded-full transition-all duration-300"
+            className="rounded-full transition-all duration-300 p-2"
             style={{
-              width: index === i ? '12px' : '8px',
-              height: index === i ? '12px' : '8px',
-              backgroundColor: index === i ? '#40467b' : 'rgba(64, 70, 123, 0.3)',
+              width: '44px', // Minimum touch target 44x44px
+              height: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              background: 'transparent'
             }}
-            aria-label={ariaLabel ? `${ariaLabel} ${i + 1}` : `Go to review ${i + 1}`}
-          />
+            aria-label={`Prejsť na recenziu ${i + 1}`}
+            aria-current={index === i ? 'true' : 'false'}
+          >
+            <span
+              className="rounded-full"
+              style={{
+                width: index === i ? '12px' : '8px',
+                height: index === i ? '12px' : '8px',
+                backgroundColor: index === i ? '#40467b' : 'rgba(64, 70, 123, 0.3)',
+                display: 'block',
+                transition: 'all 0.3s'
+              }}
+            />
+          </button>
         ))}
       </div>
     </div>

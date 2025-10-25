@@ -13,12 +13,15 @@ import ScrollToTopButton from './components/ScrollToTopButton'
 import SupabaseProvider from './components/SupabaseProvider'
 import './globals.css'
 
-// Configure Inter font
+// Configure Inter font - optimized for performance
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   display: 'swap',
   variable: '--font-inter',
-})
+  preload: true,
+  fallback: ['system-ui', '-apple-system', 'sans-serif'],
+  adjustFontFallback: true,
+});
 
 // Komponenta pre dynamické metadata
 function DynamicMetadata() {
@@ -126,6 +129,24 @@ export default function RootLayout({
         <link rel="preload" href="/hero-background.webp" as="image" type="image/webp" fetchPriority="high" />
         <link rel="dns-prefetch" href="https://analytics.lectio.one" />
         <link rel="preconnect" href="https://analytics.lectio.one" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://unnijykbupxguogrkolj.supabase.co" />
+        <link rel="preconnect" href="https://unnijykbupxguogrkolj.supabase.co" crossOrigin="anonymous" />
+        
+        {/* Preload kritických CSS/JS chunks - inline kritické CSS */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Critical CSS - inline pre okamžité načítanie */
+            :root{--color-primary:#40467b;--color-primary-light:#686ea3}
+            *{box-sizing:border-box}
+            body{margin:0;padding:0;font-family:var(--font-inter),system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+            .min-h-screen{min-height:100vh}
+            .flex{display:flex}
+            .relative{position:relative}
+            .fixed{position:fixed}
+            .absolute{position:absolute}
+            .z-50{z-index:50}
+          `
+        }} />
         
         {/* Umami Analytics */}
         <Script

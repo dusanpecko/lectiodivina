@@ -122,10 +122,14 @@ const nextConfig = {
     }
   },
   
+  // ✅ Compiler optimalizácie
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
   // ✅ Experimental features pre performance
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@supabase/supabase-js']
-    // optimizeCss odstránené - vyžaduje critters modul ktorý nie je nainštalovaný
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@supabase/supabase-js'],
   },
   
   // ✅ Webpack optimalizácie - opravené
