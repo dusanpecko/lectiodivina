@@ -2,6 +2,7 @@
 const nextConfig = {
   poweredByHeader: false,
   compress: true,
+  reactStrictMode: false, // Vypneme strict mode pre lepší performance s framer-motion
   
   // ✅ Environment variables
   env: {
@@ -123,11 +124,8 @@ const nextConfig = {
   
   // ✅ Experimental features pre performance
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@supabase/supabase-js'],
-    // Vypneme strict mode aby framer-motion nevolal useEffect 2x
-    reactStrictMode: false,
-    // Optimalizácia CSS
-    optimizeCss: true
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@supabase/supabase-js']
+    // optimizeCss odstránené - vyžaduje critters modul ktorý nie je nainštalovaný
   },
   
   // ✅ Webpack optimalizácie - opravené
