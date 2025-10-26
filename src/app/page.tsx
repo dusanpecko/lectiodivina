@@ -443,13 +443,8 @@ export default function HomePage() {
                 </div>
               </motion.div>
 
-              {/* Mobile Menu Button */}
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-                className="lg:hidden flex items-center space-x-4"
-              >
+              {/* Mobile Menu Button - Hidden on Desktop (lg+) */}
+              <div className="hidden sm:flex lg:hidden items-center space-x-4">
                 <label htmlFor="language-select-mobile" className="sr-only">Select language</label>
                 <select
                   id="language-select-mobile"
@@ -470,7 +465,7 @@ export default function HomePage() {
                 >
                   {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
-              </motion.div>
+              </div>
             </div>
 
             {/* Mobile Menu */}

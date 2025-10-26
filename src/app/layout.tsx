@@ -132,22 +132,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://unnijykbupxguogrkolj.supabase.co" />
         <link rel="preconnect" href="https://unnijykbupxguogrkolj.supabase.co" crossOrigin="anonymous" />
         
-        {/* Preload kritických CSS/JS chunks - inline kritické CSS */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            /* Critical CSS - inline pre okamžité načítanie */
-            :root{--color-primary:#40467b;--color-primary-light:#686ea3}
-            *{box-sizing:border-box}
-            body{margin:0;padding:0;font-family:var(--font-inter),system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
-            .min-h-screen{min-height:100vh}
-            .flex{display:flex}
-            .relative{position:relative}
-            .fixed{position:fixed}
-            .absolute{position:absolute}
-            .z-50{z-index:50}
-          `
-        }} />
-        
         {/* Umami Analytics */}
         <Script
           src="https://analytics.lectio.one/script.js"
