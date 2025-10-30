@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import admin from 'firebase-admin';
+import { sendPushNotification } from '@/lib/firebase-admin';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
+import { NextResponse } from 'next/server';
 
 type DebugInfo = {
   reqId: string;
@@ -74,28 +74,6 @@ interface SendResponse {
   debugInfo?: DebugInfo;
 }
 
-// Initialize Firebase Admin SDK (if not already initialized)
-// Kontrola, či admin.apps.length existuje, aby sa predišlo chybe pri prvom spustení v App Routeri
-if (typeof window === 'undefined' && !admin.apps.length) {
-  // Skip Firebase initialization during build time if env vars are missing
-  const requiredVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY'];
-  const missingVars = requiredVars.filter(varName => !process.env[varName]);
-  
-  if (missingVars.length > 0) {
-    console.warn(`Skipping Firebase initialization - missing environment variables: ${missingVars.join(', ')}`);
-  } else {
-    const serviceAccount = {
-      project_id: process.env.FIREBASE_PROJECT_ID!,
-      client_email: process.env.FIREBASE_CLIENT_EMAIL!,
-      private_key: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
-    };
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-    });
-  }
-}
-
 // Initialize Supabase client (server-only key)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -103,19 +81,6 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
-  // Check if Firebase is properly initialized
-  if (!admin.apps.length) {
-    return NextResponse.json({
-      success: false,
-      error: 'Firebase Admin SDK is not initialized. Check environment variables.',
-      details: {
-        hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
-        hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
-        hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
-      }
-    }, { status: 500 });
-  }
-
   const reqId = randomUUID();
   const url = new URL(request.url);
   const debugEnabled =
@@ -276,12 +241,12 @@ export async function POST(request: Request) {
     }, debug);
 
     return sendDebug(result, result.success ? 200 : 500);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     debug.error = {
       stage: 'unknown',
-      message: err?.message || 'Unknown error',
-      code: err?.code,
-      stackTop: typeof err?.stack === 'string' ? err.stack.split('\n').slice(0, 2).join('\n') : undefined,
+      message: error?.message || 'Unknown error',
+      stackTop: typeof error?.stack === 'string' ? error.stack.split('\n').slice(0, 2).join('\n') : undefined,
     };
     console.error('[send-notification] Uncaught', debug.reqId, err);
     return sendDebug({ success: false, message: 'Internal server error' }, 500);
@@ -304,21 +269,14 @@ async function sendImmediateNotification(
   debug: DebugInfo
 ): Promise<SendResponse> {
   try {
-    const { title, body, locale, topicSlug, topic_id, locale_id } = payload;
+    const { title, body, locale, topic_id, locale_id } = payload;
 
-    // Získať skutočných odberateľov témy a ich FCM tokeny
+    // Získať FCM tokeny používateľov, ktorí majú danú tému povolenú
     const { data: subscribersData, error: subscribersError } = await supabase
       .from('user_notification_preferences')
-      .select(`
-        user_id,
-        users!inner(
-          id,
-          user_fcm_tokens(token, is_active, device_type)
-        )
-      `)
+      .select('user_id, is_enabled')
       .eq('topic_id', topic_id)
-      .eq('is_enabled', true)
-      .eq('users.user_fcm_tokens.is_active', true);
+      .eq('is_enabled', true);
 
     if (subscribersError) {
       debug.error = {
@@ -331,26 +289,7 @@ async function sendImmediateNotification(
       };
     }
 
-    // Extrahovať FCM tokeny
-    const fcmTokens: string[] = [];
-    if (subscribersData) {
-      subscribersData.forEach((subscriber: any) => {
-        if (subscriber.users?.user_fcm_tokens) {
-          subscriber.users.user_fcm_tokens.forEach((tokenData: any) => {
-            if (tokenData.token && tokenData.is_active) {
-              fcmTokens.push(tokenData.token);
-            }
-          });
-        }
-      });
-    }
-
-    const subscriberCount = fcmTokens.length;
-    debug.supabase = debug.supabase || {};
-    debug.supabase.subscriberCount = subscriberCount;
-
-    // Ak nie sú žiadni odberatelia
-    if (subscriberCount === 0) {
+    if (!subscribersData || subscribersData.length === 0) {
       return {
         success: true,
         message: 'Notifikácia nebola odoslaná - žiadni odberatelia tejto témy',
@@ -358,87 +297,85 @@ async function sendImmediateNotification(
       };
     }
 
-    const topicName = `${topicSlug}-${locale}`; // e.g., daily-readings-sk
-    debug.messaging = {
-      topicName,
-      payloadPreview: {
-        notification: { title, body },
-        dataKeys: ['locale', 'topic', 'timestamp'],
-        apns: true,
-        android: true,
-      },
-    };
+    const userIds = subscribersData.map((sub: { user_id: string }) => sub.user_id);
 
-    // Vytvorenie multicast správy pre konkrétnych odberateľov
-    const multicastMessage: admin.messaging.MulticastMessage = {
-      notification: { title, body, imageUrl: payload.image_url },
-      data: {
-        locale,
-        topic: topicSlug, // Slug témy pre klientske aplikácie
-        topic_id: topic_id, // UUID pre identifikáciu
-        timestamp: Date.now().toString(),
-        image_url: payload.image_url || '',
-        // Deep linking fields
-        screen: payload.screen || '', // Cieľová obrazovka
-        screen_params: payload.screen_params || '' // JSON string s parametrami
-      },
-      tokens: fcmTokens,
-      apns: {
-        payload: {
-          aps: {
-            alert: { title, body },
-            badge: 1,
-            sound: 'default',
-            'mutable-content': payload.image_url ? 1 : 0
-          },
-        },
-        fcmOptions: payload.image_url ? { imageUrl: payload.image_url } : undefined
-      },
-      android: {
-        notification: {
-          title,
-          body,
-          icon: 'ic_notification',
-          color: '#4A5085',
-          sound: 'default',
-          channelId: 'lectio_divina_notifications',
-          imageUrl: payload.image_url
-        },
-        priority: 'high',
-      },
-    };
+    // Získať aktívne FCM tokeny pre týchto používateľov s daným locale
+    const { data: tokensData, error: tokensError } = await supabase
+      .from('user_fcm_tokens')
+      .select('token, user_id')
+      .eq('is_active', true)
+      .eq('locale_code', locale)
+      .in('user_id', userIds);
 
-    // Odoslať multicast správu
-    const response = await admin.messaging().sendEachForMulticast(multicastMessage);
-    
-    // Spracovať výsledky
-    const successCount = response.successCount;
-    const failureCount = response.failureCount;
-    
-    debug.messaging.sendMessageId = `${successCount}/${fcmTokens.length} successful`;
-    
-    // Ak sú chyby, zaloguj ich
-    if (response.responses.some(resp => !resp.success)) {
-      const failedTokens: string[] = [];
-      response.responses.forEach((resp, idx) => {
-        if (!resp.success) {
-          failedTokens.push(fcmTokens[idx]);
-          console.warn(`FCM send failed for token ${fcmTokens[idx]}: ${resp.error?.message}`);
-        }
-      });
-      
-      // TODO: Označiť neplatné tokeny ako is_active = false v databáze
-      // Môžeme to implementovať neskôr pre cleanup
+    if (tokensError) {
+      debug.error = {
+        stage: 'fcm_send',
+        message: `Failed to fetch FCM tokens: ${tokensError.message}`
+      };
+      return {
+        success: false,
+        message: 'Chyba pri získavaní FCM tokenov',
+      };
     }
 
-    // Log to DB
+    if (!tokensData || tokensData.length === 0) {
+      return {
+        success: true,
+        message: `Notifikácia nebola odoslaná - žiadne aktívne zariadenia pre jazyk ${locale}`,
+        sent_count: 0,
+      };
+    }
+
+    const fcmTokens = tokensData.map((t: { token: string }) => t.token);
+    const subscriberCount = fcmTokens.length;
+    
+    debug.supabase = debug.supabase || {};
+    debug.supabase.subscriberCount = subscriberCount;
+
+    // Pripraviť dáta pre deep linking
+    const notificationData: Record<string, string> = {
+      locale,
+      topic_id,
+      timestamp: Date.now().toString(),
+    };
+
+    if (payload.image_url) {
+      notificationData.image_url = payload.image_url;
+    }
+    if (payload.screen) {
+      notificationData.screen = payload.screen;
+    }
+    if (payload.screen_params) {
+      notificationData.screen_params = payload.screen_params;
+    }
+
+    debug.messaging = {
+      payloadPreview: {
+        notification: { title, body },
+        dataKeys: Object.keys(notificationData),
+      },
+    };
+
+    // Odoslať notifikácie pomocou sendPushNotification z firebase-admin.ts
+    const result = await sendPushNotification(
+      fcmTokens,
+      { 
+        title, 
+        body
+      },
+      notificationData
+    );
+
+    debug.messaging.sendMessageId = `${result.successCount}/${fcmTokens.length} successful`;
+
+    // Log do databázy
     const { error: logErr } = await supabase.from('notification_logs').insert({
       title,
       body,
       locale_id: locale_id,
-      topic_id: topic_id, // UUID témy
-      fcm_message_id: `multicast-${successCount}/${fcmTokens.length}`,
-      subscriber_count: successCount,
+      topic_id: topic_id,
+      fcm_message_id: `${result.successCount}/${fcmTokens.length}`,
+      subscriber_count: result.successCount,
       image_url: payload.image_url || null
     });
 
@@ -450,29 +387,29 @@ async function sendImmediateNotification(
       return {
         success: true,
         message: `Notification sent (log failed: ${logErr.message})`,
-        sent_count: successCount,
+        sent_count: result.successCount,
       };
     }
 
     return {
       success: true,
-      message: successCount === fcmTokens.length 
+      message: result.successCount === fcmTokens.length 
         ? 'Notifikácia úspešne odoslaná všetkým odberateľom'
-        : `Notifikácia odoslaná ${successCount}/${fcmTokens.length} odberateľom`,
-      sent_count: successCount,
+        : `Notifikácia odoslaná ${result.successCount}/${fcmTokens.length} odberateľom`,
+      sent_count: result.successCount,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     debug.error = {
       stage: 'fcm_send',
-      message: err?.message || 'FCM send failed',
-      code: err?.code || err?.errorInfo?.code,
-      stackTop: typeof err?.stack === 'string' ? err.stack.split('\n').slice(0, 2).join('\n') : undefined,
+      message: error?.message || 'FCM send failed',
+      stackTop: typeof error?.stack === 'string' ? error.stack.split('\n').slice(0, 2).join('\n') : undefined,
     };
     console.error('[send-notification] FCM error', debug.reqId, err);
 
     return {
       success: false,
-      message: `Failed to send notification: ${err?.message || 'Unknown error'}`,
+      message: `Failed to send notification: ${error?.message || 'Unknown error'}`,
     };
   }
 }
