@@ -1,9 +1,11 @@
+import BlockRenderer from "@/app/components/BlockRenderer";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 import { formatDate } from "@/utils/dateFormatter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Clock, Volume2 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 interface NewsDetailArticleProps {
   news: {
@@ -15,6 +17,7 @@ interface NewsDetailArticleProps {
     published_at: string;
     lang: string;
     audio_url?: string;
+    form_embed_code?: string;
   };
   prev: { id: number; title: string } | null;
   next: { id: number; title: string } | null;
@@ -28,12 +31,46 @@ export default function NewsDetailArticle({
   // Načítanie prekladov priamo v komponente
   const { lang } = useLanguage();
   const t = translations[lang as keyof typeof translations] ?? translations.sk;
+  const formContainerRef = useRef<HTMLDivElement>(null);
 
   const getReadingTime = (content: string) => {
     const wordsPerMinute = 200;
     const words = content.replace(/<[^>]*>/g, '').split(' ').length;
     return Math.ceil(words / wordsPerMinute);
   };
+
+  // EasyForms script loader
+  useEffect(() => {
+    if (!news.form_embed_code || !formContainerRef.current) return;
+
+    // Vyčistiť predchádzajúci obsah
+    const container = formContainerRef.current;
+    container.innerHTML = news.form_embed_code;
+
+    // Nájsť a znovu spustiť všetky scripty v embede
+    const scripts = container.getElementsByTagName('script');
+    Array.from(scripts).forEach((oldScript) => {
+      const newScript = document.createElement('script');
+      
+      // Skopíruj atribúty
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      
+      // Skopíruj obsah scriptu
+      newScript.textContent = oldScript.textContent;
+      
+      // Nahraď starý script novým
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
+
+    // Cleanup pri unmount
+    return () => {
+      if (container) {
+        container.innerHTML = '';
+      }
+    };
+  }, [news.form_embed_code]);
 
   return (
     <div className="py-2 sm:py-6 lg:py-12">
@@ -138,8 +175,9 @@ export default function NewsDetailArticle({
                   style={{
                     borderLeftColor: '#40467b'
                   }}
-                  dangerouslySetInnerHTML={{ __html: news.summary }}
-                />
+                >
+                  <BlockRenderer data={news.summary} />
+                </motion.div>
 
                 {/* Audio Player - if available */}
                 {news.audio_url && (
@@ -203,8 +241,31 @@ export default function NewsDetailArticle({
                     '--tw-prose-links': '#40467b',
                     '--tw-prose-blockquote-borders': '#40467b',
                   } as React.CSSProperties}
-                  dangerouslySetInnerHTML={{ __html: news.content }}
-                />
+                >
+                  <BlockRenderer data={news.content} />
+                </motion.div>
+
+                {/* EasyForms Embed - if present */}
+                {news.form_embed_code && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1.3 }}
+                    className="mt-8 sm:mt-12 mb-6 sm:mb-8 p-4 sm:p-6 bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg"
+                  >
+                    <div className="mb-4 sm:mb-6">
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: '#40467b' }}>
+                        📋 {t.newsDetail?.form_title || 'Interaktívny formulár'}
+                      </h3>
+                      <p className="text-sm sm:text-base text-slate-600">
+                        {t.newsDetail?.form_description || 'Vyplňte formulár nižšie'}
+                      </p>
+                    </div>
+                    
+                    {/* EasyForms embed - použiť ref pre dynamické načítanie */}
+                    <div ref={formContainerRef} className="easyforms-container" />
+                  </motion.div>
+                )}
 
                 {/* Bottom decorative accent */}
                 <motion.div

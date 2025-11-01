@@ -492,7 +492,9 @@ export const translations: Record<Language, any> = {
       published_on: "Publikované",
       listen_article: "Počúvať článok",
       audio_generated: "Profesionálny TTS od ElevenLabs",
-      audio_not_supported: "Váš prehliadač nepodporuje audio prehrávač."
+      audio_not_supported: "Váš prehliadač nepodporuje audio prehrávač.",
+      form_title: "Interaktívny formulár",
+      form_description: "Vyplňte formulár nižšie"
     },
     homeNewsSection: {
       title: "Najnovšie články",
@@ -1010,7 +1012,9 @@ export const translations: Record<Language, any> = {
       published_on: "Publikováno",
       listen_article: "Poslouchat článek",
       audio_generated: "Profesionální TTS od ElevenLabs",
-      audio_not_supported: "Váš prohlížeč nepodporuje audio přehrávač."
+      audio_not_supported: "Váš prohlížeč nepodporuje audio přehrávač.",
+      form_title: "Interaktivní formulář",
+      form_description: "Vyplňte formulář níže"
     },
     homeNewsSection: {
       title: "Nejnovější články",
@@ -1574,7 +1578,9 @@ export const translations: Record<Language, any> = {
       published_on: "Published on",
       listen_article: "Listen to article",
       audio_generated: "Professional TTS by ElevenLabs",
-      audio_not_supported: "Your browser does not support the audio player."
+      audio_not_supported: "Your browser does not support the audio player.",
+      form_title: "Interactive Form",
+      form_description: "Fill out the form below"
     },
     homeNewsSection: {
       title: "Latest Articles",
@@ -2080,7 +2086,9 @@ export const translations: Record<Language, any> = {
       published_on: "Publicado el",
       listen_article: "Escuchar artículo",
       audio_generated: "TTS profesional de ElevenLabs",
-      audio_not_supported: "Su navegador no admite el reproductor de audio."
+      audio_not_supported: "Su navegador no admite el reproductor de audio.",
+      form_title: "Formulario interactivo",
+      form_description: "Complete el formulario a continuación"
     },
     homeNewsSection: {
       title: "Últimos Artículos",

@@ -1,0 +1,22 @@
+# Dockerfile pre liturgical calendar service
+FROM node:18-alpine
+
+# Nainštalujeme Ruby
+RUN apk add --no-cache ruby ruby-dev build-base
+
+# Nainštalujeme calendarium-romanum gem
+RUN gem install calendarium-romanum
+
+# Skopírujeme aplikáciu
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+# Build aplikácie
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

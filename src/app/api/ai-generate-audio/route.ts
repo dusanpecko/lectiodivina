@@ -49,7 +49,7 @@ const VOICE_MAPPING = {
     voice_id: "6bNjXphfWPUDHuFkgDt3", // Efrayn
     model: "eleven_v3",
     stability: 0.5,
-    similarity_boost: 0.8,
+    similarity_boost: 0.98,
     style: 0.2
   },
   pt: {

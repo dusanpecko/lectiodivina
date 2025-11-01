@@ -19,6 +19,7 @@ interface News {
   published_at: string;
   lang: string;
   audio_url?: string;
+  form_embed_code?: string;
 }
 
 // Controlled Input Field
@@ -88,6 +89,7 @@ export default function NewsEditPage() {
     published_at: "",
     lang: appLang,
     audio_url: "",
+    form_embed_code: "",
   });
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
@@ -103,6 +105,7 @@ export default function NewsEditPage() {
   const [aiBibleRefs, setAiBibleRefs] = useState("");
   const [aiGenerateImage, setAiGenerateImage] = useState(true);
   const [aiProvider, setAiProvider] = useState<"openai" | "magisterium">("openai"); // Výber AI providera
+  const [showFormSection, setShowFormSection] = useState(false);
 
   // Načítanie z databázy
   useEffect(() => {
@@ -116,6 +119,10 @@ export default function NewsEditPage() {
         .single();
       if (!error && data) {
         setNews(data);
+        // Ak už má článok form_embed_code, automaticky zobraz sekciu
+        if (data.form_embed_code) {
+          setShowFormSection(true);
+        }
       }
       setLoading(false);
     };
@@ -241,12 +248,12 @@ export default function NewsEditPage() {
         }
       }
 
-      // 3. Vyplniť všetky polia
+      // 3. Vyplniť všetky polia (priamo s HTML obsahom)
       setNews(prev => ({
         ...prev,
         title: articleData.title,
-        content: articleData.content,
-        summary: articleData.summary,
+        content: articleData.content, // Priamo HTML z AI
+        summary: articleData.summary?.replace(/<[^>]*>/g, '') || '', // strip HTML from summary
         image_url: imageUrl,
       }));
 
@@ -482,10 +489,24 @@ export default function NewsEditPage() {
     setMessage(null);
     setMessageType(null);
     
+    // Priprav clean data pre Supabase
+    const cleanNewsData = {
+      title: news.title,
+      summary: news.summary,
+      image_url: news.image_url,
+      content: news.content,
+      published_at: news.published_at,
+      lang: news.lang,
+      audio_url: news.audio_url || null,
+      form_embed_code: news.form_embed_code || null
+    };
+    
+    console.log('Saving news data:', cleanNewsData);
+    
     if (isNew) {
       const { data, error } = await supabase
         .from("news")
-        .insert([news])
+        .insert([cleanNewsData])
         .select("id")
         .single();
       setSaving(false);
@@ -497,6 +518,7 @@ export default function NewsEditPage() {
           router.replace(`/admin/news/${data.id}`);
         }, 1000);
       } else {
+        console.error('Supabase insert error:', error);
         setMessage(
           (error?.message ? error.message + " " : "") +
             (t.save_error || "Chyba pri ukladaní")
@@ -506,9 +528,12 @@ export default function NewsEditPage() {
     } else {
       const { error } = await supabase
         .from("news")
-        .update(news)
+        .update(cleanNewsData)
         .eq("id", id);
       setSaving(false);
+      if (error) {
+        console.error('Supabase update error:', error);
+      }
       setMessage(
         error
           ? t.save_error || "Chyba pri ukladaní"
@@ -828,11 +853,11 @@ export default function NewsEditPage() {
                     <span>AI z obsahu</span>
                   </button>
                 </div>
-                <SimpleRichTextEditor
-                  label=""
+                <textarea
                   value={news.summary || ""}
-                  onChange={handleSummaryChange}
-                  minHeight="150px"
+                  onChange={(e) => handleSummaryChange(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg h-24 resize-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Napíšte stručný súhrn článku..."
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   💡 Stručný popis obsahu článku (zobrazí sa v zozname článkov)
@@ -958,7 +983,7 @@ export default function NewsEditPage() {
 
           {/* Obsah článku */}
           <FormSection title="Obsah článku" icon={FileText}>
-            <div className="space-y-3">
+              <div className="space-y-3">
               <div className="flex items-center justify-between mb-2">
                 <label className="admin-edit-label">
                   <span className="mr-2 text-lg">📝</span>
@@ -978,7 +1003,7 @@ export default function NewsEditPage() {
                 label=""
                 value={news.content || ""}
                 onChange={handleContentChange}
-                minHeight="600px"
+                minHeight="500px"
               />
               <p className="text-sm text-gray-500 italic">
                 💡 Tip: Text sa automaticky ukladá do dočasnej pamäte každú sekundu, takže neprídete o svoju prácu.
@@ -986,7 +1011,97 @@ export default function NewsEditPage() {
             </div>
           </FormSection>
 
-          {/* Save Button */}
+          {/* Formulár (EasyForms) - Checkbox */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="showFormSection"
+                checked={showFormSection}
+                onChange={(e) => setShowFormSection(e.target.checked)}
+                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+              />
+              <label htmlFor="showFormSection" className="text-base font-semibold text-gray-700 cursor-pointer flex items-center">
+                <span className="mr-2 text-xl">📋</span>
+                Pridať interaktívny formulár k tomuto článku
+              </label>
+            </div>
+            <p className="text-sm text-gray-500 mt-2 ml-8">
+              💡 Použite len v prípade, ak chcete do článku vložiť formulár z EasyForms (dpforms.sk)
+            </p>
+          </div>
+
+          {/* Formulár (EasyForms) - Sekcia */}
+          {showFormSection && (
+            <FormSection title="Interaktívny formulár" icon={FileText}>
+              <div className="space-y-3">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-blue-900 font-semibold mb-2">📋 EasyForms integrácia</p>
+                  <p className="text-sm text-blue-800">
+                    Vložte celý embed kód z EasyForms (vrátane &lt;div&gt; a &lt;script&gt; tagov). 
+                    Formulár sa zobrazí na konci článku.
+                  </p>
+                  <details className="mt-3">
+                    <summary className="cursor-pointer text-sm font-semibold text-blue-700 hover:text-blue-900">
+                      💡 Ako získať embed kód z dpforms.sk?
+                    </summary>
+                    <div className="mt-3 space-y-2 text-sm text-blue-800">
+                      <p>1. Otvorte formulár na <strong>dpforms.sk</strong></p>
+                      <p>2. Kliknite na tlačidlo <strong>&quot;Zdieľať&quot;</strong> alebo <strong>&quot;Embed&quot;</strong></p>
+                      <p>3. Skopírujte celý kód (HTML + JavaScript)</p>
+                      <p>4. Vložte ho do poľa nižšie</p>
+                    </div>
+                  </details>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="admin-edit-label">
+                    <span className="mr-2 text-lg">🔗</span>
+                    Embed kód formulára (voliteľné)
+                  </label>
+                  <textarea
+                    value={news.form_embed_code || ""}
+                    onChange={(e) => setNews(prev => ({ ...prev, form_embed_code: e.target.value }))}
+                    className="w-full p-3 border border-gray-300 rounded-lg font-mono text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder={`<!-- MYPROFILE -->
+<div id="c14">
+    Vyplňte moje <a href="https://dpforms.sk/app/form?id=GKBMIA">online formulár</a>.
+</div>
+<script type="text/javascript">
+    (function(d, t) {
+        var s = d.createElement(t), options = {
+            'id': 'GKBMIA',
+            'theme': 0,
+            'container': 'c14',
+            'height': '3435px',
+            'form': '//dpforms.sk/app/embed'
+        };
+        s.type= 'text/javascript';
+        s.src = '//dpforms.sk/static_files/js/form.widget.js';
+        // ... zvyšok kódu
+    })(document, 'script');
+</script>
+<!-- End MYPROFILE -->`}
+                    rows={12}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    💡 Vložte celý embed kód vrátane &lt;script&gt; tagov
+                  </p>
+                </div>
+
+                {news.form_embed_code && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p className="text-sm font-semibold text-green-900 mb-2">
+                      ✅ Formulár nastavený
+                    </p>
+                    <p className="text-xs text-green-700">
+                      Formulár sa zobrazí na konci článku (po hlavnom obsahu)
+                    </p>
+                  </div>
+                )}
+              </div>
+            </FormSection>
+          )}          {/* Save Button */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-center flex-wrap gap-4">
               <div className="text-sm text-gray-600">

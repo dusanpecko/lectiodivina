@@ -22,6 +22,7 @@ import { useCallback, useEffect, useState } from "react";
 interface LiturgicalYear {
   id: number;
   year: number;
+  locale_code: string;
   lectionary_cycle: 'A' | 'B' | 'C';
   ferial_lectionary: 1 | 2;
   start_date?: string;
@@ -172,6 +173,7 @@ export default function LiturgicalCalendarAdminPage() {
   const [years, setYears] = useState<LiturgicalYear[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [availableLocales, setAvailableLocales] = useState<Array<{code: string, name: string, native_name: string}>>([]);
   const [notification, setNotification] = useState<{
     message: string;
     type: NotificationType;
@@ -209,6 +211,22 @@ export default function LiturgicalCalendarAdminPage() {
     setNotification({ message, type });
   }, []);
 
+  // Helper pre vlajky jazykov
+  const getLanguageFlag = (code: string): string => {
+    const flags: Record<string, string> = {
+      'sk': '🇸🇰',
+      'cz': '🇨🇿', 
+      'en': '🇺🇸',
+      'es': '🇪🇸',
+      'it': '🇮🇹',
+      'fr': '🇫🇷',
+      'pt': '🇵🇹',
+      'la': '🏛️',
+      'de': '🇩🇪'
+    };
+    return flags[code] || '🌐';
+  };
+
   // Načítanie dní kalendára pre daný rok
   const fetchCalendarDays = useCallback(async (yearId: number) => {
     setLoadingDays(true);
@@ -238,7 +256,8 @@ export default function LiturgicalCalendarAdminPage() {
       const { data, error } = await supabase
         .from('liturgical_years')
         .select('*')
-        .order('year', { ascending: false });
+        .order('year', { ascending: false })
+        .order('locale_code', { ascending: true });
 
       if (error) throw error;
       setYears(data || []);
@@ -261,7 +280,7 @@ export default function LiturgicalCalendarAdminPage() {
 
       const { data: yearData, error: yearError } = await supabase
         .from('liturgical_years')
-        .select('id, year');
+        .select('id, year, locale_code');
 
       if (yearError) throw yearError;
 
@@ -282,6 +301,13 @@ export default function LiturgicalCalendarAdminPage() {
         }
       });
 
+      // Pridaj jazyky z liturgical_years tabuľky
+      yearData.forEach(year => {
+        if (year.locale_code) {
+          languagesSet.add(year.locale_code);
+        }
+      });
+
       const totalDays = calendarData?.length || 0;
       const lectioPercentage = totalDays > 0 ? Math.round((lectioFilledCount / totalDays) * 100) : 0;
 
@@ -298,10 +324,34 @@ export default function LiturgicalCalendarAdminPage() {
     }
   }, [supabase]);
 
+  // Načítanie dostupných jazykov z locales tabuľky
+  const fetchLocales = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('locales')
+        .select('code, name, native_name')
+        .eq('is_active', true)
+        .order('code', { ascending: true });
+
+      if (error) throw error;
+      setAvailableLocales(data || []);
+    } catch (error) {
+      console.error('Error fetching locales:', error);
+      // Fallback na hardkódované hodnoty ak sa nepodarí načítať
+      setAvailableLocales([
+        { code: 'sk', name: 'Slovak', native_name: 'Slovenčina' },
+        { code: 'cz', name: 'Czech', native_name: 'Čeština' },
+        { code: 'en', name: 'English', native_name: 'English' },
+        { code: 'es', name: 'Spanish', native_name: 'Español' }
+      ]);
+    }
+  }, [supabase]);
+
   useEffect(() => {
     fetchYears();
     fetchStats();
-  }, [fetchYears, fetchStats]);
+    fetchLocales();
+  }, [fetchYears, fetchStats, fetchLocales]);
 
   // Generovanie kalendára
   const handleGenerateCalendar = async () => {
@@ -317,11 +367,22 @@ export default function LiturgicalCalendarAdminPage() {
       // 1. Získaj informáciu o lekcionári
       console.log('Fetching lectionary for year:', selectedYear, 'Language:', selectedLanguage);
       
-      // CalAPI podporuje len český jazyk, takže vždy používame 'cs'
-      const apiLang = 'cs'; 
-      const lectionaryRes = await fetch(
-        `/api/liturgical-calendar?action=lectionary&year=${selectedYear}&lang=${apiLang}`
-      );
+      // Rozhodnutie o API endpoint podľa jazyka
+      const supportedByMultiApi = ['en', 'es', 'it', 'fr', 'pt', 'la', 'cs'];
+      const useMultiApi = supportedByMultiApi.includes(selectedLanguage);
+      
+      let lectionaryRes;
+      if (useMultiApi) {
+        // Použiť nové multi-language API
+        lectionaryRes = await fetch(
+          `/api/liturgical-calendar-multi?action=lectionary&year=${selectedYear}&lang=${selectedLanguage}`
+        );
+      } else {
+        // Fallback na CalAPI (český jazyk)
+        lectionaryRes = await fetch(
+          `/api/liturgical-calendar?action=lectionary&year=${selectedYear}&lang=cs`
+        );
+      }
       
       if (!lectionaryRes.ok) {
         const errorText = await lectionaryRes.text();
@@ -340,16 +401,17 @@ export default function LiturgicalCalendarAdminPage() {
       }
 
       // 2. Vytvor alebo aktualizuj záznam v liturgical_years pomocou UPSERT
-      console.log('Upserting liturgical year:', selectedYear);
+      console.log('Upserting liturgical year:', selectedYear, 'Language:', selectedLanguage);
       const { data: upsertedYear, error: upsertError } = await supabase
         .from('liturgical_years')
         .upsert({
           year: selectedYear,
+          locale_code: selectedLanguage,
           lectionary_cycle: lectionaryData.lectionary,
           ferial_lectionary: lectionaryData.ferial_lectionary,
           is_generated: true
         }, {
-          onConflict: 'year',
+          onConflict: 'year,locale_code',
           ignoreDuplicates: false
         })
         .select();
@@ -374,10 +436,19 @@ export default function LiturgicalCalendarAdminPage() {
         message: 'Sťahujem liturgický kalendár pre celý rok...'
       }));
 
-      // 3. Získaj celý rok z API (CalAPI je vždy český)
-      const yearRes = await fetch(
-        `/api/liturgical-calendar?action=year&year=${selectedYear}&lang=${apiLang}`
-      );
+      // 3. Získaj celý rok z API
+      let yearRes;
+      if (useMultiApi) {
+        // Použiť nové multi-language API
+        yearRes = await fetch(
+          `/api/liturgical-calendar-multi?action=year&year=${selectedYear}&lang=${selectedLanguage}`
+        );
+      } else {
+        // Fallback na CalAPI (český jazyk)
+        yearRes = await fetch(
+          `/api/liturgical-calendar?action=year&year=${selectedYear}&lang=cs`
+        );
+      }
       
       if (!yearRes.ok) {
         const errorText = await yearRes.text();
@@ -418,24 +489,23 @@ export default function LiturgicalCalendarAdminPage() {
         message: 'Ukladám dni do databázy...'
       }));
 
-      // 4. Získaj meniny (pre české API používame české meniny, ak existujú)
+      // 4. Získaj meniny pre daný jazyk
       const { data: nameDays } = await supabase
         .from('name_days')
         .select('datum, meniny')
-        .eq('locale_code', 'cs'); // CalAPI je české, tak hľadáme české meniny
+        .eq('locale_code', selectedLanguage);
 
       const nameDaysMap = new Map(
         nameDays?.map(nd => [nd.datum, nd.meniny]) || []
       );
       
-      console.log(`Načítaných ${nameDays?.length || 0} menín pre české kalendár`);
+      console.log(`Načítaných ${nameDays?.length || 0} menín pre ${selectedLanguage} kalendár`);
 
-      // Lectio sources sa budú mapovať až po preklade do slovenčiny
-      console.log('⚠️ POZNÁMKA: Lectio hlava sa bude mapovať až po preklade českého kalendára do slovenčiny');
+      console.log(`⚠️ POZNÁMKA: Lectio hlava sa bude mapovať podľa jazyka ${selectedLanguage}`);
 
-      // 4.5. Vymaž VŠETKY existujúce slovenské záznamy pre daný rok
-      // Problém: unique constraint datum+locale_code neumožňuje duplicity
-      console.log('Removing ALL Slovak calendar entries for dates in year:', selectedYear);
+      // 4.5. Vymaž existujúce záznamy pre daný rok a jazyk
+      // Umožňuje mať viacero kalendárov pre jeden rok v rôznych jazykoch
+      console.log(`Removing existing ${selectedLanguage} calendar entries for year:`, selectedYear);
       
       const yearStart = `${selectedYear}-01-01`;
       const yearEnd = `${selectedYear}-12-31`;
@@ -443,15 +513,15 @@ export default function LiturgicalCalendarAdminPage() {
       const { error: deleteError, count: deletedCount } = await supabase
         .from('liturgical_calendar')
         .delete({ count: 'exact' })
-        .eq('locale_code', 'sk')
+        .eq('locale_code', selectedLanguage)
         .gte('datum', yearStart)
         .lte('datum', yearEnd);
 
       if (deleteError) {
-        console.error('Error deleting old Czech entries:', deleteError);
+        console.error(`Error deleting old ${selectedLanguage} entries:`, deleteError);
         throw new Error(`Chyba pri mazaní starých záznamov: ${deleteError.message}`);
       } else {
-        console.log(`✅ Deleted ${deletedCount || 0} old Slovak entries for year ${selectedYear}`);
+        console.log(`✅ Deleted ${deletedCount || 0} old ${selectedLanguage} entries for year ${selectedYear}`);
       }
 
       // 5. Ulož dni do databázy (po dávkach)
@@ -470,7 +540,7 @@ export default function LiturgicalCalendarAdminPage() {
           
           return {
             datum: day.date,
-            locale_code: 'sk', // Používame SK locale (české texty preložíme neskôr)
+            locale_code: selectedLanguage, // Používame zvolený jazyk
             season: day.season,
             season_week: day.season_week,
             weekday: day.weekday,
@@ -483,7 +553,7 @@ export default function LiturgicalCalendarAdminPage() {
             alternative_celebration_rank_num: day.celebrations[1]?.rank_num || null,
             alternative_celebration_colour: day.celebrations[1]?.colour || null,
             meniny: nameDaysMap.get(day.date) || null,
-            lectio_hlava: null, // Bude sa vyplňovať po preklade do SK
+            lectio_hlava: null, // Bude sa mapovať neskôr
             liturgical_year_id: liturgicalYearId,
             source_api: 'calapi.inadiutorium.cz',
             is_custom_edit: false
@@ -527,7 +597,7 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
       `);
 
       showNotification(
-        `Kalendár pre rok ${selectedYear} bol vygenerovaný s českými textami! (${savedCount} dní, ${errorCount} chýb). Teraz použite "Preložiť CZ → SK"`,
+        `Kalendár pre rok ${selectedYear} (${selectedLanguage.toUpperCase()}) bol vygenerovaný! (${savedCount} dní, ${errorCount} chýb)${!useMultiApi ? '. Preklad cez AI API môže byť potrebný' : ''}`,
         'success'
       );
 
@@ -1140,6 +1210,384 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
     }
   };
 
+  // Generovanie kalendára zo slovenských lectio_sources
+  const handleGenerateFromSlovakSources = async () => {
+    if (!confirm('Toto vytvorí nový liturgický kalendár priamo zo slovenských lectio_sources. Pokračovať?')) {
+      return;
+    }
+
+    const selectedYear = new Date().getFullYear();
+    const selectedLanguage = 'sk';
+
+    setProgress({
+      current: 0,
+      total: 0,
+      status: 'fetching',
+      message: 'Načítavam slovenské lectio sources...'
+    });
+
+    try {
+      // 1. Načítaj všetky slovenské lectio sources
+      const { data: lectioSources, error: lectioError } = await supabase
+        .from('lectio_sources')
+        .select('hlava, rok, id')
+        .eq('lang', 'sk')
+        .order('hlava', { ascending: true });
+
+      if (lectioError) throw lectioError;
+
+      console.log(`Načítaných ${lectioSources?.length || 0} slovenských lectio sources`);
+
+      if (!lectioSources || lectioSources.length === 0) {
+        throw new Error('Nenašli sa žiadne slovenské lectio sources');
+      }
+
+      setProgress(prev => ({
+        ...prev,
+        total: lectioSources.length,
+        message: 'Generujem kalendár zo slovenských zdrojov...'
+      }));
+
+      // 2. Získaj lekcionárny cyklus pre rok (z českého API)
+      const lectionaryRes = await fetch(
+        `/api/liturgical-calendar?action=lectionary&year=${selectedYear}&lang=cs`
+      );
+      
+      if (!lectionaryRes.ok) {
+        throw new Error(`Lectionary API error: ${lectionaryRes.status}`);
+      }
+      
+      const lectionaryData = await lectionaryRes.json();
+      console.log('Lectionary data:', lectionaryData);
+
+      if (!lectionaryData || !lectionaryData.lectionary) {
+        throw new Error('API vrátilo neplatné dáta lekcionára');
+      }
+
+      // 3. Vytvor liturgical_year záznam
+      const { data: upsertedYear, error: upsertError } = await supabase
+        .from('liturgical_years')
+        .upsert({
+          year: selectedYear,
+          locale_code: selectedLanguage,
+          lectionary_cycle: lectionaryData.lectionary,
+          ferial_lectionary: lectionaryData.ferial_lectionary,
+          is_generated: true
+        }, {
+          onConflict: 'year,locale_code',
+          ignoreDuplicates: false
+        })
+        .select();
+
+      if (upsertError) throw upsertError;
+      if (!upsertedYear || upsertedYear.length === 0) {
+        throw new Error('Nepodarilo sa vytvoriť liturgical_year záznam');
+      }
+
+      const liturgicalYearId = upsertedYear[0].id;
+      const cycle = lectionaryData.lectionary;
+
+      // 4. Získaj základný kalendár z API (pre dátumy a liturgické informácie)
+      const yearRes = await fetch(
+        `/api/liturgical-calendar?action=year&year=${selectedYear}&lang=cs`
+      );
+      
+      if (!yearRes.ok) {
+        throw new Error(`Year API error: ${yearRes.status}`);
+      }
+      
+      const yearData = await yearRes.json();
+
+      if (!yearData || !yearData.days || !Array.isArray(yearData.days)) {
+        throw new Error('API vrátilo neplatné dáta kalendára');
+      }
+
+      const apiDays = yearData.days;
+      console.log(`API vrátilo ${apiDays.length} dní`);
+
+      // 5. Vytvor mapovanie slovenských lectio sources
+      const lectioMap = new Map();
+      
+      lectioSources.forEach(source => {
+        const key = normalizeTextForMapping(source.hlava);
+        if (!lectioMap.has(key)) {
+          lectioMap.set(key, []);
+        }
+        lectioMap.get(key).push(source);
+      });
+
+      console.log(`Vytvorené mapovanie pre ${lectioMap.size} unikátnych kľúčov`);
+
+      // 6. Vymaž existujúce slovenské záznamy pre daný rok
+      const yearStart = `${selectedYear}-01-01`;
+      const yearEnd = `${selectedYear}-12-31`;
+      
+      const { error: deleteError } = await supabase
+        .from('liturgical_calendar')
+        .delete()
+        .eq('locale_code', 'sk')
+        .gte('datum', yearStart)
+        .lte('datum', yearEnd);
+
+      if (deleteError) throw deleteError;
+
+      // 7. Spracuj každý deň z API a namapuj priamo na slovenské sources
+      let successCount = 0;
+      let errorCount = 0;
+      const calendarRecords = [];
+
+      setProgress(prev => ({
+        ...prev,
+        message: 'Mapujem dni na slovenské lectio_sources...'
+      }));
+
+      for (let i = 0; i < apiDays.length; i++) {
+        const apiDay = apiDays[i];
+        
+        setProgress(prev => ({
+          ...prev,
+          current: i + 1,
+          message: `Mapujem deň ${i + 1}/${apiDays.length}...`
+        }));
+
+        try {
+          // Nájdi zodpovedajúci slovenský lectio source priamo z českého názvu
+          const slovakLectio = findMatchingLectioSource(apiDay.celebrations[0]?.title || '', lectioSources, cycle, apiDay);
+          
+          // Ak máme lectio_source, použijeme jeho hlavu ako slovenský názov
+          let slovakTitle = '';
+          if (slovakLectio) {
+            slovakTitle = slovakLectio;
+          } else {
+            // Fallback - preložíme cez AI len ak sa nenájde mapping
+            try {
+              const translateRes = await fetch('/api/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  text: apiDay.celebrations[0]?.title || '',
+                  targetLanguage: 'sk',
+                  fieldType: 'liturgical',
+                  sourceLanguage: 'cs'
+                }),
+              });
+
+              if (translateRes.ok) {
+                const translateData = await translateRes.json();
+                slovakTitle = translateData.translatedText || apiDay.celebrations[0]?.title || '';
+              } else {
+                slovakTitle = apiDay.celebrations[0]?.title || '';
+              }
+            } catch (translateError) {
+              console.error('Translation fallback error:', translateError);
+              slovakTitle = apiDay.celebrations[0]?.title || '';
+            }
+          }
+
+          // Vytvor záznam kalendára
+          const calendarRecord = {
+            datum: apiDay.date,
+            locale_code: 'sk',
+            season: apiDay.season,
+            season_week: apiDay.season_week,
+            weekday: apiDay.weekday,
+            celebration_title: slovakTitle,
+            celebration_rank: apiDay.celebrations[0]?.rank || '',
+            celebration_rank_num: apiDay.celebrations[0]?.rank_num || null,
+            celebration_colour: apiDay.celebrations[0]?.colour || '',
+            alternative_celebration_title: apiDay.celebrations[1]?.title || null,
+            alternative_celebration_rank: apiDay.celebrations[1]?.rank || null,
+            alternative_celebration_rank_num: apiDay.celebrations[1]?.rank_num || null,
+            alternative_celebration_colour: apiDay.celebrations[1]?.colour || null,
+            meniny: null, // Bude doplnené neskôr
+            lectio_hlava: slovakLectio,
+            liturgical_year_id: liturgicalYearId,
+            source_api: 'slovenské lectio_sources',
+            is_custom_edit: false
+          };
+
+          calendarRecords.push(calendarRecord);
+          successCount++;
+
+        } catch (error) {
+          console.error(`Chyba pri spracovaní dňa ${apiDay.date}:`, error);
+          errorCount++;
+        }
+
+        // Pauza pre rate limiting
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      // 8. Ulož záznamy do databázy (po dávkach)
+      setProgress(prev => ({
+        ...prev,
+        message: 'Ukladám záznamy do databázy...'
+      }));
+
+      const BATCH_SIZE = 50;
+      for (let i = 0; i < calendarRecords.length; i += BATCH_SIZE) {
+        const batch = calendarRecords.slice(i, i + BATCH_SIZE);
+        
+        const { error: insertError } = await supabase
+          .from('liturgical_calendar')
+          .insert(batch);
+
+        if (insertError) {
+          console.error('Batch insert error:', insertError);
+        }
+      }
+
+      setProgress({
+        current: calendarRecords.length,
+        total: calendarRecords.length,
+        status: 'complete',
+        message: `Hotovo! Vytvorený slovenský kalendár (${successCount} dní, ${errorCount} chýb)`
+      });
+
+      showNotification(
+        `Slovenský kalendár pre rok ${selectedYear} bol vytvorený! (${successCount} dní, ${errorCount} chýb)`,
+        'success'
+      );
+
+      // Obnovíme dáta
+      setTimeout(() => {
+        fetchYears();
+        fetchStats();
+        setProgress({
+          current: 0,
+          total: 0,
+          status: 'idle',
+          message: ''
+        });
+      }, 2000);
+
+    } catch (error) {
+      console.error('Generator error:', error);
+      
+      let errorMessage = 'Neznáma chyba';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      setProgress({
+        current: 0,
+        total: 0,
+        status: 'error',
+        message: errorMessage
+      });
+      
+      showNotification(`Chyba pri generovaní: ${errorMessage}`, 'error');
+      
+      setTimeout(() => {
+        setProgress({
+          current: 0,
+          total: 0,
+          status: 'idle',
+          message: ''
+        });
+      }, 5000);
+    }
+  };
+
+  // Helper funkcia pre normalizáciu textu pre mapovanie
+  const normalizeTextForMapping = (text: string): string => {
+    return text.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Odstráň diakritiku
+      .replace(/\s+/g, ' ') // Normalizuj medzery
+      .trim();
+  };
+
+  // Helper funkcia pre hľadanie zodpovedajúceho lectio source
+  const findMatchingLectioSource = (czechTitle: string, lectioSources: Array<{hlava: string, rok: string | null}>, cycle: string, apiDay: CalAPIDay): string | null => {
+    // Najprv pokus o priame mapovanie češtiny na slovenčinu na základe štruktúry
+    
+    // Detekcia typu dňa
+    const isSunday = apiDay.weekday.toLowerCase().includes('neděl') || 
+                     czechTitle.toLowerCase().includes('neděle');
+    
+    // Extrahuj čísla z českého názvu
+    const extractNumbers = (text: string) => {
+      const matches = text.match(/\d+/g);
+      return matches ? matches.map(Number) : [];
+    };
+    
+    const czechNumbers = extractNumbers(czechTitle);
+    
+    // Mapovanie českých kľúčových slov na slovenské patterny
+    const czechToSlovakPatterns = (czech: string): string[] => {
+      const czechLower = czech.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const patterns: string[] = [];
+      
+      // Všedné dni
+      if (czechLower.includes('pondělí') || czechLower.includes('pondelí')) {
+        patterns.push('pondelok');
+      } else if (czechLower.includes('úterý') || czechLower.includes('utery')) {
+        patterns.push('utorok');
+      } else if (czechLower.includes('středa') || czechLower.includes('streda')) {
+        patterns.push('streda');
+      } else if (czechLower.includes('čtvrtek') || czechLower.includes('ctvrtek')) {
+        patterns.push('štvrtok', 'stvrtok');
+      } else if (czechLower.includes('pátek') || czechLower.includes('patek')) {
+        patterns.push('piatok');
+      } else if (czechLower.includes('sobota')) {
+        patterns.push('sobota');
+      } else if (czechLower.includes('neděle') || czechLower.includes('nedele')) {
+        patterns.push('nedeľa', 'nedela');
+      }
+      
+      // Liturgické obdobia
+      if (czechLower.includes('cezročním') || czechLower.includes('cezrocnim')) {
+        patterns.push('cezročnom', 'cezrocnom');
+      }
+      if (czechLower.includes('postní') || czechLower.includes('postni')) {
+        patterns.push('pôstna', 'pôstne', 'pôstnej', 'postna', 'postne', 'postnej');
+      }
+      if (czechLower.includes('velikonoční') || czechLower.includes('velikonocni')) {
+        patterns.push('veľkonočn', 'velkonocn');
+      }
+      if (czechLower.includes('adventní') || czechLower.includes('adventni')) {
+        patterns.push('adventn');
+      }
+      
+      return patterns;
+    };
+    
+    const slovakPatterns = czechToSlovakPatterns(czechTitle);
+    
+    // Hľadaj match v lectio_sources
+    const match = lectioSources.find(source => {
+      // Pre nedeľe musí byť správny cyklus
+      if (isSunday) {
+        const cycleMatch = source.rok === cycle || source.rok === 'ABC';
+        if (!cycleMatch) return false;
+      } else {
+        // Pre všedné dni musí byť rok 'N' alebo 'ABC'
+        const isWeekday = source.rok === 'N' || source.rok === 'ABC' || !source.rok;
+        if (!isWeekday) return false;
+      }
+      
+      const sourceHlava = source.hlava.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const sourceNumbers = extractNumbers(source.hlava);
+      
+      // Porovnaj čísla - musia sa zhodovať
+      if (czechNumbers.length > 0 && sourceNumbers.length > 0) {
+        const numbersMatch = czechNumbers.every((num, idx) => num === sourceNumbers[idx]);
+        if (!numbersMatch) return false;
+      }
+      
+      // Porovnaj textové patterny
+      if (slovakPatterns.length > 0) {
+        const hasPattern = slovakPatterns.some(pattern => sourceHlava.includes(pattern));
+        if (hasPattern) return true;
+      }
+      
+      return false;
+    });
+
+    return match ? match.hlava : null;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -1183,6 +1631,15 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
               >
                 <Trash2 size={20} />
                 <span className="font-medium">Vymazať všetko</span>
+              </button>
+              <button
+                onClick={handleGenerateFromSlovakSources}
+                disabled={progress.status !== 'idle'}
+                className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                title="Vytvorí kalendár priamo zo slovenských lectio_sources"
+              >
+                <BookOpen size={20} />
+                <span className="font-medium">🇸🇰 Zo SK zdrojov</span>
               </button>
               <button
                 onClick={() => setShowGeneratorModal(true)}
@@ -1292,6 +1749,9 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
                         <h3 className="text-2xl font-bold" style={{ color: '#40467b' }}>
                           {year.year}
                         </h3>
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                          {year.locale_code?.toUpperCase() || 'SK'}
+                        </span>
                         <span className="px-3 py-1 bg-gray-100 rounded-full text-sm font-medium" style={{ color: '#40467b' }}>
                           Cyklus {year.lectionary_cycle}
                         </span>
@@ -1550,16 +2010,27 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
                     onChange={(e) => setSelectedLanguage(e.target.value)}
                     className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-opacity-50 focus:border-transparent transition"
                   >
-                    <option value="sk">🇸🇰 Slovenčina</option>
-                    <option value="cz">🇨🇿 Čeština</option>
-                    <option value="en">🇺🇸 English</option>
-                    <option value="es">🇪🇸 Español</option>
+                    {availableLocales.length > 0 ? (
+                      availableLocales.map(locale => (
+                        <option key={locale.code} value={locale.code}>
+                          {getLanguageFlag(locale.code)} {locale.native_name}
+                        </option>
+                      ))
+                    ) : (
+                      // Fallback options ak sa nepodarilo načítať z databázy
+                      <>
+                        <option value="sk">🇸🇰 Slovenčina</option>
+                        <option value="cz">🇨🇿 Čeština</option>
+                        <option value="en">🇺🇸 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                   <p className="text-sm text-blue-800">
-                    <strong>Poznámka:</strong> Kalendár bude vygenerovaný z CalAPI pre český liturgický kalendár a slovenské meniny.
+                    <strong>Poznámka:</strong> Pre EN, ES, IT, FR, PT, LA, CS používame natívne zdroje. Pre ostatné jazyky (napr. DE, SK) použijeme český zdroj + AI preklad.
                   </p>
                 </div>
 

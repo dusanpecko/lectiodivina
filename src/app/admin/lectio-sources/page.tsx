@@ -276,6 +276,124 @@ const CopyDialog = ({
   );
 };
 
+// Bulk Copy Dialog komponenta
+const BulkCopyDialog = ({ 
+  isOpen, 
+  onClose, 
+  onBulkCopy,
+  currentLang,
+  selectedCount
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  onBulkCopy: (targetLang: string) => void;
+  currentLang: string;
+  selectedCount: number;
+}) => {
+  const [selectedLang, setSelectedLang] = useState<string>("");
+  const [copying, setCopying] = useState(false);
+  
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedLang("");
+      setCopying(false);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const availableLanguages = LANGUAGE_OPTIONS.filter(lang => lang.value !== currentLang);
+
+  const handleBulkCopy = async () => {
+    if (!selectedLang) return;
+    
+    setCopying(true);
+    try {
+      await onBulkCopy(selectedLang);
+    } finally {
+      setCopying(false);
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 relative">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <Copy size={20} style={{ color: '#40467b' }} />
+            Skupinové kopírovanie
+          </h3>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition"
+            disabled={copying}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="mb-4">
+          <p className="text-sm text-gray-600 mb-3">
+            Kopírujete <span className="font-bold text-emerald-600">{selectedCount}</span> označených záznamov
+          </p>
+          <p className="text-xs text-gray-500">
+            Pre každý záznam sa skopírujú: nadpis, súradnice, všetky texty (lectio, meditatio, oratio, contemplatio, actio) a referencie
+          </p>
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Vybrať cieľový jazyk:
+          </label>
+          <select
+            value={selectedLang}
+            onChange={(e) => setSelectedLang(e.target.value)}
+            className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+            disabled={copying}
+          >
+            <option value="">-- Vyberte jazyk --</option>
+            {availableLanguages.map(lang => (
+              <option key={lang.value} value={lang.value}>
+                {lang.flag} {lang.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+            disabled={copying}
+          >
+            Zrušiť
+          </button>
+          <button
+            onClick={handleBulkCopy}
+            disabled={!selectedLang || copying}
+            className="px-4 py-2 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{ backgroundColor: '#40467b' }}
+          >
+            {copying ? (
+              <>
+                <LoadingSpinner size={4} />
+                Kopírujem...
+              </>
+            ) : (
+              <>
+                <Copy size={16} />
+                Kopírovať všetky
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Loading komponenta
 const LoadingSpinner = ({ size = 6 }: { size?: number }) => (
   <div className={`w-${size} h-${size} border-2 border-t-transparent rounded-full animate-spin`} style={{ borderColor: '#40467b', borderTopColor: 'transparent' }} />
@@ -302,7 +420,14 @@ export default function LectioSourcesAdminPage() {
     lectioSource: LectioSource | null;
   }>({ isOpen: false, lectioSource: null });
 
-  // Bulk Bible Import state
+  // Bulk copy state
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [bulkCopyDialog, setBulkCopyDialog] = useState<{
+    isOpen: boolean;
+    selectedCount: number;
+  }>({ isOpen: false, selectedCount: 0 });
+
+  // Bulk Bible Import state  
   const [showBulkBibleImport, setShowBulkBibleImport] = useState(false);
 
   // Filtre a stránkovanie - inicializuj page z URL
@@ -478,6 +603,11 @@ export default function LectioSourcesAdminPage() {
     fetchLectioSources();
   }, [fetchLectioSources]);
 
+  // Vyčistiť označené riadky pri zmene stránky
+  useEffect(() => {
+    setSelectedRows(new Set());
+  }, [page]);
+
   // Handlers
   const handleDelete = useCallback(async (id: number) => {
     if (!confirm("Naozaj chcete vymazať tento Lectio zdroj? Táto akcia sa nedá vrátiť späť.")) {
@@ -645,6 +775,69 @@ export default function LectioSourcesAdminPage() {
     }
   }, [copyDialog.lectioSource, createNewLectioSource, supabase, showNotification, page, router, filterLang]);
 
+  // Bulk copy handlers
+  const handleSelectAll = useCallback(() => {
+    if (selectedRows.size === lectioSources.length) {
+      // Ak sú všetky označené, odznač všetky
+      setSelectedRows(new Set());
+    } else {
+      // Inak označ všetky
+      setSelectedRows(new Set(lectioSources.map(l => l.id!)));
+    }
+  }, [selectedRows.size, lectioSources]);
+
+  const handleRowSelect = useCallback((id: number) => {
+    setSelectedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleBulkCopy = useCallback(async (targetLang: string) => {
+    const selectedSources = lectioSources.filter(l => selectedRows.has(l.id!));
+    
+    if (selectedSources.length === 0) {
+      showNotification("Nie sú označené žiadne záznamy", "error");
+      return;
+    }
+
+    try {
+      const newLectioSources = selectedSources.map(original => 
+        createNewLectioSource(original, targetLang)
+      );
+
+      const { error } = await supabase
+        .from("lectio_sources")
+        .insert(newLectioSources);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const targetLangName = LANGUAGE_OPTIONS.find(l => l.value === targetLang)?.label || targetLang;
+      showNotification(
+        `${selectedSources.length} Lectio zdrojov bolo úspešne skopírovaných do jazyka ${targetLangName}`, 
+        "success"
+      );
+      
+      // Vyčistiť označené riadky
+      setSelectedRows(new Set());
+      
+      // Refresh data if we're viewing the target language
+      if (filterLang === targetLang) {
+        fetchLectioSources();
+      }
+    } catch (error) {
+      console.error('Bulk copy error:', error);
+      showNotification("Chyba pri skupinovom kopírovaní", "error");
+    }
+  }, [lectioSources, selectedRows, createNewLectioSource, supabase, showNotification, filterLang, fetchLectioSources]);
+
   const handleExportExcel = useCallback(async () => {
     try {
       const { data, error } = await supabase
@@ -743,6 +936,14 @@ export default function LectioSourcesAdminPage() {
         lectioSource={copyDialog.lectioSource}
       />
 
+      <BulkCopyDialog
+        isOpen={bulkCopyDialog.isOpen}
+        onClose={() => setBulkCopyDialog({ isOpen: false, selectedCount: 0 })}
+        onBulkCopy={handleBulkCopy}
+        currentLang={filterLang}
+        selectedCount={bulkCopyDialog.selectedCount}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hlavička */}
         <header className="mb-8">
@@ -757,6 +958,11 @@ export default function LectioSourcesAdminPage() {
                     Správa Lectio Zdrojov
                   </h1>
                   <p className="text-indigo-100 mt-1">Zdrojový obsah pre Lectio Divina</p>
+                  {selectedRows.size > 0 && (
+                    <p className="text-indigo-200 text-sm mt-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1 inline-block">
+                      ✓ {selectedRows.size} záznamov označených pre skupinové kopírovanie
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -863,6 +1069,24 @@ export default function LectioSourcesAdminPage() {
           </div>
         </header>
 
+        {/* Info banner pre bulk copy */}
+        {selectedRows.size === 0 && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-0.5">
+                <Copy size={16} className="text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-1">Skupinové kopírovanie</h4>
+                <p className="text-blue-700 text-sm">
+                  Označte viacero riadkov pomocou checkboxov a následne ich môžete naraz skopírovať do iného jazyka. 
+                  Použite checkbox v hlavičke pre označenie všetkých záznamov na stránke.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Ovládacie panely */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
@@ -876,6 +1100,7 @@ export default function LectioSourcesAdminPage() {
               value={filterLang}
               onChange={e => { 
                 setFilterLang(e.target.value as "sk" | "cz" | "en" | "es"); 
+                setSelectedRows(new Set()); // Vyčistiť označené riadky pri zmene jazyka
                 updatePage(1); 
               }}
               className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b] transition"
@@ -929,21 +1154,43 @@ export default function LectioSourcesAdminPage() {
             </div>
           </div>
 
-          {/* Akcie */}
+          {/* Akcie a Bulk Copy */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                 <PlusCircle size={20} style={{ color: '#40467b' }} />
               </div>
-              <h3 className="font-semibold text-gray-800">Akcie</h3>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800">Akcie</h3>
+                {selectedRows.size > 0 && (
+                  <p className="text-xs text-emerald-600 mt-1">
+                    {selectedRows.size} označených
+                  </p>
+                )}
+              </div>
             </div>
-            <button
-              onClick={() => router.push("/admin/lectio-sources/new")}
-              className="w-full bg-gradient-to-r from-[#40467b] to-[#686ea3] text-white px-4 py-2.5 rounded-lg hover:from-[#686ea3] hover:to-[#40467b] transition flex items-center justify-center gap-2 shadow-sm font-medium"
-            >
-              <PlusCircle size={16} />
-              Pridať Lectio Zdroj
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={() => router.push("/admin/lectio-sources/new")}
+                className="w-full bg-gradient-to-r from-[#40467b] to-[#686ea3] text-white px-4 py-2.5 rounded-lg hover:from-[#686ea3] hover:to-[#40467b] transition flex items-center justify-center gap-2 shadow-sm font-medium"
+              >
+                <PlusCircle size={16} />
+                Pridať Lectio Zdroj
+              </button>
+              
+              {selectedRows.size > 0 && (
+                <button
+                  onClick={() => setBulkCopyDialog({ 
+                    isOpen: true, 
+                    selectedCount: selectedRows.size 
+                  })}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-2.5 rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition flex items-center justify-center gap-2 shadow-sm font-medium"
+                >
+                  <Copy size={16} />
+                  Kopírovať označené ({selectedRows.size})
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1059,6 +1306,16 @@ export default function LectioSourcesAdminPage() {
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 w-12">
+                    <input
+                      type="checkbox"
+                      checked={lectioSources.length > 0 && selectedRows.size === lectioSources.length}
+                      onChange={handleSelectAll}
+                      className="w-4 h-4 bg-gray-100 border-gray-300 rounded focus:ring-2 cursor-pointer"
+                      style={{'--tw-ring-color': '#40467b', color: '#40467b'} as React.CSSProperties}
+                      title="Označiť/odznačiť všetky"
+                    />
+                  </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     <div className="flex items-center gap-2">
                       <FileText size={16} />
@@ -1090,7 +1347,7 @@ export default function LectioSourcesAdminPage() {
               <tbody className="divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center gap-3">
                         <LoadingSpinner />
                         <span className="text-gray-500">Načítavam...</span>
@@ -1099,7 +1356,7 @@ export default function LectioSourcesAdminPage() {
                   </tr>
                 ) : lectioSources.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="text-gray-500">
                         <Book size={48} className="mx-auto mb-4 text-gray-300" />
                         <p className="text-lg font-medium">Žiadne Lectio zdroje</p>
@@ -1109,7 +1366,17 @@ export default function LectioSourcesAdminPage() {
                   </tr>
                 ) : (
                   lectioSources.map(l => (
-                    <tr key={l.id} className="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all duration-200">
+                    <tr key={l.id} className={`hover:bg-gradient-to-r hover:from-indigo-50 hover:to-indigo-100 transition-all duration-200 ${selectedRows.has(l.id!) ? 'bg-emerald-50 border-l-4 border-emerald-400' : ''}`}>
+                      <td className="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(l.id!)}
+                          onChange={() => handleRowSelect(l.id!)}
+                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded focus:ring-2 cursor-pointer"
+                          style={{'--tw-ring-color': '#40467b', color: '#40467b'} as React.CSSProperties}
+                          title="Označiť pre skupinové kopírovanie"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div className="text-gray-900 font-medium">
                           {l.hlava?.length > 50 ? (
