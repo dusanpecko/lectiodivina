@@ -51,6 +51,7 @@ interface LiturgicalCalendarDay {
 interface LiturgicalYear {
   id: number;
   year: number;
+  locale_code: string; // sk, en, es, etc.
   lectionary_cycle: string; // A, B, C
   ferial_lectionary: number | null;
   start_date: string | null;
@@ -178,24 +179,20 @@ export default function LectioPage() {
 
     console.log(`🔍 Hľadám lectio_sources pre hlavu: "${calendarDay.lectio_hlava}", jazyk: ${currentLang}`);
 
-    // 1. Získame správny liturgický rok na základe dátumu (nie calendar year!)
-    // Liturgický rok začína prvou adventnou nedeľou, nie 1.1.
-    const currentDate = calendarDay.datum;
-    
+    // 1. Získame správny liturgický rok z calendar day (už obsahuje správny liturgical_year_id)
     const { data: liturgicalYear, error: yearError } = await supabase
       .from('liturgical_years')
       .select('*')
-      .lte('start_date', currentDate) // start_date <= currentDate
-      .gte('end_date', currentDate)   // end_date >= currentDate
+      .eq('id', calendarDay.liturgical_year_id)
       .single() as { data: LiturgicalYear | null, error: Error | null };
 
     if (yearError || !liturgicalYear) {
-      console.error('❌ Liturgický rok nenájdený pre dátum:', currentDate, yearError);
+      console.error('❌ Liturgický rok nenájdený pre ID:', calendarDay.liturgical_year_id, yearError);
       setLectioData(null);
       return;
     }
 
-    console.log(`📅 Liturgický rok ${liturgicalYear.year} (${liturgicalYear.start_date} - ${liturgicalYear.end_date}), cyklus: ${liturgicalYear.lectionary_cycle}`);
+    console.log(`📅 Liturgický rok ${liturgicalYear.year} (${liturgicalYear.start_date} - ${liturgicalYear.end_date}), cyklus: ${liturgicalYear.lectionary_cycle}, jazyk: ${calendarDay.locale_code}`);
 
     // 2. Určíme či použiť cyklus (A/B/C) alebo 'N' pre všedné dni
     // Pre všedné dni (pondelok-sobota v cezročnom období) používame 'N'
