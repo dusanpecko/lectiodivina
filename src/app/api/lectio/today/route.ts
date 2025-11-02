@@ -33,16 +33,15 @@ export async function GET(request: Request) {
     // 2. Ak existuje lectio_hlava, nájdi správny lectio source
     let lectioSource = null;
     if (calendarDay.lectio_hlava) {
-      // 2.1 Najprv zistíme liturgický rok na základe dátumu
+      // 2.1 Získame liturgický rok z calendar day (už obsahuje správny liturgical_year_id pre daný jazyk)
       const { data: liturgicalYear } = await supabase
         .from('liturgical_years')
         .select('*')
-        .lte('start_date', today)
-        .gte('end_date', today)
+        .eq('id', calendarDay.liturgical_year_id)
         .single();
       
       if (!liturgicalYear) {
-        console.error('Liturgický rok nebol nájdený pre dátum:', today);
+        console.error('Liturgický rok nebol nájdený pre ID:', calendarDay.liturgical_year_id);
         return NextResponse.json(
           { error: 'Liturgický rok nebol nájdený' },
           { status: 404 }
@@ -58,7 +57,7 @@ export async function GET(request: Request) {
       
       const rokToSearch = isSpecialDay ? liturgicalYear.lectionary_cycle : 'N';
       
-      console.log(`🔍 Hľadám lectio pre rok: ${rokToSearch}, hlava: ${calendarDay.lectio_hlava}, lang: ${lang}`);
+      console.log(`🔍 Hľadám lectio pre rok: ${rokToSearch}, hlava: ${calendarDay.lectio_hlava}, lang: ${lang}, liturgický rok: ${liturgicalYear.year} (${liturgicalYear.locale_code})`);
       
       // 2.3 Nájdi lectio source s správnym rokom
       const { data: source } = await supabase
