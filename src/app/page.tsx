@@ -272,6 +272,14 @@ export default function HomePage() {
                   </AnimatePresence>
                 </div>
 
+                {/* E-shop */}
+                <button
+                  onClick={() => router.push("/shop")}
+                  className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium"
+                >
+                  E-shop
+                </button>
+
                 {/* Contact */}
                 <button
                   onClick={() => router.push("/contact")}
@@ -300,9 +308,9 @@ export default function HomePage() {
                     </select>
                   </div>
 
-                  {/* Give Button */}
+                  {/* Support Button */}
                   <button
-                    onClick={() => window.open('https://www.paypal.com/donate/?hosted_button_id=3BMNK9CH675ZL', '_blank')}
+                    onClick={() => router.push('/support')}
                     className="px-4 h-10 border border-white/30 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 font-medium flex items-center"
                   >
                     {t.give}
@@ -511,6 +519,17 @@ export default function HomePage() {
                     </button>
                   </div>
 
+                  {/* E-shop */}
+                  <button
+                    onClick={() => {
+                      router.push("/shop");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2"
+                  >
+                    E-shop
+                  </button>
+
                   {/* Contact */}
                   <button
                     onClick={() => {
@@ -524,10 +543,10 @@ export default function HomePage() {
 
                   {/* Divider */}
                   <div className="border-t border-white/20 pt-4 space-y-2">
-                    {/* Give */}
+                    {/* Support */}
                     <button
                       onClick={() => {
-                        window.open('https://www.paypal.com/donate/?hosted_button_id=3BMNK9CH675ZL', '_blank');
+                        router.push('/support');
                         setMobileMenuOpen(false);
                       }}
                       className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2 px-4 border border-white/30 rounded-lg"

@@ -11,6 +11,7 @@ import {
   Mail,
   Menu,
   Settings,
+  ShoppingCart,
   User,
   X
 } from "lucide-react";
@@ -40,9 +41,26 @@ export default function NavBar() {
   const [mounted, setMounted] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Load cart count from localStorage
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem('lectio_cart') || '[]');
+      const totalItems = cart.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+      setCartItemCount(totalItems);
+    };
+
+    updateCartCount();
+
+    // Listen for cart updates
+    window.addEventListener('cartUpdated', updateCartCount);
+    
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
   }, []);
 
 
@@ -331,6 +349,14 @@ export default function NavBar() {
                   </AnimatePresence>
                 </div>
 
+                {/* E-shop */}
+                <button
+                  onClick={() => router.push("/shop")}
+                  className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium"
+                >
+                  E-shop
+                </button>
+
                 {/* Contact */}
                 <button
                   onClick={() => router.push("/contact")}
@@ -340,13 +366,26 @@ export default function NavBar() {
                 </button>
               </div>
 
-              {/* Give Button */}
+              {/* Support Button */}
               <button
-                onClick={() => window.open('https://www.paypal.com/donate/?hosted_button_id=3BMNK9CH675ZL', '_blank')}
+                onClick={() => router.push('/support')}
                 className="hidden lg:flex items-center px-3 py-2 rounded-lg font-medium transition-all duration-200 text-white/90 hover:text-white hover:bg-white/10 border"
                 style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
               >
                 {t.give}
+              </button>
+
+              {/* Shopping Cart Icon */}
+              <button
+                onClick={() => router.push('/cart')}
+                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+              >
+                <ShoppingCart size={20} />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
               </button>
 
               {/* Language Selector */}
@@ -546,6 +585,17 @@ export default function NavBar() {
                 </button>
               </div>
 
+              {/* E-shop */}
+              <button
+                onClick={() => {
+                  router.push("/shop");
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2"
+              >
+                E-shop
+              </button>
+
               {/* Contact */}
               <button
                 onClick={() => {
@@ -557,11 +607,11 @@ export default function NavBar() {
                 {t.footer.contact}
               </button>
 
-              {/* Give Button - MOBILE */}
+              {/* Support Button - MOBILE */}
               <div className="border-t pt-3 mt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
                 <button
                   onClick={() => {
-                    window.open('https://www.paypal.com/donate/?hosted_button_id=3BMNK9CH675ZL', '_blank');
+                    router.push('/support');
                     setMobileMenuOpen(false);
                   }}
                   className="flex items-center justify-center space-x-2 w-full px-4 py-3 rounded-lg font-medium transition-colors text-white/90 hover:text-white hover:bg-white/10 border"

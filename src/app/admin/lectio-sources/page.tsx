@@ -1301,6 +1301,59 @@ export default function LectioSourcesAdminPage() {
           )}
         </div>
 
+        {/* Pagination - Top */}
+        {Math.ceil(total / PAGE_SIZE) > 1 && (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="text-center text-sm text-gray-600 mb-4">
+              Zobrazujem <span className="font-bold">{(page - 1) * PAGE_SIZE + 1}</span> až{" "}
+              <span className="font-bold">{Math.min(page * PAGE_SIZE, total)}</span> z{" "}
+              <span className="font-bold">{total}</span> Lectio zdrojov
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => updatePage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft size={16} />
+                <span className="hidden sm:inline">Predchádzajúca</span>
+              </button>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 whitespace-nowrap">Stránka:</span>
+                <select
+                  value={page}
+                  onChange={(e) => updatePage(Number(e.target.value))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:border-transparent transition min-w-[80px]"
+                  style={{'--tw-ring-color': '#40467b'} as React.CSSProperties}
+                >
+                  {Array.from({ length: Math.ceil(total / PAGE_SIZE) }, (_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <option key={pageNum} value={pageNum}>
+                        {pageNum} / {Math.ceil(total / PAGE_SIZE)}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              
+              <button
+                onClick={() => {
+                  const nextPage = page * PAGE_SIZE < total ? page + 1 : page;
+                  updatePage(nextPage);
+                }}
+                disabled={page * PAGE_SIZE >= total}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="hidden sm:inline">Ďalšia</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">

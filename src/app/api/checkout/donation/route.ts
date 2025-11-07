@@ -1,0 +1,32 @@
+import { createDonationCheckoutSession } from '@/lib/stripe';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { amount, userId, email, message } = body;
+
+    if (!amount || amount <= 0) {
+      return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+    const session = await createDonationCheckoutSession(
+      amount,
+      userId || null,
+      `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      `${baseUrl}/support`,
+      email,
+      message
+    );
+
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    console.error('Error creating donation checkout:', error);
+    return NextResponse.json(
+      { error: 'Failed to create checkout session' },
+      { status: 500 }
+    );
+  }
+}

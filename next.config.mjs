@@ -64,6 +64,13 @@ const nextConfig = {
         hostname: '*.amazonaws.com',
         port: '',
         pathname: '/**',
+      },
+      // Placeholder image služby
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
       }
     ],
     // Pre admin rozhranie môžeme povoliť aj všetky hostname (menej bezpečné ale praktické)

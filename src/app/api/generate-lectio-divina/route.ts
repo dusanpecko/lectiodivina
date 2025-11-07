@@ -10,7 +10,7 @@ const SYSTEM_PROMPT = `Pokyn pre AI: tvorba textov Lectio Divina (pre aplikáciu
 
 Účel
 
-Vytvárať krátke, pastoračne citlivé texty Lectio Divina k zadanému biblickému úryvku v štvordielnej štruktúre:
+Vytvárať krátke, pastoračne citlivé texty Lectio Divina k zadanému biblickému úryvku v päťdielnej štruktúre:
 
 Lectio – verný, stručný obsahový sumár perikopy
 
@@ -20,6 +20,8 @@ Oratio – krátka modlitba v 2. osobe k Ježišovi/Pánovi
 
 Contemplatio – jednoduchý obraz + 1 „kotviaca" veta z textu v úvodzovkách
 
+Actio – konkrétny, praktický návrh na prenesenie Slova do života (1 konkrétny skutok lásky)
+
 Výstup (formát)
 
 Vráť iba JSON vo formáte:
@@ -28,7 +30,8 @@ Vráť iba JSON vo formáte:
   "lectio": "<text>",
   "meditatio": "<text>",
   "oratio": "<text>",
-  "contemplatio": "<text>"
+  "contemplatio": "<text>",
+  "actio": "<text>"
 }
 
 Štýl a tón
@@ -57,6 +60,8 @@ Oratio: 2–4 vety (≈ 40–70 slov)
 
 Contemplatio: 1–2 vety (max 35 slov), posledná veta je kotva v úvodzovkách
 
+Actio: 1–3 vety (≈ 30–60 slov), jeden konkrétny, praktický skutok lásky alebo služby vyplývajúci z úryvku
+
 Teologické a jazykové zásady
 
 Rešpektuj katolícku/ekumenickú citlivosť.
@@ -81,11 +86,28 @@ Oratio: krátka osobná modlitba – prosba o milosť žiť posolstvo dnes.
 
 Contemplatio: 1 obraz v tichu + kotva (krátka veta z úryvku v úvodzovkách).
 
+Actio: konkrétny návrh na skutok lásky vyplývajúci z úryvku. Môže byť malý, jednoduchý, ale konkrétny: zavolať niekomu, odpustiť, pomôcť, poďakovať, byť trpezlivý, zdieľať radosť... Nie teória, ale prax lásky. Formulácia Actio nech je otvorená a variabilná — môže byť vyjadrená rôznymi spôsobmi (napr. "Dnes...", "Skús...", "Zváž...", "Môžem...", imperatívou alebo jemnou výzvou) podľa tónu a štýlu textu. Buď konkrétny a praktický: namiesto všeobecného "byť láskavejší" ponúkni jasný krok (napr. "zavolať niekomu a poďakovať mu").
+
 Kontrola: zachovaná štruktúra, tón, dĺžky, diakritika, bez nadbytočných vsuviek.
+
+Actio – filozofia a kontext
+
+"Dobré je tiež pripomenúť, že dynamika lectio divina sa nenapĺňa, kým neprejde do činnosti (actio), čím podnecuje život veriaceho, aby sa v láske stal darom pre druhých." (Pápež Benedikt XVI., Verbum Domini, 87)
+
+Actio nie je len ďalší bod – je to dôsledok. Je to syla Krista, ktorú sme prijali, a ktorá nás teraz pohýna k láske. Slovo, ktoré nás zasiahlo, sa má prejaviť v konkrétnych činoch: v láskavosti, službe, odpustení, pozornosti, odvahe...
+
+Actio môže byť:
+- Zdieľanie: podeliť sa o Slovo, zavolať osamelému, povedať niekomu o svojej viere
+- Starostlivosť: navštíviť chorého, pomôcť bez očakávania vďaky
+- Viera: dôverovať, vydať svedectvo životom
+- Tiché skutky: zápis do denníka, list odpustenia, rozhodnutie denne ďakovať
+- Malé gestá lásky: úsmev, telefonát, ospravedlnenie, trpezlivosť s deťmi
+
+"Čokoľvek ste urobili jednému z týchto mojich najmenších bratov, mne ste urobili." (Mt 25,40)
 
 Kvalitárska kontrola (checklist pred výstupom)
 
-✓ Štyri sekcie v správnom poradí a názvoch
+✓ Päť sekcií v správnom poradí a názvoch
 
 ✓ Lectio je súhrn deja, nie výklad
 
@@ -94,6 +116,8 @@ Kvalitárska kontrola (checklist pred výstupom)
 ✓ Oratio je krátka, osobná, adresuje posolstvo úryvku
 
 ✓ Contemplatio končí presnou vetou z úryvku v úvodzovkách
+
+✓ Actio je konkrétny, praktický skutok lásky vyplývajúci z úryvku (začína "Dnes" alebo "Môžem")
 
 ✓ Bez zvláštnych či nejasných fráz; prirodzená slovenčina
 
@@ -129,12 +153,15 @@ Napíš Lectio Divina v štyroch sekciách (Lectio, Meditatio, Oratio, Contempla
 
 DÔLEŽITÉ pre Meditatio: Na konci textu pridaj 2 osobné reflexné otázky, ktoré pomôžu čitateľovi zamyslieť sa nad svojím životom vo svetle tohto úryvku. Každá otázka začína na novom riadku s "• ".
 
+DÔLEŽITÉ pre Actio: Navrhni jeden konkrétny, praktický skutok lásky vyplývajúci z tohto úryvku. Začni slovom "Dnes" alebo "Môžem". Buď špecifický: nie "byť láskavejší", ale "Dnes môžem zavolať mame a poďakovať jej za všetko, čo pre mňa urobila."
+
 Vráť výsledok vo formáte JSON:
 {
   "lectio": "<text>",
   "meditatio": "<text>",
   "oratio": "<text>",
-  "contemplatio": "<text>"
+  "contemplatio": "<text>",
+  "actio": "<text>"
 }
 `.trim();
 
@@ -160,7 +187,7 @@ Vráť výsledok vo formáte JSON:
     const result = JSON.parse(responseText);
 
     // Validate response structure
-    if (!result.lectio || !result.meditatio || !result.oratio || !result.contemplatio) {
+    if (!result.lectio || !result.meditatio || !result.oratio || !result.contemplatio || !result.actio) {
       throw new Error('Neplatná štruktúra odpovede z AI');
     }
 
@@ -170,7 +197,8 @@ Vráť výsledok vo formáte JSON:
         lectio: result.lectio,
         meditatio: result.meditatio,
         oratio: result.oratio,
-        contemplatio: result.contemplatio
+        contemplatio: result.contemplatio,
+        actio: result.actio
       },
       usage: {
         model: model,

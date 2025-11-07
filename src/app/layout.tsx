@@ -125,8 +125,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
         <link rel="manifest" href="/manifest.json" />
         
-        {/* Performance Optimizations - Preload kritických zdrojov */}
-        <link rel="preload" href="/hero-background.webp" as="image" type="image/webp" fetchPriority="high" />
+        {/* Performance Optimizations - DNS prefetch */}
         <link rel="dns-prefetch" href="https://analytics.lectio.one" />
         <link rel="preconnect" href="https://analytics.lectio.one" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://unnijykbupxguogrkolj.supabase.co" />

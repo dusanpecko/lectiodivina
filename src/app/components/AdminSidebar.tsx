@@ -17,6 +17,7 @@ import {
   Newspaper,
   Plus,
   Settings,
+  ShoppingBag,
   UserPlus,
   Users
 } from "lucide-react";
@@ -39,6 +40,7 @@ const links = [
   // { href: "/admin/daily_quotes", key: "daily_quotes", icon: Quote, color: "purple" }, // DEPRECATED - používame actio_text z lectio_sources
   { href: "/admin/community", key: "community", icon: UserPlus, color: "amber" },
   { href: "/admin/rosary", key: "rosary", icon: Crown, color: "violet" },
+  { href: "/admin/shop", key: "shop", icon: ShoppingBag, color: "cyan" },
   { href: "/admin/launch-checklist", key: "launch_checklist", icon: CheckCircle2, color: "green" },
   // { href: "/admin/content_cards", key: "content_cards", icon: CreditCard, color: "indigo" }, // VO VÝVOJI
   // { href: "/admin/programs", key: "programs", icon: Kanban, color: "pink" }, // VO VÝVOJI
@@ -75,6 +77,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
     if (key === 'tasks') return adminT.navigation.tasks;
     if (key === 'lectio_sources') return adminT.navigation.lectio_sources;
     if (key === 'rosary') return adminT.navigation.rosary;
+    if (key === 'shop') return adminT.navigation.shop;
     if (key === 'launch_checklist') return adminT.navigation.launch_checklist;
     if (key === 'error_reports') return adminT.navigation.error_reports;
     if (key === 'bible_bulk_import') return adminT.navigation.bible_bulk_import;

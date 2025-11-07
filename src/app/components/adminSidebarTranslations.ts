@@ -8,6 +8,7 @@ export interface AdminSidebarTranslations {
     lectio_sources: string;
     liturgical_calendar: string;
     rosary: string;
+    shop: string;
     launch_checklist: string;
     error_reports: string;
     programs: string;
@@ -38,6 +39,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       lectio_sources: "Lectio Zdroje",
       liturgical_calendar: "Liturgický kalendár",
       rosary: "Ruženec",
+      shop: "E-shop",
       launch_checklist: "Launch Checklist",
       error_reports: "Správa chýb",
       programs: "Programy",
@@ -66,6 +68,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       lectio_sources: "Lectio Zdroje",
       liturgical_calendar: "Liturgický kalendář",
       rosary: "Růženec",
+      shop: "E-shop",
       launch_checklist: "Launch Checklist",
       error_reports: "Zpráva chyb",
       programs: "Programy",
@@ -94,6 +97,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       lectio_sources: "Lectio Sources",
       liturgical_calendar: "Liturgical Calendar",
       rosary: "Rosary",
+      shop: "E-shop",
       launch_checklist: "Launch Checklist",
       error_reports: "Error Reports",
       programs: "Programs",
@@ -122,6 +126,7 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       lectio_sources: "Fuentes Lectio",
       liturgical_calendar: "Calendario Litúrgico",
       rosary: "Rosario",
+      shop: "Tienda",
       launch_checklist: "Launch Checklist",
       error_reports: "Reportes de Error",
       programs: "Programas",

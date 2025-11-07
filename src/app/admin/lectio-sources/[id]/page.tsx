@@ -9,6 +9,7 @@ import AudioGenerateButton from "@/app/components/AudioGenerateButton";
 import BulkTranslateSection from "@/app/components/BulkTranslateSection";
 import { useLanguage } from "@/app/components/LanguageProvider";
 import LectioAIGenerator from "@/app/components/LectioAIGenerator";
+import PartialLectioGenerator from "@/app/components/PartialLectioGenerator";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import TranslateButton from "@/app/components/TranslateButton";
 import VoiceSelector from "@/app/components/VoiceSelector";
@@ -92,6 +93,14 @@ export default function LectioSourceEditPage() {
   // Voice and model settings
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>("scOwDtmlUjD3prqpp97I"); // Sam ako predvolený
   const [selectedModel, setSelectedModel] = useState<string>("eleven_v3"); // V3 ako predvolený
+  
+  // AI assistance toggle per field (default: only lectio_text enabled)
+  const [aiEnabledFields, setAiEnabledFields] = useState<Record<string, boolean>>({
+    lectio_text: true,
+    meditatio_text: false,
+    oratio_text: false,
+    contemplatio_text: false,
+  });
 
   const DRAFT_KEY = `lectio_draft_${id}`;
 
@@ -169,12 +178,31 @@ export default function LectioSourceEditPage() {
     meditatio: string;
     oratio: string;
     contemplatio: string;
+    actio: string;
   }) => {
     updateFormField('lectio_text', data.lectio);
     updateFormField('meditatio_text', data.meditatio);
     updateFormField('oratio_text', data.oratio);
     updateFormField('contemplatio_text', data.contemplatio);
-    showTempMessage('✨ AI vygenerovalo všetky sekcie Lectio Divina', 'success', 4000);
+    updateFormField('actio_text', data.actio);
+    showTempMessage('✨ AI vygenerovalo všetkých 5 sekcií Lectio Divina vrátane Actio', 'success', 4000);
+  }, [updateFormField]);
+
+  // Partial generation handlers
+  const handleContemplatiooActioGenerated = useCallback((data: {
+    contemplatio: string;
+    actio: string;
+  }) => {
+    updateFormField('contemplatio_text', data.contemplatio);
+    updateFormField('actio_text', data.actio);
+    showTempMessage('✨ AI vygenerovalo Contemplatio a Actio', 'success', 3000);
+  }, [updateFormField]);
+
+  const handleActioGenerated = useCallback((data: {
+    actio: string;
+  }) => {
+    updateFormField('actio_text', data.actio);
+    showTempMessage('✨ AI vygenerovalo Actio', 'success', 3000);
   }, [updateFormField]);
 
   // Template selection handler
@@ -785,8 +813,95 @@ export default function LectioSourceEditPage() {
             disabled={saving}
           />
 
+          {/* Rýchle AI generovanie - čiastočné sekcie */}
+          <PartialLectioGenerator
+            bibliaText={formData.biblia_1 || ""}
+            lectioText={formData.lectio_text || ""}
+            meditatioText={formData.meditatio_text || ""}
+            oratioText={formData.oratio_text || ""}
+            contemplatioText={formData.contemplatio_text || ""}
+            suradnicePismo={formData.suradnice_pismo || ""}
+            onContemplatiooActioGenerated={handleContemplatiooActioGenerated}
+            onActioGenerated={handleActioGenerated}
+            disabled={saving}
+          />
+
           {/* Hlavný obsah lectio divina */}
           <FormSection title="Hlavný obsah lectio divina" icon={BookOpen}>
+            {/* AI assistance settings */}
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 mb-6">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center mt-1">
+                  <span className="text-xl">🤖</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">AI asistencia pri písaní</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Zapnite/vypnite AI návrhy pre jednotlivé polia. Defaultne je zapnuté len pre Lectio.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="flex items-center bg-white rounded-lg p-3 border border-purple-200">
+                  <input
+                    type="checkbox"
+                    id="ai-lectio"
+                    checked={aiEnabledFields.lectio_text}
+                    onChange={(e) => setAiEnabledFields(prev => ({ ...prev, lectio_text: e.target.checked }))}
+                    className="w-5 h-5 text-purple-600 bg-gray-100 border-purple-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="ai-lectio" className="ml-3 text-sm font-semibold text-gray-800 cursor-pointer">
+                    📖 Lectio
+                  </label>
+                </div>
+                
+                <div className="flex items-center bg-white rounded-lg p-3 border border-purple-200">
+                  <input
+                    type="checkbox"
+                    id="ai-meditatio"
+                    checked={aiEnabledFields.meditatio_text}
+                    onChange={(e) => setAiEnabledFields(prev => ({ ...prev, meditatio_text: e.target.checked }))}
+                    className="w-5 h-5 text-purple-600 bg-gray-100 border-purple-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="ai-meditatio" className="ml-3 text-sm font-semibold text-gray-800 cursor-pointer">
+                    👁️ Meditatio
+                  </label>
+                </div>
+                
+                <div className="flex items-center bg-white rounded-lg p-3 border border-purple-200">
+                  <input
+                    type="checkbox"
+                    id="ai-oratio"
+                    checked={aiEnabledFields.oratio_text}
+                    onChange={(e) => setAiEnabledFields(prev => ({ ...prev, oratio_text: e.target.checked }))}
+                    className="w-5 h-5 text-purple-600 bg-gray-100 border-purple-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="ai-oratio" className="ml-3 text-sm font-semibold text-gray-800 cursor-pointer">
+                    ❤️ Oratio
+                  </label>
+                </div>
+                
+                <div className="flex items-center bg-white rounded-lg p-3 border border-purple-200">
+                  <input
+                    type="checkbox"
+                    id="ai-contemplatio"
+                    checked={aiEnabledFields.contemplatio_text}
+                    onChange={(e) => setAiEnabledFields(prev => ({ ...prev, contemplatio_text: e.target.checked }))}
+                    className="w-5 h-5 text-purple-600 bg-gray-100 border-purple-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="ai-contemplatio" className="ml-3 text-sm font-semibold text-gray-800 cursor-pointer">
+                    👁️ Contemplatio
+                  </label>
+                </div>
+              </div>
+              
+              <p className="text-xs text-purple-600 mt-4 flex items-center gap-2">
+                <span>💡</span>
+                <span>Keď je pole vypnuté, AI nebude navrhovať zmeny počas písania.</span>
+              </p>
+            </div>
+            
             <div className="space-y-8">
               <AITextField
                 label="Lectio – text"
@@ -799,7 +914,7 @@ export default function LectioSourceEditPage() {
                 fieldType="spiritual"
                 disabled={saving}
                 showGrammarCheck={true}
-                enableAISuggestions={true}
+                enableAISuggestions={aiEnabledFields.lectio_text}
                 enableRichText={true}
               />
               
@@ -814,7 +929,7 @@ export default function LectioSourceEditPage() {
                 fieldType="spiritual"
                 disabled={saving}
                 showGrammarCheck={true}
-                enableAISuggestions={true}
+                enableAISuggestions={aiEnabledFields.meditatio_text}
                 enableRichText={true}
               />
               
@@ -829,7 +944,7 @@ export default function LectioSourceEditPage() {
                 fieldType="prayer"
                 disabled={saving}
                 showGrammarCheck={true}
-                enableAISuggestions={true}
+                enableAISuggestions={aiEnabledFields.oratio_text}
                 enableRichText={true}
               />
               
@@ -844,7 +959,7 @@ export default function LectioSourceEditPage() {
                 fieldType="spiritual"
                 disabled={saving}
                 showGrammarCheck={true}
-                enableAISuggestions={true}
+                enableAISuggestions={aiEnabledFields.contemplatio_text}
                 enableRichText={true}
               />
               

@@ -11,6 +11,7 @@ interface LectioAIGeneratorProps {
     meditatio: string;
     oratio: string;
     contemplatio: string;
+    actio: string;
   }) => void;
   disabled?: boolean;
 }
@@ -195,7 +196,7 @@ export default function LectioAIGenerator({
       </button>
 
       <p className="text-xs text-center text-gray-500 mt-3">
-        AI vygeneruje všetky 4 sekcie: Lectio, Meditatio (+ 2 reflexné otázky), Oratio, Contemplatio
+        AI vygeneruje všetkých 5 sekcií: Lectio, Meditatio (+ 2 reflexné otázky), Oratio, Contemplatio, Actio (konkrétny skutok lásky)
       </p>
     </div>
   );
