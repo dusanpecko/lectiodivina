@@ -256,10 +256,6 @@ export default function PrivacyPolicyPage() {
             {t.sections.rights.content.intro}{" "}
             <a href={`mailto:${t.sections.rights.content.contactEmails.first}`} className="text-blue-600 hover:text-blue-800 font-medium">
               {t.sections.rights.content.contactEmails.first}
-            </a>{" "}
-            alebo{" "}
-            <a href={`mailto:${t.sections.rights.content.contactEmails.second}`} className="text-blue-600 hover:text-blue-800 font-medium">
-              {t.sections.rights.content.contactEmails.second}
             </a>
           </p>
           

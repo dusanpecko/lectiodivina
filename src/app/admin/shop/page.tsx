@@ -5,6 +5,7 @@ import {
   Calculator,
   CreditCard,
   Heart,
+  Mail,
   Package,
   Settings,
   ShoppingBag,
@@ -120,6 +121,15 @@ export default function ShopDashboard() {
       stat: "50+",
       statLabel: "krajín",
     },
+    {
+      href: "/admin/shop/email-templates",
+      icon: <Mail className="w-8 h-8" />,
+      title: "Email Šablóny",
+      description: "Upravuj email notifikácie",
+      color: "indigo",
+      stat: "7",
+      statLabel: "šablón",
+    },
   ];
 
   const colorClasses = {
@@ -164,6 +174,13 @@ export default function ShopDashboard() {
       icon: "text-orange-600",
       hover: "hover:bg-orange-100",
       badge: "bg-orange-100 text-orange-700",
+    },
+    indigo: {
+      bg: "bg-indigo-50",
+      border: "border-indigo-200",
+      icon: "text-indigo-600",
+      hover: "hover:bg-indigo-100",
+      badge: "bg-indigo-100 text-indigo-700",
     },
   };
 

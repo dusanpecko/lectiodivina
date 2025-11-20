@@ -1,3 +1,4 @@
+import { formatCurrency, formatDate, sendEmailFromTemplate } from '@/lib/email-sender';
 import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -13,6 +14,7 @@ const supabase = createClient(
 );
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 // Route segment config - disable Next.js body parsing
 export const dynamic = 'force-dynamic';
@@ -143,6 +145,48 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
 
   if (error) {
     console.error('Error creating subscription:', error);
+  } else {
+    console.log('✅ Subscription created in database');
+
+    // Send email notification
+    try {
+      // Get user email
+      const { data: profile } = await supabase
+        .from('users')
+        .select('email, full_name')
+        .eq('id', userId)
+        .single();
+
+      if (profile?.email) {
+        const tierNames: Record<string, string> = {
+          supporter: 'Supporter',
+          patron: 'Patron',
+          benefactor: 'Benefactor',
+        };
+
+        await sendEmailFromTemplate({
+          templateKey: 'subscription_created',
+          recipientEmail: profile.email,
+          recipientName: profile.full_name || undefined,
+          userId,
+          subscriptionId: subscriptionId,
+          variables: {
+            customer_name: profile.full_name || 'Podporovateľ',
+            tier_name: tierNames[tier] || tier,
+            amount: formatCurrency((subscription.items.data[0].price.unit_amount || 0) / 100),
+            interval: subscription.items.data[0].price.recurring?.interval === 'month' ? 'mesiac' : 'rok',
+            start_date: formatDate(new Date(subData.current_period_start * 1000)),
+            next_billing_date: formatDate(new Date(subData.current_period_end * 1000)),
+            tier_benefits: 'Prístup k premium obsahu a podpora projektu',
+            account_url: `${BASE_URL}/profile`,
+          },
+        });
+
+        console.log('📧 Subscription email sent');
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending subscription email:', emailError);
+    }
   }
 }
 
@@ -185,17 +229,49 @@ async function handleDonationCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.user_id === 'anonymous' ? null : session.metadata?.user_id;
   const message = session.metadata?.message;
 
-  const { error } = await supabase.from('donations').insert({
+  const { data: donation, error } = await supabase.from('donations').insert({
     user_id: userId,
     amount: (session.amount_total || 0) / 100,
     stripe_payment_id: session.payment_intent as string,
     stripe_session_id: session.id,
     message: message || null,
     is_anonymous: !userId,
-  });
+  }).select().single();
 
   if (error) {
     console.error('Error creating donation:', error);
+  } else {
+    console.log('✅ Donation created in database');
+
+    // Send email notification
+    try {
+      const recipientEmail = session.customer_email || session.customer_details?.email;
+      
+      if (recipientEmail) {
+        const recipientName = session.customer_details?.name || 'Darujúci';
+
+        await sendEmailFromTemplate({
+          templateKey: 'donation_receipt',
+          recipientEmail,
+          recipientName,
+          userId: userId || undefined,
+          donationId: donation.id,
+          variables: {
+            donor_name: recipientName,
+            amount: formatCurrency((session.amount_total || 0) / 100),
+            message: message || '',
+            has_message: !!message,
+            donation_date: formatDate(new Date()),
+            transaction_id: session.payment_intent as string,
+            receipt_url: `${BASE_URL}/profile#donations`,
+          },
+        });
+
+        console.log('📧 Donation email sent');
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending donation email:', emailError);
+    }
   }
 }
 
@@ -304,6 +380,40 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
 
   console.log('✅ Order items created:', orderItems.length);
 
+  // Send order confirmation email
+  try {
+    if (customerEmail) {
+      const itemsList = orderItems.map((item, index) => {
+        const product = products[index];
+        return `<li>${product?.name} - ${item.quantity}× - ${formatCurrency(item.price)}</li>`;
+      }).join('');
+
+      await sendEmailFromTemplate({
+        templateKey: 'order_confirmation',
+        recipientEmail: customerEmail,
+        recipientName: shippingAddress.name || undefined,
+        userId: userId || undefined,
+        orderId: order.id,
+        variables: {
+          customer_name: shippingAddress.name || 'Zákazník',
+          order_number: order.id.slice(0, 8).toUpperCase(),
+          total_amount: formatCurrency(total),
+          shipping_cost: formatCurrency(shippingCost),
+          items: itemsList,
+          shipping_name: shippingAddress.name || '',
+          shipping_address: shippingAddress.street || '',
+          shipping_city: shippingAddress.city || '',
+          shipping_zip: shippingAddress.postal_code || '',
+          shipping_country: shippingAddress.country || '',
+        },
+      });
+
+      console.log('📧 Order confirmation email sent');
+    }
+  } catch (emailError) {
+    console.error('❌ Error sending order confirmation email:', emailError);
+  }
+
   // Update product stock
   for (const item of items) {
     const product = products.find((p) => p.id === item.id);
@@ -347,6 +457,38 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       console.error('❌ Error updating subscription after payment:', error);
     } else {
       console.log('✅ Subscription updated with new billing period');
+
+      // Send renewal email
+      try {
+        // Get subscription from database
+        const { data: dbSubscription } = await supabase
+          .from('subscriptions')
+          .select('*, profiles!inner(email, full_name)')
+          .eq('stripe_subscription_id', subscriptionId)
+          .single();
+
+        if (dbSubscription && dbSubscription.profiles?.email) {
+          await sendEmailFromTemplate({
+            templateKey: 'subscription_renewal',
+            recipientEmail: dbSubscription.profiles.email,
+            recipientName: dbSubscription.profiles.full_name || undefined,
+            userId: dbSubscription.user_id,
+            subscriptionId: subscriptionId,
+            variables: {
+              customer_name: dbSubscription.profiles.full_name || 'Podporovateľ',
+              tier_name: dbSubscription.tier,
+              amount: formatCurrency(dbSubscription.amount),
+              payment_date: formatDate(new Date()),
+              next_billing_date: formatDate(new Date(subData.current_period_end * 1000)),
+              receipt_url: invoice.hosted_invoice_url || `${BASE_URL}/profile`,
+            },
+          });
+
+          console.log('📧 Subscription renewal email sent');
+        }
+      } catch (emailError) {
+        console.error('❌ Error sending renewal email:', emailError);
+      }
     }
   }
 }
@@ -366,6 +508,39 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
     if (error) {
       console.error('Error updating subscription status:', error);
+    } else {
+      console.log('⚠️ Subscription marked as past_due');
+
+      // Send payment failed email
+      try {
+        // Get subscription from database
+        const { data: dbSubscription } = await supabase
+          .from('subscriptions')
+          .select('*, profiles!inner(email, full_name)')
+          .eq('stripe_subscription_id', subscriptionId)
+          .single();
+
+        if (dbSubscription && dbSubscription.profiles?.email) {
+          await sendEmailFromTemplate({
+            templateKey: 'payment_failed',
+            recipientEmail: dbSubscription.profiles.email,
+            recipientName: dbSubscription.profiles.full_name || undefined,
+            userId: dbSubscription.user_id,
+            subscriptionId: subscriptionId,
+            variables: {
+              customer_name: dbSubscription.profiles.full_name || 'Podporovateľ',
+              tier_name: dbSubscription.tier,
+              error_reason: invoice.last_finalization_error?.message || 'Nepodarilo sa stiahnuť platbu z karty',
+              update_payment_url: `${BASE_URL}/profile#subscription`,
+              retry_attempts: '3',
+            },
+          });
+
+          console.log('📧 Payment failed email sent');
+        }
+      } catch (emailError) {
+        console.error('❌ Error sending payment failed email:', emailError);
+      }
     }
   }
 }

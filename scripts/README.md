@@ -1,19 +1,51 @@
 # Scripts Directory
 
-Utility scripts for manual database operations. **Use with caution!**
+Utility scripts for manual database operations and testing. **Use with caution!**
 
 ⚠️ **All scripts use environment variables from `.env.local` for security.**
 
 ## Available Scripts
 
-### 1. `check_donations.js`
+### 📧 Email Testing
+
+#### `test-email.js`
+Test email templates with mock data.
+
+```bash
+node scripts/test-email.js <template_key> <recipient_email>
+
+# Examples:
+node scripts/test-email.js order_confirmation mojkrok@dcza.sk
+node scripts/test-email.js subscription_created info@lectiodivina.sk
+node scripts/test-email.js donation_receipt test@example.com
+```
+
+**Available templates:**
+- `order_confirmation` - Order confirmation
+- `order_shipped` - Shipment notification
+- `subscription_created` - New subscription
+- `subscription_renewal` - Subscription renewed
+- `subscription_cancelled` - Subscription cancelled
+- `payment_failed` - Payment failed
+- `donation_receipt` - Donation thank you
+
+### 💰 Donations
+
+#### 1. `check_donations.js`
 Lists all donations in the database.
 
 ```bash
 node scripts/check_donations.js
 ```
 
-### 2. `get_user_id.js`
+#### 1. `check_donations.js`
+Lists all donations in the database.
+
+```bash
+node scripts/check_donations.js
+```
+
+#### 2. `get_user_id.js`
 Find a user's ID by email address.
 
 ```bash
@@ -21,7 +53,15 @@ Find a user's ID by email address.
 node scripts/get_user_id.js
 ```
 
-### 3. `add_manual_donation.js`
+#### 2. `get_user_id.js`
+Find a user's ID by email address.
+
+```bash
+# Edit the script to set your email, then run:
+node scripts/get_user_id.js
+```
+
+#### 3. `add_manual_donation.js`
 Manually add a donation record (when webhook fails).
 
 ```bash

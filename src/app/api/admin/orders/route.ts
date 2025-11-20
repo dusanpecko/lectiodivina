@@ -1,3 +1,4 @@
+import { sendEmailFromTemplate } from '@/lib/email-sender';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
@@ -48,7 +49,27 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
+    // First, get the current order details
+    const { data: currentOrder, error: fetchError } = await supabaseAdmin
+      .from('orders')
+      .select(`
+        *,
+        order_items (
+          quantity,
+          price,
+          product_snapshot
+        )
+      `)
+      .eq('id', orderId)
+      .single();
+
+    if (fetchError || !currentOrder) {
+      console.error('Error fetching order:', fetchError);
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
     const updateData: Record<string, string> = {};
+    const oldStatus = currentOrder.status;
     
     if (status) {
       updateData.status = status;
@@ -72,6 +93,36 @@ export async function PATCH(request: Request) {
     if (error) {
       console.error('Error updating order:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Send email notification when status changes to 'shipped'
+    const newStatus = updateData.status || oldStatus;
+    if (newStatus === 'shipped' && oldStatus !== 'shipped' && currentOrder.shipping_address?.email) {
+      try {
+        const orderNumber = orderId.slice(0, 8).toUpperCase();
+        const trackingNum = trackingNumber || currentOrder.tracking_number || 'Bude doplnené';
+        
+        await sendEmailFromTemplate({
+          templateKey: 'order_shipped',
+          recipientEmail: currentOrder.shipping_address.email,
+          recipientName: currentOrder.shipping_address.name,
+          userId: currentOrder.user_id || undefined,
+          orderId: orderId,
+          variables: {
+            customer_name: currentOrder.shipping_address.name || 'Zákazník',
+            order_number: orderNumber,
+            tracking_number: trackingNum,
+            carrier: 'Slovenská pošta',
+            tracking_url: 'https://www.posta.sk/sledovanie-zasielok',
+            estimated_delivery: '3-5 pracovných dní',
+          },
+        });
+
+        console.log('✅ Order shipped email sent to:', currentOrder.shipping_address.email);
+      } catch (emailError) {
+        console.error('❌ Error sending order shipped email:', emailError);
+        // Don't fail the request if email fails
+      }
     }
 
     return NextResponse.json({ order: data });

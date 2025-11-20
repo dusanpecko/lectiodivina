@@ -150,11 +150,11 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         title: "Kto je správca osobných údajov",
         content: {
           intro: "Správcom osobných údajov účastníkov podujatí (najmä seminárov a konferencií) organizovaných KROK – Pastoračný fond Žilinskej diecézy, odberateľov newslettera, dobrovoľníkov a podporovateľov, dodávateľov služieb a korešpondentov s našou organizáciou, získaných prostredníctvom registračných formulárov na jednotlivé podujatia, prostredníctvom formulára na odoberanie newslettera uverejnenom na našej webovej stránke www.lectio.one, objednávkového formulára na knihy alebo prostredníctvom osobnej korešpondencie, je:",
-          companyTitle: "KROK – Pastoračný fond Žilinskej diecézy",
+          companyTitle: "lectio.one",
           address: {
             street: "Jána Kalinčiaka 1",
             city: "010 01 Žilina",
-            ico: "IČO: 52 60 18 97"
+            ico: "IČO: 55 97 15 21"
           }
         }
       },
@@ -286,7 +286,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         content: {
           intro: "V súvislosti s ochranou osobných údajov máte viacero práv. Ak budete niektoré z týchto práv chcieť využiť, prosíme, kontaktujte nás na",
           contactEmails: {
-            first: "mojkrok@dcza.sk",
+            first: "info@lectio.one",
             second: "info@lectio.one"
           },
           rightsList: [
@@ -342,7 +342,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
     
     footer: {
       signature: "Mgr. Dušan Pecko",
-      position: "štatutárny zástupca KROK Pastoračný fond Žilinskej diecézy"
+      position: "štatutárny zástupca lectio.one"
     }
   },
 
@@ -358,11 +358,11 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         title: "Who is the personal data controller",
         content: {
           intro: "The controller of personal data of event participants (especially seminars and conferences) organized by KROK – Pastoral Fund of the Diocese of Žilina, newsletter subscribers, volunteers and supporters, service providers and correspondents with our organization, obtained through registration forms for individual events, through the newsletter subscription form published on our website www.lectio.one, book order form or through personal correspondence, is:",
-          companyTitle: "KROK – Pastoral Fund of the Diocese of Žilina",
+          companyTitle: "lectio.one",
           address: {
             street: "Jána Kalinčiaka 1",
             city: "010 01 Žilina",
-            ico: "ID: 52 60 18 97"
+            ico: "ID: 55 97 15 21"
           }
         }
       },
@@ -494,7 +494,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         content: {
           intro: "In connection with the protection of personal data, you have several rights. If you want to exercise any of these rights, please contact us at",
           contactEmails: {
-            first: "mojkrok@dcza.sk",
+            first: "info@lectio.one",
             second: "info@lectio.one"
           },
           rightsList: [
@@ -550,7 +550,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
     
     footer: {
       signature: "Mgr. Dušan Pecko",
-      position: "statutory representative of KROK Pastoral Fund of the Diocese of Žilina"
+      position: "statutory representative of lectio.one"
     }
   },
 
@@ -566,11 +566,11 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         title: "Kdo je správce osobních údajů",
         content: {
           intro: "Správcem osobních údajů účastníků akcí (zejména seminářů a konferencí) organizovaných KROK – Pastorační fond Žilinské diecéze, odběratelů newsletteru, dobrovolníků a podporovatelů, dodavatelů služeb a korespondentů s naší organizací, získaných prostřednictvím registračních formulářů na jednotlivé akce, prostřednictvím formuláře pro odběr newsletteru zveřejněném na našich webových stránkách www.lectio.one, objednávkového formuláře na knihy nebo prostřednictvím osobní korespondence, je:",
-          companyTitle: "KROK – Pastorační fond Žilinské diecéze",
+          companyTitle: "lectio.one",
           address: {
             street: "Jána Kalinčiaka 1",
             city: "010 01 Žilina",
-            ico: "IČO: 52 60 18 97"
+            ico: "IČO: 55 97 15 21"
           }
         }
       },
@@ -702,7 +702,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         content: {
           intro: "V souvislosti s ochranou osobních údajů máte několik práv. Pokud budete některé z těchto práv chtít využít, prosíme, kontaktujte nás na",
           contactEmails: {
-            first: "mojkrok@dcza.sk",
+            first: "info@lectio.one",
             second: "info@lectio.one"
           },
           rightsList: [
@@ -758,7 +758,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
     
     footer: {
       signature: "Mgr. Dušan Pecko",
-      position: "statutární zástupce KROK Pastorační fond Žilinské diecéze"
+      position: "statutární zástupce lectio.one"
     }
   },
 
@@ -774,11 +774,11 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         title: "Quién es el responsable del tratamiento de datos personales",
         content: {
           intro: "El responsable del tratamiento de datos personales de los participantes de eventos (especialmente seminarios y conferencias) organizados por KROK – Fondo Pastoral de la Diócesis de Žilina, suscriptores de newsletters, voluntarios y seguidores, proveedores de servicios y corresponsales con nuestra organización, obtenidos a través de formularios de registro para eventos individuales, a través del formulario de suscripción al newsletter publicado en nuestro sitio web www.lectio.one, formulario de pedido de libros o a través de correspondencia personal, es:",
-          companyTitle: "KROK – Fondo Pastoral de la Diócesis de Žilina",
+          companyTitle: "lectio.one",
           address: {
             street: "Jána Kalinčiaka 1",
             city: "010 01 Žilina",
-            ico: "ID: 52 60 18 97"
+            ico: "ID: 55 97 15 21"
           }
         }
       },
@@ -910,7 +910,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
         content: {
           intro: "En relación con la protección de datos personales, tiene varios derechos. Si desea ejercer alguno de estos derechos, por favor contáctenos en",
           contactEmails: {
-            first: "mojkrok@dcza.sk",
+            first: "info@lectio.one",
             second: "info@lectio.one"
           },
           rightsList: [
@@ -966,7 +966,7 @@ export const privacyTranslations: Record<string, PrivacyTranslations> = {
     
     footer: {
       signature: "Mgr. Dušan Pecko",
-      position: "representante legal de KROK Fondo Pastoral de la Diócesis de Žilina"
+      position: "representante legal de lectio.one"
     }
   }
 };

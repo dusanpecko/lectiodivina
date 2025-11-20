@@ -53,7 +53,7 @@ export default function Footer() {
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
                   <div>
-                    <div className="font-medium text-white">KROK – Pastoračný fond Žilinskej diecézy</div>
+                    <div className="font-medium text-white">lectio.one</div>
                     <div>Jána Kalinčiaka 1</div>
                     <div>010 01 Žilina</div>
                   </div>
@@ -73,8 +73,8 @@ export default function Footer() {
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
-                  <a href="mailto:mojkrok@dcza.sk" className="text-gray-300 hover:text-[#40467b] transition-colors duration-200">
-                    mojkrok@dcza.sk
+                  <a href="mailto:info@lectio.one" className="text-gray-300 hover:text-[#40467b] transition-colors duration-200">
+                    info@lectio.one
                   </a>
                 </div>
               </div>
@@ -89,12 +89,12 @@ export default function Footer() {
                 <div className="absolute bottom-0 left-0 w-full h-0.5 rounded-full" style={{ backgroundColor: '#40467b' }}></div>
               </h4>
               <div className="space-y-2 text-gray-300 text-sm">
-                <div><span className="font-medium text-white">IČO:</span> 52 60 18 97</div>
+                <div><span className="font-medium text-white">IČO:</span>55 97 15 21</div>
                 <div><span className="font-medium text-white">DIČ:</span> 21 21 13 90 42</div>
                 <div>
                   <span className="font-medium text-white">IBAN:</span><br />
                   <span className="select-all font-mono text-xs px-2 py-1 rounded mt-1 inline-block" style={{ background: 'rgba(64, 70, 123, 0.2)' }}>
-                    SK04 8330 0000 0029 0168 8673
+                    SK42 7500 0000 0040 3515 6222
                   </span>
                 </div>
               </div>
@@ -242,6 +242,27 @@ export default function Footer() {
                       <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                     </a>
                     
+                    {/* X (Twitter) */}
+                    <a
+                      href="https://x.com/lectioone"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                      style={{ background: 'rgba(64, 70, 123, 0.2)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#000000'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(64, 70, 123, 0.2)'}
+                      title="X (Twitter)"
+                    >
+                      <svg 
+                        className="w-4 h-4 text-gray-300 group-hover:text-white transition-colors duration-300" 
+                        fill="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                      <div className="absolute inset-0 bg-black rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                    </a>
+                    
                     {/* YouTube (pre budúcnosť) */}
                     <a
                       href="#"
@@ -293,21 +314,10 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
             <div className="text-xs text-gray-400 text-center sm:text-left">
-              © 2022 - {new Date().getFullYear()} Dušan Pecko | Pastoračný fond Žilinskej diecézy (
-              <a href="https://mojkrok.sk" target="_blank" rel="noopener" className="transition-colors" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
-                mojkrok.sk
-              </a>
-              ) | {t.footer?.all_rights_reserved || "Všetky práva vyhradené"}
+              © 2022 - {new Date().getFullYear()} lectio.one | {t.footer?.all_rights_reserved || "Všetky práva vyhradené"}
             </div>
             
             <div className="flex items-center space-x-3">
-              <span className="text-xs text-gray-400">
-                {t.footer?.created_by || "vytvoril"}{" "}
-                <a href="https://myprofile.sk" target="_blank" rel="noopener" className="transition-colors font-medium" style={{ color: '#40467b' }} onMouseEnter={(e) => e.currentTarget.style.color = '#686ea3'} onMouseLeave={(e) => e.currentTarget.style.color = '#40467b'}>
-                  MYPROFILE
-                </a>
-              </span>
-              
               {/* Cookie Status Floating Button */}
               <button
                 onClick={open}

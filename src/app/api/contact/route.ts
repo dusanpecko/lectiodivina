@@ -1,9 +1,9 @@
 // app/api/contact/route.ts
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import nodemailer from 'nodemailer';
 import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterprise';
+import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 
 // Type definitions for better TypeScript support
 interface EmailData {
@@ -104,7 +104,7 @@ async function createRecaptchaAssessment({
       
       // Log reasons if any
       if (response.riskAnalysis?.reasons) {
-        response.riskAnalysis.reasons.forEach((reason: any) => {
+        response.riskAnalysis.reasons.forEach((reason) => {
           console.log(`reCAPTCHA reason: ${reason}`);
         });
       }
@@ -132,7 +132,7 @@ async function verifyRecaptcha(token: string, action: string): Promise<boolean> 
         // Consider score > 0.5 as valid (adjust threshold as needed)
         return score > 0.5;
       }
-    } catch (error) {
+    } catch {
       console.log('Falling back to basic reCAPTCHA verification');
     }
   }
@@ -256,15 +256,113 @@ function createAutoReplyTemplate(data: EmailData, language: string = 'sk') {
             
             <div style="text-align: center; margin: 30px 0;">
               <p style="color: #6b7280; font-style: italic;">
-                "Skúste a presvedčte sa, aký dobrý je Hospodin." - Žalm 34:9
+                "Skúste a presvedčte sa, aký dobrý je Pán" - Žalm 34:9
               </p>
             </div>
             
             <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
               <p style="color: #6b7280; font-size: 14px; margin: 0;">
                 S požehnaním,<br>
-                Tím Lectio Divina<br>
-                KROK – Pastoračný fond Žilinskej diecézy
+                Tím lectio.one
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    en: {
+      subject: 'Message Received Confirmation - Lectio Divina',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">Lectio Divina</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Thank you for your message</p>
+          </div>
+          
+          <div style="padding: 30px; background: white; border: 1px solid #e5e7eb;">
+            <h2 style="color: #374151; margin-bottom: 20px;">Dear ${data.firstName},</h2>
+            
+            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 20px;">
+              Thank you for your message regarding the Lectio Divina app. 
+              Your message has been successfully received and our team will get back to you as soon as possible.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <p style="color: #6b7280; font-style: italic;">
+                "Taste and see that the Lord is good" - Psalm 34:9
+              </p>
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                With blessings,<br>
+                The lectio.one Team
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    es: {
+      subject: 'Confirmación de recepción del mensaje - Lectio Divina',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">Lectio Divina</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Gracias por tu mensaje</p>
+          </div>
+          
+          <div style="padding: 30px; background: white; border: 1px solid #e5e7eb;">
+            <h2 style="color: #374151; margin-bottom: 20px;">Estimado/a ${data.firstName},</h2>
+            
+            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 20px;">
+              Gracias por tu mensaje sobre la aplicación Lectio Divina. 
+              Tu mensaje ha sido recibido con éxito y nuestro equipo se pondrá en contacto contigo lo antes posible.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <p style="color: #6b7280; font-style: italic;">
+                "Prueben y vean qué bueno es el Señor" - Salmo 34:9
+              </p>
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Con bendiciones,<br>
+                El equipo de lectio.one
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    cz: {
+      subject: 'Potvrzení přijetí zprávy - Lectio Divina',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">Lectio Divina</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Děkujeme za vaši zprávu</p>
+          </div>
+          
+          <div style="padding: 30px; background: white; border: 1px solid #e5e7eb;">
+            <h2 style="color: #374151; margin-bottom: 20px;">Vážený/á ${data.firstName},</h2>
+            
+            <p style="line-height: 1.6; color: #4b5563; margin-bottom: 20px;">
+              Děkujeme za vaši zprávu týkající se aplikace Lectio Divina. 
+              Vaše zpráva byla úspěšně přijata a náš tým se vám ozve co nejdříve.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <p style="color: #6b7280; font-style: italic;">
+                "Okuste a vizte, že Hospodin je dobrý" - Žalm 34:9
+              </p>
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                S požehnáním,<br>
+                Tým lectio.one
               </p>
             </div>
           </div>
@@ -426,7 +524,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

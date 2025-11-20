@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potvrdenie objednávky kalendára Lectio Divina</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f5f5;">
+        <tr>
+            <td style="padding: 40px 20px;">
+                <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <!-- Header with gradient -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #40467b 0%, #5a61a8 100%); padding: 40px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                                Lectio Divina
+                            </h1>
+                            <p style="margin: 15px 0 0 0; color: rgba(255, 255, 255, 0.95); font-size: 18px; font-weight: 500;">
+                                Ďakujeme za Vašu objednávku!
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="margin: 0 0 20px 0; color: #40467b; font-size: 22px; font-weight: 600;">
+                                Vážený/á {{ .Name }},
+                            </h2>
+                            
+                            <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">
+                                Vaša objednávka kalendára Lectio Divina bola úspešne prijatá a čoskoro ju začneme spracovávať.
+                            </p>
+
+                            <!-- Order Details Box -->
+                            <div style="background-color: #f8f9fa; border-left: 4px solid #40467b; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                                <h3 style="margin: 0 0 15px 0; color: #40467b; font-size: 18px; font-weight: 600;">
+                                    Detaily objednávky
+                                </h3>
+                                
+                                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666666; font-size: 14px;">Počet kusov kalendára:</td>
+                                        <td style="padding: 8px 0; color: #333333; font-size: 14px; font-weight: 600; text-align: right;">{{ .Quantity }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666666; font-size: 14px;">Darček k objednávke:</td>
+                                        <td style="padding: 8px 0; color: #333333; font-size: 14px; font-weight: 600; text-align: right;">{{ .Gift }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666666; font-size: 14px; border-top: 1px solid #dee2e6; padding-top: 15px;">Doručenie:</td>
+                                        <td style="padding: 8px 0; color: #333333; font-size: 14px; font-weight: 600; text-align: right; border-top: 1px solid #dee2e6; padding-top: 15px;">{{ .Delivery }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666666; font-size: 14px;">Platba:</td>
+                                        <td style="padding: 8px 0; color: #333333; font-size: 14px; font-weight: 600; text-align: right;">{{ .Payment }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding: 0;"><hr style="border: none; border-top: 1px solid #dee2e6; margin: 15px 0;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666666; font-size: 14px;">Cena za kalendáre:</td>
+                                        <td style="padding: 8px 0; color: #333333; font-size: 14px; font-weight: 600; text-align: right;">{{ .CalendarPrice }} €</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; color: #666666; font-size: 14px;">Cena za poštovné:</td>
+                                        <td style="padding: 8px 0; color: #333333; font-size: 14px; font-weight: 600; text-align: right;">{{ .ShippingPrice }} €</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; color: #40467b; font-size: 16px; font-weight: 700; border-top: 2px solid #40467b; padding-top: 15px;">Cena celkom:</td>
+                                        <td style="padding: 12px 0; color: #40467b; font-size: 18px; font-weight: 700; text-align: right; border-top: 2px solid #40467b; padding-top: 15px;">{{ .TotalPrice }} €</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Payment Details (only if bank transfer) -->
+                            {{if eq .Payment "Prevodom, na faktúru"}}
+                            <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                                <h3 style="margin: 0 0 15px 0; color: #2e7d32; font-size: 18px; font-weight: 600;">
+                                    Platobné údaje pre prevod
+                                </h3>
+                                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #2e7d32; font-size: 14px; font-weight: 600;">IBAN:</td>
+                                        <td style="padding: 5px 0; color: #1b5e20; font-size: 14px; font-family: 'Courier New', monospace; text-align: right;">SK42 7500 0000 0040 3515 6222</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #2e7d32; font-size: 14px; font-weight: 600;">BIC (SWIFT):</td>
+                                        <td style="padding: 5px 0; color: #1b5e20; font-size: 14px; font-family: 'Courier New', monospace; text-align: right;">CEKOSKBX</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #2e7d32; font-size: 14px; font-weight: 600;">Suma:</td>
+                                        <td style="padding: 5px 0; color: #1b5e20; font-size: 16px; font-weight: 700; text-align: right;">{{ .TotalPrice }} €</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #2e7d32; font-size: 14px; font-weight: 600;">Variabilný symbol:</td>
+                                        <td style="padding: 5px 0; color: #1b5e20; font-size: 14px; font-family: 'Courier New', monospace; text-align: right;">{{ .OrderNumber }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #2e7d32; font-size: 14px; font-weight: 600;">Správa pre príjemcu:</td>
+                                        <td style="padding: 5px 0; color: #1b5e20; font-size: 14px; text-align: right;">Kalendár {{ .Name }}</td>
+                                    </tr>
+                                </table>
+                                <p style="margin: 15px 0 0 0; color: #2e7d32; font-size: 13px; font-style: italic;">
+                                    Prosím, uveďte variabilný symbol pri platbe. Po prijatí platby Vám zašleme faktúru e-mailom.
+                                </p>
+                            </div>
+                            {{end}}
+
+                            <!-- Delivery Address Box -->
+                            <div style="background-color: #e8eaf6; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                                <h3 style="margin: 0 0 15px 0; color: #40467b; font-size: 18px; font-weight: 600;">
+                                    Dodacia adresa
+                                </h3>
+                                <p style="margin: 0; color: #333333; font-size: 14px; line-height: 1.8;">
+                                    <strong>{{ .Name }}</strong><br>
+                                    {{ .Street }}<br>
+                                    {{ .PostalCode }} {{ .City }}<br>
+                                    {{ .Country }}
+                                </p>
+                            </div>
+
+                            <p style="margin: 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">
+                                O ďalších krokoch Vás budeme informovať e-mailom. Kalendár sa snažíme doručiť čo najskôr, spravidla do <strong>30 dní</strong> od objednávky.
+                            </p>
+
+                            {{if .Note}}
+                            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 8px;">
+                                <p style="margin: 0; color: #856404; font-size: 14px;">
+                                    <strong>Vaša poznámka:</strong><br>
+                                    {{ .Note }}
+                                </p>
+                            </div>
+                            {{end}}
+
+                            {{if .Invoice}}
+                            <div style="background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 20px 0; border-radius: 8px;">
+                                <p style="margin: 0; color: #0c5460; font-size: 14px;">
+                                    <strong>Faktúra:</strong> Tlačená faktúra bude priložená k balíku
+                                </p>
+                            </div>
+                            {{end}}
+
+                            <!-- Bible Verse -->
+                            <div style="text-align: center; margin: 40px 0 30px 0; padding: 30px 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px;">
+                                <p style="margin: 0; color: #40467b; font-size: 18px; font-style: italic; line-height: 1.6;">
+                                    "Skúste a presvedčte sa, aký dobrý je Pán"
+                                </p>
+                                <p style="margin: 10px 0 0 0; color: #6c757d; font-size: 14px;">
+                                    – Žalm 34:9
+                                </p>
+                            </div>
+
+                            <p style="margin: 20px 0 0 0; color: #666666; font-size: 14px; line-height: 1.6;">
+                                Ak máte akékoľvek otázky, neváhajte nás kontaktovať na <a href="mailto:info@lectio.one" style="color: #40467b; text-decoration: none; font-weight: 600;">info@lectio.one</a>
+                            </p>
+
+                            <!-- Signature -->
+                            <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e9ecef;">
+                                <p style="margin: 0; color: #333333; font-size: 16px; line-height: 1.6;">
+                                    S požehnaním,<br>
+                                    <strong style="color: #40467b;">Tím lectio.one</strong>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #dee2e6;">
+                            <p style="margin: 0 0 15px 0; color: #6c757d; font-size: 14px;">
+                                <strong>lectio.one</strong><br>
+                                Jána Kalinčiaka 1, 010 01 Žilina<br>
+                                IČO: 55971521
+                            </p>
+                            
+                            <div style="margin: 20px 0;">
+                                <a href="https://lectio.one" style="color: #40467b; text-decoration: none; margin: 0 10px; font-size: 14px;">Webová stránka</a>
+                                <span style="color: #dee2e6;">|</span>
+                                <a href="https://lectio.one/terms" style="color: #40467b; text-decoration: none; margin: 0 10px; font-size: 14px;">Obchodné podmienky</a>
+                                <span style="color: #dee2e6;">|</span>
+                                <a href="https://lectio.one/privacy-policy" style="color: #40467b; text-decoration: none; margin: 0 10px; font-size: 14px;">Ochrana údajov</a>
+                            </div>
+
+                            <p style="margin: 15px 0 0 0; color: #adb5bd; font-size: 12px;">
+                                Tento e-mail bol odoslaný ako potvrdenie Vašej objednávky
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

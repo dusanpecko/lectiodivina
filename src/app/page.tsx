@@ -714,9 +714,7 @@ export default function HomePage() {
               </a>
               
               <a 
-                href="https://www.paypal.com/donate/?hosted_button_id=3BMNK9CH675ZL" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/support"
                 className="group inline-flex items-center space-x-3 px-8 py-4 rounded-2xl text-white font-bold text-lg shadow-2xl hover:scale-105 transition-all duration-300"
                 style={{ backgroundColor: '#40467b' }}
               >

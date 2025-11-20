@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useLanguage } from '../components/LanguageProvider';
 import { useSupabase } from '../components/SupabaseProvider';
@@ -87,12 +87,6 @@ const TrashIcon = () => (
   </svg>
 );
 
-const SaveIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-  </svg>
-);
-
 const ChevronDownIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -129,11 +123,107 @@ const AlertIcon = () => (
   </svg>
 );
 
+const Package = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+  </svg>
+);
+
+const Truck = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+  </svg>
+);
+
+const CreditCard = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+  </svg>
+);
+
+const Heart = ({ size = 24, className = "" }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+);
+
+const Building2 = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+  </svg>
+);
+
+const MapPin = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const SaveIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+  </svg>
+);
+
 interface UserProfile {
   full_name: string;
   avatar_url: string | null;
   role: string;
   created_at: string;
+}
+
+interface Order {
+  id: string;
+  total: number;
+  status: string;
+  tracking_number: string | null;
+  created_at: string;
+  order_items: Array<{
+    id: string;
+    quantity: number;
+    price_at_time: number;
+    product_name: string;
+    product_snapshot: {
+      name: { sk: string };
+    };
+  }>;
+}
+
+interface Subscription {
+  id: string;
+  tier: string;
+  amount: number;
+  status: string;
+  interval: string;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+}
+
+interface Donation {
+  id: string;
+  amount: number;
+  created_at: string;
+  message: string | null;
+}
+
+interface ShippingAddress {
+  name: string;
+  street: string;
+  city: string;
+  postal_code: string;
+  country: string;
+  phone: string;
+  email: string;
+}
+
+interface BillingInfo {
+  shipping_address: ShippingAddress | null;
+  billing_address: ShippingAddress | null;
+  company_name: string | null;
+  ico: string | null;
+  dic: string | null;
+  iban: string | null;
 }
 
 interface NotificationTopic {
@@ -195,6 +285,24 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
+  // Orders, Subscriptions, Donations state
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Billing info state
+  const [billingInfo, setBillingInfo] = useState<BillingInfo>({
+    shipping_address: null,
+    billing_address: null,
+    company_name: null,
+    ico: null,
+    dic: null,
+    iban: null,
+  });
+  const [editingBilling, setEditingBilling] = useState(false);
+  const [savingBilling, setSavingBilling] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsCheckingAuth(false);
@@ -235,6 +343,92 @@ export default function ProfilePage() {
       setFullName(data.full_name || '');
     }
   };
+
+  const fetchOrdersAndBilling = useCallback(async () => {
+    if (!session?.user) return;
+    
+    try {
+      const authUser = session.user;
+
+      // Fetch orders
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('id, total, status, tracking_number, created_at')
+        .eq('user_id', authUser.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (ordersError) {
+        console.error('Orders fetch error:', ordersError);
+      }
+      
+      const ordersWithItems = (ordersData || []).map(order => ({
+        ...order,
+        order_items: []
+      }));
+      
+      setOrders(ordersWithItems);
+
+      // Fetch subscriptions
+      const { data: subscriptionsData, error: subError } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', authUser.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (subError) {
+        console.error('Subscription fetch error:', subError);
+      }
+      
+      setSubscriptions(subscriptionsData || []);
+
+      // Fetch donations
+      const { data: donationsData, error: donationsError } = await supabase
+        .from('donations')
+        .select('*')
+        .eq('user_id', authUser.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (donationsError) {
+        console.error('Donations fetch error:', donationsError);
+      }
+
+      setDonations(donationsData || []);
+
+      // Fetch billing information
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('shipping_address, billing_address, company_name, ico, dic, iban')
+        .eq('email', authUser.email)
+        .single();
+
+      if (userError) {
+        console.error('User billing info fetch error:', userError);
+      } else if (userData) {
+        setBillingInfo({
+          shipping_address: userData.shipping_address,
+          billing_address: userData.billing_address,
+          company_name: userData.company_name,
+          ico: userData.ico,
+          dic: userData.dic,
+          iban: userData.iban,
+        });
+      }
+
+    } catch (error) {
+      console.error('Error fetching orders and billing:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [supabase, session]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchOrdersAndBilling();
+    }
+  }, [session, fetchOrdersAndBilling]);
 
   const fetchNotificationPreferences = async () => {
     if (!session?.access_token) return;
@@ -541,6 +735,76 @@ export default function ProfilePage() {
     }
   };
 
+  const handleCancelSubscription = async (subscriptionId: string) => {
+    if (!confirm('Naozaj chcete zrušiť toto predplatné? Zostane aktívne do konca aktuálneho obdobia.')) {
+      return;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No access token available');
+      }
+
+      const response = await fetch('/api/cancel-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ subscriptionId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to cancel subscription');
+      }
+
+      await fetchOrdersAndBilling();
+      showMessage('success', 'Predplatné bolo úspešne zrušené. Zostáva aktívne do konca aktuálneho obdobia.');
+    } catch (error) {
+      console.error('Error canceling subscription:', error);
+      showMessage('error', 'Nepodarilo sa zrušiť predplatné. Skúste to prosím neskôr.');
+    }
+  };
+
+  const handleSaveBillingInfo = async () => {
+    setSavingBilling(true);
+    
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (!authUser) {
+        throw new Error('Not authenticated');
+      }
+
+      const { error } = await supabase
+        .from('users')
+        .update({
+          shipping_address: billingInfo.shipping_address,
+          billing_address: billingInfo.billing_address,
+          company_name: billingInfo.company_name,
+          ico: billingInfo.ico,
+          dic: billingInfo.dic,
+          iban: billingInfo.iban,
+        })
+        .eq('email', authUser.email);
+
+      if (error) {
+        throw error;
+      }
+
+      showMessage('success', 'Fakturačné údaje boli úspešne uložené.');
+      setEditingBilling(false);
+    } catch (error) {
+      console.error('Error saving billing info:', error);
+      showMessage('error', 'Nepodarilo sa uložiť fakturačné údaje. Skúste to prosím neskôr.');
+    } finally {
+      setSavingBilling(false);
+    }
+  };
+
   const deleteAccount = async () => {
     if (!user || !supabase) return;
 
@@ -622,6 +886,22 @@ export default function ProfilePage() {
 
   if (!session) {
     return null;
+  }
+
+  // Show loading state while fetching orders and billing data
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl shadow-lg p-12 text-center max-w-md">
+          <div className="w-16 h-16 mx-auto mb-6 relative">
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Načítavam údaje...</h2>
+          <p className="text-gray-600 text-sm">Prosím počkajte</p>
+        </div>
+      </div>
+    );
   }
 
   const sections = [
@@ -950,6 +1230,408 @@ export default function ProfilePage() {
               <span>{t.sections.security.delete_account.button}</span>
             </button>
           </div>
+        </div>
+      )
+    },
+    {
+      id: "orders",
+      title: "Moje objednávky",
+      icon: <Package size={24} />,
+      content: (
+        <div className="space-y-4">
+          {orders.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-6">Zatiaľ ste nevytvorili žiadne objednávky.</p>
+              <Link
+                href="/shop"
+                className="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #40467b 0%, #2d3356 100%)' }}
+              >
+                Prejsť do obchodu
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {orders.map((order) => (
+                <div
+                  key={order.id}
+                  className="backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all"
+                  style={{
+                    backgroundColor: 'rgba(64, 70, 123, 0.02)',
+                    borderColor: 'rgba(64, 70, 123, 0.15)'
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Objednávka #{order.id.slice(0, 8)}
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">€{order.total.toFixed(2)}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                        order.status === 'shipped' ? 'bg-purple-100 text-purple-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {order.status === 'completed' ? 'Dokončená' :
+                         order.status === 'processing' ? 'Spracováva sa' :
+                         order.status === 'shipped' ? 'Odoslaná' : order.status}
+                      </span>
+                      <p className="text-sm text-gray-500 mt-2">
+                        {new Date(order.created_at).toLocaleDateString('sk-SK')}
+                      </p>
+                    </div>
+                  </div>
+                  {order.tracking_number && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
+                      <Truck size={16} />
+                      <span>Sledovacie číslo: {order.tracking_number}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      id: "subscriptions",
+      title: "Moje predplatné",
+      icon: <CreditCard size={24} />,
+      content: (
+        <div className="space-y-4">
+          {subscriptions.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-6">Momentálne nemáte žiadne aktívne predplatné.</p>
+              <Link
+                href="/support"
+                className="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }}
+              >
+                Podporiť projekt
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {subscriptions.map((subscription) => (
+                <div
+                  key={subscription.id}
+                  className="backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all"
+                  style={{
+                    backgroundColor: 'rgba(139, 92, 246, 0.02)',
+                    borderColor: 'rgba(139, 92, 246, 0.15)'
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 capitalize">
+                        {subscription.tier} tier
+                      </h3>
+                      <p className="text-2xl font-bold text-purple-600 mt-1">
+                        €{subscription.amount.toFixed(2)}/{subscription.interval === 'month' ? 'mes.' : 'rok'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        Aktívne
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm text-gray-600 mb-4">
+                    <p>Ďalšia platba: {new Date(subscription.current_period_end).toLocaleDateString('sk-SK')}</p>
+                  </div>
+
+                  {subscription.cancel_at_period_end && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-yellow-800">
+                        Predplatné bude zrušené {new Date(subscription.current_period_end).toLocaleDateString('sk-SK')}
+                      </p>
+                    </div>
+                  )}
+
+                  {!subscription.cancel_at_period_end && (
+                    <button
+                      onClick={() => handleCancelSubscription(subscription.id)}
+                      className="w-full px-4 py-2 rounded-lg font-medium text-red-600 border-2 border-red-200 hover:bg-red-50 transition-colors"
+                    >
+                      Zrušiť predplatné
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      id: "donations",
+      title: "Moje príspevky",
+      icon: <Heart size={24} />,
+      content: (
+        <div className="space-y-4">
+          {donations.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-6">Zatiaľ ste nevykonali žiadne jednorazové príspevky.</p>
+              <Link
+                href="/support"
+                className="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
+              >
+                Podporiť projekt
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {donations.map((donation) => (
+                <div
+                  key={donation.id}
+                  className="backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all"
+                  style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.02)',
+                    borderColor: 'rgba(239, 68, 68, 0.15)'
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">€{donation.amount.toFixed(2)}</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {new Date(donation.created_at).toLocaleDateString('sk-SK')}
+                      </p>
+                      {donation.message && (
+                        <p className="text-sm text-gray-700 mt-2 italic">&quot;{donation.message}&quot;</p>
+                      )}
+                    </div>
+                    <Heart className="text-red-500" size={32} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      id: "billing",
+      title: "Fakturačné údaje",
+      icon: <Building2 size={24} />,
+      content: (
+        <div className="space-y-6">
+          {editingBilling ? (
+            <div className="space-y-6">
+              {/* Shipping Address */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div style={{ color: '#40467b' }}>
+                    <MapPin size={20} />
+                  </div>
+                  <h3 className="text-lg font-semibold" style={{ color: '#40467b' }}>Dodacia adresa</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Meno a priezvisko"
+                    value={billingInfo.shipping_address?.name || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, name: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={billingInfo.shipping_address?.email || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, email: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Ulica a číslo"
+                    value={billingInfo.shipping_address?.street || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, street: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none md:col-span-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Mesto"
+                    value={billingInfo.shipping_address?.city || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, city: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="PSČ"
+                    value={billingInfo.shipping_address?.postal_code || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, postal_code: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Krajina"
+                    value={billingInfo.shipping_address?.country || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, country: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Telefón"
+                    value={billingInfo.shipping_address?.phone || ''}
+                    onChange={(e) => setBillingInfo({
+                      ...billingInfo,
+                      shipping_address: { ...billingInfo.shipping_address, phone: e.target.value } as ShippingAddress
+                    })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Company Info */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div style={{ color: '#40467b' }}>
+                    <Building2 size={20} />
+                  </div>
+                  <h3 className="text-lg font-semibold" style={{ color: '#40467b' }}>Údaje o firme (nepovinné)</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Názov firmy"
+                    value={billingInfo.company_name || ''}
+                    onChange={(e) => setBillingInfo({ ...billingInfo, company_name: e.target.value })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none md:col-span-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="IČO"
+                    value={billingInfo.ico || ''}
+                    onChange={(e) => setBillingInfo({ ...billingInfo, ico: e.target.value })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="DIČ"
+                    value={billingInfo.dic || ''}
+                    onChange={(e) => setBillingInfo({ ...billingInfo, dic: e.target.value })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="IBAN"
+                    value={billingInfo.iban || ''}
+                    onChange={(e) => setBillingInfo({ ...billingInfo, iban: e.target.value })}
+                    className="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-purple-400 focus:outline-none md:col-span-2"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSaveBillingInfo}
+                  disabled={savingBilling}
+                  className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #40467b 0%, #2d3356 100%)' }}
+                >
+                  <SaveIcon />
+                  {savingBilling ? 'Ukladám...' : 'Uložiť údaje'}
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingBilling(false);
+                    fetchOrdersAndBilling();
+                  }}
+                  disabled={savingBilling}
+                  className="px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
+                  style={{
+                    color: '#40467b',
+                    border: '2px solid rgba(64, 70, 123, 0.2)',
+                    backgroundColor: 'rgba(64, 70, 123, 0.05)'
+                  }}
+                >
+                  Zrušiť
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Display Shipping Address */}
+              {billingInfo.shipping_address && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div style={{ color: '#40467b' }}>
+                      <MapPin size={18} />
+                    </div>
+                    <h3 className="font-semibold" style={{ color: '#40467b' }}>Dodacia adresa</h3>
+                  </div>
+                  <div className="text-gray-700 space-y-1">
+                    <p>{billingInfo.shipping_address.name}</p>
+                    <p>{billingInfo.shipping_address.street}</p>
+                    <p>{billingInfo.shipping_address.postal_code} {billingInfo.shipping_address.city}</p>
+                    <p>{billingInfo.shipping_address.country}</p>
+                    <p className="text-sm mt-2">{billingInfo.shipping_address.email}</p>
+                    <p className="text-sm">{billingInfo.shipping_address.phone}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Display Company Info */}
+              {billingInfo.company_name && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div style={{ color: '#40467b' }}>
+                      <Building2 size={18} />
+                    </div>
+                    <h3 className="font-semibold" style={{ color: '#40467b' }}>Údaje o firme</h3>
+                  </div>
+                  <div className="text-gray-700 space-y-1">
+                    <p className="font-medium">{billingInfo.company_name}</p>
+                    {billingInfo.ico && <p className="text-sm">IČO: {billingInfo.ico}</p>}
+                    {billingInfo.dic && <p className="text-sm">DIČ: {billingInfo.dic}</p>}
+                    {billingInfo.iban && <p className="text-sm">IBAN: {billingInfo.iban}</p>}
+                  </div>
+                </div>
+              )}
+
+              {!billingInfo.shipping_address && !billingInfo.company_name && (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Zatiaľ nemáte uložené žiadne fakturačné údaje.</p>
+                </div>
+              )}
+
+              <button
+                onClick={() => setEditingBilling(true)}
+                className="w-full px-4 py-2 rounded-lg font-medium transition-colors"
+                style={{
+                  color: '#40467b',
+                  border: '2px solid rgba(64, 70, 123, 0.2)',
+                  backgroundColor: 'rgba(64, 70, 123, 0.05)'
+                }}
+              >
+                Upraviť fakturačné údaje
+              </button>
+            </div>
+          )}
         </div>
       )
     }
