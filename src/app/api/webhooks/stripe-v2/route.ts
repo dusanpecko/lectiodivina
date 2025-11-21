@@ -1,9 +1,9 @@
 import { formatCurrency, formatDate, sendEmailFromTemplate } from '@/lib/email-sender';
 import { createClient } from '@supabase/supabase-js';
+import { appendFileSync } from 'fs';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { appendFileSync } from 'fs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-10-29.clover',
@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
     // Pass Buffer directly to constructEvent (not a string)
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     console.log('✅ Webhook signature verified! Event type:', event.type);
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ✅ Signature verified: ${event.type}\n`);
   } catch (err) {
     const error = err as Error;
     console.error('❌ Webhook signature verification failed:', {
@@ -61,11 +62,13 @@ export async function POST(req: NextRequest) {
       bodyLength: body.length,
       signaturePresent: !!signature,
     });
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ Signature FAILED: ${error.message}\n`);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
   try {
     console.log(`📨 Webhook received: ${event.type}`);
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - 📨 Processing event: ${event.type}\n`);
     
     switch (event.type) {
       // Handle successful subscription creation
@@ -76,20 +79,25 @@ export async function POST(req: NextRequest) {
           mode: session.mode,
           metadata: session.metadata
         });
+        appendFileSync('/tmp/webhook-v2.log', `${timestamp} - 🎉 Checkout session: mode=${session.mode}, type=${session.metadata?.type}\n`);
         
         try {
           if (session.mode === 'subscription') {
             await handleSubscriptionCreated(session);
           } else if (session.metadata?.type === 'donation') {
+            appendFileSync('/tmp/webhook-v2.log', `${timestamp} - 💰 Calling handleDonationCompleted...\n`);
             await handleDonationCompleted(session);
+            appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ✅ handleDonationCompleted SUCCESS\n`);
           } else if (session.metadata?.type === 'product_order') {
             console.log('📦 Processing product order...');
             await handleOrderCompleted(session);
           } else {
             console.log('⚠️ Unknown checkout type:', session.metadata);
+            appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ⚠️ Unknown checkout type: ${JSON.stringify(session.metadata)}\n`);
           }
         } catch (handlerError) {
           console.error(`❌ Error in checkout handler:`, handlerError);
+          appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ Handler error: ${handlerError instanceof Error ? handlerError.message : String(handlerError)}\n`);
           throw handlerError;
         }
         break;
@@ -171,11 +179,14 @@ export async function POST(req: NextRequest) {
 
       default:
         console.log(`⚠️ Unhandled event type: ${event.type}`);
+        appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ⚠️ Unhandled event: ${event.type}\n`);
     }
 
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ✅ Webhook processing COMPLETE\n`);
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ FATAL ERROR: ${error instanceof Error ? error.message : String(error)}\n`);
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }
@@ -300,8 +311,13 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleDonationCompleted(session: Stripe.Checkout.Session) {
+  const timestamp = new Date().toISOString();
+  appendFileSync('/tmp/webhook-v2.log', `${timestamp} - 💰 handleDonationCompleted ENTRY\n`);
+  
   const userId = session.metadata?.user_id === 'anonymous' ? null : session.metadata?.user_id;
   const message = session.metadata?.message;
+  
+  appendFileSync('/tmp/webhook-v2.log', `${timestamp} - 📝 Donation data: user=${userId}, amount=${(session.amount_total || 0) / 100}, session=${session.id}\n`);
 
   const { data: donation, error } = await supabase.from('donations').insert({
     user_id: userId,
@@ -314,8 +330,10 @@ async function handleDonationCompleted(session: Stripe.Checkout.Session) {
 
   if (error) {
     console.error('Error creating donation:', error);
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ DB INSERT ERROR: ${JSON.stringify(error)}\n`);
   } else {
     console.log('✅ Donation created in database');
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ✅ DB INSERT SUCCESS: donation_id=${donation.id}\n`);
 
     try {
       const recipientEmail = session.customer_email || session.customer_details?.email;
@@ -341,9 +359,11 @@ async function handleDonationCompleted(session: Stripe.Checkout.Session) {
         });
 
         console.log('📧 Donation email sent');
+        appendFileSync('/tmp/webhook-v2.log', `${timestamp} - 📧 Email sent to ${recipientEmail}\n`);
       }
     } catch (emailError) {
       console.error('❌ Error sending donation email:', emailError);
+      appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ Email error: ${emailError instanceof Error ? emailError.message : String(emailError)}\n`);
     }
   }
 }
