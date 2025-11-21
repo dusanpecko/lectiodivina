@@ -56,8 +56,8 @@ const SUBSCRIPTION_TIERS = [
     tier: "friend",
     price: 3,
     yearlyPrice: 30,
-    stripePriceMonthly: "price_1SQUUsGrGKpSpokk7PtIDvy0",
-    stripePriceYearly: "price_1SVYYiGrGKpSpokkQMrIqRYL",
+    stripePriceMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_FRIEND_MONTHLY || "price_1SQUUsGrGKpSpokk7PtIDvy0",
+    stripePriceYearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_FRIEND_YEARLY || "price_1SVYYiGrGKpSpokkQMrIqRYL",
     name: { sk: "Priateľ", en: "Friend", cz: "Přítel", es: "Amigo" },
     description: { 
       sk: "ročná podpora, ktorá drží projekt pre všetkých zadarmo", 
@@ -102,8 +102,8 @@ const SUBSCRIPTION_TIERS = [
     tier: "patron",
     price: 20,
     yearlyPrice: 200,
-    stripePriceMonthly: "price_1SQYSSGrGKpSpokkCSnAuMPr",
-    stripePriceYearly: "price_1SVYbMGrGKpSpokkP0a2Bbo4",
+    stripePriceMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PATRON_MONTHLY || "price_1SQYSSGrGKpSpokkCSnAuMPr",
+    stripePriceYearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PATRON_YEARLY || "price_1SVYbMGrGKpSpokkP0a2Bbo4",
     name: { sk: "Patrón", en: "Patron", cz: "Patron", es: "Patrono" },
     description: { 
       sk: "stály pilier projektu + výhody naviac", 
@@ -149,8 +149,8 @@ const SUBSCRIPTION_TIERS = [
     tier: "founder",
     price: 50,
     yearlyPrice: 500,
-    stripePriceMonthly: "price_1SQYauGrGKpSpokkHQhkJUhe",
-    stripePriceYearly: "price_1SVYd9GrGKpSpokkbvQ0nXeG",
+    stripePriceMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_FOUNDER_MONTHLY || "price_1SQYauGrGKpSpokkHQhkJUhe",
+    stripePriceYearly: process.env.NEXT_PUBLIC_STRIPE_PRICE_FOUNDER_YEARLY || "price_1SVYd9GrGKpSpokkbvQ0nXeG",
     name: { sk: "Zakladateľ", en: "Founder", cz: "Zakladatel", es: "Fundador" },
     description: { 
       sk: "ťaháš dielo dopredu – veľká vďaka!", 
