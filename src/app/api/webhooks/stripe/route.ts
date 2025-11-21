@@ -102,8 +102,59 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      // Handle new customer creation
+      case 'customer.subscription.created': {
+        const subscription = event.data.object as Stripe.Subscription;
+        console.log('🆕 New customer subscription created:', subscription.id);
+        // Usually handled by checkout.session.completed, but we log it for tracking
+        break;
+      }
+
+      // Handle invoice creation
+      case 'invoice.created':
+      case 'invoice.finalization_failed':
+      case 'invoice.finalized':
+      case 'invoice.payment_action_required':
+      case 'invoice.upcoming':
+      case 'invoice.updated': {
+        const invoice = event.data.object as Stripe.Invoice;
+        console.log(`📄 Invoice event: ${event.type} for invoice:`, invoice.id);
+        // These are informational - main handling is in invoice.paid and invoice.payment_failed
+        break;
+      }
+
+      // Handle PaymentIntent events
+      case 'payment_intent.created':
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log(`💳 Payment intent ${event.type}:`, paymentIntent.id);
+        // These are informational - actual business logic is in checkout.session.completed
+        break;
+      }
+
+      // Handle subscription schedule events
+      case 'subscription_schedule.aborted':
+      case 'subscription_schedule.canceled':
+      case 'subscription_schedule.completed':
+      case 'subscription_schedule.created':
+      case 'subscription_schedule.expiring':
+      case 'subscription_schedule.released':
+      case 'subscription_schedule.updated': {
+        const schedule = event.data.object as Stripe.SubscriptionSchedule;
+        console.log(`📅 Subscription schedule ${event.type}:`, schedule.id);
+        // Currently not using subscription schedules, but logging for future use
+        break;
+      }
+
+      // Handle customer entitlements
+      case 'entitlements.active_entitlement_summary.updated': {
+        console.log(`🎫 Customer entitlements updated`);
+        // Currently not using Stripe entitlements, but logging for future use
+        break;
+      }
+
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`⚠️ Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
