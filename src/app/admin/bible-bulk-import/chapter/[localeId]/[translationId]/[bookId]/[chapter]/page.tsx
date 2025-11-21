@@ -37,10 +37,10 @@ export default function ChapterDetailPage() {
   const router = useRouter();
   const params = useParams();
 
-  const localeId = params.localeId as string;
-  const translationId = params.translationId as string;
-  const bookId = params.bookId as string;
-  const chapter = parseInt(params.chapter as string);
+  const localeId = params?.localeId ? String(params.localeId) : "";
+  const translationId = params?.translationId ? String(params.translationId) : "";
+  const bookId = params?.bookId ? String(params.bookId) : "";
+  const chapter = params?.chapter ? parseInt(String(params.chapter)) : 0;
 
   // State
   const [verses, setVerses] = useState<BibleVerse[]>([]);
