@@ -1,14 +1,12 @@
 import { formatCurrency, formatDate, sendEmailFromTemplate } from '@/lib/email-sender';
 import { createClient } from '@supabase/supabase-js';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-10-29.clover',
 });
 
-// Initialize Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -17,59 +15,64 @@ const supabase = createClient(
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
-// Disable body parser to get raw body
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// Route segment config - disable Next.js body parsing
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).end('Method Not Allowed');
-  }
-
+export async function POST(req: NextRequest) {
   const timestamp = new Date().toISOString();
-  console.log('🔔 Webhook V1 (Pages Router) received!', timestamp);
-
-  let buf: Buffer;
+  console.log('🔔 Webhook V2 (App Router on /stripe) received!', timestamp);
+  
+  let signature: string | null = null;
+  let body: Buffer;
+  
   try {
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-    }
-    buf = Buffer.concat(chunks);
+    // Get signature from headers (Next.js 15 compatible)
+    signature = req.headers.get('stripe-signature');
+  } catch (err) {
+    console.error('❌ Error getting headers:', err);
+    return NextResponse.json({ error: 'Header error' }, { status: 400 });
+  }
+  
+  try {
+    // Get raw body as Buffer to avoid encoding issues
+    const rawBody = await req.arrayBuffer();
+    body = Buffer.from(rawBody);
   } catch (err) {
     console.error('❌ Error reading body:', err);
-    return res.status(400).send(`Webhook Error: Body read failed`);
+    return NextResponse.json({ error: 'Body read error' }, { status: 400 });
   }
 
-  const sig = req.headers['stripe-signature'] as string;
-
   console.log('📝 Webhook secret configured:', webhookSecret ? 'YES' : 'NO');
-  console.log('📝 Signature received:', sig ? 'YES' : 'NO');
-  console.log('📝 Body length:', buf.length, 'bytes');
+  console.log('📝 Signature received:', signature ? 'YES' : 'NO');
+  console.log('📝 Body length:', body.length, 'bytes');
+
+  if (!signature) {
+    console.error('❌ No signature in webhook request');
+    return NextResponse.json({ error: 'No signature' }, { status: 400 });
+  }
 
   let event: Stripe.Event;
 
   try {
-    if (!sig || !webhookSecret) {
-        console.error('Missing signature or webhook secret');
-        return res.status(400).send('Missing signature or webhook secret');
-    }
-    event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
+    // Pass Buffer directly to constructEvent (not a string)
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     console.log('✅ Webhook signature verified! Event type:', event.type);
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    console.error(`❌ Webhook signature verification failed: ${errorMessage}`);
-    return res.status(400).send(`Webhook Error: ${errorMessage}`);
+    const error = err as Error;
+    console.error('❌ Webhook signature verification failed:', {
+      message: error.message,
+      bodyLength: body.length,
+      signaturePresent: !!signature,
+    });
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
   try {
     console.log(`📨 Webhook received: ${event.type}`);
     
     switch (event.type) {
+      // Handle successful subscription creation
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         console.log('🎉 Checkout session completed:', {
@@ -78,49 +81,61 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           metadata: session.metadata
         });
         
-        if (session.mode === 'subscription') {
-          await handleSubscriptionCreated(session);
-        } else if (session.metadata?.type === 'donation') {
-          await handleDonationCompleted(session);
-        } else if (session.metadata?.type === 'product_order') {
-          console.log('📦 Processing product order...');
-          await handleOrderCompleted(session);
-        } else {
-          console.log('⚠️ Unknown checkout type:', session.metadata);
+        try {
+          if (session.mode === 'subscription') {
+            await handleSubscriptionCreated(session);
+          } else if (session.metadata?.type === 'donation') {
+            console.log('💰 Processing donation...');
+            await handleDonationCompleted(session);
+          } else if (session.metadata?.type === 'product_order') {
+            console.log('📦 Processing product order...');
+            await handleOrderCompleted(session);
+          } else {
+            console.log('⚠️ Unknown checkout type:', session.metadata);
+          }
+        } catch (handlerError) {
+          console.error(`❌ Error in checkout handler:`, handlerError);
+          // Don't throw, just log error so we return 200 to Stripe
         }
         break;
       }
 
+      // Handle subscription updates
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionUpdated(subscription);
         break;
       }
 
+      // Handle subscription deletion
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionDeleted(subscription);
         break;
       }
 
+      // Handle successful invoice payment (subscription renewal)
       case 'invoice.paid': {
         const invoice = event.data.object as Stripe.Invoice;
         await handleInvoicePaid(invoice);
         break;
       }
 
+      // Handle payment failures
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
         await handlePaymentFailed(invoice);
         break;
       }
 
+      // Handle new customer creation
       case 'customer.subscription.created': {
         const subscription = event.data.object as Stripe.Subscription;
         console.log('🆕 New customer subscription created:', subscription.id);
         break;
       }
 
+      // Handle invoice creation
       case 'invoice.created':
       case 'invoice.finalization_failed':
       case 'invoice.finalized':
@@ -132,6 +147,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
 
+      // Handle PaymentIntent events
       case 'payment_intent.created':
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
@@ -139,14 +155,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
 
+      // Handle subscription schedule events
+      case 'subscription_schedule.aborted':
+      case 'subscription_schedule.canceled':
+      case 'subscription_schedule.completed':
+      case 'subscription_schedule.created':
+      case 'subscription_schedule.expiring':
+      case 'subscription_schedule.released':
+      case 'subscription_schedule.updated': {
+        const schedule = event.data.object as Stripe.SubscriptionSchedule;
+        console.log(`📅 Subscription schedule ${event.type}:`, schedule.id);
+        break;
+      }
+
+      // Handle customer entitlements
+      case 'entitlements.active_entitlement_summary.updated': {
+        console.log(`🎫 Customer entitlements updated`);
+        break;
+      }
+
       default:
         console.log(`⚠️ Unhandled event type: ${event.type}`);
     }
 
-    res.status(200).json({ received: true });
+    return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
-    res.status(500).send('Webhook handler failed');
+    return NextResponse.json(
+      { error: 'Webhook handler failed' },
+      { status: 500 }
+    );
   }
 }
 
@@ -160,10 +198,9 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // Get subscription details
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sub: any = subscription; // Cast to access period properties
+  const sub: any = subscription;
   
   console.log('📊 Subscription data:', {
     id: subscription.id,
@@ -172,7 +209,6 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
     current_period_end: sub.current_period_end
   });
 
-  // Create or update subscription in database
   const { error } = await supabase.from('subscriptions').upsert({
     user_id: userId,
     stripe_subscription_id: subscriptionId,
@@ -190,9 +226,7 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
   } else {
     console.log('✅ Subscription created in database');
 
-    // Send email notification
     try {
-      // Get user email
       const { data: profile } = await supabase
         .from('users')
         .select('email, full_name')
@@ -238,7 +272,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   console.log('🔄 Subscription updated:', subscription.id);
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sub: any = subscription; // Cast to access period properties
+  const sub: any = subscription;
   
   const { error } = await supabase
     .from('subscriptions')
@@ -273,6 +307,8 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 async function handleDonationCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.user_id === 'anonymous' ? null : session.metadata?.user_id;
   const message = session.metadata?.message;
+  
+  console.log(`Processing donation for user ${userId}, amount ${(session.amount_total || 0) / 100}`);
 
   const { data: donation, error } = await supabase.from('donations').insert({
     user_id: userId,
@@ -288,7 +324,6 @@ async function handleDonationCompleted(session: Stripe.Checkout.Session) {
   } else {
     console.log('✅ Donation created in database');
 
-    // Send email notification
     try {
       const recipientEmail = session.customer_email || session.customer_details?.email;
       
@@ -333,7 +368,6 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
   const items = JSON.parse(itemsJson) as Array<{ id: string; qty: number }>;
   console.log('📋 Order items:', items);
 
-  // Get product details
   const { data: products, error: productsError } = await supabase
     .from('products')
     .select('*')
@@ -346,7 +380,6 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
 
   console.log('✅ Fetched products:', products.length);
 
-  // Calculate total
   const total = items.reduce((sum, item) => {
     const product = products.find((p) => p.id === item.id);
     return sum + (product?.price || 0) * item.qty;
@@ -354,13 +387,10 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
 
   console.log('💰 Total calculated:', total);
 
-  // Extract shipping and customer info from Stripe session
   const customerEmail = session.customer_email || session.customer_details?.email || null;
   
-  // Get shipping address from session metadata (we stored it there)
   const metadataAddress = session.metadata?.shipping_address ? JSON.parse(session.metadata.shipping_address) : null;
   
-  // Fallback to customer_details.address if no metadata
   const rawAddress = metadataAddress || session.customer_details?.address;
   
   const shippingAddress = rawAddress ? {
@@ -376,11 +406,9 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
   console.log('📧 Customer email:', customerEmail);
   console.log('📦 Shipping address:', shippingAddress);
 
-  // Extract shipping cost and zone from metadata
   const shippingCost = parseFloat(session.metadata?.shipping_cost || '0');
   const shippingZone = session.metadata?.shipping_zone || '';
 
-  // Create order
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
@@ -404,7 +432,6 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
 
   console.log('✅ Order created:', order.id);
 
-  // Create order items
   const orderItems = items.map((item) => {
     const product = products.find((p) => p.id === item.id)!;
     return {
@@ -425,7 +452,6 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
 
   console.log('✅ Order items created:', orderItems.length);
 
-  // Send order confirmation email
   try {
     if (customerEmail) {
       const itemsList = orderItems.map((item, index) => {
@@ -459,7 +485,6 @@ async function handleOrderCompleted(session: Stripe.Checkout.Session) {
     console.error('❌ Error sending order confirmation email:', emailError);
   }
 
-  // Update product stock
   for (const item of items) {
     const product = products.find((p) => p.id === item.id);
     if (product) {
@@ -482,11 +507,9 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   console.log('💰 Invoice paid for subscription:', subscriptionId);
 
   if (subscriptionId) {
-    // Get updated subscription details from Stripe
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     const subData = subscription as unknown as { current_period_start: number; current_period_end: number };
     
-    // Update subscription with new period dates
     const { error } = await supabase
       .from('subscriptions')
       .update({
@@ -503,9 +526,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     } else {
       console.log('✅ Subscription updated with new billing period');
 
-      // Send renewal email
       try {
-        // Get subscription from database
         const { data: dbSubscription } = await supabase
           .from('subscriptions')
           .select('*, profiles!inner(email, full_name)')
@@ -556,9 +577,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     } else {
       console.log('⚠️ Subscription marked as past_due');
 
-      // Send payment failed email
       try {
-        // Get subscription from database
         const { data: dbSubscription } = await supabase
           .from('subscriptions')
           .select('*, profiles!inner(email, full_name)')
