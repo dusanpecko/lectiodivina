@@ -1,17 +1,30 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useSupabase } from "@/app/components/SupabaseProvider";
-import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
-import { translations } from "@/app/i18n";
+import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useFileUpload } from "@/app/hooks/useFileUpload";
-import { 
-  Play, Video, Headphones, FileText, Image as ImageIcon, 
-  PlusCircle, Edit3, Trash2, GripVertical, ArrowLeft, Save,
-  Clock, Eye, Volume2, Upload, X, CheckCircle, AlertCircle,
-  ChevronDown, ChevronUp, Globe, Calendar, Settings
+import { translations } from "@/app/i18n";
+import {
+    AlertCircle,
+    ArrowLeft,
+    CheckCircle,
+    ChevronDown, ChevronUp,
+    Clock,
+    Edit3,
+    Eye,
+    FileText,
+    GripVertical,
+    Image as ImageIcon,
+    Play,
+    PlusCircle,
+    Settings,
+    Trash2,
+    Video,
+    Volume2,
+    X
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 interface Program {
   id: string;
@@ -685,7 +698,7 @@ export default function SessionsManagementPage() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
-  const programId = params.id as string;
+  const programId = params?.id ? String(params.id) : "";
 
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];

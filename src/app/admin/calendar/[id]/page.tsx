@@ -38,7 +38,7 @@ export default function CalendarEditPage() {
   const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   const [day, setDay] = useState<CalendarDay | null>(null);
   const [loading, setLoading] = useState(true);

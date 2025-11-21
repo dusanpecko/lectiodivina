@@ -6,19 +6,19 @@ import { useEffect, useState } from "react";
 // import { useLanguage } from "@/app/components/LanguageProvider";
 // import { translations } from "@/app/i18n";
 import {
-  AlertCircle,
-  ArrowLeft,
-  BookOpen,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Edit3,
-  Eye,
-  Globe,
-  MessageSquare,
-  Quote as QuoteIcon,
-  Save,
-  Trash2
+    AlertCircle,
+    ArrowLeft,
+    BookOpen,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Edit3,
+    Eye,
+    Globe,
+    MessageSquare,
+    Quote as QuoteIcon,
+    Save,
+    Trash2
 } from "lucide-react";
 import Link from "next/link";
 
@@ -46,7 +46,7 @@ export default function DailyQuoteEditPage() {
   const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   const [quote, setQuote] = useState<DailyQuote | null>(null);
   const [loading, setLoading] = useState(true);

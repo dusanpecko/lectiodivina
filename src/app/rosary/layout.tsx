@@ -3,12 +3,12 @@
 
 "use client";
 
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import NavBar from '@/app/components/NavBar';
 import { useLanguage } from '@/app/components/LanguageProvider';
+import NavBar from '@/app/components/NavBar';
+import { BookOpen, Home } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { rosaryTranslations } from './translations';
-import { Home, BookOpen } from 'lucide-react';
 
 interface RosaryLayoutProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export default function RosaryLayout({ children }: RosaryLayoutProps) {
   const pathname = usePathname();
 
   // Validácia URL parametrov (základná)
-  const isValidPath = pathname.startsWith('/rosary');
+  const isValidPath = pathname?.startsWith('/rosary');
 
   return (
     <div className="min-h-screen">

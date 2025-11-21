@@ -875,7 +875,7 @@ export default function LectioEditPage() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];

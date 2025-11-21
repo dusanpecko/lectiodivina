@@ -9,18 +9,18 @@ import TranslateButton from "@/app/components/TranslateButton";
 import VoiceSelector from "@/app/components/VoiceSelector";
 import { useFileUpload } from "@/app/hooks/useFileUpload";
 import {
-  BookOpen,
-  Calendar,
-  Crown,
-  Eye,
-  FileText,
-  Globe,
-  Headphones,
-  Heart,
-  Image as ImageIcon,
-  Sparkles,
-  Star, Sun,
-  Volume2
+    BookOpen,
+    Calendar,
+    Crown,
+    Eye,
+    FileText,
+    Globe,
+    Headphones,
+    Heart,
+    Image as ImageIcon,
+    Sparkles,
+    Star, Sun,
+    Volume2
 } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -615,7 +615,7 @@ export default function RosaryEditPage() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   const { lang: appLang } = useLanguage();
   const rt = rosaryAdminTranslations[appLang as keyof typeof rosaryAdminTranslations] || rosaryAdminTranslations.sk;

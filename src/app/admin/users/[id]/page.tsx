@@ -100,7 +100,7 @@ export default function UserEditPage() {
 
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
   const isNew = id === "new";
 
   const [user, setUser] = useState<UserData>(

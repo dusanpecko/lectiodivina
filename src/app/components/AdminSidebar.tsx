@@ -3,23 +3,23 @@
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { translations } from "@/app/i18n";
 import {
-  AlertCircle,
-  Bell,
-  Book,
-  BookOpen,
-  Calendar,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Crown,
-  Kanban,
-  LayoutDashboard,
-  Newspaper,
-  Plus,
-  Settings,
-  ShoppingBag,
-  UserPlus,
-  Users
+    AlertCircle,
+    Bell,
+    Book,
+    BookOpen,
+    Calendar,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Crown,
+    Kanban,
+    LayoutDashboard,
+    Newspaper,
+    Plus,
+    Settings,
+    ShoppingBag,
+    UserPlus,
+    Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -90,7 +90,7 @@ export default function AdminSidebar({ isCollapsed = false, onToggle, isMobile =
   };
 
   const isActive = (href: string) => {
-    if (!mounted) return false; // No active state during SSR/hydration
+    if (!mounted || !pathname) return false; // No active state during SSR/hydration or if pathname is null
     
     if (href === "/admin") {
       return pathname === "/admin";

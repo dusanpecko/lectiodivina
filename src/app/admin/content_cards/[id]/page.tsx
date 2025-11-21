@@ -2,21 +2,21 @@
 
 import { useSupabase } from "@/app/components/SupabaseProvider"; // ← ZMENA: náš provider
 import {
-  AlertCircle,
-  ArrowLeft,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Eye,
-  EyeOff,
-  FileText,
-  Globe,
-  Hash,
-  Image as ImageIcon,
-  Save,
-  Star,
-  Trash2,
-  Type
+    AlertCircle,
+    ArrowLeft,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Eye,
+    EyeOff,
+    FileText,
+    Globe,
+    Hash,
+    Image as ImageIcon,
+    Save,
+    Star,
+    Trash2,
+    Type
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -58,7 +58,7 @@ export default function ContentCardEditPage() {
   const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
   const isNew = id === "new";
 
   const [card, setCard] = useState<ContentCard>(

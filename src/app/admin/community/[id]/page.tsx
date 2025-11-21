@@ -9,14 +9,14 @@ import ActionButton from "@/app/admin/components/ActionButton";
 import EditPageHeader from "@/app/admin/components/EditPageHeader";
 import FormSection from "@/app/admin/components/FormSection";
 import {
-  Calendar,
-  Lightbulb,
-  Mail,
-  MessageCircle,
-  Save,
-  TestTube,
-  Trash2,
-  User
+    Calendar,
+    Lightbulb,
+    Mail,
+    MessageCircle,
+    Save,
+    TestTube,
+    Trash2,
+    User
 } from "lucide-react";
 import Link from "next/link";
 
@@ -36,7 +36,7 @@ export default function CommunityDetailPage() {
   const { supabase } = useSupabase(); // ← ZMENA: náš provider namiesto useSupabaseClient
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   // const { lang: appLang } = useLanguage();
   // const t = translations[appLang]; // TODO: implementovať prekladové texty

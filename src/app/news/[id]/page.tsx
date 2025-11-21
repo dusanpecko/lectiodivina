@@ -26,7 +26,8 @@ interface NewsLink {
 }
 
 export default function NewsDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = params?.id ? String(params.id) : "";
   const { supabase } = useSupabase();
   const { lang } = useLanguage();
   const t = translations[lang as keyof typeof translations] ?? translations.sk;

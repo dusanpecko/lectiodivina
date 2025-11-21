@@ -9,8 +9,8 @@ import { Suspense, useEffect } from "react";
 function ThankYouContent() {
   const { lang } = useLanguage();
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
-  const type = searchParams.get("type"); // 'subscription', 'donation', or 'order'
+  const sessionId = searchParams?.get("session_id");
+  const type = searchParams?.get("type"); // 'subscription', 'donation', or 'order'
 
   // Clear cart after successful order
   useEffect(() => {

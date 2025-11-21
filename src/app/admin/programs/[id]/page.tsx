@@ -1,16 +1,26 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useSupabase } from "@/app/components/SupabaseProvider";
-import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
-import { translations } from "@/app/i18n";
+import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useFileUpload } from "@/app/hooks/useFileUpload";
-import { 
-  Play, Upload, FileText, BookOpen, Eye, Heart, 
-  Star, Globe, Calendar, Video, Users,
-  Save, ArrowLeft, Image as ImageIcon, Settings, Clock
+import { translations } from "@/app/i18n";
+import {
+    ArrowLeft,
+    BookOpen,
+    Calendar,
+    Eye,
+    FileText,
+    Globe,
+    Image as ImageIcon,
+    Play,
+    Save,
+    Settings,
+    Star,
+    Users,
+    Video
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 interface Program {
   id?: string;
@@ -53,7 +63,7 @@ export default function ProgramEditPage() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   const { lang: appLang } = useLanguage();
   const t = translations[appLang];

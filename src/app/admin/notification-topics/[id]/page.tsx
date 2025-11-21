@@ -5,15 +5,15 @@ import { FormSection } from '@/app/admin/components';
 import TranslateButton from '@/app/components/TranslateButton';
 import { AVAILABLE_COLORS, AVAILABLE_ICONS, TOPIC_CATEGORIES } from '@/app/types/notificationTopics';
 import {
-  AlertCircle, ArrowLeft,
-  Bell,
-  CheckCircle,
-  Eye,
-  FileText,
-  Globe, Hash,
-  Palette,
-  Save,
-  Settings
+    AlertCircle, ArrowLeft,
+    Bell,
+    CheckCircle,
+    Eye,
+    FileText,
+    Globe, Hash,
+    Palette,
+    Save,
+    Settings
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -41,7 +41,7 @@ interface NotificationTopic {
 export default function EditNotificationTopicPage() {
   const router = useRouter();
   const params = useParams();
-  const id = params.id as string;
+  const id = params?.id ? String(params.id) : "";
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

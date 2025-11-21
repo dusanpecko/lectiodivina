@@ -1,11 +1,11 @@
 // app/auth/login/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { Session } from "@supabase/supabase-js";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,7 +23,7 @@ export default function PublicLoginPage() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    const msg = searchParams.get("message");
+    const msg = searchParams?.get("message");
     if (msg === "password_updated") {
       setMessage("Heslo bolo úspešne zmenené. Môžete sa prihlásiť.");
     }

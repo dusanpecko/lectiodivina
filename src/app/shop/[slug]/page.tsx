@@ -79,7 +79,7 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     async function fetchProduct() {
-      if (!params.slug) return;
+      if (!params?.slug) return;
 
       const { data, error } = await supabase
         .from('products')
@@ -98,7 +98,7 @@ export default function ProductDetailPage() {
     }
 
     fetchProduct();
-  }, [params.slug, supabase]);
+  }, [params?.slug, supabase]);
 
   const handleAddToCart = () => {
     if (!product) return;

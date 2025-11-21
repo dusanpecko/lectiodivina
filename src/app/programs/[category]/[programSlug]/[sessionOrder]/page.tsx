@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSupabase } from "@/app/components/SupabaseProvider";
 import { useLanguage } from "@/app/components/LanguageProvider";
-import { useParams, useRouter } from "next/navigation";
-import { 
+import { useSupabase } from "@/app/components/SupabaseProvider";
+import {
   ArrowLeft, Heart, Share
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // Import new components
 import SessionPlayer from "@/app/components/programs/SessionPlayer";
@@ -50,9 +51,9 @@ export default function SessionPlayerPage() {
   const params = useParams();
   const router = useRouter();
   
-  const category = params.category as string;
-  const programSlug = params.programSlug as string;
-  const sessionOrder = parseInt(params.sessionOrder as string);
+  const category = params?.category ? String(params.category) : "";
+  const programSlug = params?.programSlug ? String(params.programSlug) : "";
+  const sessionOrder = params?.sessionOrder ? parseInt(String(params.sessionOrder)) : 0;
   
   const [program, setProgram] = useState<Program | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -278,11 +279,14 @@ export default function SessionPlayerPage() {
               <h3 className="font-semibold text-gray-900 mb-4">O programe</h3>
               
               {program.image_url && (
-                <img 
-                  src={program.image_url} 
-                  alt={program.title}
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
+                <div className="relative w-full h-32 mb-4">
+                  <Image 
+                    src={program.image_url} 
+                    alt={program.title}
+                    fill
+                    className="object-cover rounded-lg"
+                  />
+                </div>
               )}
               
               <h4 className="font-medium text-gray-900 mb-2">{program.title}</h4>

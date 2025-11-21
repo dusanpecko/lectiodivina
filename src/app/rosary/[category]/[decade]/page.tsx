@@ -6,33 +6,33 @@
 import { useLanguage } from '@/app/components/LanguageProvider';
 import { useSupabase } from '@/app/components/SupabaseProvider';
 import {
-  getCategoryInfo,
-  isValidCategory,
-  isValidDecadeNumber
+    getCategoryInfo,
+    isValidCategory,
+    isValidDecadeNumber
 } from '@/app/lib/rosary-utils';
 import {
-  LectioDivinaRuzenec,
-  RosaryCategory
+    LectioDivinaRuzenec,
+    RosaryCategory
 } from '@/app/types/rosary';
 import {
-  BookOpen,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Crown,
-  Eye,
-  Headphones,
-  Heart,
-  MessageCircle,
-  Pause,
-  Play as PlayIcon,
-  Quote,
-  RefreshCw,
-  SkipForward,
-  Volume,
-  Volume2,
-  VolumeX,
-  X
+    BookOpen,
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    Crown,
+    Eye,
+    Headphones,
+    Heart,
+    MessageCircle,
+    Pause,
+    Play as PlayIcon,
+    Quote,
+    RefreshCw,
+    SkipForward,
+    Volume,
+    Volume2,
+    VolumeX,
+    X
 } from 'lucide-react';
 import Image from 'next/image';
 import { notFound, useParams, useRouter } from 'next/navigation';
@@ -57,8 +57,8 @@ export default function DecadeDetailPage() {
   const { supabase } = useSupabase();
   const t = rosaryTranslations[lang as keyof typeof rosaryTranslations] ?? rosaryTranslations.sk;
   
-  const category = params.category as string;
-  const decadeNumber = parseInt(params.decade as string);
+  const category = params?.category ? String(params.category) : "";
+  const decadeNumber = params?.decade ? parseInt(String(params.decade)) : 0;
   
   // Validácia parametrov
   if (!isValidCategory(category) || !isValidDecadeNumber(decadeNumber)) {

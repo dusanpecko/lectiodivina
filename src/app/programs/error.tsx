@@ -1,12 +1,19 @@
 'use client' // Error components must be Client Components
 
-import { useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import Link from 'next/link'
-import { 
-  AlertTriangle, RefreshCw, Home, ArrowLeft, Book,
-  Wifi, Server, Database, Search, FileQuestion
+import {
+    AlertTriangle,
+    ArrowLeft, Book,
+    Database,
+    FileQuestion,
+    Home,
+    RefreshCw,
+    Search,
+    Server,
+    Wifi
 } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 interface ErrorProps {
   error: Error & { digest?: string }
@@ -92,7 +99,7 @@ export default function ProgramsError({ error, reset }: ErrorProps) {
 
   // Get context-aware navigation
   const getNavigationOptions = () => {
-    const pathSegments = pathname.split('/').filter(Boolean)
+    const pathSegments = pathname?.split('/').filter(Boolean) || []
     
     if (pathSegments.length === 1) {
       // /programs

@@ -1,21 +1,21 @@
 'use client';
 
 import {
-  AlertCircle,
-  ArrowLeft, ArrowRight,
-  BarChart3,
-  Bell,
-  CheckCircle,
-  ChevronDown, ChevronUp,
-  Edit3,
-  Filter,
-  List,
-  Plus, RefreshCw,
-  Search,
-  Settings,
-  Trash2,
-  Users,
-  X
+    AlertCircle,
+    ArrowLeft, ArrowRight,
+    BarChart3,
+    Bell,
+    CheckCircle,
+    ChevronDown, ChevronUp,
+    Edit3,
+    Filter,
+    List,
+    Plus, RefreshCw,
+    Search,
+    Settings,
+    Trash2,
+    Users,
+    X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -120,7 +120,7 @@ export default function NotificationTopicsPage() {
 
   // Filtre a stránkovanie
   const [page, setPage] = useState(() => {
-    const pageParam = searchParams.get('page');
+    const pageParam = searchParams?.get('page');
     const pageNum = pageParam ? parseInt(pageParam, 10) : 1;
     return pageNum > 0 ? pageNum : 1;
   });

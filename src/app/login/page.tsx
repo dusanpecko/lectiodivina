@@ -1,15 +1,15 @@
 "use client";
 import {
-  AlertCircle,
-  CheckCircle2,
-  Chrome,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  LogIn,
-  Mail,
-  Shield
+    AlertCircle,
+    CheckCircle2,
+    Chrome,
+    Eye,
+    EyeOff,
+    Loader2,
+    Lock,
+    LogIn,
+    Mail,
+    Shield
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,7 +24,7 @@ function LoginPageContent() {
   const t = loginTranslations[lang];
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/admin';
+  const redirectPath = searchParams?.get('redirect') || '/admin';
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);

@@ -148,8 +148,8 @@ export default function ProgramDetailPage() {
   const params = useParams();
   const router = useRouter();
   
-  const category = params.category as string;
-  const programSlug = params.programSlug as string;
+  const category = params?.category ? String(params.category) : "";
+  const programSlug = params?.programSlug ? String(params.programSlug) : "";
   
   const [program, setProgram] = useState<Program | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);

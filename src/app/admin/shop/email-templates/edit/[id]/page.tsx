@@ -27,7 +27,7 @@ interface EmailTemplate {
 export default function EditEmailTemplatePage() {
   const router = useRouter();
   const params = useParams();
-  const templateId = params.id as string;
+  const templateId = params?.id ? String(params.id) : "";
 
   const [template, setTemplate] = useState<EmailTemplate | null>(null);
   const [loading, setLoading] = useState(true);

@@ -3,27 +3,27 @@
 import BulkBibleImportModal from "@/app/admin/components/BulkBibleImportModal";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import {
-  AlertCircle,
-  ArrowLeft, ArrowRight,
-  Book,
-  BookOpen,
-  Calendar,
-  CheckCircle,
-  ChevronDown, ChevronUp,
-  Copy,
-  Download,
-  Edit3,
-  Eye,
-  FileText,
-  Filter,
-  Globe,
-  Headphones,
-  Heart,
-  PlusCircle,
-  Search,
-  Trash2,
-  Upload,
-  X
+    AlertCircle,
+    ArrowLeft, ArrowRight,
+    Book,
+    BookOpen,
+    Calendar,
+    CheckCircle,
+    ChevronDown, ChevronUp,
+    Copy,
+    Download,
+    Edit3,
+    Eye,
+    FileText,
+    Filter,
+    Globe,
+    Headphones,
+    Heart,
+    PlusCircle,
+    Search,
+    Trash2,
+    Upload,
+    X
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -433,7 +433,7 @@ export default function LectioSourcesAdminPage() {
   // Filtre a stránkovanie - inicializuj page z URL
   const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
   const [page, setPage] = useState(() => {
-    const pageParam = searchParams.get('page');
+    const pageParam = searchParams?.get('page');
     const pageNum = pageParam ? parseInt(pageParam, 10) : 1;
     return pageNum > 0 ? pageNum : 1;
   });
@@ -511,7 +511,7 @@ export default function LectioSourcesAdminPage() {
 
   // Load page from URL on mount or from localStorage if returning from edit
   useEffect(() => {
-    const pageParam = searchParams.get('page');
+    const pageParam = searchParams?.get('page');
     
     // Ak nie je stránka v URL, skús načítať z localStorage (návrat z editácie)
     if (!pageParam) {

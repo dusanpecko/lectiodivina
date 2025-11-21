@@ -29,7 +29,7 @@ interface Product {
 export default function EditProductPage() {
   const params = useParams();
   const router = useRouter();
-  const productId = params.id as string;
+  const productId = params?.id ? String(params.id) : "";
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

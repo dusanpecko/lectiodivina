@@ -1,24 +1,24 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { useSupabase } from '../../components/SupabaseProvider'; // ← ZMENA: náš provider
-import { 
-  Key, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  CheckCircle2, 
-  AlertCircle, 
-  Loader2,
-  Shield,
-  ArrowLeft,
-  RefreshCw,
-  Clock
-} from 'lucide-react';
 import { useLanguage } from '@/app/components/LanguageProvider';
+import {
+    AlertCircle,
+    ArrowLeft,
+    CheckCircle2,
+    Clock,
+    Eye,
+    EyeOff,
+    Key,
+    Loader2,
+    Lock,
+    Mail,
+    RefreshCw,
+    Shield
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useSupabase } from '../../components/SupabaseProvider'; // ← ZMENA: náš provider
 import { resetPasswordTranslations } from './translations';
 
 export default function ResetPasswordForm() {
@@ -44,12 +44,12 @@ export default function ResetPasswordForm() {
     const validateToken = async () => {
       try {
         // Extrahuj parametre z URL
-        const urlToken = searchParams.get('token');
-        const urlEmail = searchParams.get('email');
-        const code = searchParams.get('code');
-        const access_token = searchParams.get('access_token');
-        const refresh_token = searchParams.get('refresh_token');
-        const urlError = searchParams.get('error');
+        const urlToken = searchParams?.get('token');
+        const urlEmail = searchParams?.get('email');
+        const code = searchParams?.get('code');
+        const access_token = searchParams?.get('access_token');
+        const refresh_token = searchParams?.get('refresh_token');
+        const urlError = searchParams?.get('error');
 
         // Ak je v URL token a email, automaticky ich overíme
         if (urlToken && urlEmail) {
