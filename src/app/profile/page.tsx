@@ -207,6 +207,15 @@ interface Donation {
   message: string | null;
 }
 
+interface PaymentHistoryItem {
+  id: string;
+  type: 'subscription' | 'donation';
+  amount: number;
+  date: string;
+  description: string;
+  status?: string;
+}
+
 interface ShippingAddress {
   name: string;
   street: string;
@@ -289,6 +298,7 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Billing info state
@@ -369,7 +379,7 @@ export default function ProfilePage() {
       
       setOrders(ordersWithItems);
 
-      // Fetch subscriptions
+      // Fetch active subscriptions
       const { data: subscriptionsData, error: subError } = await supabase
         .from('subscriptions')
         .select('*')
@@ -382,6 +392,17 @@ export default function ProfilePage() {
       }
       
       setSubscriptions(subscriptionsData || []);
+
+      // Fetch ALL subscription history (including inactive)
+      const { data: allSubscriptionsData, error: allSubError } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', authUser.id)
+        .order('created_at', { ascending: false });
+
+      if (allSubError) {
+        console.error('All subscriptions fetch error:', allSubError);
+      }
 
       // Fetch donations
       const { data: donationsData, error: donationsError } = await supabase
@@ -396,6 +417,36 @@ export default function ProfilePage() {
       }
 
       setDonations(donationsData || []);
+
+      // Combine all payments into history
+      const history: PaymentHistoryItem[] = [];
+      
+      // Add all subscriptions to history
+      (allSubscriptionsData || []).forEach(sub => {
+        history.push({
+          id: sub.id,
+          type: 'subscription',
+          amount: sub.amount,
+          date: sub.created_at,
+          description: `${sub.tier} tier - ${sub.interval === 'month' ? 'Mesačné' : 'Ročné'} predplatné`,
+          status: sub.status
+        });
+      });
+
+      // Add all donations to history
+      (donationsData || []).forEach(donation => {
+        history.push({
+          id: donation.id,
+          type: 'donation',
+          amount: donation.amount,
+          date: donation.created_at,
+          description: donation.message || 'Jednorazový príspevok'
+        });
+      });
+
+      // Sort by date (newest first)
+      history.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setPaymentHistory(history);
 
       // Fetch billing information
       const { data: userData, error: userError } = await supabase
@@ -1407,6 +1458,76 @@ export default function ProfilePage() {
                       )}
                     </div>
                     <Heart className="text-red-500" size={32} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      id: "payment-history",
+      title: "História platieb",
+      icon: <CreditCard size={24} />,
+      content: (
+        <div className="space-y-4">
+          {paymentHistory.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-6">Zatiaľ nemáte žiadne platby.</p>
+              <Link
+                href="/support"
+                className="inline-flex items-center px-6 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
+              >
+                Podporiť projekt
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {paymentHistory.map((payment) => (
+                <div
+                  key={payment.id}
+                  className="backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all"
+                  style={{
+                    backgroundColor: payment.type === 'subscription' 
+                      ? 'rgba(139, 92, 246, 0.02)' 
+                      : 'rgba(239, 68, 68, 0.02)',
+                    borderColor: payment.type === 'subscription'
+                      ? 'rgba(139, 92, 246, 0.15)'
+                      : 'rgba(239, 68, 68, 0.15)'
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        {payment.type === 'subscription' ? (
+                          <CreditCard className="text-purple-600" size={24} />
+                        ) : (
+                          <Heart className="text-red-500" size={24} />
+                        )}
+                        <h4 className="font-semibold text-gray-900">{payment.description}</h4>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <span>{new Date(payment.date).toLocaleDateString('sk-SK')}</span>
+                        {payment.status && (
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            payment.status === 'active' 
+                              ? 'bg-green-100 text-green-800' 
+                              : payment.status === 'canceled'
+                              ? 'bg-gray-100 text-gray-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {payment.status === 'active' ? 'Aktívne' : payment.status === 'canceled' ? 'Zrušené' : payment.status}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold" style={{ 
+                      color: payment.type === 'subscription' ? '#8b5cf6' : '#ef4444' 
+                    }}>
+                      €{payment.amount.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               ))}

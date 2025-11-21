@@ -11,7 +11,6 @@ import {
   Mail,
   Menu,
   Settings,
-  ShoppingCart,
   User,
   X
 } from "lucide-react";
@@ -41,26 +40,9 @@ export default function NavBar() {
   const [mounted, setMounted] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Load cart count from localStorage
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem('lectio_cart') || '[]');
-      const totalItems = cart.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
-      setCartItemCount(totalItems);
-    };
-
-    updateCartCount();
-
-    // Listen for cart updates
-    window.addEventListener('cartUpdated', updateCartCount);
-    
-    return () => {
-      window.removeEventListener('cartUpdated', updateCartCount);
-    };
   }, []);
 
 
@@ -231,23 +213,33 @@ export default function NavBar() {
       >
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
+            {/* Left side - Hamburger (mobile only) */}
+            <div className="flex items-center lg:space-x-2">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
               >
-                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
 
-              <Link href="/" className="flex items-center group">
+              {/* Logo - visible only on desktop */}
+              <Link href="/" className="hidden lg:flex items-center group">
                 <Logo 
-                  className="h-4 sm:h-8 w-auto text-white group-hover:opacity-80 transition-opacity" 
+                  className="h-8 w-auto text-white group-hover:opacity-80 transition-opacity" 
                   height={32}
                 />
               </Link>
             </div>
 
-            <div className="flex items-center space-x-2">
+            {/* Center - Logo on mobile */}
+            <Link href="/" className="lg:hidden absolute left-1/2 transform -translate-x-1/2 flex items-center group">
+              <Logo 
+                className="h-8 w-auto text-white group-hover:opacity-80 transition-opacity" 
+                height={32}
+              />
+            </Link>
+
+            <div className="flex items-center space-x-1 sm:space-x-2">
               {/* Desktop Menu Items */}
               <div className="hidden lg:flex items-center space-x-4">
                 {/* Explore Dropdown */}
@@ -350,12 +342,12 @@ export default function NavBar() {
                 </div>
 
                 {/* E-shop */}
-                <button
+                {/* <button
                   onClick={() => router.push("/shop")}
                   className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium"
                 >
                   E-shop
-                </button>
+                </button> */}
 
                 {/* Contact */}
                 <button
@@ -376,9 +368,9 @@ export default function NavBar() {
               </button>
 
               {/* Shopping Cart Icon */}
-              <button
+              {/* <button
                 onClick={() => router.push('/cart')}
-                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors text-white hidden sm:flex"
               >
                 <ShoppingCart size={20} />
                 {cartItemCount > 0 && (
@@ -386,10 +378,10 @@ export default function NavBar() {
                     {cartItemCount}
                   </span>
                 )}
-              </button>
+              </button> */}
 
               {/* Language Selector */}
-              <div className="relative">
+              <div className="relative hidden lg:flex">
                 <select
                   value={lang}
                   onChange={e => changeLang(e.target.value as Language)}
@@ -511,7 +503,7 @@ export default function NavBar() {
               ) : (
                 <Link
                   href="/login"
-                  className="text-white px-4 py-2 rounded-lg font-medium hover:bg-white/20 transition-colors backdrop-blur-sm border"
+                  className="hidden lg:flex text-white px-4 py-2 rounded-lg font-medium hover:bg-white/20 transition-colors backdrop-blur-sm border"
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.15)',
                     borderColor: 'rgba(255, 255, 255, 0.3)'
@@ -586,7 +578,7 @@ export default function NavBar() {
               </div>
 
               {/* E-shop */}
-              <button
+              {/* <button
                 onClick={() => {
                   router.push("/shop");
                   setMobileMenuOpen(false);
@@ -594,7 +586,7 @@ export default function NavBar() {
                 className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2"
               >
                 E-shop
-              </button>
+              </button> */}
 
               {/* Contact */}
               <button
@@ -619,6 +611,27 @@ export default function NavBar() {
                 >
                   <span>{t.give}</span>
                 </button>
+              </div>
+
+              {/* Language Selector - MOBILE */}
+              <div className="border-t pt-3 mt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
+                <div className="flex items-center justify-center space-x-2 px-3 py-2">
+                  <Globe size={18} className="text-white/70" />
+                  <select
+                    value={lang}
+                    onChange={e => changeLang(e.target.value as Language)}
+                    className="appearance-none backdrop-blur-sm rounded-lg px-3 py-2 pr-8 text-sm font-medium focus:ring-2 focus:ring-white/50 cursor-pointer text-white border"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderColor: 'rgba(255, 255, 255, 0.2)'
+                    }}
+                  >
+                    <option value="sk" className="text-gray-900">{flagEmojis.sk} SK</option>
+                    <option value="cz" className="text-gray-900">{flagEmojis.cz} CZ</option>
+                    <option value="en" className="text-gray-900">{flagEmojis.en} EN</option>
+                    <option value="es" className="text-gray-900">{flagEmojis.es} ES</option>
+                  </select>
+                </div>
               </div>
 
               {/* DIVIDER */}

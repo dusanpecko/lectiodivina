@@ -170,7 +170,7 @@ export default function HomePage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
               >
-                <Logo className="h-12 w-auto text-white drop-shadow-lg" />
+                <Logo className="h-8 sm:h-12 w-auto text-white drop-shadow-lg" />
               </motion.div>
 
               {/* Desktop Menu */}
@@ -273,12 +273,12 @@ export default function HomePage() {
                 </div>
 
                 {/* E-shop */}
-                <button
+                {/* <button
                   onClick={() => router.push("/shop")}
                   className="text-white hover:text-indigo-200 transition-colors duration-200 font-medium"
                 >
                   E-shop
-                </button>
+                </button> */}
 
                 {/* Contact */}
                 <button
@@ -452,7 +452,7 @@ export default function HomePage() {
               </motion.div>
 
               {/* Mobile Menu Button - Hidden on Desktop (lg+) */}
-              <div className="hidden sm:flex lg:hidden items-center space-x-4">
+              <div className="flex lg:hidden items-center space-x-2 sm:space-x-4">
                 <label htmlFor="language-select-mobile" className="sr-only">Select language</label>
                 <select
                   id="language-select-mobile"
@@ -469,9 +469,9 @@ export default function HomePage() {
                 
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="text-white hover:text-indigo-200 transition-colors duration-200 p-1"
+                  className="text-white hover:text-indigo-200 transition-colors duration-200 p-2"
                 >
-                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
                 </button>
               </div>
             </div>
@@ -520,7 +520,7 @@ export default function HomePage() {
                   </div>
 
                   {/* E-shop */}
-                  <button
+                  {/* <button
                     onClick={() => {
                       router.push("/shop");
                       setMobileMenuOpen(false);
@@ -528,7 +528,7 @@ export default function HomePage() {
                     className="block w-full text-left text-white hover:text-indigo-200 font-medium py-2"
                   >
                     E-shop
-                  </button>
+                  </button> */}
 
                   {/* Contact */}
                   <button

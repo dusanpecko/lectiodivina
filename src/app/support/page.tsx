@@ -4,66 +4,192 @@ import { useLanguage } from "@/app/components/LanguageProvider";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import { motion } from "framer-motion";
 import { Check, Heart } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const SUBSCRIPTION_TIERS = [
   {
-    tier: "test_daily",
-    price: 1,
-    interval: "deň",
-    name: { sk: "Test Denné", en: "Test Daily", cz: "Test Denní", es: "Test Diario" },
-    testMode: true,
-    features: {
-      sk: ["🧪 TEST: Obnovuje sa každý deň", "Pre testovanie automatic renewal", "€1/deň"],
-      en: ["🧪 TEST: Renews daily", "For testing automatic renewal", "€1/day"],
-      cz: ["🧪 TEST: Obnovuje se každý den", "Pro testování automatického obnovení", "€1/den"],
-      es: ["🧪 TEST: Se renueva diariamente", "Para probar la renovación automática", "€1/día"],
-    },
-  },
-  {
-    tier: "free",
+    tier: "prayer",
     price: 0,
-    name: { sk: "Zdarma", en: "Free", cz: "Zdarma", es: "Gratis" },
-    features: {
-      sk: ["Prístup k základným lectio", "Denná citácia", "Základné funkcie"],
-      en: ["Access to basic lectio", "Daily quote", "Basic features"],
-      cz: ["Přístup k základním lectio", "Denní citát", "Základní funkce"],
-      es: ["Acceso a lectio básico", "Cita diaria", "Funciones básicas"],
+    yearlyPrice: 0,
+    name: { sk: "Modlím sa", en: "I'm Praying", cz: "Modlím se", es: "Rezo" },
+    description: { 
+      sk: "nefinančná modlitebná podpora", 
+      en: "non-financial prayer support", 
+      cz: "nefinanční modlitební podpora", 
+      es: "apoyo de oración no financiero" 
     },
+    features: {
+      sk: [
+        "Pridávam sa k modlitbovej reťazi za lectio.one",
+        "denne lectio divina",
+        "Mesačný mail s modlitbovými úmyslami (voliteľné)",
+        "Bez záväzkov, bez platby"
+      ],
+      en: [
+        "I join the prayer chain for lectio.one",
+        "daily lectio divina",
+        "Monthly email with prayer intentions (optional)",
+        "No commitments, no payment"
+      ],
+      cz: [
+        "Přidávám se k modlitebnímu řetězu za lectio.one",
+        "denní lectio divina",
+        "Měsíční e-mail s modlitebními úmysly (volitelné)",
+        "Bez závazků, bez platby"
+      ],
+      es: [
+        "Me uno a la cadena de oración por lectio.one",
+        "lectio divina diaria",
+        "Email mensual con intenciones de oración (opcional)",
+        "Sin compromisos, sin pago"
+      ],
+    },
+    cta: {
+      sk: "Modlím sa s vami",
+      en: "I'll pray with you",
+      cz: "Modlím se s vámi",
+      es: "Rezo con ustedes"
+    }
   },
   {
-    tier: "supporter",
+    tier: "friend",
     price: 3,
-    name: { sk: "Podporovateľ", en: "Supporter", cz: "Podporovatel", es: "Partidario" },
-    popular: true,
-    features: {
-      sk: ["Všetky lectio bez reklám", "Pokročilé funkcie", "Podpora projektu", "Ďakovné email"],
-      en: ["All lectio ad-free", "Advanced features", "Support the project", "Thank you email"],
-      cz: ["Všechna lectio bez reklam", "Pokročilé funkce", "Podpora projektu", "Děkovný email"],
-      es: ["Todos los lectio sin anuncios", "Funciones avanzadas", "Apoyar el proyecto", "Email de agradecimiento"],
+    yearlyPrice: 30,
+    stripePriceMonthly: "price_1SQUUsGrGKpSpokk7PtIDvy0",
+    stripePriceYearly: "price_1SVYYiGrGKpSpokkQMrIqRYL",
+    name: { sk: "Priateľ", en: "Friend", cz: "Přítel", es: "Amigo" },
+    description: { 
+      sk: "ročná podpora, ktorá drží projekt pre všetkých zadarmo", 
+      en: "yearly support that keeps the project free for everyone", 
+      cz: "roční podpora, která drží projekt pro všechny zdarma", 
+      es: "apoyo anual que mantiene el proyecto gratis para todos" 
     },
+    features: {
+      sk: [
+        "Jednorazový dar na 12 mesiacov",
+        "Priateľ badge v profile",
+        "Ďakovný e-mail a krátky ročný report dopadu",
+        "Podporuješ vývoj a lokalizáciu"
+      ],
+      en: [
+        "One-time gift covering 12 months",
+        "Friend badge in your profile",
+        "Thank-you email and a short annual impact report",
+        "You support development and localization"
+      ],
+      cz: [
+        "Jednorázový dar na 12 měsíců",
+        "Odznak Přítel v profilu",
+        "Děkovný e-mail a krátká výroční zpráva o dopadu",
+        "Podporuješ vývoj a lokalizaci"
+      ],
+      es: [
+        "Donación única para 12 meses",
+        "Insignia Amigo en tu perfil",
+        "Email de agradecimiento e informe anual breve de impacto",
+        "Apoyas el desarrollo y la localización"
+      ],
+    },
+    cta: {
+      sk: "Vybrať plán",
+      en: "Choose plan",
+      cz: "Vybrat plán",
+      es: "Elegir plan"
+    }
   },
   {
     tier: "patron",
     price: 20,
-    name: { sk: "Patrón", en: "Patron", cz: "Patron", es: "Patrón" },
-    features: {
-      sk: ["Všetko z Podporovateľ", "Exkluzívny obsah", "Prioritná podpora", "Možnosť volby nových funkcií"],
-      en: ["Everything in Supporter", "Exclusive content", "Priority support", "Vote on new features"],
-      cz: ["Vše z Podporovatel", "Exkluzivní obsah", "Prioritní podpora", "Hlasování o nových funkcích"],
-      es: ["Todo en Partidario", "Contenido exclusivo", "Soporte prioritario", "Votar sobre nuevas funciones"],
+    yearlyPrice: 200,
+    stripePriceMonthly: "price_1SQYSSGrGKpSpokkCSnAuMPr",
+    stripePriceYearly: "price_1SVYbMGrGKpSpokkP0a2Bbo4",
+    name: { sk: "Patrón", en: "Patron", cz: "Patron", es: "Patrono" },
+    description: { 
+      sk: "stály pilier projektu + výhody naviac", 
+      en: "steady pillar of the project + extra benefits", 
+      cz: "stálý pilíř projektu + výhody navíc", 
+      es: "pilar constante del proyecto + beneficios extra" 
     },
+    popular: true,
+    features: {
+      sk: [
+        "Patrón badge v profile",
+        "Skorší prístup k novému obsahu a funkciám",
+        "Early access k pripravovanému kurzu Lectio Divina",
+        "Prioritná podpora a hlasovanie o nových funkciách"
+      ],
+      en: [
+        "Patron badge in your profile",
+        "Earlier access to new content and features",
+        "Early access to the upcoming Lectio Divina course",
+        "Priority support and voting on new features"
+      ],
+      cz: [
+        "Odznak Patron v profilu",
+        "Dřívější přístup k novému obsahu a funkcím",
+        "Předběžný přístup k připravovanému kurzu Lectio Divina",
+        "Prioritní podpora a hlasování o nových funkcích"
+      ],
+      es: [
+        "Insignia Patrono en tu perfil",
+        "Acceso anticipado a nuevo contenido y funciones",
+        "Acceso anticipado al curso de Lectio Divina en preparación",
+        "Soporte prioritario y votación de nuevas funciones"
+      ],
+    },
+    cta: {
+      sk: "Stať sa patrónom",
+      en: "Become a Patron",
+      cz: "Stát se patronem",
+      es: "Hacerme Patrono"
+    }
   },
   {
-    tier: "benefactor",
+    tier: "founder",
     price: 50,
-    name: { sk: "Dobrodinci", en: "Benefactor", cz: "Dobrodinci", es: "Benefactor" },
-    features: {
-      sk: ["Všetko z Patrón", "Osobné poďakovanie", "Ovplyvniť budúci obsah", "Uvedenie v titulkoch (voliteľné)"],
-      en: ["Everything in Patron", "Personal acknowledgment", "Influence future content", "Credit in app (optional)"],
-      cz: ["Vše z Patron", "Osobní poděkování", "Ovlivnění budoucího obsahu", "Uvedení v aplikaci (volitelné)"],
-      es: ["Todo en Patrón", "Reconocimiento personal", "Influir en el contenido futuro", "Crédito en la aplicación (opcional)"],
+    yearlyPrice: 500,
+    stripePriceMonthly: "price_1SQYauGrGKpSpokkHQhkJUhe",
+    stripePriceYearly: "price_1SVYd9GrGKpSpokkbvQ0nXeG",
+    name: { sk: "Zakladateľ", en: "Founder", cz: "Zakladatel", es: "Fundador" },
+    description: { 
+      sk: "ťaháš dielo dopredu – veľká vďaka!", 
+      en: "you move the mission forward — thank you!", 
+      cz: "táhneš dílo dopředu – díky!", 
+      es: "impulsas la misión — ¡gracias!" 
     },
+    features: {
+      sk: [
+        "Všetko z úrovne Patrón",
+        "Ročný žurnál Lectio (tlačený alebo PDF – podľa dostupnosti)",
+        "Osobné poďakovanie",
+        '(Voliteľné) Uvedenie medzi "Zakladateľmi"'
+      ],
+      en: [
+        "Everything in Patron",
+        "Annual Lectio Journal (printed or PDF — subject to availability)",
+        "Personal thank-you",
+        '(Optional) Listed among "Founders"'
+      ],
+      cz: [
+        "Vše z úrovně Patron",
+        "Roční deník Lectio (tištěný nebo PDF – dle dostupnosti)",
+        "Osobní poděkování",
+        '(Volitelné) Uvedení mezi "Zakladateli"'
+      ],
+      es: [
+        "Todo lo de Patrono",
+        "Diario anual de Lectio (impreso o PDF — según disponibilidad)",
+        "Agradecimiento personal",
+        '(Opcional) Aparición en la lista de "Fundadores"'
+      ],
+    },
+    cta: {
+      sk: "Podporiť ako zakladateľ",
+      en: "Support as Founder",
+      cz: "Podpořit jako zakladatel",
+      es: "Apoyar como Fundador"
+    }
   },
 ];
 
@@ -71,33 +197,73 @@ const DONATION_AMOUNTS = [5, 10, 25, 50, 100];
 
 export default function SupportPage() {
   const { lang } = useLanguage();
-  const { supabase } = useSupabase();
+  const { supabase, session } = useSupabase();
   const [mode, setMode] = useState<"subscription" | "donation">("subscription");
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">("monthly");
   const [customAmount, setCustomAmount] = useState("");
   const [donationMessage, setDonationMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentTier, setCurrentTier] = useState<string | null>(null);
+
+  // Fetch user's current subscription tier
+  useEffect(() => {
+    const fetchUserTier = async () => {
+      if (!session?.user?.id) {
+        setCurrentTier(null);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('tier, status, cancel_at_period_end')
+          .eq('user_id', session.user.id)
+          .eq('status', 'active')
+          .single();
+
+        if (error || !data || data.cancel_at_period_end) {
+          setCurrentTier(null);
+        } else {
+          setCurrentTier(data.tier);
+        }
+      } catch (err) {
+        console.error('Error fetching user tier:', err);
+        setCurrentTier(null);
+      }
+    };
+
+    fetchUserTier();
+  }, [session, supabase]);
 
   const translations = {
     title: { sk: "Podporiť Lectio Divina", en: "Support Lectio Divina", cz: "Podpořit Lectio Divina", es: "Apoyar Lectio Divina" },
     subtitle: {
-      sk: "Pomôžte nám prinášať duchovný obsah širšiemu publiku",
-      en: "Help us bring spiritual content to a wider audience",
-      cz: "Pomozte nám přinášet duchovní obsah širšímu publiku",
-      es: "Ayúdanos a llevar contenido espiritual a un público más amplio",
+      sk: "Spoločne prinesieme ticho cez Božie slovo do digitálneho sveta",
+      en: "Together we bring silence through God's Word into the digital world",
+      cz: "Společně přineseme ticho skrze Boží slovo do digitálního světa",
+      es: "Juntos traemos el silencio a través de la Palabra de Dios al mundo digital",
     },
     subscriptionTab: { sk: "Mesačná podpora", en: "Monthly Support", cz: "Měsíční podpora", es: "Apoyo mensual" },
     donationTab: { sk: "Jednorazový príspevok", en: "One-time Donation", cz: "Jednorázový příspěvek", es: "Donación única" },
+    monthly: { sk: "Mesačne", en: "Monthly", cz: "Měsíčně", es: "Mensual" },
+    yearly: { sk: "Ročne", en: "Yearly", cz: "Ročně", es: "Anual" },
     perMonth: { sk: "/mesiac", en: "/month", cz: "/měsíc", es: "/mes" },
-    selectPlan: { sk: "Vybrať plán", en: "Select plan", cz: "Vybrat plán", es: "Seleccionar plan" },
-    currentPlan: { sk: "Aktuálny plán", en: "Current plan", cz: "Aktuální plán", es: "Plan actual" },
-    popular: { sk: "Populárne", en: "Popular", cz: "Populární", es: "Popular" },
+    perYear: { sk: "/rok", en: "/year", cz: "/rok", es: "/año" },
+    saveMonths: { sk: "Ušetríte 2 mesiace", en: "Save 2 months", cz: "Ušetříte 2 měsíce", es: "Ahorra 2 meses" },
+    popular: { sk: "Najobľúbenejšie", en: "Most popular", cz: "Nejoblíbenější", es: "El más popular" },
     customAmount: { sk: "Vlastná suma", en: "Custom amount", cz: "Vlastní částka", es: "Cantidad personalizada" },
     message: { sk: "Správa (voliteľné)", en: "Message (optional)", cz: "Zpráva (volitelné)", es: "Mensaje (opcional)" },
     donate: { sk: "Prispieť", en: "Donate", cz: "Přispět", es: "Donar" },
     oneTime: { sk: "Jednorazový príspevok", en: "One-time donation", cz: "Jednorázový příspěvek", es: "Donación única" },
+    noPaywall: {
+      sk: "Lectio.one je bez paywallu. Dary môžeš kedykoľvek zrušiť. Ďakujeme za každú formu podpory – modlitbou aj financiami.",
+      en: "Lectio.one has no paywall. You can cancel donations at any time. Thank you for every form of support — in prayer and financially.",
+      cz: "Lectio.one je bez paywallu. Dar můžeš kdykoli zrušit. Děkujeme za každou formu podpory — modlitbou i finančně.",
+      es: "Lectio.one no tiene paywall. Puedes cancelar tu donación en cualquier momento. Gracias por cualquier forma de apoyo — con tu oración y con tu ayuda económica."
+    }
   };
 
-  const handleSubscribe = async (tier: string) => {
+  const handleSubscribe = async (tier: string, priceId: string) => {
     if (tier === "free") return;
 
     setLoading(true);
@@ -109,6 +275,7 @@ export default function SupportPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tier,
+          priceId,
           userId: user?.id || null,
           email: user?.email || null,
         }),
@@ -236,26 +403,45 @@ export default function SupportPage() {
 
           {/* Subscription Tiers */}
           {mode === "subscription" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <>
+              {/* Billing Interval Toggle */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex justify-center items-center gap-4 mb-8"
+              >
+                <span className={`text-lg font-semibold ${billingInterval === "monthly" ? "text-[#40467b]" : "text-gray-400"}`}>
+                  {translations.monthly[lang as keyof typeof translations.monthly]}
+                </span>
+                <button
+                  onClick={() => setBillingInterval(billingInterval === "monthly" ? "yearly" : "monthly")}
+                  className="relative w-16 h-8 rounded-full transition-colors"
+                  style={{ backgroundColor: billingInterval === "yearly" ? "#40467b" : "#cbd5e1" }}
+                >
+                  <span
+                    className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform"
+                    style={{ transform: billingInterval === "yearly" ? "translateX(32px)" : "translateX(0)" }}
+                  />
+                </button>
+                <span className={`text-lg font-semibold ${billingInterval === "yearly" ? "text-[#40467b]" : "text-gray-400"}`}>
+                  {translations.yearly[lang as keyof typeof translations.yearly]}
+                </span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {SUBSCRIPTION_TIERS.map((tier, index) => (
                 <motion.div
                   key={tier.tier}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`backdrop-blur-md rounded-3xl shadow-lg p-8 relative border hover:shadow-2xl transition-all ${
-                    tier.testMode ? "bg-yellow-50/90" : ""
-                  }`}
+                  className="backdrop-blur-md rounded-3xl shadow-lg p-8 relative border hover:shadow-2xl transition-all flex flex-col"
                   style={
                     tier.popular 
                       ? {
                           backgroundColor: 'rgba(255, 255, 255, 0.95)',
                           borderColor: '#40467b',
-                          borderWidth: '3px'
-                        }
-                      : tier.testMode
-                      ? {
-                          borderColor: '#eab308',
                           borderWidth: '3px'
                         }
                       : {
@@ -264,11 +450,6 @@ export default function SupportPage() {
                         }
                   }
                 >
-                {tier.testMode && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black px-4 py-1 rounded-full text-sm font-bold">
-                    🧪 TEST MODE
-                  </div>
-                )}
                 {tier.popular && (
                   <div 
                     className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-white px-4 py-1 rounded-full text-sm font-semibold"
@@ -278,20 +459,31 @@ export default function SupportPage() {
                   </div>
                 )}
 
-                <h3 className="text-2xl font-bold mb-2" style={{ color: '#40467b' }}>
+                <h3 className="text-2xl font-bold mb-1" style={{ color: '#40467b' }}>
                   {tier.name[lang as keyof typeof tier.name]}
                 </h3>
+                
+                {tier.description && (
+                  <p className="text-sm text-gray-600 mb-4">
+                    {tier.description[lang as keyof typeof tier.description]}
+                  </p>
+                )}
 
                 <div className="mb-6">
-                  <span className="text-4xl font-bold" style={{ color: '#40467b' }}>€{tier.price}</span>
+                  <span className="text-4xl font-bold" style={{ color: '#40467b' }}>
+                    €{billingInterval === "monthly" ? tier.price : tier.yearlyPrice}
+                  </span>
                   {tier.price > 0 && (
                     <span className="text-gray-600">
-                      {tier.interval === "deň" ? "/deň" : translations.perMonth[lang as keyof typeof translations.perMonth]}
+                      {billingInterval === "monthly" 
+                        ? translations.perMonth[lang as keyof typeof translations.perMonth]
+                        : translations.perYear[lang as keyof typeof translations.perYear]
+                      }
                     </span>
                   )}
                 </div>
 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-grow">
                   {tier.features[lang as keyof typeof tier.features].map((feature, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <Check size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
@@ -301,22 +493,50 @@ export default function SupportPage() {
                 </ul>
 
                 <button
-                  onClick={() => handleSubscribe(tier.tier)}
-                  disabled={loading || tier.tier === "free"}
+                  onClick={() => {
+                    if (tier.tier === "prayer" || currentTier === tier.tier) return;
+                    const priceId = billingInterval === "monthly" 
+                      ? tier.stripePriceMonthly 
+                      : tier.stripePriceYearly;
+                    if (priceId) handleSubscribe(tier.tier, priceId);
+                  }}
+                  disabled={loading || tier.tier === "prayer" || currentTier === tier.tier}
                   className="w-full py-3 rounded-xl font-semibold transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-white"
                   style={
-                    tier.tier === "free"
+                    tier.tier === "prayer" || currentTier === tier.tier
                       ? { backgroundColor: '#9ca3af' }
                       : { background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }
                   }
                 >
-                  {tier.tier === "free"
-                    ? translations.currentPlan[lang as keyof typeof translations.currentPlan]
-                    : translations.selectPlan[lang as keyof typeof translations.selectPlan]}
+                  {currentTier === tier.tier 
+                    ? (lang === "sk" ? "Aktívne predplatné" : lang === "en" ? "Active subscription" : lang === "cz" ? "Aktivní předplatné" : "Suscripción activa")
+                    : tier.cta[lang as keyof typeof tier.cta]
+                  }
                 </button>
               </motion.div>
             ))}
-          </div>
+              </div>
+
+              {/* No paywall message */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="mt-12"
+              >
+                <div 
+                  className="backdrop-blur-md rounded-2xl p-6 border text-center"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    borderColor: 'rgba(64, 70, 123, 0.1)'
+                  }}
+                >
+                  <p className="text-gray-700 leading-relaxed">
+                    {translations.noPaywall[lang as keyof typeof translations.noPaywall]}
+                  </p>
+                </div>
+              </motion.div>
+            </>
           )}
 
           {/* One-time Donations */}
@@ -325,77 +545,109 @@ export default function SupportPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="max-w-2xl mx-auto backdrop-blur-md rounded-3xl shadow-xl p-8 border"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                borderColor: 'rgba(64, 70, 123, 0.2)'
-              }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch"
             >
-              <div className="text-center mb-8">
-                <Heart size={48} className="mx-auto text-red-500 mb-4" />
-                <h2 className="text-3xl font-bold mb-2" style={{ color: '#40467b' }}>
-                  {translations.oneTime[lang as keyof typeof translations.oneTime]}
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                {DONATION_AMOUNTS.map((amount) => (
-                  <button
-                    key={amount}
-                    onClick={() => handleDonate(amount)}
-                    disabled={loading}
-                    className="py-4 rounded-xl font-bold text-xl transition-all hover:shadow-lg text-white"
-                    style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
-                  >
-                    €{amount}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                  {translations.customAmount[lang as keyof typeof translations.customAmount]}
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent"
-                  style={{
-                    borderColor: 'rgba(64, 70, 123, 0.3)',
-                    '--tw-ring-color': '#40467b'
-                  } as React.CSSProperties}
-                  placeholder="10.00"
+              {/* Image Side */}
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl min-h-[600px]">
+                <Image
+                  src="/support_gift.webp"
+                  alt="Support Lectio Divina"
+                  fill
+                  className="object-cover"
+                  priority
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                    {translations.oneTime[lang as keyof typeof translations.oneTime]}
+                  </h2>
+                  <p className="text-lg text-white/90">
+                    {translations.subtitle[lang as keyof typeof translations.subtitle]}
+                  </p>
+                </div>
               </div>
 
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
-                  {translations.message[lang as keyof typeof translations.message]}
-                </label>
-                <textarea
-                  value={donationMessage}
-                  onChange={(e) => setDonationMessage(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:border-transparent resize-none"
-                  style={{
-                    borderColor: 'rgba(64, 70, 123, 0.3)',
-                    '--tw-ring-color': '#40467b'
-                  } as React.CSSProperties}
-                  rows={4}
-                  placeholder="Vaša správa..."
-                />
-              </div>
-
-              <button
-                onClick={() => handleDonate(parseFloat(customAmount) || 0)}
-                disabled={loading || !customAmount || parseFloat(customAmount) <= 0}
-                className="w-full text-white py-4 rounded-xl font-semibold text-lg transition-all hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
+              {/* Form Side */}
+              <div 
+                className="backdrop-blur-md rounded-3xl shadow-xl p-8 border flex flex-col justify-between"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  borderColor: 'rgba(64, 70, 123, 0.2)'
+                }}
               >
-                {translations.donate[lang as keyof typeof translations.donate]}
-              </button>
+                <div className="mb-8">
+                  <Heart size={48} className="mx-auto mb-4" style={{ color: '#40467b' }} />
+                  <h3 className="text-2xl font-bold text-center mb-2" style={{ color: '#40467b' }}>
+                    {translations.customAmount[lang as keyof typeof translations.customAmount]}
+                  </h3>
+                </div>
+
+                {/* Preset amounts */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {DONATION_AMOUNTS.map((amount) => (
+                    <button
+                      key={amount}
+                      onClick={() => handleDonate(amount)}
+                      disabled={loading}
+                      className="py-4 rounded-xl font-bold text-xl transition-all hover:shadow-lg disabled:opacity-50 text-white"
+                      style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
+                    >
+                      €{amount}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom amount input */}
+                <div className="mb-6">
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
+                    {translations.customAmount[lang as keyof typeof translations.customAmount]}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold" style={{ color: '#40467b' }}>€</span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(e.target.value)}
+                      className="w-full pl-12 pr-4 py-4 border-2 rounded-xl focus:ring-2 focus:border-transparent text-xl font-semibold"
+                      style={{
+                        borderColor: 'rgba(64, 70, 123, 0.3)',
+                        '--tw-ring-color': '#40467b'
+                      } as React.CSSProperties}
+                      placeholder="10.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Message textarea */}
+                <div className="mb-6 flex-grow">
+                  <label className="block text-sm font-semibold mb-2" style={{ color: '#40467b' }}>
+                    {translations.message[lang as keyof typeof translations.message]}
+                  </label>
+                  <textarea
+                    value={donationMessage}
+                    onChange={(e) => setDonationMessage(e.target.value)}
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:border-transparent resize-none"
+                    style={{
+                      borderColor: 'rgba(64, 70, 123, 0.3)',
+                      '--tw-ring-color': '#40467b'
+                    } as React.CSSProperties}
+                    rows={4}
+                    placeholder="Vaša správa..."
+                  />
+                </div>
+
+                {/* Submit button */}
+                <button
+                  onClick={() => handleDonate(parseFloat(customAmount) || 0)}
+                  disabled={loading || !customAmount || parseFloat(customAmount) <= 0}
+                  className="w-full text-white py-4 rounded-xl font-semibold text-lg transition-all hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
+                >
+                  {translations.donate[lang as keyof typeof translations.donate]}
+                </button>
+              </div>
             </motion.div>
           )}
         </div>
