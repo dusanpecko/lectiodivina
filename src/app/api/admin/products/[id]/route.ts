@@ -14,13 +14,14 @@ const supabaseAdmin = createClient(
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { data, error } = await supabaseAdmin
       .from('products')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -41,8 +42,9 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const body = await request.json();
     const { name, description, slug, price, stock, category, images, is_active } = body;
@@ -60,7 +62,7 @@ export async function PUT(
       .from('products')
       .select('id')
       .eq('slug', slug)
-      .neq('id', params.id)
+      .neq('id', id)
       .single();
 
     if (existing) {
@@ -83,7 +85,7 @@ export async function PUT(
         images: images || [],
         is_active: is_active ?? true,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
