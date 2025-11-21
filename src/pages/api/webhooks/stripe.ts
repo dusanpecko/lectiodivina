@@ -24,22 +24,6 @@ export const config = {
   },
 };
 
-// Helper to read request body
-async function getRawBody(req: NextApiRequest): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    req.on('data', (chunk) => {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    });
-    req.on('end', () => {
-      resolve(Buffer.concat(chunks));
-    });
-    req.on('error', (err) => {
-      reject(err);
-    });
-  });
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -47,11 +31,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const timestamp = new Date().toISOString();
-  console.log('🔔 Webhook received! (Pages Router)', timestamp);
+  console.log('🔔 Webhook V1 (Pages Router) received!', timestamp);
 
   let buf: Buffer;
   try {
-    buf = await getRawBody(req);
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+    }
+    buf = Buffer.concat(chunks);
   } catch (err) {
     console.error('❌ Error reading body:', err);
     return res.status(400).send(`Webhook Error: Body read failed`);
