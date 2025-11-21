@@ -160,8 +160,10 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
       if (profile?.email) {
         const tierNames: Record<string, string> = {
           supporter: 'Supporter',
-          patron: 'Patron',
+          friend: 'Priateľ',
+          patron: 'Patrón',
           benefactor: 'Benefactor',
+          founder: 'Zakladateľ',
         };
 
         await sendEmailFromTemplate({
