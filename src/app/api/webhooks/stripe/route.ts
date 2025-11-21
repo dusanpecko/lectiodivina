@@ -23,8 +23,9 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   console.log('🔔 Webhook received!');
   
-  // Get raw body text for Stripe signature verification
-  const body = await req.text();
+  // Get raw body as Buffer to avoid encoding issues
+  const rawBody = await req.arrayBuffer();
+  const body = Buffer.from(rawBody).toString('utf8');
   
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
