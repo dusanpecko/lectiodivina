@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { appendFileSync } from 'fs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-10-29.clover',
@@ -21,7 +22,15 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  console.log('🔔 Webhook V2 received!');
+  const timestamp = new Date().toISOString();
+  console.log('🔔 Webhook V2 received!', timestamp);
+  
+  // Write to file for debugging
+  try {
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - Webhook received\n`);
+  } catch {
+    // Ignore file errors
+  }
   
   // Get raw body as Buffer to avoid encoding issues
   const rawBody = await req.arrayBuffer();
