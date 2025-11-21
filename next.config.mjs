@@ -131,7 +131,7 @@ const nextConfig = {
   
   // ✅ Compiler optimalizácie
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // removeConsole: process.env.NODE_ENV === 'production',
   },
   
   // ✅ Experimental features pre performance
