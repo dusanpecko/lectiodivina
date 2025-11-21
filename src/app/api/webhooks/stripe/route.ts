@@ -25,13 +25,14 @@ export async function POST(req: NextRequest) {
   
   // Get raw body as Buffer to avoid encoding issues
   const rawBody = await req.arrayBuffer();
-  const body = Buffer.from(rawBody).toString('utf8');
+  const body = Buffer.from(rawBody);
   
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
 
   console.log('📝 Webhook secret configured:', webhookSecret ? 'YES' : 'NO');
   console.log('📝 Signature received:', signature ? 'YES' : 'NO');
+  console.log('📝 Body length:', body.length, 'bytes');
 
   if (!signature) {
     console.error('❌ No signature in webhook request');
@@ -41,10 +42,16 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
+    // Pass Buffer directly to constructEvent (not a string)
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     console.log('✅ Webhook signature verified! Event type:', event.type);
   } catch (err) {
-    console.error('❌ Webhook signature verification failed:', err);
+    const error = err as Error;
+    console.error('❌ Webhook signature verification failed:', {
+      message: error.message,
+      bodyLength: body.length,
+      signaturePresent: !!signature,
+    });
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
