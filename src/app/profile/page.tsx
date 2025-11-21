@@ -1502,9 +1502,13 @@ export default function ProfilePage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         {payment.type === 'subscription' ? (
-                          <CreditCard className="text-purple-600" size={24} />
+                          <div className="text-purple-600">
+                            <CreditCard size={24} />
+                          </div>
                         ) : (
-                          <Heart className="text-red-500" size={24} />
+                          <div className="text-red-500">
+                            <Heart size={24} />
+                          </div>
                         )}
                         <h4 className="font-semibold text-gray-900">{payment.description}</h4>
                       </div>
