@@ -37,6 +37,7 @@ export default function ChapterDetailPage() {
   const router = useRouter();
   const params = useParams();
 
+  // Fixed params type error
   const localeId = params?.localeId ? String(params.localeId) : "";
   const translationId = params?.translationId ? String(params.translationId) : "";
   const bookId = params?.bookId ? String(params.bookId) : "";
