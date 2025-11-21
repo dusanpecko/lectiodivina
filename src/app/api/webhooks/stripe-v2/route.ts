@@ -1,7 +1,6 @@
 import { formatCurrency, formatDate, sendEmailFromTemplate } from '@/lib/email-sender';
 import { createClient } from '@supabase/supabase-js';
 import { appendFileSync } from 'fs';
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
@@ -23,21 +22,39 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const timestamp = new Date().toISOString();
-  console.log('🔔 Webhook V2 received!', timestamp);
   
-  // Write to file for debugging
+  // Write to file FIRST for debugging
   try {
-    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - Webhook received\n`);
-  } catch {
-    // Ignore file errors
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - Webhook V2 START\n`);
+  } catch (err) {
+    console.error('File write error:', err);
   }
   
-  // Get raw body as Buffer to avoid encoding issues
-  const rawBody = await req.arrayBuffer();
-  const body = Buffer.from(rawBody);
+  console.log('🔔 Webhook V2 received!', timestamp);
   
-  const headersList = await headers();
-  const signature = headersList.get('stripe-signature');
+  let signature: string | null = null;
+  let body: Buffer;
+  
+  try {
+    // Get signature from headers (Next.js 15 compatible)
+    signature = req.headers.get('stripe-signature');
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - Got signature: ${signature ? 'YES' : 'NO'}\n`);
+  } catch (err) {
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ Headers error: ${err}\n`);
+    console.error('❌ Error getting headers:', err);
+    return NextResponse.json({ error: 'Header error' }, { status: 400 });
+  }
+  
+  try {
+    // Get raw body as Buffer to avoid encoding issues
+    const rawBody = await req.arrayBuffer();
+    body = Buffer.from(rawBody);
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - Got body: ${body.length} bytes\n`);
+  } catch (err) {
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ Body error: ${err}\n`);
+    console.error('❌ Error reading body:', err);
+    return NextResponse.json({ error: 'Body read error' }, { status: 400 });
+  }
 
   console.log('📝 Webhook secret configured:', webhookSecret ? 'YES' : 'NO');
   console.log('📝 Signature received:', signature ? 'YES' : 'NO');
@@ -45,6 +62,7 @@ export async function POST(req: NextRequest) {
 
   if (!signature) {
     console.error('❌ No signature in webhook request');
+    appendFileSync('/tmp/webhook-v2.log', `${timestamp} - ❌ No signature\n`);
     return NextResponse.json({ error: 'No signature' }, { status: 400 });
   }
 
