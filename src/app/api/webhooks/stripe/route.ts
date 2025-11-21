@@ -21,55 +21,61 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const timestamp = new Date().toISOString();
-  console.log('🔔 Webhook V2 (App Router on /stripe) received!', timestamp);
+  console.log('🔔 Webhook V3 (App Router) received!', timestamp);
   
   let signature: string | null = null;
   let body: Buffer;
   
   try {
-    // Get signature from headers (Next.js 15 compatible)
     signature = req.headers.get('stripe-signature');
+    
+    // Read body safely
+    const arrayBuffer = await req.arrayBuffer();
+    body = Buffer.from(arrayBuffer);
+    
+    console.log('📝 Body read success. Size:', body.length);
   } catch (err) {
-    console.error('❌ Error getting headers:', err);
-    return NextResponse.json({ error: 'Header error' }, { status: 400 });
+    console.error('❌ Error reading request:', err);
+    return new NextResponse(
+      JSON.stringify({ error: 'Request read failed', details: String(err) }), 
+      { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Version': 'v3' }
+      }
+    );
   }
-  
-  try {
-    // Get raw body as Buffer to avoid encoding issues
-    const rawBody = await req.arrayBuffer();
-    body = Buffer.from(rawBody);
-  } catch (err) {
-    console.error('❌ Error reading body:', err);
-    return NextResponse.json({ error: 'Body read error' }, { status: 400 });
-  }
-
-  console.log('📝 Webhook secret configured:', webhookSecret ? 'YES' : 'NO');
-  console.log('📝 Signature received:', signature ? 'YES' : 'NO');
-  console.log('📝 Body length:', body.length, 'bytes');
 
   if (!signature) {
-    console.error('❌ No signature in webhook request');
-    return NextResponse.json({ error: 'No signature' }, { status: 400 });
+    console.error('❌ No signature');
+    return new NextResponse(
+      JSON.stringify({ error: 'No signature' }), 
+      { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Version': 'v3' }
+      }
+    );
   }
 
   let event: Stripe.Event;
 
   try {
-    // Pass Buffer directly to constructEvent (not a string)
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-    console.log('✅ Webhook signature verified! Event type:', event.type);
+    console.log('✅ Signature verified:', event.type);
   } catch (err) {
     const error = err as Error;
-    console.error('❌ Webhook signature verification failed:', {
-      message: error.message,
-      bodyLength: body.length,
-      signaturePresent: !!signature,
-    });
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    console.error('❌ Signature verification failed:', error.message);
+    return new NextResponse(
+      JSON.stringify({ error: 'Invalid signature', message: error.message }), 
+      { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Version': 'v3' }
+      }
+    );
   }
 
+  // ... rest of the handler ...
   try {
-    console.log(`📨 Webhook received: ${event.type}`);
+    console.log(`📨 Processing event: ${event.type}`);
     
     switch (event.type) {
       // Handle successful subscription creation
@@ -178,12 +184,18 @@ export async function POST(req: NextRequest) {
         console.log(`⚠️ Unhandled event type: ${event.type}`);
     }
 
-    return NextResponse.json({ received: true });
+    return new NextResponse(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Version': 'v3' }
+    });
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
+    return new NextResponse(
+      JSON.stringify({ error: 'Webhook handler failed' }),
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Version': 'v3' }
+      }
     );
   }
 }
