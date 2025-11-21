@@ -1,16 +1,30 @@
 //src/app/admin/articles/[id]/page.tsx
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useSupabase } from "@/app/components/SupabaseProvider";
-import { useParams, useRouter } from "next/navigation";
 import { useLanguage } from "@/app/components/LanguageProvider";
-import { translations } from "@/app/i18n";
-import { 
-  FileText, Type, Image, Video, MapPin, ExternalLink, Upload, Code,
-  Plus, Trash2, GripVertical, Save, ArrowLeft, Settings, Tag, User,
-  Calendar, Globe, Eye, Heart, X, CheckCircle, AlertCircle
+import { useSupabase } from "@/app/components/SupabaseProvider";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle,
+  Code,
+  ExternalLink,
+  Eye,
+  FileText,
+  GripVertical,
+  Heart,
+  Image as ImageIcon,
+  MapPin,
+  Save,
+  Settings,
+  Trash2,
+  Type,
+  Upload,
+  Video,
+  X
 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Article {
   id?: number;
@@ -32,11 +46,37 @@ interface Article {
   updated_at: string;
 }
 
+interface BlockData {
+  content?: string;
+  heading?: string;
+  alignment?: string;
+  size?: string;
+  images?: string[];
+  description?: string;
+  type?: string;
+  url?: string;
+  title?: string;
+  name?: string;
+  address?: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  phone?: string;
+  website?: string;
+  showAddress?: boolean;
+  showDirections?: boolean;
+  label?: string;
+  style?: string;
+  target?: string;
+  code?: string;
+  height?: string | number;
+  [key: string]: unknown;
+}
+
 interface Block {
   id: string;
   type: 'text' | 'image' | 'video' | 'address' | 'button' | 'source';
   position: number;
-  data: any;
+  data: BlockData;
 }
 
 interface Category {
@@ -62,7 +102,7 @@ const STATUS_OPTIONS = [
 
 const BLOCK_TYPES = [
   { type: 'text', label: 'Text blok', icon: Type, color: 'blue', description: 'Formátovaný text s nadpisom' },
-  { type: 'image', label: 'Obrázok', icon: Image, color: 'green', description: 'Galéria obrázkov' },
+  { type: 'image', label: 'Obrázok', icon: ImageIcon, color: 'green', description: 'Galéria obrázkov' },
   { type: 'video', label: 'Video', icon: Video, color: 'purple', description: 'YouTube, Vimeo alebo vlastné video' },
   { type: 'address', label: 'Adresa', icon: MapPin, color: 'red', description: 'Mapa a kontaktné údaje' },
   { type: 'button', label: 'Tlačítko', icon: ExternalLink, color: 'orange', description: 'Akčné tlačítko s odkazom' },
@@ -115,7 +155,7 @@ const LoadingSpinner = ({ size = 6 }: { size?: number }) => (
 // Text Block Component
 const TextBlock = ({ block, updateBlock, deleteBlock }: {
   block: Block;
-  updateBlock: (id: string, data: any) => void;
+  updateBlock: (id: string, data: BlockData) => void;
   deleteBlock: (id: string) => void;
 }) => {
   const [content, setContent] = useState(block.data.content || '');
@@ -236,7 +276,7 @@ const TextBlock = ({ block, updateBlock, deleteBlock }: {
 // Image Block Component
 const ImageBlock = ({ block, updateBlock, deleteBlock }: {
   block: Block;
-  updateBlock: (id: string, data: any) => void;
+  updateBlock: (id: string, data: BlockData) => void;
   deleteBlock: (id: string) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -251,7 +291,7 @@ const ImageBlock = ({ block, updateBlock, deleteBlock }: {
   };
 
   const removeImage = (index: number) => {
-    const newImages = (block.data.images || []).filter((_: any, i: number) => i !== index);
+    const newImages = (block.data.images || []).filter((_: string, i: number) => i !== index);
     updateBlock(block.id, { ...block.data, images: newImages });
   };
 
@@ -260,7 +300,7 @@ const ImageBlock = ({ block, updateBlock, deleteBlock }: {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
-          <Image className="w-5 h-5 text-green-600" />
+          <ImageIcon className="w-5 h-5 text-green-600" />
           <span className="font-semibold">Obrázok</span>
         </div>
         <button onClick={() => deleteBlock(block.id)} className="text-red-600 hover:bg-red-50 p-1 rounded">
@@ -294,6 +334,7 @@ const ImageBlock = ({ block, updateBlock, deleteBlock }: {
           <div className="grid grid-cols-3 gap-2">
             {block.data.images.map((img: string, index: number) => (
               <div key={index} className="relative group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img} alt="" className="w-full h-20 object-cover rounded" />
                 <button
                   onClick={() => removeImage(index)}
@@ -313,7 +354,7 @@ const ImageBlock = ({ block, updateBlock, deleteBlock }: {
 // Video Block Component
 const VideoBlock = ({ block, updateBlock, deleteBlock }: {
   block: Block;
-  updateBlock: (id: string, data: any) => void;
+  updateBlock: (id: string, data: BlockData) => void;
   deleteBlock: (id: string) => void;
 }) => {
   return (
@@ -382,7 +423,7 @@ const VideoBlock = ({ block, updateBlock, deleteBlock }: {
 // Address Block Component  
 const AddressBlock = ({ block, updateBlock, deleteBlock }: {
   block: Block;
-  updateBlock: (id: string, data: any) => void;
+  updateBlock: (id: string, data: BlockData) => void;
   deleteBlock: (id: string) => void;
 }) => {
   return (
@@ -494,7 +535,7 @@ const AddressBlock = ({ block, updateBlock, deleteBlock }: {
 // Button Block Component
 const ButtonBlock = ({ block, updateBlock, deleteBlock }: {
   block: Block;
-  updateBlock: (id: string, data: any) => void;
+  updateBlock: (id: string, data: BlockData) => void;
   deleteBlock: (id: string) => void;
 }) => {
   return (
@@ -566,7 +607,7 @@ const ButtonBlock = ({ block, updateBlock, deleteBlock }: {
 // Source Block Component
 const SourceBlock = ({ block, updateBlock, deleteBlock }: {
   block: Block;
-  updateBlock: (id: string, data: any) => void;
+  updateBlock: (id: string, data: BlockData) => void;
   deleteBlock: (id: string) => void;
 }) => {
   return (
@@ -614,7 +655,11 @@ export default function ArticleEditor() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  // Use React.use() to unwrap params if it's a Promise (Next.js 15)
+  // or handle it if it's an object.
+  // However, useParams() hook returns Params directly in client components.
+  // The issue might be that params can be null in some contexts.
+  const id = params?.id ? String(params.id) : "";
 
   const { lang: appLang } = useLanguage();
   const isNew = id === "new";
@@ -724,14 +769,14 @@ export default function ArticleEditor() {
   const addBlock = useCallback((type: string) => {
     const newBlock: Block = {
       id: Date.now().toString(),
-      type: type as any,
+      type: type as Block['type'],
       position: blocks.length,
       data: {}
     };
     setBlocks(prev => [...prev, newBlock]);
   }, [blocks.length]);
 
-  const updateBlock = useCallback((blockId: string, data: any) => {
+  const updateBlock = useCallback((blockId: string, data: BlockData) => {
     setBlocks(prev => prev.map(block => 
       block.id === blockId ? { ...block, data } : block
     ));
@@ -1065,7 +1110,7 @@ export default function ArticleEditor() {
                       <label className="block text-sm font-medium mb-1">Jazyk</label>
                       <select
                         value={article.lang}
-                        onChange={(e) => setArticle(prev => prev ? {...prev, lang: e.target.value as any} : null)}
+                        onChange={(e) => setArticle(prev => prev ? {...prev, lang: e.target.value as Article['lang']} : null)}
                         className="w-full p-3 border rounded-lg"
                       >
                         {LANGUAGE_OPTIONS.map(option => (
@@ -1166,7 +1211,7 @@ export default function ArticleEditor() {
                       <label className="block text-sm font-medium mb-1">Stav článku</label>
                       <select
                         value={article.status}
-                        onChange={(e) => setArticle(prev => prev ? {...prev, status: e.target.value as any} : null)}
+                        onChange={(e) => setArticle(prev => prev ? {...prev, status: e.target.value as Article['status']} : null)}
                         className="w-full p-3 border rounded-lg"
                       >
                         {STATUS_OPTIONS.map(status => (
