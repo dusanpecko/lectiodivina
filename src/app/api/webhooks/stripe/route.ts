@@ -1,6 +1,5 @@
 import { formatCurrency, formatDate, sendEmailFromTemplate } from '@/lib/email-sender';
 import { createClient } from '@supabase/supabase-js';
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
@@ -21,14 +20,28 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  console.log('🔔 Webhook received!');
+  const timestamp = new Date().toISOString();
+  console.log('🔔 Webhook received!', timestamp);
   
-  // Get raw body as Buffer to avoid encoding issues
-  const rawBody = await req.arrayBuffer();
-  const body = Buffer.from(rawBody);
+  let signature: string | null = null;
+  let body: Buffer;
   
-  const headersList = await headers();
-  const signature = headersList.get('stripe-signature');
+  try {
+    // Get signature from headers (Next.js 15 compatible)
+    signature = req.headers.get('stripe-signature');
+  } catch (err) {
+    console.error('❌ Error getting headers:', err);
+    return NextResponse.json({ error: 'Header error' }, { status: 400 });
+  }
+  
+  try {
+    // Get raw body as Buffer to avoid encoding issues
+    const rawBody = await req.arrayBuffer();
+    body = Buffer.from(rawBody);
+  } catch (err) {
+    console.error('❌ Error reading body:', err);
+    return NextResponse.json({ error: 'Body read error' }, { status: 400 });
+  }
 
   console.log('📝 Webhook secret configured:', webhookSecret ? 'YES' : 'NO');
   console.log('📝 Signature received:', signature ? 'YES' : 'NO');
