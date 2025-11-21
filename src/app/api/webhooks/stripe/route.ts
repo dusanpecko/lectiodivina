@@ -60,15 +60,20 @@ export async function POST(req: NextRequest) {
           metadata: session.metadata
         });
         
-        if (session.mode === 'subscription') {
-          await handleSubscriptionCreated(session);
-        } else if (session.metadata?.type === 'donation') {
-          await handleDonationCompleted(session);
-        } else if (session.metadata?.type === 'product_order') {
-          console.log('📦 Processing product order...');
-          await handleOrderCompleted(session);
-        } else {
-          console.log('⚠️ Unknown checkout type:', session.metadata);
+        try {
+          if (session.mode === 'subscription') {
+            await handleSubscriptionCreated(session);
+          } else if (session.metadata?.type === 'donation') {
+            await handleDonationCompleted(session);
+          } else if (session.metadata?.type === 'product_order') {
+            console.log('📦 Processing product order...');
+            await handleOrderCompleted(session);
+          } else {
+            console.log('⚠️ Unknown checkout type:', session.metadata);
+          }
+        } catch (handlerError) {
+          console.error(`❌ Error in checkout handler:`, handlerError);
+          throw handlerError; // Re-throw to be caught by outer try-catch
         }
         break;
       }
@@ -178,7 +183,15 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
 
   // Get subscription details
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const subData = subscription as unknown as { current_period_start: number; current_period_end: number };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sub: any = subscription; // Cast to access period properties
+  
+  console.log('📊 Subscription data:', {
+    id: subscription.id,
+    status: subscription.status,
+    current_period_start: sub.current_period_start,
+    current_period_end: sub.current_period_end
+  });
 
   // Create or update subscription in database
   const { error } = await supabase.from('subscriptions').upsert({
@@ -188,8 +201,8 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
     tier,
     amount: (subscription.items.data[0].price.unit_amount || 0) / 100,
     status: subscription.status,
-    current_period_start: new Date((subData.current_period_start || subscription.created) * 1000).toISOString(),
-    current_period_end: new Date((subData.current_period_end || (subscription.created + 2592000)) * 1000).toISOString(),
+    current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
+    current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
     cancel_at_period_end: subscription.cancel_at_period_end,
   });
 
@@ -227,8 +240,8 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
             tier_name: tierNames[tier] || tier,
             amount: formatCurrency((subscription.items.data[0].price.unit_amount || 0) / 100),
             interval: subscription.items.data[0].price.recurring?.interval === 'month' ? 'mesiac' : 'rok',
-            start_date: formatDate(new Date(subData.current_period_start * 1000)),
-            next_billing_date: formatDate(new Date(subData.current_period_end * 1000)),
+            start_date: formatDate(new Date(sub.current_period_start * 1000)),
+            next_billing_date: formatDate(new Date(sub.current_period_end * 1000)),
             tier_benefits: 'Prístup k premium obsahu a podpora projektu',
             account_url: `${BASE_URL}/profile`,
           },
@@ -245,14 +258,15 @@ async function handleSubscriptionCreated(session: Stripe.Checkout.Session) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   console.log('🔄 Subscription updated:', subscription.id);
   
-  const subData = subscription as unknown as { current_period_start: number; current_period_end: number };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sub: any = subscription; // Cast to access period properties
   
   const { error } = await supabase
     .from('subscriptions')
     .update({
       status: subscription.status,
-      current_period_start: new Date(subData.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subData.current_period_end * 1000).toISOString(),
+      current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
       updated_at: new Date().toISOString(),
     })
