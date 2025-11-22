@@ -84,20 +84,27 @@ export async function POST(req: NextRequest) {
         console.log('🎉 Checkout session completed:', {
           sessionId: session.id,
           mode: session.mode,
-          metadata: session.metadata
+          metadata: session.metadata,
+          amount_total: session.amount_total,
+          customer_email: session.customer_email,
         });
         
         try {
           if (session.mode === 'subscription') {
+            console.log('📋 Processing subscription...');
             await handleSubscriptionCreated(session);
           } else if (session.metadata?.type === 'donation') {
-            console.log('💰 Processing donation...');
+            console.log('💰 Processing donation with metadata...');
             await handleDonationCompleted(session);
           } else if (session.metadata?.type === 'product_order') {
             console.log('📦 Processing product order...');
             await handleOrderCompleted(session);
+          } else if (session.mode === 'payment' && !session.subscription) {
+            // Fallback: If mode is payment and no subscription, treat as donation
+            console.log('💰 Processing payment as donation (fallback)...');
+            await handleDonationCompleted(session);
           } else {
-            console.log('⚠️ Unknown checkout type:', session.metadata);
+            console.log('⚠️ Unknown checkout type. Mode:', session.mode, 'Metadata:', JSON.stringify(session.metadata));
           }
         } catch (handlerError) {
           console.error(`❌ Error in checkout handler:`, handlerError);
