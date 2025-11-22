@@ -116,86 +116,50 @@ function LoginPageContent() {
     }
 
     try {
-      if (!supabase) {
-        throw new Error(t.supabaseUnavailable);
-      }
-
-      // Registrácia používateľa
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName
-          }
-        }
+      // Registrácia cez API endpoint (server-side s admin právami)
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          fullName: fullName || email.split('@')[0]
+        }),
       });
 
-      if (authError) {
+      const data = await response.json();
+
+      if (!response.ok) {
         setLoading(false);
         
         // Špeciálne správy pre rôzne chyby
-        if (authError.message.includes("rate limit")) {
+        if (data.error?.includes("rate limit")) {
           setError("Príliš veľa pokusov. Počkajte prosím 2 minúty a skúste znova.");
-        } else if (authError.message.includes("already registered")) {
+        } else if (data.error?.includes("already registered") || data.error?.includes("already exists")) {
           setError("Tento email je už registrovaný. Skúste sa prihlásiť.");
         } else {
-          setError(authError.message);
+          setError(data.error || "Chyba pri registrácii");
         }
         return;
       }
 
-      if (authData?.user) {
-        // DÔLEŽITÉ: Počkáme chvíľu na vytvorenie Auth používateľa
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Skontrolujeme, či používateľ už existuje v users tabuľke
-        const { data: existingUser } = await supabase
-          .from("users")
-          .select("id")
-          .eq("id", authData.user.id)
-          .maybeSingle();
+      // Úspešná registrácia
+      setLoading(false);
+      setError(null);
+      setSuccessMessage(t.registrationSuccess);
+      
+      // Po 3 sekundách prepneme na prihlásenie
+      setTimeout(() => {
+        setIsRegister(false);
+        setSuccessMessage(null);
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setFullName("");
+      }, 3000);
 
-        // Vytvoríme záznam len ak neexistuje
-        if (!existingUser) {
-          const { error: userError } = await supabase
-            .from("users")
-            .insert([{
-              id: authData.user.id,
-              email: authData.user.email,
-              full_name: fullName || authData.user.email?.split('@')[0],
-              role: "user",
-              provider: authData.user.app_metadata?.provider || "email"
-            }]);
-
-          if (userError) {
-            // Ak je to duplicate email, ignoruj (používateľ už existuje)
-            if (userError.code !== '23505') {
-              console.error("Error creating user record:", userError);
-              setError(`Database error: ${userError.message || "Unknown error"}`);
-              setLoading(false);
-              return;
-            }
-          }
-        }
-
-        // Odhlásiме používateľa aby sa automaticky neprihlásil
-        await supabase.auth.signOut();
-        
-        setLoading(false);
-        setError(null);
-        setSuccessMessage(t.registrationSuccess);
-        
-        // Po 3 sekundách prepneme na prihlásenie
-        setTimeout(() => {
-          setIsRegister(false);
-          setSuccessMessage(null);
-          setEmail("");
-          setPassword("");
-          setConfirmPassword("");
-          setFullName("");
-        }, 3000);
-      }
     } catch (err) {
       console.error("Register error:", err);
       setLoading(false);
