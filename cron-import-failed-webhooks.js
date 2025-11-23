@@ -1,8 +1,12 @@
 #!/usr/bin/env node
-require('dotenv').config({ path: '.env.local' });
-const { createClient } = require('@supabase/supabase-js');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const nodemailer = require('nodemailer');
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+import Stripe from 'stripe';
+
+dotenv.config({ path: '.env.local' });
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -227,9 +231,11 @@ async function importFailedWebhooks() {
         } else {
           console.log(`✅ Imported donation ${session.id} (${session.amount_total / 100} EUR)`);
           
-          // Send email if user exists
-          if (user?.id && session.customer_email) {
+          // Send email if customer provided email (skip stripe@lectio.one for anonymous donations)
+          if (session.customer_email && session.customer_email !== 'stripe@lectio.one') {
             await sendDonationEmail(insertedDonation[0], session.customer_email);
+          } else if (session.customer_email === 'stripe@lectio.one') {
+            console.log(`ℹ️ Anonymous donation - skipping email`);
           }
         }
       }

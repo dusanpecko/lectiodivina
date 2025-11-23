@@ -104,7 +104,7 @@ export async function createSubscriptionCheckoutSession(
     ],
     success_url: successUrl,
     cancel_url: cancelUrl,
-    customer_email: customerEmail,
+    customer_email: customerEmail && customerEmail.trim() ? customerEmail : undefined,
     client_reference_id: userId,
     metadata: {
       user_id: userId,
@@ -130,6 +130,9 @@ export async function createDonationCheckoutSession(
   customerEmail?: string,
   message?: string
 ) {
+  // Disable Stripe Link for anonymous donations to prevent card association
+  const isAnonymous = customerEmail === 'stripe@lectio.one';
+  
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
@@ -148,13 +151,21 @@ export async function createDonationCheckoutSession(
     ],
     success_url: successUrl,
     cancel_url: cancelUrl,
-    customer_email: customerEmail,
+    customer_email: customerEmail && customerEmail.trim() ? customerEmail : undefined,
     client_reference_id: userId || undefined,
     metadata: {
       user_id: userId || 'anonymous',
       type: 'donation',
       message: message || '',
     },
+    // Disable Link for anonymous donations
+    ...(isAnonymous && {
+      payment_method_options: {
+        card: {
+          setup_future_usage: undefined,
+        },
+      },
+    }),
   });
 
   return session;
