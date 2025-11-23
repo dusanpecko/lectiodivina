@@ -32,19 +32,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Price ID not configured' }, { status: 500 });
     }
 
+    // Detect if request is from mobile
+    const userAgent = request.headers.get('user-agent') || '';
+    const isMobile = /mobile|android|iphone|lectio/i.test(userAgent);
+
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     const session = await createSubscriptionCheckoutSession(
       userId,
       priceId,
       tier,
-      `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      `${baseUrl}/support`,
+      isMobile
+        ? `lectio://subscription/success?session_id={CHECKOUT_SESSION_ID}`
+        : `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      isMobile
+        ? `lectio://subscription/cancel`
+        : `${baseUrl}/support`,
       email
     );
 
     console.log('✅ Checkout session created:', session.id);
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (error) {
     console.error('❌ Error creating subscription checkout:', error);
     return NextResponse.json(

@@ -2,11 +2,104 @@
 require('dotenv').config({ path: '.env.local' });
 const { createClient } = require('@supabase/supabase-js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const nodemailer = require('nodemailer');
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+// Email helper functions
+async function sendEmail({ to, subject, html, templateKey, userId, subscriptionId, donationId }) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.m1.websupport.sk',
+      port: parseInt(process.env.SMTP_PORT || '465'),
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: '"Lectio Divina" <info@lectio.one>',
+      to,
+      subject,
+      html,
+    });
+
+    // Log email
+    await supabase.from('email_logs').insert({
+      template_key: templateKey,
+      recipient_email: to,
+      user_id: userId,
+      subject,
+      body: html,
+      locale: 'sk',
+      subscription_id: subscriptionId,
+      donation_id: donationId,
+      status: 'sent',
+      provider: 'smtp',
+      provider_message_id: info.messageId,
+      sent_at: new Date().toISOString(),
+    });
+
+    console.log(`📧 Email sent to ${to}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Email failed:`, error.message);
+    return false;
+  }
+}
+
+async function sendDonationEmail(donation, userEmail) {
+  const html = `
+    <h2>Ďakujeme za vašu podporu! 🙏</h2>
+    <p>Vaša finančná podpora bola úspešne prijatá.</p>
+    <p><strong>Suma:</strong> €${donation.amount}</p>
+    <p><strong>Dátum:</strong> ${new Date(donation.created_at).toLocaleDateString('sk-SK')}</p>
+    <p>Vďaka vám môžeme pokračovať v našej misii prinášať Božie slovo do každodenného života.</p>
+    <p>S vďakou,<br>Tím Lectio Divina</p>
+  `;
+  
+  return sendEmail({
+    to: userEmail,
+    subject: '🙏 Ďakujeme za vašu podporu',
+    html,
+    templateKey: 'donation_receipt',
+    userId: donation.user_id,
+    donationId: donation.id,
+  });
+}
+
+async function sendSubscriptionEmail(subscription, userEmail) {
+  const tierNames = {
+    prayer: '🙏 Modlitba',
+    friend: '💙 Priateľ Lectio',
+    patron: '💜 Patron Lectio',
+    founder: '🌟 Zakladateľ Lectio'
+  };
+
+  const html = `
+    <h2>Vitajte medzi podporovateľmi Lectio Divina! 🎉</h2>
+    <p>Vaše predplatné bolo úspešne aktivované.</p>
+    <p><strong>Úroveň:</strong> ${tierNames[subscription.tier] || subscription.tier}</p>
+    <p><strong>Suma:</strong> €${subscription.amount}/mesiac</p>
+    <p><strong>Platné do:</strong> ${new Date(subscription.current_period_end).toLocaleDateString('sk-SK')}</p>
+    <p>Vaša podpora znamená pre nás veľmi veľa. Ďakujeme, že ste súčasťou našej komunity!</p>
+    <p>S vďakou,<br>Tím Lectio Divina</p>
+  `;
+  
+  return sendEmail({
+    to: userEmail,
+    subject: '🎉 Vitajte medzi podporovateľmi Lectio Divina',
+    html,
+    templateKey: 'subscription_created',
+    userId: subscription.user_id,
+    subscriptionId: subscription.id,
+  });
+}
 
 const LOOKBACK_MINUTES = 5; // Check last 5 minutes
 
@@ -75,7 +168,7 @@ async function importFailedWebhooks() {
 
         const tier = tierMap[subscriptionData.items.data[0].price.unit_amount] || 'friend';
 
-        const { error } = await supabase
+        const { data: insertedSub, error } = await supabase
           .from('subscriptions')
           .insert([{
             user_id: user?.id || null,
@@ -88,12 +181,18 @@ async function importFailedWebhooks() {
             current_period_end: new Date(subscriptionData.current_period_end * 1000).toISOString(),
             cancel_at_period_end: subscriptionData.cancel_at_period_end,
             created_at: new Date(subscriptionData.created * 1000).toISOString()
-          }]);
+          }])
+          .select();
 
         if (error) {
           console.error(`❌ Failed to import subscription ${subscriptionData.id}:`, error.message);
         } else {
           console.log(`✅ Imported subscription ${subscriptionData.id} (${tier})`);
+          
+          // Send email if user exists
+          if (user?.id && session.customer_email) {
+            await sendSubscriptionEmail(insertedSub[0], session.customer_email);
+          }
         }
 
       } else {
@@ -110,7 +209,7 @@ async function importFailedWebhooks() {
               : session.payment_intent.id)
           : null;
 
-        const { error } = await supabase
+        const { data: insertedDonation, error } = await supabase
           .from('donations')
           .insert([{
             user_id: user?.id || null,
@@ -120,12 +219,18 @@ async function importFailedWebhooks() {
             message: session.metadata?.message || null,
             is_anonymous: !user?.id,
             created_at: new Date(session.created * 1000).toISOString()
-          }]);
+          }])
+          .select();
 
         if (error) {
           console.error(`❌ Failed to import donation ${session.id}:`, error.message);
         } else {
           console.log(`✅ Imported donation ${session.id} (${session.amount_total / 100} EUR)`);
+          
+          // Send email if user exists
+          if (user?.id && session.customer_email) {
+            await sendDonationEmail(insertedDonation[0], session.customer_email);
+          }
         }
       }
     }
