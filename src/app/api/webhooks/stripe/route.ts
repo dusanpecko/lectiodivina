@@ -328,6 +328,14 @@ async function handleDonationCompleted(session: Stripe.Checkout.Session) {
   const message = session.metadata?.message;
   
   console.log(`Processing donation for user ${userId}, amount ${(session.amount_total || 0) / 100}`);
+  console.log('📝 Donation data:', {
+    user_id: userId,
+    amount: (session.amount_total || 0) / 100,
+    stripe_payment_id: session.payment_intent,
+    stripe_session_id: session.id,
+    message: message || null,
+    is_anonymous: !userId,
+  });
 
   const { data: donation, error } = await supabase.from('donations').insert({
     user_id: userId,
@@ -338,10 +346,13 @@ async function handleDonationCompleted(session: Stripe.Checkout.Session) {
     is_anonymous: !userId,
   }).select().single();
 
+  console.log('🔍 Insert result:', { donation, error });
+
   if (error) {
-    console.error('Error creating donation:', error);
+    console.error('❌ Error creating donation:', JSON.stringify(error, null, 2));
+    return; // Stop if error
   } else {
-    console.log('✅ Donation created in database');
+    console.log('✅ Donation created in database with ID:', donation?.id);
 
     try {
       const recipientEmail = session.customer_email || session.customer_details?.email;
