@@ -60,40 +60,40 @@ function ThankYouContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center px-4">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-12 text-center">
-        <div className="mb-8">{getIcon()}</div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center px-4 py-8">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-6 sm:p-12 text-center">
+        <div className="mb-6 sm:mb-8">{getIcon()}</div>
 
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">
+        <h1 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
           {translations.title[lang as keyof typeof translations.title]}
         </h1>
 
-        <p className="text-xl text-gray-700 mb-8">{getMessage()}</p>
+        <p className="text-base sm:text-xl text-gray-700 mb-6 sm:mb-8 px-2">{getMessage()}</p>
 
         {sessionId && (
-          <p className="text-sm text-gray-500 mb-8">
-            Session ID: <code className="bg-gray-100 px-2 py-1 rounded">{sessionId}</code>
+          <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 break-all">
+            Session ID: <code className="bg-gray-100 px-2 py-1 rounded text-xs">{sessionId}</code>
           </p>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <Link
             href="/profile"
-            className="bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition"
+            className="bg-purple-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-purple-700 transition text-sm sm:text-base"
           >
             {translations.goToAccount[lang as keyof typeof translations.goToAccount]}
           </Link>
 
           <Link
             href="/"
-            className="bg-white text-gray-700 px-8 py-4 rounded-lg font-semibold border-2 border-gray-300 hover:bg-gray-50 transition"
+            className="bg-white text-gray-700 px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold border-2 border-gray-300 hover:bg-gray-50 transition text-sm sm:text-base"
           >
             {translations.backToHome[lang as keyof typeof translations.backToHome]}
           </Link>
 
           <Link
             href="/lectio"
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:opacity-90 transition"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:opacity-90 transition text-sm sm:text-base"
           >
             {translations.continueReading[lang as keyof typeof translations.continueReading]}
           </Link>
