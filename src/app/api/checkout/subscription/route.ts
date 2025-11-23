@@ -42,12 +42,8 @@ export async function POST(request: NextRequest) {
       userId,
       priceId,
       tier,
-      isMobile
-        ? `lectio://subscription/success?session_id={CHECKOUT_SESSION_ID}`
-        : `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      isMobile
-        ? `lectio://subscription/cancel`
-        : `${baseUrl}/support`,
+      `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      `${baseUrl}/support`,
       email
     );
 

@@ -19,12 +19,8 @@ export async function POST(request: NextRequest) {
     const session = await createDonationCheckoutSession(
       amount,
       userId || null,
-      isMobile 
-        ? `lectio://donation/success?session_id={CHECKOUT_SESSION_ID}`
-        : `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      isMobile
-        ? `lectio://donation/cancel`
-        : `${baseUrl}/support`,
+      `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      `${baseUrl}/support`,
       email,
       message
     );
