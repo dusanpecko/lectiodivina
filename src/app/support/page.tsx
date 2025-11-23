@@ -204,6 +204,7 @@ export default function SupportPage() {
   const [donationMessage, setDonationMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentTier, setCurrentTier] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Fetch user's current subscription tier
   useEffect(() => {
@@ -260,24 +261,54 @@ export default function SupportPage() {
       en: "Lectio.one has no paywall. You can cancel donations at any time. Thank you for every form of support — in prayer and financially.",
       cz: "Lectio.one je bez paywallu. Dar můžeš kdykoli zrušit. Děkujeme za každou formu podpory — modlitbou i finančně.",
       es: "Lectio.one no tiene paywall. Puedes cancelar tu donación en cualquier momento. Gracias por cualquier forma de apoyo — con tu oración y con tu ayuda económica."
+    },
+    loginRequired: {
+      sk: "Prihlásenie potrebné",
+      en: "Login Required",
+      cz: "Přihlášení povinné",
+      es: "Inicio de sesión requerido"
+    },
+    loginMessage: {
+      sk: "Pre vytvorenie predplatného sa prosím prihláste alebo zaregistrujte.",
+      en: "Please log in or register to create a subscription.",
+      cz: "Pro vytvoření předplatného se prosím přihlaste nebo zaregistrujte.",
+      es: "Por favor, inicie sesión o regístrese para crear una suscripción."
+    },
+    loginButton: {
+      sk: "Prihlásiť sa",
+      en: "Log in",
+      cz: "Přihlásit se",
+      es: "Iniciar sesión"
+    },
+    cancelButton: {
+      sk: "Zrušiť",
+      en: "Cancel",
+      cz: "Zrušit",
+      es: "Cancelar"
     }
   };
 
   const handleSubscribe = async (tier: string, priceId: string) => {
     if (tier === "free") return;
 
+    // Check if user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
       const response = await fetch("/api/checkout/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tier,
           priceId,
-          userId: user?.id || null,
-          email: user?.email || null,
+          userId: user.id,
+          email: user.email || null,
         }),
       });
 
@@ -652,6 +683,50 @@ export default function SupportPage() {
           )}
         </div>
       </div>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8"
+          >
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
+              >
+                <Heart size={32} className="text-white" />
+              </div>
+              
+              <h3 className="text-2xl font-bold mb-3" style={{ color: '#40467b' }}>
+                {translations.loginRequired[lang as keyof typeof translations.loginRequired]}
+              </h3>
+              
+              <p className="text-gray-600 mb-8">
+                {translations.loginMessage[lang as keyof typeof translations.loginMessage]}
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="flex-1 px-6 py-3 rounded-xl font-semibold border-2 transition-all hover:bg-gray-50"
+                  style={{ borderColor: 'rgba(64, 70, 123, 0.3)', color: '#40467b' }}
+                >
+                  {translations.cancelButton[lang as keyof typeof translations.cancelButton]}
+                </button>
+                <button
+                  onClick={() => window.location.href = '/login'}
+                  className="flex-1 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
+                >
+                  {translations.loginButton[lang as keyof typeof translations.loginButton]}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
