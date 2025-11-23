@@ -90,20 +90,26 @@ export async function POST(req: NextRequest) {
         });
         
         try {
-          if (session.mode === 'subscription') {
+          // Priority 1: Check mode first (subscription takes precedence)
+          if (session.mode === 'subscription' || session.subscription) {
             console.log('📋 Processing subscription...');
             await handleSubscriptionCreated(session);
-          } else if (session.metadata?.type === 'donation') {
+          } 
+          // Priority 2: Check explicit metadata type
+          else if (session.metadata?.type === 'donation') {
             console.log('💰 Processing donation with metadata...');
             await handleDonationCompleted(session);
-          } else if (session.metadata?.type === 'product_order') {
+          } 
+          else if (session.metadata?.type === 'product_order') {
             console.log('📦 Processing product order...');
             await handleOrderCompleted(session);
-          } else if (session.mode === 'payment' && !session.subscription) {
-            // Fallback: If mode is payment and no subscription, treat as donation
-            console.log('💰 Processing payment as donation (fallback)...');
+          } 
+          // Priority 3: Fallback - only if mode is payment AND metadata is not explicitly set
+          else if (session.mode === 'payment' && !session.metadata?.type) {
+            console.log('💰 Processing payment as donation (fallback - no metadata type)...');
             await handleDonationCompleted(session);
-          } else {
+          } 
+          else {
             console.log('⚠️ Unknown checkout type. Mode:', session.mode, 'Metadata:', JSON.stringify(session.metadata));
           }
         } catch (handlerError) {
