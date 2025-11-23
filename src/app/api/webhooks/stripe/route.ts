@@ -324,8 +324,22 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleDonationCompleted(session: Stripe.Checkout.Session) {
-  const userId = session.metadata?.user_id === 'anonymous' ? null : session.metadata?.user_id;
+  let userId = session.metadata?.user_id === 'anonymous' ? null : session.metadata?.user_id;
   const message = session.metadata?.message;
+  
+  // If no userId in metadata, try to find user by email
+  if (!userId && session.customer_email) {
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', session.customer_email)
+      .single();
+    
+    if (user) {
+      userId = user.id;
+      console.log(`✅ Matched user by email: ${session.customer_email} -> ${userId}`);
+    }
+  }
   
   console.log(`Processing donation for user ${userId}, amount ${(session.amount_total || 0) / 100}`);
   console.log('📝 Donation data:', {
