@@ -2,6 +2,7 @@
   "name": "lectiodivina",
   "version": "0.2.0-beta.5",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build --no-lint",

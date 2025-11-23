@@ -93,7 +93,9 @@ export async function createSubscriptionCheckoutSession(
   cancelUrl: string,
   customerEmail?: string
 ) {
-  const session = await stripe.checkout.sessions.create({
+  const hasEmail = customerEmail && customerEmail.trim() && customerEmail !== '';
+  
+  const sessionConfig: any = {
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [
@@ -104,7 +106,6 @@ export async function createSubscriptionCheckoutSession(
     ],
     success_url: successUrl,
     cancel_url: cancelUrl,
-    customer_email: customerEmail && customerEmail.trim() ? customerEmail : undefined,
     client_reference_id: userId,
     metadata: {
       user_id: userId,
@@ -116,7 +117,14 @@ export async function createSubscriptionCheckoutSession(
         tier,
       },
     },
-  });
+  };
+  
+  // Only add customer_email if provided
+  if (hasEmail) {
+    sessionConfig.customer_email = customerEmail;
+  }
+  
+  const session = await stripe.checkout.sessions.create(sessionConfig);
 
   return session;
 }
@@ -133,7 +141,10 @@ export async function createDonationCheckoutSession(
   // Disable Stripe Link for anonymous donations to prevent card association
   const isAnonymous = customerEmail === 'stripe@lectio.one';
   
-  const session = await stripe.checkout.sessions.create({
+  // Only set customer_email if provided and not empty
+  const hasEmail = customerEmail && customerEmail.trim() && customerEmail !== '';
+  
+  const sessionConfig: any = {
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: [
@@ -151,7 +162,6 @@ export async function createDonationCheckoutSession(
     ],
     success_url: successUrl,
     cancel_url: cancelUrl,
-    customer_email: customerEmail && customerEmail.trim() ? customerEmail : undefined,
     client_reference_id: userId || undefined,
     metadata: {
       user_id: userId || 'anonymous',
@@ -166,7 +176,14 @@ export async function createDonationCheckoutSession(
         },
       },
     }),
-  });
+  };
+  
+  // Only add customer_email if provided (otherwise Stripe will require it in checkout form)
+  if (hasEmail) {
+    sessionConfig.customer_email = customerEmail;
+  }
+  
+  const session = await stripe.checkout.sessions.create(sessionConfig);
 
   return session;
 }
