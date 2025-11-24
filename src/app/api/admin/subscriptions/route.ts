@@ -19,13 +19,27 @@ export async function GET() {
     // Fetch user info for each subscription
     const subscriptionsWithUsers = await Promise.all(
       (subscriptions || []).map(async (sub) => {
-        const { data: userData } = await supabaseAdmin.auth.admin.getUserById(sub.user_id);
-        
-        return {
-          ...sub,
-          user_email: userData?.user?.email || '',
-          user_name: userData?.user?.user_metadata?.name || '',
-        };
+        try {
+          // Get full_name and email from users table
+          const { data: userData } = await supabaseAdmin
+            .from('users')
+            .select('full_name, email')
+            .eq('id', sub.user_id)
+            .single();
+          
+          return {
+            ...sub,
+            user_email: userData?.email || '',
+            user_name: userData?.full_name || '',
+          };
+        } catch (userErr) {
+          console.error(`Exception fetching user ${sub.user_id}:`, userErr);
+          return {
+            ...sub,
+            user_email: '',
+            user_name: '',
+          };
+        }
       })
     );
 

@@ -221,9 +221,11 @@ export default function DonationsAdminPage() {
                     <td className="px-6 py-4">
                       <div>
                         <div className="font-medium text-gray-900">
-                          {donation.user_name || 'Anonymný'}
+                          {donation.user_name || donation.user_email || 'Anonymný'}
                         </div>
-                        <div className="text-sm text-gray-500">{donation.user_email}</div>
+                        {donation.user_name && donation.user_email && (
+                          <div className="text-sm text-gray-500">{donation.user_email}</div>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
