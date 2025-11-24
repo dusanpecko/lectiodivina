@@ -85,6 +85,22 @@ const nextConfig = {
         source: '/(.*)',
         headers: [
           {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.stripe.com https://*.supabase.co",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: blob: https: http:",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "connect-src 'self' https://*.supabase.co https://*.stripe.com https://*.upstash.io wss://*.supabase.co",
+              "frame-src 'self' https://*.stripe.com",
+              "media-src 'self' https://*.supabase.co blob:",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self' https://*.stripe.com",
+            ].join('; ')
+          },
+          {
             key: 'X-Frame-Options',
             value: 'DENY'
           },
@@ -93,8 +109,20 @@ const nextConfig = {
             value: 'nosniff'
           },
           {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=(self)'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
           }
         ]
       },

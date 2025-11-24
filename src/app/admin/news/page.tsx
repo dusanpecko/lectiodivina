@@ -3,6 +3,7 @@
 import { useLanguage } from "@/app/components/LanguageProvider";
 import { useSupabase } from "@/app/components/SupabaseProvider";
 import { translations } from "@/app/i18n";
+import { invalidateAdminCache } from "@/lib/admin-cache-helper";
 import { Calendar, Clock, Database, Download, Eraser, Eye, Filter, Heart, Pencil, PencilLine, PlusCircle, Search, Settings, Tag, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,6 +34,10 @@ export default function NewsAdminPage() {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ show: boolean; item: News | null }>({
+    show: false,
+    item: null,
+  });
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -52,66 +57,46 @@ export default function NewsAdminPage() {
   const [globalSearch, setGlobalSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Načítanie dát
+  // Načítanie dát cez API (s cachovaním)
   const fetchNews = useCallback(async () => {
     setLoading(true);
 
-    let dataQuery = supabase
-      .from("news")
-      .select("*")
-      .eq("lang", filterLang);
+    try {
+      // Vytvor query params
+      const params = new URLSearchParams({
+        lang: filterLang,
+        page: page.toString(),
+        limit: PAGE_SIZE.toString(),
+      });
 
-    let countQuery = supabase
-      .from("news")
-      .select("*", { count: "exact", head: true })
-      .eq("lang", filterLang);
+      // Pridaj vyhľadávanie
+      if (globalSearch) {
+        params.append('search', globalSearch);
+      } else {
+        if (filter.title) params.append('title', filter.title);
+        if (filter.summary) params.append('summary', filter.summary);
+        if (filter.content) params.append('content', filter.content);
+        if (filter.dateFrom) params.append('dateFrom', filter.dateFrom);
+        if (filter.dateTo) params.append('dateTo', filter.dateTo);
+      }
 
-    if (globalSearch) {
-      const val = `%${globalSearch}%`;
-      dataQuery = dataQuery.or(
-        `title.ilike.${val},summary.ilike.${val},content.ilike.${val},lang.ilike.${val}`
-      );
-      countQuery = countQuery.or(
-        `title.ilike.${val},summary.ilike.${val},content.ilike.${val},lang.ilike.${val}`
-      );
-    } else {
-      if (filter.title) {
-        dataQuery = dataQuery.ilike("title", `%${filter.title}%`);
-        countQuery = countQuery.ilike("title", `%${filter.title}%`);
+      const response = await fetch(`/api/news?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch news');
       }
-      if (filter.summary) {
-        dataQuery = dataQuery.ilike("summary", `%${filter.summary}%`);
-        countQuery = countQuery.ilike("summary", `%${filter.summary}%`);
-      }
-      if (filter.content) {
-        dataQuery = dataQuery.ilike("content", `%${filter.content}%`);
-        countQuery = countQuery.ilike("content", `%${filter.content}%`);
-      }
-      if (filter.dateFrom) {
-        dataQuery = dataQuery.gte("published_at", filter.dateFrom);
-        countQuery = countQuery.gte("published_at", filter.dateFrom);
-      }
-      if (filter.dateTo) {
-        dataQuery = dataQuery.lte("published_at", filter.dateTo);
-        countQuery = countQuery.lte("published_at", filter.dateTo);
-      }
-    }
 
-    dataQuery = dataQuery.order("published_at", { ascending: false })
-      .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
-
-    const { data, error } = await dataQuery;
-    const { count, error: countError } = await countQuery;
-
-    if (!error && !countError) {
-      setNews(data as News[]);
-      setTotal(count || 0);
-    } else {
+      const result = await response.json();
+      setNews(result.data || []);
+      setTotal(result.total || 0);
+    } catch (error) {
+      console.error('Error fetching news:', error);
       setNews([]);
       setTotal(0);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [supabase, filterLang, globalSearch, filter, page]);
+  }, [filterLang, globalSearch, filter, page]);
 
   useEffect(() => {
     fetchNews();
@@ -145,11 +130,15 @@ export default function NewsAdminPage() {
   };
 
   // Vymazať položku
-  const handleDelete = async (id: number) => {
-    if (!confirm(t.confirm_delete || "Naozaj chcete vymazať tento článok?")) return;
-    setDeletingId(id);
-    const { error } = await supabase.from("news").delete().eq("id", id);
+  const handleDelete = async () => {
+    if (!deleteDialog.item) return;
+    
+    setDeletingId(deleteDialog.item.id);
+    const { error } = await supabase.from("news").delete().eq("id", deleteDialog.item.id);
     if (!error) {
+      // Invalidate cache after delete
+      await invalidateAdminCache("news");
+      
       if (news.length === 1 && page > 1) {
         setPage(p => p - 1);
       } else {
@@ -157,6 +146,7 @@ export default function NewsAdminPage() {
       }
     }
     setDeletingId(null);
+    setDeleteDialog({ show: false, item: null });
   };
 
   // Import z Excelu
@@ -191,6 +181,8 @@ export default function NewsAdminPage() {
       if (error) {
         alert((t.error_import || "Chyba importu") + ": " + error.message);
       } else {
+        // Invalidate cache after bulk import
+        await invalidateAdminCache("news");
         alert(t.imported || "Úspešne importované");
         fetchNews();
       }
@@ -708,7 +700,7 @@ export default function NewsAdminPage() {
                               <Pencil size={18} className="text-blue-600 group-hover:text-blue-700" />
                             </button>
                             <button
-                              onClick={() => handleDelete(n.id)}
+                              onClick={() => setDeleteDialog({ show: true, item: n })}
                               disabled={deletingId === n.id}
                               className="p-2 rounded-lg hover:bg-red-100 transition group disabled:opacity-50"
                               title="Vymazať článok"
@@ -758,6 +750,122 @@ export default function NewsAdminPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {deleteDialog.show && deleteDialog.item && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <Trash2 size={24} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Vymazať novinku</h3>
+                  <p className="text-red-100 text-sm">Táto akcia je nenávratná</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              {/* Article Preview */}
+              <div className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+                {deleteDialog.item.image_url && (
+                  <div className="mb-3">
+                    <Image
+                      src={deleteDialog.item.image_url}
+                      alt=""
+                      width={400}
+                      height={200}
+                      className="w-full h-32 object-cover rounded-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <span className="font-medium">ID:</span>
+                    <code className="px-2 py-0.5 bg-gray-200 rounded">{deleteDialog.item.id}</code>
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                      Nadpis
+                    </div>
+                    <div className="font-semibold text-gray-900">
+                      {deleteDialog.item.title}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                      Súhrn
+                    </div>
+                    <div className="text-sm text-gray-700">
+                      {truncateText(deleteDialog.item.summary, 100)}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 pt-2">
+                    <div className="flex items-center gap-1 text-sm">
+                      <Calendar size={14} className="text-gray-500" />
+                      <span className="text-gray-600">{formatDate(deleteDialog.item.published_at)}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm">
+                      <Heart size={14} className="text-pink-500" />
+                      <span className="text-gray-600">{deleteDialog.item.likes || 0} páči sa</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm">
+                      <span className="text-gray-500">🌍</span>
+                      <span className="text-gray-600">{deleteDialog.item.lang.toUpperCase()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Warning */}
+              <div className="flex items-start gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                <div className="flex-shrink-0 w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-red-600 font-bold text-sm">!</span>
+                </div>
+                <div className="text-sm text-red-800">
+                  <p className="font-semibold mb-1">Upozornenie</p>
+                  <p>Tento článok bude natrvalo vymazaný. Túto akciu nie je možné vrátiť späť.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="bg-gray-50 px-6 py-4 flex gap-3">
+              <button
+                onClick={() => setDeleteDialog({ show: false, item: null })}
+                disabled={deletingId !== null}
+                className="flex-1 px-4 py-2.5 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all disabled:opacity-50"
+              >
+                Zrušiť
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deletingId !== null}
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deletingId !== null ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Mažem...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={18} />
+                    Vymazať článok
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useLanguage } from "@/app/components/LanguageProvider";
-import { useSupabase } from "@/app/components/SupabaseProvider";
 import { translations } from "@/app/i18n";
 import { formatDate } from "@/utils/dateFormatter";
 import { motion } from "framer-motion";
@@ -23,7 +22,6 @@ interface News {
 }
 
 export default function NewsListPage() {
-  const { supabase } = useSupabase();
   const { lang: appLang } = useLanguage();
   const t = translations[appLang as keyof typeof translations] ?? translations.sk;
   
@@ -37,16 +35,22 @@ export default function NewsListPage() {
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
-      const { data } = await supabase
-        .from("news")
-        .select("*")
-        .eq("lang", appLang)
-        .order("published_at", { ascending: false });
-      setNews(data || []);
-      setLoading(false);
+      try {
+        const response = await fetch(`/api/news?lang=${appLang}&limit=100`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch news');
+        }
+        const result = await response.json();
+        setNews(result.data || []);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+        setNews([]);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchNews();
-  }, [supabase, appLang]);
+  }, [appLang]);
 
   useEffect(() => {
     let filtered = news.filter(n => 

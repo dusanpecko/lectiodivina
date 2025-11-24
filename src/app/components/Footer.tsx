@@ -90,7 +90,7 @@ export default function Footer() {
               </h4>
               <div className="space-y-2 text-gray-300 text-sm">
                 <div><span className="font-medium text-white">IČO:</span>55 97 15 21</div>
-                <div><span className="font-medium text-white">DIČ:</span> 21 21 13 90 42</div>
+                <div><span className="font-medium text-white">DIČ:</span>-</div>
                 <div>
                   <span className="font-medium text-white">IBAN:</span><br />
                   <span className="select-all font-mono text-xs px-2 py-1 rounded mt-1 inline-block" style={{ background: 'rgba(64, 70, 123, 0.2)' }}>

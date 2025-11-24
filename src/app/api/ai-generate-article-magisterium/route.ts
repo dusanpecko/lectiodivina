@@ -1,3 +1,11 @@
+import { createClient } from "@/app/lib/supabase/server";
+import {
+    calculateCost,
+    checkAILimit,
+    generateBatchId,
+    logAIUsage,
+} from "@/lib/ai-usage-tracker";
+import { aiLimiter, rateLimitError } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 
 // Typy článkov s ich popismi
@@ -53,6 +61,47 @@ interface GenerateArticleRequest {
 
 export async function POST(req: NextRequest) {
   try {
+    // Authentication check
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = user.id;
+    const identifier = userId || req.headers.get("x-forwarded-for") || "anonymous";
+
+    // Rate limiting - hourly limit (10 requests/hour)
+    const { success: hourlySuccess, limit, reset, remaining } = await aiLimiter.limit(identifier);
+    if (!hourlySuccess) {
+      return NextResponse.json(rateLimitError(limit, reset, remaining), {
+        status: 429,
+        headers: {
+          "X-RateLimit-Limit": limit.toString(),
+          "X-RateLimit-Remaining": remaining.toString(),
+          "X-RateLimit-Reset": reset.toString(),
+        },
+      });
+    }
+
+    // Daily article limit check (10 articles/day)
+    const canUseAI = await checkAILimit(userId);
+    if (!canUseAI) {
+      return NextResponse.json(
+        {
+          error: "Dosiahli ste denný limit generovania článkov",
+          message: "Môžete generovať max 10 článkov za deň. Skúste to zajtra alebo upgradujte na premium.",
+          limit: 10,
+          resetIn: "24 hodín",
+        },
+        { status: 429 }
+      );
+    }
+
     const body: GenerateArticleRequest = await req.json();
     const { topic, articleType, length, targetLang, bibleRefs } = body;
 
@@ -172,14 +221,38 @@ Return response in this JSON format:
 
     const parsedResult = JSON.parse(result);
 
+    // Log AI usage for cost tracking
+    const totalTokens = data.usage?.total_tokens || 0;
+    const estimatedCost = calculateCost("gpt-4o", totalTokens); // Use same pricing model
+    const batchId = generateBatchId();
+
+    await logAIUsage({
+      user_id: userId,
+      endpoint: "generate-article-magisterium",
+      model: "magisterium-1",
+      tokens_used: totalTokens,
+      estimated_cost: estimatedCost,
+      language: targetLang,
+      article_batch_id: batchId,
+      metadata: {
+        topic,
+        articleType,
+        length,
+        promptTokens: data.usage?.prompt_tokens || 0,
+        completionTokens: data.usage?.completion_tokens || 0,
+      },
+    });
+
     return NextResponse.json({
       title: parsedResult.title,
       content: parsedResult.content,
       summary: parsedResult.summary,
+      batchId, // Return batch ID for multi-language tracking
       usage: {
         promptTokens: data.usage?.prompt_tokens || 0,
         completionTokens: data.usage?.completion_tokens || 0,
         totalTokens: data.usage?.total_tokens || 0,
+        estimatedCost,
       },
     });
   } catch (error) {

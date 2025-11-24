@@ -31,6 +31,10 @@ export default function CommunityAdminPage() {
   const [members, setMembers] = useState<CommunityMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; member: CommunityMember | null }>({
+    isOpen: false,
+    member: null,
+  });
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -129,10 +133,12 @@ export default function CommunityAdminPage() {
   }, [filter, globalSearch, page, supabase]);
 
   // Vymazať člena
-  const handleDelete = async (id: string) => {
-    if (!confirm(t.confirm_delete || "Naozaj chcete vymazať tohto člena?")) return;
-    setDeletingId(id);
-    const { error } = await supabase.from("community_members").delete().eq("id", id);
+  const handleDelete = async () => {
+    if (!deleteDialog.member) return;
+    
+    setDeletingId(deleteDialog.member.id);
+    const { error } = await supabase.from("community_members").delete().eq("id", deleteDialog.member.id);
+    
     if (!error) {
       if (members.length === 1 && page > 1) {
         setPage(p => p - 1);
@@ -140,7 +146,9 @@ export default function CommunityAdminPage() {
         fetchMembers();
       }
     }
+    
     setDeletingId(null);
+    setDeleteDialog({ isOpen: false, member: null });
   };
 
   // Export do Excelu
@@ -520,7 +528,7 @@ export default function CommunityAdminPage() {
                       </button>
                     </Link>
                     <button
-                      onClick={() => handleDelete(member.id)}
+                      onClick={() => setDeleteDialog({ isOpen: true, member })}
                       disabled={deletingId === member.id}
                       className="p-2 rounded hover:bg-red-100 transition disabled:opacity-50"
                       title={t.delete || "Vymazať"}
@@ -564,6 +572,89 @@ export default function CommunityAdminPage() {
                   aria-label={t.next || "Ďalšia"}
                 >
                   {t.next || "Ďalšia"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Confirm Delete Dialog */}
+        {deleteDialog.isOpen && deleteDialog.member && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <Trash2 size={24} className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Vymazať člena komunity</h3>
+                  <p className="text-sm text-gray-500">Táto akcia je nevratná</p>
+                </div>
+              </div>
+
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-start gap-3">
+                  <Users size={20} className="text-gray-600 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 mb-1">{deleteDialog.member.name}</div>
+                    <div className="text-sm text-gray-600 mb-2">{deleteDialog.member.email}</div>
+                    {deleteDialog.member.message && (
+                      <div className="text-sm text-gray-500 italic border-t border-gray-200 pt-2 mt-2">
+                        &ldquo;{deleteDialog.member.message}&rdquo;
+                      </div>
+                    )}
+                    <div className="flex gap-1 flex-wrap mt-2">
+                      {deleteDialog.member.want_testing && (
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          <TestTube size={12} /> Testovanie
+                        </span>
+                      )}
+                      {deleteDialog.member.want_newsletter && (
+                        <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          <Mail size={12} /> Newsletter
+                        </span>
+                      )}
+                      {deleteDialog.member.has_idea && (
+                        <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          <Lightbulb size={12} /> Nápad
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
+                <p className="text-sm text-red-800 flex items-start gap-2">
+                  <span className="text-red-600 font-bold mt-0.5">⚠️</span>
+                  <span>Naozaj chcete vymazať tohto člena komunity? Všetky jeho údaje budú natrvalo odstránené.</span>
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteDialog({ isOpen: false, member: null })}
+                  disabled={!!deletingId}
+                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all disabled:opacity-50"
+                >
+                  Zrušiť
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={!!deletingId}
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {deletingId ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Mažem...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={18} />
+                      Vymazať
+                    </>
+                  )}
                 </button>
               </div>
             </div>

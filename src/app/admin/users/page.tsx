@@ -24,6 +24,10 @@ export default function UsersAdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; user: User | null }>({
+    isOpen: false,
+    user: null,
+  });
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -94,15 +98,36 @@ export default function UsersAdminPage() {
   }, [filter, globalSearch, page, supabase]);
 
   // DELETE
-  const handleDelete = async (id: string) => {
-    if (!confirm("Naozaj vymazať používateľa? Táto akcia sa nedá vrátiť späť.")) return;
-    setDeletingId(id);
-    const { error } = await supabase.from("users").delete().eq("id", id);
-    if (!error) {
+  const handleDelete = async () => {
+    if (!deleteDialog.user?.id) return;
+    
+    setDeletingId(deleteDialog.user.id);
+    
+    try {
+      // Call API endpoint to delete from both users table AND auth.users
+      const response = await fetch(`/api/admin/users/${deleteDialog.user.id}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete user');
+      }
+
+      console.log('✅ User deleted:', result.message);
+      
+      // Refresh list
       if (users.length === 1 && page > 1) setPage(p => p - 1);
       else fetchUsers();
+      
+    } catch (error) {
+      console.error('❌ Delete error:', error);
+      alert("Chyba pri vymazávaní: " + (error as Error).message);
     }
+    
     setDeletingId(null);
+    setDeleteDialog({ isOpen: false, user: null });
   };
 
   // FILTERS
@@ -612,7 +637,7 @@ export default function UsersAdminPage() {
                             </button>
                           </Link>
                           <button
-                            onClick={() => handleDelete(u.id!)}
+                            onClick={() => setDeleteDialog({ isOpen: true, user: u })}
                             disabled={deletingId === u.id}
                             className="p-2 rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50"
                             title="Vymazať používateľa"
@@ -757,6 +782,92 @@ export default function UsersAdminPage() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Confirm Delete Dialog */}
+        {deleteDialog.isOpen && deleteDialog.user && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <Trash2 size={24} className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Vymazať používateľa</h3>
+                  <p className="text-sm text-gray-500">Táto akcia je nevratná</p>
+                </div>
+              </div>
+
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-start gap-3">
+                  {deleteDialog.user.avatar_url ? (
+                    <Image 
+                      src={deleteDialog.user.avatar_url} 
+                      alt="" 
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      <User size={24} className="text-gray-500" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-900 mb-1">
+                      {deleteDialog.user.full_name || "Bez mena"}
+                    </div>
+                    <div className="text-sm text-gray-600 mb-2 break-all">{deleteDialog.user.email}</div>
+                    <div className="flex gap-2 flex-wrap">
+                      {getRoleBadge(deleteDialog.user.role || 'user')}
+                      {getProviderBadge(deleteDialog.user.provider || '')}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-2 flex items-center">
+                      <Calendar size={12} className="mr-1" />
+                      Vytvorené: {formatDate(deleteDialog.user.created_at || '')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
+                <p className="text-sm text-red-800 flex items-start gap-2">
+                  <span className="text-red-600 font-bold mt-0.5">⚠️</span>
+                  <span>Naozaj chcete vymazať tohto používateľa? Všetky jeho údaje, subscriptions a donations budú natrvalo odstránené.</span>
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteDialog({ isOpen: false, user: null })}
+                  disabled={!!deletingId}
+                  className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all disabled:opacity-50"
+                >
+                  Zrušiť
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={!!deletingId}
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {deletingId ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Mažem...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={18} />
+                      Vymazať používateľa
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}

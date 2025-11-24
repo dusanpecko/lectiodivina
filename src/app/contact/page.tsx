@@ -191,7 +191,7 @@ export default function ContactPage() {
     { name: "Časopis Naša Žilinská diecéza", logo: "/logos/partner11.webp", url: "https://www.nasadieceza.sk/" },
     { name: "Zachej", logo: "/logos/partner12.webp", url: "https://www.zachej.sk/" },
     { name: "Kongregácia Sestier Panny Márie Útechy", logo: "/logos/partner13.webp", url: "https://consolation.sk/" },
-    { name: "Miesto pre vás", logo: "/logos/placeholder.svg", url: "mailto:mojkrok@dcza.sk" },
+    { name: "Penzión Bystrík.", logo: "/logos/partner14.webp", url: "https://bystrikpenzion.sk/" },
     { name: "Miesto pre vás", logo: "/logos/placeholder.svg", url: "mailto:mojkrok@dcza.sk" },
     { name: "Miesto pre vás", logo: "/logos/placeholder.svg", url: "mailto:mojkrok@dcza.sk" },
     { name: "Miesto pre vás", logo: "/logos/placeholder.svg", url: "mailto:mojkrok@dcza.sk" },

@@ -121,20 +121,35 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const { id } = params
     const adminClient = createAdminClient()
 
-    // Delete from custom users table first
-    await adminClient.from('users').delete().eq('id', id)
+    console.log('🗑️ Deleting user:', id);
 
-    // Delete from auth.users
-    const { error } = await adminClient.auth.admin.deleteUser(id)
+    // 1. Delete from auth.users first (this will cascade to related tables due to FK constraints)
+    const { error: authError } = await adminClient.auth.admin.deleteUser(id)
 
-    if (error) {
-      throw new Error(`Failed to delete user: ${error.message}`)
+    if (authError) {
+      console.error('❌ Auth delete error:', authError);
+      throw new Error(`Failed to delete user from auth: ${authError.message}`)
     }
 
-    return NextResponse.json({ message: 'User deleted successfully' })
+    console.log('✅ Deleted from auth.users');
+
+    // 2. Delete from custom users table (if exists and not already cascaded)
+    const { error: usersError } = await adminClient.from('users').delete().eq('id', id)
+    
+    if (usersError) {
+      console.warn('⚠️ Custom users table delete error (might already be cascaded):', usersError);
+      // Don't throw, as auth delete already succeeded
+    } else {
+      console.log('✅ Deleted from users table');
+    }
+
+    return NextResponse.json({ 
+      message: 'User deleted successfully from both auth and users table',
+      deleted_from: ['auth.users', 'users']
+    })
 
   } catch (error: unknown) {
-    console.error('API Error:', error)
+    console.error('❌ API Error:', error)
     return NextResponse.json(
       { error: (error as Error).message || 'Failed to delete user' },
       { status: 500 }

@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
-import { useSupabase } from "./SupabaseProvider";
 
 interface News {
   id: number;
@@ -23,7 +22,6 @@ interface News {
 }
 
 export function HomeNewsSection() {
-  const { supabase } = useSupabase();
   const { lang: appLang } = useLanguage();
   const t = translations[appLang as keyof typeof translations] ?? translations.sk;
   
@@ -36,26 +34,20 @@ export function HomeNewsSection() {
   const isInitialMount = useRef(true);
 
   const fetchNews = useCallback(async (language: string) => {
-    if (!supabase || !language) return;
+    if (!language) return;
     
     try {
       setLoading(true);
       setError(null);
       
-      const { data, error } = await supabase
-        .from("news")
-        .select("*")
-        .eq("lang", language)
-        .order("published_at", { ascending: false })
-        .limit(3);
-
-      if (error) {
-        console.error("Error fetching news:", error);
-        setError(error.message);
-        setNews([]);
-      } else {
-        setNews(data || []);
+      const response = await fetch(`/api/news?lang=${language}&limit=3`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch news');
       }
+      
+      const result = await response.json();
+      setNews(result.data || []);
     } catch (err) {
       console.error("Error fetching news:", err);
       setError(err instanceof Error ? err.message : t.homeNewsSection?.error_title || "Chyba pri načítavaní článkov");
@@ -63,7 +55,7 @@ export function HomeNewsSection() {
     } finally {
       setLoading(false);
     }
-  }, [supabase, t.homeNewsSection?.error_title]);
+  }, [t.homeNewsSection?.error_title]);
 
   useEffect(() => {
     // Fetch iba ak sa jazyk zmenil alebo je to prvé načítanie

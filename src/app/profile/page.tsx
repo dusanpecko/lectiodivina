@@ -105,12 +105,6 @@ const XIcon = () => (
   </svg>
 );
 
-const UploadIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-  </svg>
-);
-
 const Loader2Icon = () => (
   <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24" />
@@ -360,62 +354,79 @@ export default function ProfilePage() {
     try {
       const authUser = session.user;
 
-      // Fetch orders
-      const { data: ordersData, error: ordersError } = await supabase
-        .from('orders')
-        .select('id, total, status, tracking_number, created_at')
-        .eq('user_id', authUser.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
+      // Fetch all data in parallel using Promise.all - 5x faster!
+      const [
+        { data: ordersData, error: ordersError },
+        { data: subscriptionsData, error: subError },
+        { data: allSubscriptionsData, error: allSubError },
+        { data: donationsData, error: donationsError },
+        { data: userData, error: userError }
+      ] = await Promise.all([
+        // Fetch orders
+        supabase
+          .from('orders')
+          .select('id, total, status, tracking_number, created_at')
+          .eq('user_id', authUser.id)
+          .order('created_at', { ascending: false })
+          .limit(10),
+        
+        // Fetch active subscriptions
+        supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', authUser.id)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false }),
+        
+        // Fetch ALL subscription history (including inactive)
+        supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', authUser.id)
+          .order('created_at', { ascending: false }),
+        
+        // Fetch donations
+        supabase
+          .from('donations')
+          .select('*')
+          .eq('user_id', authUser.id)
+          .order('created_at', { ascending: false })
+          .limit(10),
+        
+        // Fetch billing information
+        supabase
+          .from('users')
+          .select('shipping_address, billing_address, company_name, ico, dic, iban')
+          .eq('email', authUser.email)
+          .single()
+      ]);
 
+      // Handle errors
       if (ordersError) {
         console.error('Orders fetch error:', ordersError);
       }
-      
+      if (subError) {
+        console.error('Subscription fetch error:', subError);
+      }
+      if (allSubError) {
+        console.error('All subscriptions fetch error:', allSubError);
+      }
+      if (donationsError) {
+        console.error('Donations fetch error:', donationsError);
+      }
+      if (userError) {
+        console.error('User billing info fetch error:', userError);
+      }
+
+      // Set orders
       const ordersWithItems = (ordersData || []).map(order => ({
         ...order,
         order_items: []
       }));
-      
       setOrders(ordersWithItems);
 
-      // Fetch active subscriptions
-      const { data: subscriptionsData, error: subError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', authUser.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (subError) {
-        console.error('Subscription fetch error:', subError);
-      }
-      
+      // Set subscriptions
       setSubscriptions(subscriptionsData || []);
-
-      // Fetch ALL subscription history (including inactive)
-      const { data: allSubscriptionsData, error: allSubError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', authUser.id)
-        .order('created_at', { ascending: false });
-
-      if (allSubError) {
-        console.error('All subscriptions fetch error:', allSubError);
-      }
-
-      // Fetch donations
-      const { data: donationsData, error: donationsError } = await supabase
-        .from('donations')
-        .select('*')
-        .eq('user_id', authUser.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (donationsError) {
-        console.error('Donations fetch error:', donationsError);
-      }
-
       setDonations(donationsData || []);
 
       // Combine all payments into history
@@ -448,16 +459,8 @@ export default function ProfilePage() {
       history.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       setPaymentHistory(history);
 
-      // Fetch billing information
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('shipping_address, billing_address, company_name, ico, dic, iban')
-        .eq('email', authUser.email)
-        .single();
-
-      if (userError) {
-        console.error('User billing info fetch error:', userError);
-      } else if (userData) {
+      // Set billing info
+      if (userData) {
         setBillingInfo({
           shipping_address: userData.shipping_address,
           billing_address: userData.billing_address,
@@ -921,16 +924,21 @@ export default function ProfilePage() {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-12 text-center max-w-md">
-          <div className="w-16 h-16 mx-auto mb-6 relative">
-            <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
-            <div className="absolute inset-2 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/30 flex items-center justify-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-12 text-center max-w-md"
+        >
+          <div className="w-20 h-20 mx-auto mb-6 relative">
+            <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%)' }}></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b', borderRightColor: '#5a6191' }}></div>
+            <div className="absolute inset-3 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#6b72a8', animationDirection: 'reverse', animationDuration: '1s' }}></div>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">{t.loading.title}</h2>
-          <p className="text-gray-600 text-sm">{t.loading.checking_access}</p>
-        </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.loading.title}</h2>
+          <p className="text-gray-600">{t.loading.checking_access}</p>
+        </motion.div>
       </div>
     );
   }
@@ -942,15 +950,20 @@ export default function ProfilePage() {
   // Show loading state while fetching orders and billing data
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-12 text-center max-w-md">
-          <div className="w-16 h-16 mx-auto mb-6 relative">
-            <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b' }}></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/30 flex items-center justify-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-12 text-center max-w-md"
+        >
+          <div className="w-20 h-20 mx-auto mb-6 relative">
+            <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%)' }}></div>
+            <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: '#40467b', borderRightColor: '#5a6191' }}></div>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Načítavam údaje...</h2>
-          <p className="text-gray-600 text-sm">Prosím počkajte</p>
-        </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Načítavam údaje...</h2>
+          <p className="text-gray-600">Prosím počkajte</p>
+        </motion.div>
       </div>
     );
   }
@@ -962,40 +975,6 @@ export default function ProfilePage() {
       icon: <EditIcon />,
       content: (
         <div className="space-y-6">
-          {/* Avatar Section */}
-          <div className="flex flex-col items-center">
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden ring-4 ring-white shadow-lg">
-                {profile?.avatar_url ? (
-                  <NextImage 
-                    src={profile.avatar_url} 
-                    alt="Avatar" 
-                    width={128}
-                    height={128}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <UserIcon />
-                )}
-              </div>
-              {isUploading && (
-                <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
-                  <Loader2Icon />
-                </div>
-              )}
-            </div>
-            
-            <button
-              onClick={() => setShowAvatarPicker(true)}
-              disabled={isUploading}
-              className="mt-4 inline-flex items-center space-x-2 px-4 py-2 text-white rounded-lg hover:opacity-90 focus:ring-4 focus:ring-opacity-30 transition-all duration-200 disabled:opacity-50"
-              style={{ backgroundColor: '#40467b' }}
-            >
-              <CameraIcon />
-              <span>{t.sections.profile_info.change_avatar}</span>
-            </button>
-          </div>
-
           {/* Full Name */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
@@ -1005,10 +984,7 @@ export default function ProfilePage() {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-opacity-50 transition-all duration-200"
-              style={{ '--tw-ring-color': '#40467b', '--tw-border-opacity': '1' } as React.CSSProperties}
-              onFocus={(e) => e.target.style.borderColor = '#40467b'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-all duration-200 bg-white"
               placeholder={t.sections.profile_info.full_name_placeholder}
             />
           </div>
@@ -1017,8 +993,8 @@ export default function ProfilePage() {
           <button
             onClick={saveProfile}
             disabled={isSaving}
-            className="w-full text-white py-3 px-4 rounded-lg hover:opacity-90 focus:ring-4 focus:ring-opacity-30 transition-all duration-200 disabled:opacity-50 font-medium"
-            style={{ backgroundColor: '#40467b' }}
+            className="w-full text-white py-3 px-6 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:scale-100 font-semibold text-lg"
+            style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
           >
             {isSaving ? (
               <div className="flex items-center justify-center space-x-2">
@@ -1041,40 +1017,40 @@ export default function ProfilePage() {
       icon: <UserIcon />,
       content: (
         <div className="space-y-4">
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 rounded-xl border-2 border-indigo-100">
             <div className="flex items-center space-x-3">
-              <div style={{ color: '#40467b' }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)', color: 'white' }}>
                 <MailIcon />
               </div>
               <div>
-                <div className="font-medium" style={{ color: '#40467b' }}>{t.sections.account_info.email_address}</div>
+                <div className="font-semibold text-indigo-900">{t.sections.account_info.email_address}</div>
                 <div className="text-gray-700">{email}</div>
               </div>
             </div>
           </div>
 
           {profile?.created_at && (
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-blue-100">
               <div className="flex items-center space-x-3">
-                <div style={{ color: '#40467b' }}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)', color: 'white' }}>
                   <CalendarIcon />
                 </div>
                 <div>
-                  <div className="font-medium" style={{ color: '#40467b' }}>{t.sections.account_info.registration_date}</div>
+                  <div className="font-semibold text-indigo-900">{t.sections.account_info.registration_date}</div>
                   <div className="text-gray-700">{formatDate(profile.created_at, lang as 'sk' | 'cz' | 'en' | 'es')}</div>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border-2 border-green-200">
             <div className="flex items-center space-x-3">
-              <div className="text-green-600">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white">
                 <ShieldIcon />
               </div>
               <div>
-                <div className="font-medium text-green-900">{t.sections.account_info.user_role}</div>
-                <div className="text-green-700">{profile?.role || t.sections.account_info.role_loading}</div>
+                <div className="font-semibold text-green-900">{t.sections.account_info.user_role}</div>
+                <div className="text-green-700 font-medium">{profile?.role || t.sections.account_info.role_loading}</div>
               </div>
             </div>
           </div>
@@ -1225,57 +1201,60 @@ export default function ProfilePage() {
       icon: <LockIcon />,
       content: (
         <div className="space-y-4">
-          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-5 rounded-xl border-2 border-yellow-200">
             <div className="flex items-center space-x-2 mb-2">
               <div className="text-yellow-600">
                 <LockIcon />
               </div>
-              <h4 className="font-medium text-yellow-900">{t.sections.security.password_change.title}</h4>
+              <h4 className="font-bold text-yellow-900">{t.sections.security.password_change.title}</h4>
             </div>
             <p className="text-yellow-800 text-sm mb-4">
               {t.sections.security.password_change.description}
             </p>
             <button
               onClick={() => setShowPasswordDialog(true)}
-              className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
             >
               <LockIcon />
               <span>{t.sections.security.password_change.button}</span>
             </button>
           </div>
 
-          <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-blue-200">
             <div className="flex items-center space-x-2 mb-2">
-              <div className="text-red-600">
+              <div className="text-blue-600">
                 <LogOutIcon />
               </div>
-              <h4 className="font-medium text-red-900">{t.sections.security.logout.title}</h4>
+              <h4 className="font-bold text-blue-900">{t.sections.security.logout.title}</h4>
             </div>
-            <p className="text-red-800 text-sm mb-4">
+            <p className="text-blue-800 text-sm mb-4">
               {t.sections.security.logout.description}
             </p>
             <button
               onClick={handleSignOutClick}
-              className="inline-flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
             >
               <LogOutIcon />
               <span>{t.sections.security.logout.button}</span>
             </button>
           </div>
 
-          <div className="bg-red-100 p-4 rounded-lg border border-red-300">
+          <div className="bg-gradient-to-r from-red-50 to-pink-50 p-5 rounded-xl border-2 border-red-300">
             <div className="flex items-center space-x-2 mb-2">
               <div className="text-red-700">
                 <TrashIcon />
               </div>
-              <h4 className="font-medium text-red-900">{t.sections.security.delete_account.title}</h4>
+              <h4 className="font-bold text-red-900">{t.sections.security.delete_account.title}</h4>
             </div>
             <p className="text-red-800 text-sm mb-4">
               {t.sections.security.delete_account.description}
             </p>
             <button
               onClick={() => setShowDeleteDialog(true)}
-              className="inline-flex items-center space-x-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+              style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}
             >
               <TrashIcon />
               <span>{t.sections.security.delete_account.button}</span>
@@ -1763,119 +1742,226 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="w-full">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                <UserIcon />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/30">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {/* Hero Header with Gradient */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 relative overflow-hidden rounded-3xl"
+          style={{
+            background: 'linear-gradient(135deg, #40467b 0%, #5a6191 50%, #6b72a8 100%)',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative z-10 p-8 md:p-12">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              {/* Avatar */}
+              <div className="relative">
+                <div className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-4 ring-white/30 shadow-2xl">
+                  {profile?.avatar_url ? (
+                    <NextImage 
+                      src={profile.avatar_url} 
+                      alt="Avatar" 
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-white/70">
+                      <UserIcon />
+                    </div>
+                  )}
+                </div>
+                {isUploading && (
+                  <div className="absolute inset-0 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                    <Loader2Icon />
+                  </div>
+                )}
+                <button
+                  onClick={() => setShowAvatarPicker(true)}
+                  disabled={isUploading}
+                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-gray-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center disabled:opacity-50"
+                >
+                  <CameraIcon />
+                </button>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">{t.header.title}</h1>
-                <p className="text-gray-600">{t.header.description}</p>
+
+              {/* User Info */}
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                  {fullName || t.loading.title}
+                </h1>
+                <p className="text-indigo-100 text-lg mb-4">{email}</p>
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                  {profile?.created_at && (
+                    <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium flex items-center gap-2">
+                      <CalendarIcon />
+                      {formatDate(profile.created_at, lang as 'sk' | 'cz' | 'en' | 'es')}
+                    </div>
+                  )}
+                  {profile?.role && (
+                    <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium flex items-center gap-2">
+                      <ShieldIcon />
+                      {profile.role}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Message */}
         {message && (
-          <div className="mb-6">
-            <div className={`p-4 rounded-lg border ${
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-6"
+          >
+            <div className={`p-5 rounded-2xl border-2 shadow-lg ${
               message.type === 'success' 
-                ? 'bg-green-50 text-green-800 border-green-200' 
-                : 'bg-red-50 text-red-800 border-red-200'
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-900 border-green-200' 
+                : 'bg-gradient-to-r from-red-50 to-pink-50 text-red-900 border-red-200'
             }`}>
-              <div className="flex items-center space-x-2">
-                {message.type === 'success' ? <CheckIcon /> : <AlertIcon />}
-                <span className="font-medium">{message.text}</span>
+              <div className="flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  message.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {message.type === 'success' ? <CheckIcon /> : <AlertIcon />}
+                </div>
+                <span className="font-semibold text-lg">{message.text}</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Sections */}
-        <div className="space-y-4">
-          {sections.map((section) => (
-            <div key={section.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div style={{ color: '#40467b' }}>{section.icon}</div>
-                  <h2 className="text-xl font-semibold text-gray-900">{section.title}</h2>
-                </div>
-                <motion.div
-                  animate={{ rotate: expandedSections.has(section.id) ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {sections.map((section, index) => (
+            <motion.div
+              key={section.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group"
+            >
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 overflow-hidden hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                <button
+                  onClick={() => toggleSection(section.id)}
+                  className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-transparent to-indigo-50/30 hover:to-indigo-50/50 transition-all duration-300"
                 >
-                  <ChevronDownIcon />
+                  <div className="flex items-center space-x-4">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+                      style={{ 
+                        background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)',
+                        color: 'white'
+                      }}
+                    >
+                      {section.icon}
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-indigo-900 transition-colors">{section.title}</h2>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: expandedSections.has(section.id) ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-gray-400 group-hover:text-indigo-600 transition-colors"
+                  >
+                    <ChevronDownIcon />
+                  </motion.div>
+                </button>
+                
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: expandedSections.has(section.id) ? "auto" : 0,
+                    opacity: expandedSections.has(section.id) ? 1 : 0
+                  }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-6 pb-6 pt-2 text-gray-700 leading-relaxed">
+                    {section.content}
+                  </div>
                 </motion.div>
-              </button>
-              
-              <motion.div
-                initial={false}
-                animate={{
-                  height: expandedSections.has(section.id) ? "auto" : 0,
-                  opacity: expandedSections.has(section.id) ? 1 : 0
-                }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="px-6 pb-6 text-gray-700 leading-relaxed">
-                  {section.content}
-                </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="mt-12 text-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <p className="text-gray-600 mb-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-12 text-center"
+        >
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg p-8 border border-indigo-100/50">
+            <p className="text-gray-600 mb-6 text-lg">
               {t.footer.help_text}
             </p>
             <Link 
               href="/contact" 
-              className="inline-flex items-center text-white px-6 py-3 rounded-lg hover:opacity-90 transition-colors"
-              style={{ backgroundColor: '#40467b' }}
+              className="inline-flex items-center gap-2 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+              style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
             >
+              <MailIcon />
               {t.footer.contact_us}
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Avatar Picker Modal */}
       {showAvatarPicker && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-96 shadow-2xl">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowAvatarPicker(false)}
+        >
+          <motion.div 
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">{t.dialogs.avatar_picker.title}</h3>
+              <h3 className="text-2xl font-bold text-gray-900">{t.dialogs.avatar_picker.title}</h3>
               <button
                 onClick={() => setShowAvatarPicker(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
               >
-                <XIcon />
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full flex items-center space-x-3 p-4 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                onClick={() => {
+                  fileInputRef.current?.click();
+                  setShowAvatarPicker(false);
+                }}
+                className="w-full py-4 px-6 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                style={{ background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)' }}
               >
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <UploadIcon />
-                </div>
-                <span className="font-medium text-gray-700">{t.dialogs.avatar_picker.select_image}</span>
+                {t.dialogs.avatar_picker.upload}
+              </button>
+              <button
+                onClick={() => setShowAvatarPicker(false)}
+                className="w-full py-4 px-6 rounded-xl font-semibold border-2 border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                {t.dialogs.avatar_picker.cancel}
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Delete Account Dialog */}
