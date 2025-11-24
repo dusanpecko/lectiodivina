@@ -572,7 +572,7 @@ export async function POST(request: Request) {
 #### Install Winston
 ```bash
 npm install winston
-npm install @types/winston --save-dev
+npm install @types/winston
 ```
 
 #### Setup Logger
