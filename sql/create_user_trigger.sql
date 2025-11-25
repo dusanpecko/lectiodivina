@@ -20,11 +20,12 @@ SET search_path = public
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, role, provider, created_at, updated_at)
+  INSERT INTO public.users (id, email, full_name, avatar_url, role, provider, created_at, updated_at)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+    NEW.raw_user_meta_data->>'avatar_url',
     'user',
     COALESCE(NEW.raw_app_meta_data->>'provider', 'email'),
     NOW(),
@@ -33,6 +34,7 @@ BEGIN
   ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     full_name = COALESCE(EXCLUDED.full_name, public.users.full_name),
+    avatar_url = COALESCE(EXCLUDED.avatar_url, public.users.avatar_url),
     updated_at = NOW();
   
   RETURN NEW;

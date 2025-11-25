@@ -5,6 +5,7 @@ import {
   Calculator,
   CreditCard,
   Heart,
+  Landmark,
   Mail,
   Package,
   Settings,
@@ -104,6 +105,15 @@ export default function ShopDashboard() {
       statLabel: "darov",
     },
     {
+      href: "/admin/shop/banka",
+      icon: <Landmark className="w-8 h-8" />,
+      title: "Bankové platby",
+      description: "Správa bankových prevodov",
+      color: "cyan",
+      stat: "🏦",
+      statLabel: "importy",
+    },
+    {
       href: "/admin/shop/shipping-settings",
       icon: <Settings className="w-8 h-8" />,
       title: t.shippingSettings,
@@ -160,6 +170,13 @@ export default function ShopDashboard() {
       icon: "text-pink-600",
       hover: "hover:bg-pink-100",
       badge: "bg-pink-100 text-pink-700",
+    },
+    cyan: {
+      bg: "bg-cyan-50",
+      border: "border-cyan-200",
+      icon: "text-cyan-600",
+      hover: "hover:bg-cyan-100",
+      badge: "bg-cyan-100 text-cyan-700",
     },
     teal: {
       bg: "bg-teal-50",

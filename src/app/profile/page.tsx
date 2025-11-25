@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useLanguage } from '../components/LanguageProvider';
 import { useSupabase } from '../components/SupabaseProvider';
+import BankPaymentHistory from './BankPaymentHistory';
 import { profileTranslations } from './translations';
 
 // SVG Icons
@@ -165,6 +166,7 @@ interface UserProfile {
   avatar_url: string | null;
   role: string;
   created_at: string;
+  variable_symbol?: string | null;
 }
 
 interface Order {
@@ -203,7 +205,7 @@ interface Donation {
 
 interface PaymentHistoryItem {
   id: string;
-  type: 'subscription' | 'donation';
+  type: 'subscription' | 'donation' | 'bank_payment';
   amount: number;
   date: string;
   description: string;
@@ -338,7 +340,7 @@ export default function ProfilePage() {
 
     const { data } = await supabase
       .from('users')
-      .select('full_name, avatar_url, role, created_at')
+      .select('full_name, avatar_url, role, created_at, variable_symbol')
       .eq('id', userId)
       .single();
 
@@ -360,6 +362,7 @@ export default function ProfilePage() {
         { data: subscriptionsData, error: subError },
         { data: allSubscriptionsData, error: allSubError },
         { data: donationsData, error: donationsError },
+        { data: bankPaymentsData, error: bankPaymentsError },
         { data: userData, error: userError }
       ] = await Promise.all([
         // Fetch orders
@@ -393,6 +396,14 @@ export default function ProfilePage() {
           .order('created_at', { ascending: false })
           .limit(10),
         
+        // Fetch bank payments
+        supabase
+          .from('bank_payments')
+          .select('id, transaction_date, amount, currency, payment_type, payer_reference, matched_at')
+          .eq('user_id', authUser.id)
+          .eq('matched', true)
+          .order('transaction_date', { ascending: false }),
+        
         // Fetch billing information
         supabase
           .from('users')
@@ -413,6 +424,9 @@ export default function ProfilePage() {
       }
       if (donationsError) {
         console.error('Donations fetch error:', donationsError);
+      }
+      if (bankPaymentsError) {
+        console.error('Bank payments fetch error:', bankPaymentsError);
       }
       if (userError) {
         console.error('User billing info fetch error:', userError);
@@ -452,6 +466,20 @@ export default function ProfilePage() {
           amount: donation.amount,
           date: donation.created_at,
           description: donation.message || 'Jednorazový príspevok'
+        });
+      });
+
+      // Add all bank payments to history
+      (bankPaymentsData || []).forEach(payment => {
+        const paymentTypeLabel = payment.payment_type === 'donation' ? 'Dar' :
+                                 payment.payment_type === 'shop' ? 'Obchod' :
+                                 payment.payment_type === 'subscription' ? 'Predplatné' : 'Banková platba';
+        history.push({
+          id: payment.id,
+          type: 'bank_payment',
+          amount: payment.amount,
+          date: payment.transaction_date,
+          description: `${paymentTypeLabel} - VS: ${payment.payer_reference || 'N/A'}`
         });
       });
 
@@ -1043,6 +1071,21 @@ export default function ProfilePage() {
             </div>
           )}
 
+          {profile?.variable_symbol && (
+            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-5 rounded-xl border-2 border-cyan-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-600 text-white">
+                  <span className="text-xl font-bold">VS</span>
+                </div>
+                <div>
+                  <div className="font-semibold text-cyan-900">Variabilný symbol</div>
+                  <div className="text-gray-700 font-mono text-lg">{profile.variable_symbol}</div>
+                  <div className="text-xs text-gray-600 mt-1">Pre trvalé príkazy v banke</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border-2 border-green-200">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white">
@@ -1054,6 +1097,36 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* Supporter Badge */}
+          {subscriptions.length > 0 && (
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-5 rounded-xl border-2 border-amber-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-amber-500 to-yellow-600 text-white">
+                    <span className="text-xl">⭐</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-amber-900">Stav podpory</div>
+                    <div className="text-amber-700 font-medium">
+                      {subscriptions.some(s => s.tier === 'founder') ? '🏆 Zakladateľ' :
+                       subscriptions.some(s => s.tier === 'patron') ? '💎 Patron' :
+                       '❤️ Priateľ'}
+                    </div>
+                  </div>
+                </div>
+                <div className={`px-4 py-2 rounded-full text-sm font-bold ${
+                  subscriptions.some(s => s.tier === 'founder') ? 'bg-purple-600 text-white' :
+                  subscriptions.some(s => s.tier === 'patron') ? 'bg-blue-600 text-white' :
+                  'bg-red-500 text-white'
+                }`}>
+                  {subscriptions.some(s => s.tier === 'founder') ? 'FOUNDER' :
+                   subscriptions.some(s => s.tier === 'patron') ? 'PATRON' :
+                   'FRIEND'}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )
     },
@@ -1446,6 +1519,14 @@ export default function ProfilePage() {
       )
     },
     {
+      id: "bank-payments",
+      title: "Bankové platby",
+      icon: <Building2 size={24} />,
+      content: (
+        <BankPaymentHistory />
+      )
+    },
+    {
       id: "payment-history",
       title: "História platieb",
       icon: <CreditCard size={24} />,
@@ -1463,57 +1544,107 @@ export default function ProfilePage() {
               </Link>
             </div>
           ) : (
-            <div className="space-y-3">
-              {paymentHistory.map((payment) => (
-                <div
-                  key={payment.id}
-                  className="backdrop-blur-sm rounded-2xl p-6 border hover:shadow-lg transition-all"
-                  style={{
-                    backgroundColor: payment.type === 'subscription' 
-                      ? 'rgba(139, 92, 246, 0.02)' 
-                      : 'rgba(239, 68, 68, 0.02)',
-                    borderColor: payment.type === 'subscription'
-                      ? 'rgba(139, 92, 246, 0.15)'
-                      : 'rgba(239, 68, 68, 0.15)'
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        {payment.type === 'subscription' ? (
-                          <div className="text-purple-600">
-                            <CreditCard size={24} />
-                          </div>
-                        ) : (
-                          <div className="text-red-500">
-                            <Heart size={24} />
-                          </div>
-                        )}
-                        <h4 className="font-semibold text-gray-900">{payment.description}</h4>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <span>{new Date(payment.date).toLocaleDateString('sk-SK')}</span>
-                        {payment.status && (
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            payment.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : payment.status === 'canceled'
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {payment.status === 'active' ? 'Aktívne' : payment.status === 'canceled' ? 'Zrušené' : payment.status}
-                          </span>
-                        )}
-                      </div>
+            <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+              {/* Table Header */}
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+                <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-semibold text-gray-700">
+                  <div className="col-span-1 flex items-center justify-center">Typ</div>
+                  <div className="col-span-5">Popis</div>
+                  <div className="col-span-2">Dátum</div>
+                  <div className="col-span-2">Status</div>
+                  <div className="col-span-2 text-right">Suma</div>
+                </div>
+              </div>
+              
+              {/* Table Body with Scroll */}
+              <div className="overflow-y-auto" style={{ maxHeight: '600px' }}>
+                {paymentHistory.map((payment, index) => (
+                  <div
+                    key={payment.id}
+                    className={`grid grid-cols-12 gap-4 px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                    }`}
+                  >
+                    {/* Type Icon */}
+                    <div className="col-span-1 flex items-center justify-center">
+                      {payment.type === 'subscription' ? (
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
+                          <CreditCard size={16} />
+                        </div>
+                      ) : payment.type === 'bank_payment' ? (
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                          <Building2 size={16} />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-500">
+                          <Heart size={16} />
+                        </div>
+                      )}
                     </div>
-                    <p className="text-2xl font-bold" style={{ 
-                      color: payment.type === 'subscription' ? '#8b5cf6' : '#ef4444' 
-                    }}>
-                      €{payment.amount.toFixed(2)}
-                    </p>
+                    
+                    {/* Description */}
+                    <div className="col-span-5 flex items-center">
+                      <span className="text-sm text-gray-900 truncate" title={payment.description}>
+                        {payment.description}
+                      </span>
+                    </div>
+                    
+                    {/* Date */}
+                    <div className="col-span-2 flex items-center">
+                      <span className="text-sm text-gray-600">
+                        {new Date(payment.date).toLocaleDateString('sk-SK')}
+                      </span>
+                    </div>
+                    
+                    {/* Status */}
+                    <div className="col-span-2 flex items-center">
+                      {payment.status ? (
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          payment.status === 'active' 
+                            ? 'bg-green-100 text-green-800' 
+                            : payment.status === 'canceled'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {payment.status === 'active' ? 'Aktívne' : payment.status === 'canceled' ? 'Zrušené' : payment.status}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-gray-400">—</span>
+                      )}
+                    </div>
+                    
+                    {/* Amount */}
+                    <div className="col-span-2 flex items-center justify-end">
+                      <span className={`text-sm font-bold ${
+                        payment.type === 'subscription' ? 'text-purple-600' : 
+                        payment.type === 'bank_payment' ? 'text-blue-600' : 
+                        'text-red-500'
+                      }`}>
+                        €{payment.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Table Footer with Total */}
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-t-2 border-gray-300">
+                <div className="grid grid-cols-12 gap-4 px-4 py-4">
+                  <div className="col-span-5 flex items-center text-sm">
+                    <span className="font-semibold text-gray-700">Celkový počet platieb:</span>
+                    <span className="ml-2 font-bold text-gray-900">{paymentHistory.length}</span>
+                  </div>
+                  <div className="col-span-7 flex items-center justify-end">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-gray-700">Celková podpora Lectio Divina:</span>
+                      <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                        €{paymentHistory.reduce((sum, payment) => sum + payment.amount, 0).toFixed(2)}
+                      </span>
+                      <span className="text-xl">❤️</span>
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           )}
         </div>
@@ -1759,7 +1890,18 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               {/* Avatar */}
               <div className="relative">
-                <div className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-4 ring-white/30 shadow-2xl">
+                <div 
+                  className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden shadow-2xl"
+                  style={{
+                    border: subscriptions.length > 0 
+                      ? `4px solid ${
+                          subscriptions.some(s => s.tier === 'founder') ? '#9333ea' :
+                          subscriptions.some(s => s.tier === 'patron') ? '#2563eb' :
+                          '#ef4444'
+                        }`
+                      : '4px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                >
                   {profile?.avatar_url ? (
                     <NextImage 
                       src={profile.avatar_url} 
@@ -1838,9 +1980,120 @@ export default function ProfilePage() {
           </motion.div>
         )}
 
-        {/* Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {sections.map((section, index) => (
+        {/* Top Sections - Two Columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Left Column - Profile Info & Billing */}
+          <div className="space-y-6">
+            {sections.filter(s => s.id === 'profile-info' || s.id === 'billing').map((section, index) => (
+              <motion.div
+                key={section.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 overflow-hidden hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                  <button
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-transparent to-indigo-50/30 hover:to-indigo-50/50 transition-all duration-300"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+                        style={{ 
+                          background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)',
+                          color: 'white'
+                        }}
+                      >
+                        {section.icon}
+                      </div>
+                      <h2 className="text-xl font-bold text-gray-900 group-hover:text-indigo-900 transition-colors">{section.title}</h2>
+                    </div>
+                    <motion.div
+                      animate={{ rotate: expandedSections.has(section.id) ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-gray-400 group-hover:text-indigo-600 transition-colors"
+                    >
+                      <ChevronDownIcon />
+                    </motion.div>
+                  </button>
+                  
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: expandedSections.has(section.id) ? "auto" : 0,
+                      opacity: expandedSections.has(section.id) ? 1 : 0
+                    }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 pt-2 text-gray-700 leading-relaxed">
+                      {section.content}
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Right Column - Account Info */}
+          <div className="space-y-6">
+            {sections.filter(s => s.id === 'account-info').map((section, index) => (
+              <motion.div
+                key={section.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 overflow-hidden hover:shadow-xl hover:border-indigo-200 transition-all duration-300">
+                  <button
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full px-6 py-5 flex items-center justify-between bg-gradient-to-r from-transparent to-indigo-50/30 hover:to-indigo-50/50 transition-all duration-300"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div 
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300"
+                        style={{ 
+                          background: 'linear-gradient(135deg, #40467b 0%, #5a6191 100%)',
+                          color: 'white'
+                        }}
+                      >
+                        {section.icon}
+                      </div>
+                      <h2 className="text-xl font-bold text-gray-900 group-hover:text-indigo-900 transition-colors">{section.title}</h2>
+                    </div>
+                    <motion.div
+                      animate={{ rotate: expandedSections.has(section.id) ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-gray-400 group-hover:text-indigo-600 transition-colors"
+                    >
+                      <ChevronDownIcon />
+                    </motion.div>
+                  </button>
+                  
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: expandedSections.has(section.id) ? "auto" : 0,
+                      opacity: expandedSections.has(section.id) ? 1 : 0
+                    }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 pt-2 text-gray-700 leading-relaxed">
+                      {section.content}
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Other Sections - Single Full Width Column */}
+        <div className="space-y-6">
+          {sections.filter(s => !['profile-info', 'account-info', 'billing'].includes(s.id)).map((section, index) => (
             <motion.div
               key={section.id}
               initial={{ opacity: 0, y: 20 }}

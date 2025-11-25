@@ -3,6 +3,7 @@
 import { useLanguage } from '@/app/components/LanguageProvider';
 import {
     BookOpen,
+    Building2,
     Calculator,
     CheckSquare,
     CreditCard,
@@ -164,6 +165,16 @@ export default function AdminNavGrid() {
       bgColor: "bg-pink-100",
       hoverBgColor: "group-hover:bg-pink-200",
       iconColor: "text-pink-600",
+    },
+    {
+      href: "/admin/shop/banka",
+      icon: <Building2 size={24} />,
+      titleKey: "bankPayments",
+      descriptionKey: "bankPaymentsDesc",
+      borderColor: "border-blue-500",
+      bgColor: "bg-blue-100",
+      hoverBgColor: "group-hover:bg-blue-200",
+      iconColor: "text-blue-600",
     },
   ];
   return (

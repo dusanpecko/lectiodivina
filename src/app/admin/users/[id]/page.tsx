@@ -13,6 +13,7 @@ interface UserData {
   provider?: string;
   created_at?: string;
   role?: string;
+  variable_symbol?: string;
 }
 
 const InputField = ({ 
@@ -299,6 +300,16 @@ export default function UserEditPage() {
                     placeholder="https://example.com/avatar.jpg"
                     icon={<Camera size={16} />}
                     description="Odkaz na profilový obrázok"
+                  />
+
+                  <InputField
+                    label="Variabilný symbol"
+                    name="variable_symbol"
+                    value={user.variable_symbol || ""}
+                    onChange={handleChange}
+                    placeholder="napr. 123456"
+                    icon={<span className="font-bold text-blue-600">VS</span>}
+                    description="Pre párovanie bankových platieb (trvalé príkazy)"
                   />
                 </div>
               </FormSection>

@@ -31,6 +31,8 @@ export const adminTranslations = {
     subscriptionsDesc: "Správa predplatného",
     donations: "Dary",
     donationsDesc: "Správa darov",
+    bankPayments: "Bankové platby",
+    bankPaymentsDesc: "Import z banky",
     
     // Error Reports
     reportedErrors: "Nahlásené chyby",
@@ -105,6 +107,8 @@ export const adminTranslations = {
     subscriptionsDesc: "Správa předplatného",
     donations: "Dary",
     donationsDesc: "Správa darů",
+    bankPayments: "Bankovní platby",
+    bankPaymentsDesc: "Import z banky",
     
     // Error Reports
     reportedErrors: "Nahlášené chyby",
@@ -179,6 +183,8 @@ export const adminTranslations = {
     subscriptionsDesc: "Subscription management",
     donations: "Donations",
     donationsDesc: "Donation management",
+    bankPayments: "Bank Payments",
+    bankPaymentsDesc: "Bank import",
     
     // Error Reports
     reportedErrors: "Reported Errors",
@@ -253,6 +259,8 @@ export const adminTranslations = {
     subscriptionsDesc: "Gestión de suscripciones",
     donations: "Donaciones",
     donationsDesc: "Gestión de donaciones",
+    bankPayments: "Pagos Bancarios",
+    bankPaymentsDesc: "Importar del banco",
     
     // Error Reports
     reportedErrors: "Errores Reportados",

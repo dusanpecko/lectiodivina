@@ -66,6 +66,7 @@ export default function HomePage() {
   const [fullName, setFullName] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [subscriptions, setSubscriptions] = useState<Array<{ tier: string; status: string }>>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -109,6 +110,16 @@ export default function HomePage() {
         if (data) {
           setFullName(data.full_name);
           setAvatarUrl(data.avatar_url);
+        }
+        
+        // Fetch active subscriptions
+        const { data: subsData } = await supabase
+          .from("subscriptions")
+          .select("tier, status")
+          .eq("user_id", session.user.id)
+          .eq("status", "active");
+        if (subsData) {
+          setSubscriptions(subsData);
         }
       }
     };
@@ -333,15 +344,39 @@ export default function HomePage() {
                         className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-colors"
                       >
                         {avatarUrl ? (
-                          <Image 
-                            src={avatarUrl} 
-                            alt="Profile" 
-                            width={32}
-                            height={32}
-                            className="w-8 h-8 rounded-full object-cover border-2 border-white/30"
-                          />
+                          <div
+                            className="w-8 h-8 rounded-full overflow-hidden"
+                            style={{
+                              border: subscriptions.length > 0 
+                                ? `2px solid ${
+                                    subscriptions.some(s => s.tier === 'founder') ? '#9333ea' :
+                                    subscriptions.some(s => s.tier === 'patron') ? '#2563eb' :
+                                    '#ef4444'
+                                  }`
+                                : '2px solid rgba(255, 255, 255, 0.3)'
+                            }}
+                          >
+                            <Image 
+                              src={avatarUrl} 
+                              alt="Profile" 
+                              width={32}
+                              height={32}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                         ) : (
-                          <div className="w-8 h-8 bg-gradient-to-r from-white/20 to-white/30 rounded-full flex items-center justify-center">
+                          <div 
+                            className="w-8 h-8 bg-gradient-to-r from-white/20 to-white/30 rounded-full flex items-center justify-center"
+                            style={{
+                              border: subscriptions.length > 0 
+                                ? `2px solid ${
+                                    subscriptions.some(s => s.tier === 'founder') ? '#9333ea' :
+                                    subscriptions.some(s => s.tier === 'patron') ? '#2563eb' :
+                                    '#ef4444'
+                                  }`
+                                : '2px solid rgba(255, 255, 255, 0.3)'
+                            }}
+                          >
                             <User size={16} className="text-white" />
                           </div>
                         )}
@@ -571,15 +606,39 @@ export default function HomePage() {
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3 px-3 py-2 rounded-lg backdrop-blur-sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                           {avatarUrl ? (
-                            <Image 
-                              src={avatarUrl} 
-                              alt="Profile" 
-                              width={40}
-                              height={40}
-                              className="w-10 h-10 rounded-full object-cover border-2 border-white/30"
-                            />
+                            <div
+                              className="w-10 h-10 rounded-full overflow-hidden"
+                              style={{
+                                border: subscriptions.length > 0 
+                                  ? `2px solid ${
+                                      subscriptions.some(s => s.tier === 'founder') ? '#9333ea' :
+                                      subscriptions.some(s => s.tier === 'patron') ? '#2563eb' :
+                                      '#ef4444'
+                                    }`
+                                  : '2px solid rgba(255, 255, 255, 0.3)'
+                              }}
+                            >
+                              <Image 
+                                src={avatarUrl} 
+                                alt="Profile" 
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                           ) : (
-                            <div className="w-10 h-10 bg-gradient-to-r from-white/20 to-white/30 rounded-full flex items-center justify-center">
+                            <div 
+                              className="w-10 h-10 bg-gradient-to-r from-white/20 to-white/30 rounded-full flex items-center justify-center"
+                              style={{
+                                border: subscriptions.length > 0 
+                                  ? `2px solid ${
+                                      subscriptions.some(s => s.tier === 'founder') ? '#9333ea' :
+                                      subscriptions.some(s => s.tier === 'patron') ? '#2563eb' :
+                                      '#ef4444'
+                                    }`
+                                  : '2px solid rgba(255, 255, 255, 0.3)'
+                              }}
+                            >
                               <User size={20} className="text-white" />
                             </div>
                           )}
