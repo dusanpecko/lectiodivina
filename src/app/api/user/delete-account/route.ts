@@ -61,7 +61,14 @@ export async function DELETE(request: NextRequest) {
     const userId = user.id;
     console.log(`🗑️ Delete account request for user: ${userId}`);
 
-    // 3. SOFT DELETE OPTION (zakomentované - ak chceš obnoviť účty)
+    // 3. Get user's avatar URL before deletion
+    const { data: userData } = await supabaseAdmin
+      .from('users')
+      .select('avatar_url')
+      .eq('id', userId)
+      .single();
+
+    // 4. SOFT DELETE OPTION (zakomentované - ak chceš obnoviť účty)
     // await supabaseAdmin
     //   .from('users')
     //   .update({ 
@@ -70,7 +77,23 @@ export async function DELETE(request: NextRequest) {
     //   })
     //   .eq('id', userId);
 
-    // 4. Vymaž všetky závislé záznamy (v správnom poradí kvôli foreign keys)
+    // 5. Delete avatar from storage if exists
+    if (userData?.avatar_url) {
+      try {
+        const fileName = userData.avatar_url.split('/').pop();
+        if (fileName) {
+          await supabaseAdmin.storage
+            .from('avatars')
+            .remove([`avatars/${fileName}`]);
+          console.log(`✅ Avatar deleted: ${fileName}`);
+        }
+      } catch (storageError) {
+        console.warn('Error deleting avatar:', storageError);
+        // Continue anyway - not critical
+      }
+    }
+
+    // 6. Vymaž všetky závislé záznamy (v správnom poradí kvôli foreign keys)
     
     // Vymaž FCM tokeny
     const { error: fcmError } = await supabaseAdmin
@@ -116,7 +139,7 @@ export async function DELETE(request: NextRequest) {
       // Continue anyway
     }
 
-    // 5. Vymaž hlavný user záznam z users tabuľky
+    // 7. Vymaž hlavný user záznam z users tabuľky
     const { error: userError } = await supabaseAdmin
       .from('users')
       .delete()
@@ -133,7 +156,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // 6. Vymaž Supabase Auth účet (KRITICKÉ - toto ho definitívne vymaže)
+    // 8. Vymaž Supabase Auth účet (KRITICKÉ - toto ho definitívne vymaže)
     const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
     if (authDeleteError) {
@@ -154,7 +177,7 @@ export async function DELETE(request: NextRequest) {
 
     console.log(`✅ User ${userId} successfully deleted (data + auth)`);
 
-    // 7. Úspech!
+    // 9. Úspech!
     return NextResponse.json(
       {
         success: true,

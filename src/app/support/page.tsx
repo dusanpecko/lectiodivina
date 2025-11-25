@@ -206,6 +206,15 @@ export default function SupportPage() {
   const [currentTier, setCurrentTier] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Check URL parameter for mode
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const modeParam = params.get('mode');
+    if (modeParam === 'donation' || modeParam === 'subscription') {
+      setMode(modeParam);
+    }
+  }, []);
+
   // Fetch user's current subscription tier
   useEffect(() => {
     const fetchUserTier = async () => {

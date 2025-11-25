@@ -897,40 +897,45 @@ export default function ProfilePage() {
 
     setIsDeletingAccount(true);
     try {
-      // Najprv odstráň používateľa z databázy
-      const { error: deleteUserError } = await supabase
-        .from('users')
-        .delete()
-        .eq('id', user.id);
-
-      if (deleteUserError) throw deleteUserError;
-
-      // Odstráň avatar zo storage ak existuje
-      if (profile?.avatar_url) {
-        const fileName = profile.avatar_url.split('/').pop();
-        if (fileName) {
-          await supabase.storage
-            .from('avatars')
-            .remove([`avatars/${fileName}`]);
-        }
+      // Get current session token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No access token available');
       }
 
-      // Nakoniec zmaž auth účet
-      const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(user.id);
-      
-      if (deleteAuthError) {
-        // Ak admin API nefunguje, aspoň odhlás používateľa
-        await supabase.auth.signOut();
+      // Call API endpoint to delete account
+      const response = await fetch('/api/user/delete-account', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      // Sign out locally
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.error('Logout error after deletion:', err);
       }
 
       showMessage('success', t.messages.account_deleted);
       
-      // Presmeruj na hlavnú stránku
+      // Redirect to home page
       setTimeout(() => {
         router.push('/');
+        router.refresh();
       }, 2000);
 
     } catch (error: unknown) {
+      console.error('Delete account error:', error);
       showMessage('error', `${t.messages.delete_error}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsDeletingAccount(false);
