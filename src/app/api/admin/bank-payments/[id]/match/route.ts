@@ -15,12 +15,12 @@ interface MatchRequest {
 // POST - Manual match payment to user
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: paymentId } = await params;
     const body: MatchRequest = await request.json();
     const { userId, paymentType, relatedId } = body;
-    const paymentId = params.id;
 
     if (!paymentId || !userId) {
       return NextResponse.json(
@@ -85,10 +85,10 @@ export async function POST(
 // DELETE - Unmatch payment
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const paymentId = params.id;
+    const { id: paymentId } = await params;
 
     if (!paymentId) {
       return NextResponse.json(
