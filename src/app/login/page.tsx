@@ -216,7 +216,12 @@ function LoginPageContent() {
       } else {
         setLoading(false);
         setError(t.userVerificationFailed);
-        await supabase.auth.signOut();
+        try {
+          await supabase.auth.signOut({ scope: 'global' });
+        } catch (err) {
+          console.error('Logout error:', err);
+        }
+        router.refresh();
       }
     } catch (err) {
       console.error("Login error:", err);

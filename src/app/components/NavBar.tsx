@@ -99,12 +99,32 @@ export default function NavBar() {
   }, [mounted]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setShowLogoutMessage(true);
-    setProfileDropdownOpen(false);
-    setShowLogoutDialog(false);
-    router.push("/");
-    setTimeout(() => setShowLogoutMessage(false), 3000);
+    try {
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut({
+        scope: 'global' // Sign out from all sessions
+      });
+      
+      if (error) {
+        console.error('Logout error:', error);
+      }
+      
+      // Clear local state
+      setShowLogoutMessage(true);
+      setProfileDropdownOpen(false);
+      setShowLogoutDialog(false);
+      
+      // Force router refresh and redirect
+      router.push("/");
+      router.refresh();
+      
+      setTimeout(() => setShowLogoutMessage(false), 3000);
+    } catch (err) {
+      console.error('Unexpected logout error:', err);
+      // Even if error, try to redirect
+      router.push("/");
+      router.refresh();
+    }
   };
 
   const handleLogoutClick = () => {

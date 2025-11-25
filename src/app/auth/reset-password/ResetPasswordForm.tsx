@@ -242,7 +242,11 @@ export default function ResetPasswordForm() {
       setSuccess(t.passwordChangedDesc);
       
       // Odhlásiť používateľa po úspešnej zmene hesla
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
 
     } catch (err: any) {
       setError(err.message || t.unknownError);

@@ -859,9 +859,14 @@ export default function HomePage() {
   confirmText={t.logout}
   cancelText={t.cancel}
         onConfirm={async () => {
-          await supabase.auth.signOut();
+          try {
+            await supabase.auth.signOut({ scope: 'global' });
+          } catch (err) {
+            console.error('Logout error:', err);
+          }
           setShowLogoutDialog(false);
           router.push('/');
+          router.refresh();
         }}
         onCancel={() => setShowLogoutDialog(false)}
         type="warning"

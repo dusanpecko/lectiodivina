@@ -941,9 +941,14 @@ export default function ProfilePage() {
 
   const signOut = async () => {
     if (!supabase) return;
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
     setShowLogoutDialog(false);
     router.push('/login');
+    router.refresh();
   };
 
   const handleSignOutClick = () => {
