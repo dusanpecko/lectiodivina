@@ -1,5 +1,6 @@
 'use client';
 
+import { useSupabase } from '@/app/components/SupabaseProvider';
 import { AlertCircle, ArrowLeft, CheckCircle2, FileText, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -13,16 +14,22 @@ interface ImportResult {
 
 export default function BankImportPage() {
   const router = useRouter();
+  const { session } = useSupabase();
   const [file, setFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [preview, setPreview] = useState<string[]>([]);
+  const [fileType, setFileType] = useState<'csv' | 'xml'>('csv');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
       setResult(null);
+      
+      // Detect file type
+      const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+      setFileType(extension === 'xml' ? 'xml' : 'csv');
       
       // Preview first 5 lines
       const reader = new FileReader();
@@ -43,8 +50,20 @@ export default function BankImportPage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/admin/bank-payments/import', {
+      // Use different endpoint based on file type
+      const endpoint = fileType === 'xml' 
+        ? '/api/admin/bank-payments/import-xml'
+        : '/api/admin/bank-payments/import';
+
+      // Get session for authorization
+      const headers: Record<string, string> = {};
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
+      const response = await fetch(endpoint, {
         method: 'POST',
+        headers,
         body: formData,
       });
 
@@ -54,7 +73,13 @@ export default function BankImportPage() {
         throw new Error(data.error || 'Import failed');
       }
 
-      setResult(data);
+      // Map XML response to common format
+      setResult({
+        success: data.success || false,
+        imported: data.imported || 0,
+        duplicates: data.skipped || data.duplicates || 0,
+        errors: data.error ? [data.error] : data.errors || []
+      });
     } catch (error) {
       console.error('Error importing:', error);
       setResult({
@@ -83,7 +108,7 @@ export default function BankImportPage() {
             <Upload className="text-blue-600" size={32} />
             Import bankových platieb
           </h1>
-          <p className="text-gray-600 mt-1">Nahrajte CSV súbor z vašej banky</p>
+          <p className="text-gray-600 mt-1">Nahrajte CSV alebo XML súbor z vašej banky</p>
         </div>
       </div>
 
@@ -91,23 +116,37 @@ export default function BankImportPage() {
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
         <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
           <AlertCircle size={20} />
-          Formát CSV súboru
+          Podporované formáty
         </h3>
-        <p className="text-blue-800 mb-2">
-          CSV súbor musí obsahovať nasledujúce stĺpce (presne v tomto poradí):
-        </p>
-        <ul className="list-disc list-inside text-blue-800 space-y-1 ml-4">
-          <li>datum zauctovania</li>
-          <li>suma</li>
-          <li>mena</li>
-          <li>referencia platitela</li>
-          <li>typ transakcie</li>
-          <li>cislo uctu protistrany</li>
-          <li>banka protistrany</li>
-          <li>nazov protistrany</li>
-          <li>informacia pre prijemcu</li>
-          <li>doplnujuce udaje</li>
-        </ul>
+        
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-blue-900 mb-2">📄 CSV formát</h4>
+            <p className="text-blue-800 mb-2">
+              CSV súbor musí obsahovať nasledujúce stĺpce (presne v tomto poradí):
+            </p>
+            <ul className="list-disc list-inside text-blue-800 space-y-1 ml-4 text-sm">
+              <li>datum zauctovania</li>
+              <li>suma</li>
+              <li>mena</li>
+              <li>referencia platitela</li>
+              <li>typ transakcie</li>
+              <li>cislo uctu protistrany</li>
+              <li>banka protistrany</li>
+              <li>nazov protistrany</li>
+              <li>informacia pre prijemcu</li>
+              <li>doplnujuce udaje</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-semibold text-blue-900 mb-2">📋 XML formát (CAMT.053)</h4>
+            <p className="text-blue-800 text-sm">
+              Štandardný bankový výpis vo formáte CAMT.053 (ISO 20022). 
+              Automaticky parsuje transakcie, variabilné symboly a údaje platiteľa.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Upload Area */}
@@ -139,7 +178,7 @@ export default function BankImportPage() {
               <div className="flex flex-col items-center">
                 <Upload className="text-gray-400 mb-4" size={48} />
                 <p className="text-lg font-semibold text-gray-700 mb-2">
-                  Vyberte CSV súbor
+                  Vyberte CSV alebo XML súbor
                 </p>
                 <p className="text-sm text-gray-500">alebo ho pretiahnite sem</p>
               </div>
@@ -147,7 +186,7 @@ export default function BankImportPage() {
             <input
               id="csv-upload"
               type="file"
-              accept=".csv"
+              accept=".csv,.xml"
               onChange={handleFileChange}
               className="hidden"
             />
