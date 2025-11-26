@@ -17,7 +17,8 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('locales')
-      .select('code, name')
+      .select('id, code, name, native_name, is_active')
+      .eq('is_active', true)
       .order('name');
 
     if (error) {

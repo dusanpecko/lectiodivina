@@ -21,6 +21,7 @@ import { translations } from "./i18n";
 const HomeLectioSection = dynamic(() => import("@/app/components/HomeLectioSection"));
 const HomeNewsSection = dynamic(() => import("./components/HomeNewsSection").then(mod => ({ default: mod.HomeNewsSection })));
 const RoadmapSection = dynamic(() => import("./components/RoadmapSection"));
+const SpiritualExercisesSection = dynamic(() => import("./components/SpiritualExercisesSection"));
 
 
 
@@ -788,6 +789,8 @@ export default function HomePage() {
       </section>
       {/* App Section */}
       <AppSection t={t} />
+      {/* Spiritual Exercises Section */}
+      <SpiritualExercisesSection lang={lang} />
       {/* Lectio Guide Section */}
       <LectioGuideSection t={t} />
       

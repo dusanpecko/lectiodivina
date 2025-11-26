@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd" xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>CEKOSKBXXXX-***-251126-TEST-DUPLICATE</MsgId>
+      <CreDtTm>2025-11-26T10:00:00.0+01:00</CreDtTm>
+      <MsgPgntn>
+        <PgNb>1</PgNb>
+        <LastPgInd>true</LastPgInd>
+      </MsgPgntn>
+      <AddtlInf>denny</AddtlInf>
+    </GrpHdr>
+    <Stmt>
+      <Id>SK4275000000004035156222-3-251126</Id>
+      <ElctrncSeqNb>1</ElctrncSeqNb>
+      <LglSeqNb>1</LglSeqNb>
+      <CreDtTm>2025-11-26T10:00:00.0+01:00</CreDtTm>
+      <FrToDt>
+        <FrDtTm>2025-11-05T00:00:00.0+01:00</FrDtTm>
+        <ToDtTm>2025-11-26T23:59:59.9+01:00</ToDtTm>
+      </FrToDt>
+      <Acct>
+        <Id>
+          <IBAN>SK4275000000004035156222</IBAN>
+        </Id>
+        <Tp>
+          <Cd>CACC</Cd>
+        </Tp>
+        <Ccy>EUR</Ccy>
+        <Nm>Zdruzenie 45</Nm>
+        <Ownr>
+          <Nm>Zdruzenie 45</Nm>
+          <PstlAdr>
+            <AdrLine>Podunajska 12542/23F</AdrLine>
+            <AdrLine>82106 Bratislava - mestska cast</AdrLine>
+            <AdrLine>SLOVAKIA</AdrLine>
+          </PstlAdr>
+        </Ownr>
+        <Svcr>
+          <FinInstnId>
+            <BIC>CEKOSKBX</BIC>
+            <Nm>Ceskoslovenska obchodna banka a.s.</Nm>
+            <PstlAdr>
+              <StrtNm>Zizkova</StrtNm>
+              <BldgNb>11</BldgNb>
+              <PstCd>81102</PstCd>
+              <TwnNm>Bratislava</TwnNm>
+              <Ctry>SK</Ctry>
+            </PstlAdr>
+            <Othr>
+              <Id>7500</Id>
+              <SchmeNm>
+                <Prtry>EuroSIPS Bank Code</Prtry>
+              </SchmeNm>
+              <Issr>NBS</Issr>
+            </Othr>
+          </FinInstnId>
+        </Svcr>
+      </Acct>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>PRCD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="EUR">0.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt>
+          <Dt>2025-11-05</Dt>
+        </Dt>
+      </Bal>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>CLBD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="EUR">8561.82</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt>
+          <Dt>2025-11-26</Dt>
+        </Dt>
+      </Bal>
+      <TxsSummry>
+        <TtlNtries>
+          <NbOfNtries>27</NbOfNtries>
+          <Sum>8561.82</Sum>
+          <TtlNetNtryAmt>8561.82</TtlNetNtryAmt>
+          <CdtDbtInd>CRDT</CdtDbtInd>
+        </TtlNtries>
+        <TtlCdtNtries>
+          <NbOfNtries>27</NbOfNtries>
+          <Sum>8561.82</Sum>
+        </TtlCdtNtries>
+        <TtlDbtNtries>
+          <NbOfNtries>0</NbOfNtries>
+          <Sum>0.00</Sum>
+        </TtlDbtNtries>
+      </TxsSummry>
+      
+      <!-- EXISTING PAYMENT - Should be skipped -->
+      <Ntry>
+        <NtryRef>8</NtryRef>
+        <Amt Ccy="EUR">50.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-10</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-10</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>8</AcctSvcrRef>
+              <EndToEndId>/VS777/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">50.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Dusan Pecko</Nm>
+                <PstlAdr>
+                  <AdrLine>Velka okruzna 1294/10</AdrLine>
+                  <AdrLine>01001 Zilina</AdrLine>
+                </PstlAdr>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK3075002000020004113088</IBAN>
+                </Id>
+                <Nm>Dusan Pecko</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+                <PstlAdr>
+                  <AdrLine>Podunajska 12542/23F</AdrLine>
+                  <AdrLine>Bratislava - mestska cast 82106 SK</AdrLine>
+                </PstlAdr>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Dar Dusan Pecko</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-10T00:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- NEW FICTIVE PAYMENT - Should be imported -->
+      <Ntry>
+        <NtryRef>999</NtryRef>
+        <Amt Ccy="EUR">100.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-26</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-26</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>999</AcctSvcrRef>
+              <EndToEndId>/VS999999/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">100.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Test Testovaci</Nm>
+                <PstlAdr>
+                  <AdrLine>Testovacia 123</AdrLine>
+                  <AdrLine>01001 Bratislava</AdrLine>
+                </PstlAdr>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK9999999999999999999999</IBAN>
+                </Id>
+                <Nm>Test Testovaci</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+                <PstlAdr>
+                  <AdrLine>Podunajska 12542/23F</AdrLine>
+                  <AdrLine>Bratislava - mestska cast 82106 SK</AdrLine>
+                </PstlAdr>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>TESTOVACIA PLATBA - Nova fiktivna platba</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-26T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- NEW FICTIVE PAYMENT 2 -->
+      <Ntry>
+        <NtryRef>997</NtryRef>
+        <Amt Ccy="EUR">75.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-26</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-26</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>997</AcctSvcrRef>
+              <EndToEndId>/VS888888/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">75.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Jana Novakova</Nm>
+                <PstlAdr>
+                  <AdrLine>Hlavna 456</AdrLine>
+                  <AdrLine>82108 Bratislava</AdrLine>
+                </PstlAdr>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK8888888888888888888888</IBAN>
+                </Id>
+                <Nm>Jana Novakova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+                <PstlAdr>
+                  <AdrLine>Podunajska 12542/23F</AdrLine>
+                  <AdrLine>Bratislava - mestska cast 82106 SK</AdrLine>
+                </PstlAdr>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>GIBASKBXXXX</BIC>
+                  <Nm>Slovenska sporitelna, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Dar - Jana Novakova</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-26T09:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- NEW FICTIVE PAYMENT 3 -->
+      <Ntry>
+        <NtryRef>998</NtryRef>
+        <Amt Ccy="EUR">125.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-26</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-26</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>998</AcctSvcrRef>
+              <EndToEndId>/VS777777/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">125.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Peter Kovac</Nm>
+                <PstlAdr>
+                  <AdrLine>Kosicka 789</AdrLine>
+                  <AdrLine>04011 Kosice</AdrLine>
+                </PstlAdr>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK7777777777777777777777</IBAN>
+                </Id>
+                <Nm>Peter Kovac</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+                <PstlAdr>
+                  <AdrLine>Podunajska 12542/23F</AdrLine>
+                  <AdrLine>Bratislava - mestska cast 82106 SK</AdrLine>
+                </PstlAdr>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>TATRSKBXXXX</BIC>
+                  <Nm>Tatra banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Predplatne - Peter Kovac</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-26T08:30:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

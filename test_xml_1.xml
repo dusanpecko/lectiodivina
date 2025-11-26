@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd" xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>CEKOSKBXXXX-***-251127-0000TEST001</MsgId>
+      <CreDtTm>2025-11-27T10:00:00.0+01:00</CreDtTm>
+      <MsgPgntn>
+        <PgNb>1</PgNb>
+        <LastPgInd>true</LastPgInd>
+      </MsgPgntn>
+      <AddtlInf>denny</AddtlInf>
+    </GrpHdr>
+    <Stmt>
+      <Id>SK4275000000004035156222-4-251127</Id>
+      <ElctrncSeqNb>1</ElctrncSeqNb>
+      <LglSeqNb>1</LglSeqNb>
+      <CreDtTm>2025-11-27T00:00:00.0+01:00</CreDtTm>
+      <FrToDt>
+        <FrDtTm>2025-11-01T00:00:00.0+01:00</FrDtTm>
+        <ToDtTm>2025-11-27T23:59:59.9+01:00</ToDtTm>
+      </FrToDt>
+      <Acct>
+        <Id>
+          <IBAN>SK4275000000004035156222</IBAN>
+        </Id>
+        <Tp>
+          <Cd>CACC</Cd>
+        </Tp>
+        <Ccy>EUR</Ccy>
+        <Nm>Zdruzenie 45</Nm>
+      </Acct>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>CLBD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="EUR">350.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt>
+          <Dt>2025-11-27</Dt>
+        </Dt>
+      </Bal>
+      <TxsSummry>
+        <TtlNtries>
+          <NbOfNtries>3</NbOfNtries>
+          <Sum>350.00</Sum>
+        </TtlNtries>
+      </TxsSummry>
+      
+      <Ntry>
+        <NtryRef>1001</NtryRef>
+        <Amt Ccy="EUR">50.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>1001</AcctSvcrRef>
+              <EndToEndId>/VS100001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">50.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Martin Horvath</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK1111111111111111111111</IBAN>
+                </Id>
+                <Nm>Martin Horvath</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>GIBASKBXXXX</BIC>
+                  <Nm>Slovenska sporitelna, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Dar - Martin Horvath</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>1002</NtryRef>
+        <Amt Ccy="EUR">150.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>1002</AcctSvcrRef>
+              <EndToEndId>/VS100002/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">150.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Eva Balogova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK2222222222222222222222</IBAN>
+                </Id>
+                <Nm>Eva Balogova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>TATRSKBXXXX</BIC>
+                  <Nm>Tatra banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Predplatne - Eva Balogova</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T11:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>1003</NtryRef>
+        <Amt Ccy="EUR">150.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>1003</AcctSvcrRef>
+              <EndToEndId>/VS100003/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">150.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Jozef Kral</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK3333333333333333333333</IBAN>
+                </Id>
+                <Nm>Jozef Kral</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>SUBASKBXXXX</BIC>
+                  <Nm>Vseobecna uverova banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Kalendar - Jozef Kral</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T12:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

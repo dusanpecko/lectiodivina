@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd" xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>CEKOSKBXXXX-***-251129-0000TEST004</MsgId>
+      <CreDtTm>2025-11-29T10:00:00.0+01:00</CreDtTm>
+      <MsgPgntn>
+        <PgNb>1</PgNb>
+        <LastPgInd>true</LastPgInd>
+      </MsgPgntn>
+      <AddtlInf>denny</AddtlInf>
+    </GrpHdr>
+    <Stmt>
+      <Id>SK4275000000004035156222-7-251129</Id>
+      <ElctrncSeqNb>1</ElctrncSeqNb>
+      <LglSeqNb>1</LglSeqNb>
+      <CreDtTm>2025-11-29T10:00:00.0+01:00</CreDtTm>
+      <FrToDt>
+        <FrDtTm>2025-11-15T00:00:00.0+01:00</FrDtTm>
+        <ToDtTm>2025-11-29T23:59:59.9+01:00</ToDtTm>
+      </FrToDt>
+      <Acct>
+        <Id>
+          <IBAN>SK4275000000004035156222</IBAN>
+        </Id>
+        <Tp>
+          <Cd>CACC</Cd>
+        </Tp>
+        <Ccy>EUR</Ccy>
+        <Nm>Zdruzenie 45</Nm>
+      </Acct>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>CLBD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="EUR">1050.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt>
+          <Dt>2025-11-29</Dt>
+        </Dt>
+      </Bal>
+      <TxsSummry>
+        <TtlNtries>
+          <NbOfNtries>5</NbOfNtries>
+          <Sum>1050.00</Sum>
+        </TtlNtries>
+      </TxsSummry>
+      
+      <!-- DUPLICATE from test_xml_1 -->
+      <Ntry>
+        <NtryRef>1001</NtryRef>
+        <Amt Ccy="EUR">50.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-20</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-20</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>1001</AcctSvcrRef>
+              <EndToEndId>/VS100001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">50.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Martin Horvath</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK1111111111111111111111</IBAN>
+                </Id>
+                <Nm>Martin Horvath</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>GIBASKBXXXX</BIC>
+                  <Nm>Slovenska sporitelna, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Mesacny prispevok - Martin Horvath</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-20T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- DUPLICATE from test_xml_2 -->
+      <Ntry>
+        <NtryRef>2001</NtryRef>
+        <Amt Ccy="EUR">200.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-21</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-21</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>2001</AcctSvcrRef>
+              <EndToEndId>/VS200001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">200.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Anna Vargova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK2222222222222222222222</IBAN>
+                </Id>
+                <Nm>Anna Vargova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>TATRSKBXXXX</BIC>
+                  <Nm>Tatra banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Jednorazova podpora - Anna Vargova</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-21T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- DUPLICATE from test_xml_3 -->
+      <Ntry>
+        <NtryRef>3001</NtryRef>
+        <Amt Ccy="EUR">100.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-28</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-28</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>3001</AcctSvcrRef>
+              <EndToEndId>/VS300001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">100.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Robert Nemec</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK7777777777777777777777</IBAN>
+                </Id>
+                <Nm>Robert Nemec</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>BREXSKBXXXX</BIC>
+                  <Nm>mBank S.A., pobocka zahranicnej banky</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Dar - Robert Nemec</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-28T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- NEW payments -->
+      <Ntry>
+        <NtryRef>4001</NtryRef>
+        <Amt Ccy="EUR">250.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-29</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-29</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>4001</AcctSvcrRef>
+              <EndToEndId>/VS400001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">250.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Filip Dubovsky</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK9999999999999999999999</IBAN>
+                </Id>
+                <Nm>Filip Dubovsky</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>SUBASKBXXXX</BIC>
+                  <Nm>Vseobecna uverova banka, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Sponzorsky dar - Filip Dubovsky</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-29T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>4002</NtryRef>
+        <Amt Ccy="EUR">450.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-29</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-29</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>4002</AcctSvcrRef>
+              <EndToEndId>/VS400002/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">450.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Zuzana Majercikova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK0000000000000000000000</IBAN>
+                </Id>
+                <Nm>Zuzana Majercikova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>FIOZSKBAXXX</BIC>
+                  <Nm>Fio banka, a.s., pobocka zahranicnej banky</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Rocny prispevok - Zuzana Majercikova</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-29T11:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

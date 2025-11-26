@@ -1,6 +1,6 @@
 'use client';
 
-import { Banknote, Building2, Calendar, Link as LinkIcon, Search, TrendingUp, Upload, X } from 'lucide-react';
+import { Banknote, Building2, Calendar, FileText, Link as LinkIcon, Search, TrendingUp, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -69,6 +69,12 @@ export default function BankaAdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(50);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Delete modal and bulk selection state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [paymentToDelete, setPaymentToDelete] = useState<string | null>(null);
+  const [selectedPayments, setSelectedPayments] = useState<Set<string>>(new Set());
+  const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -238,6 +244,69 @@ export default function BankaAdminPage() {
     }
   };
 
+  const handleDelete = async (paymentId: string) => {
+    setPaymentToDelete(paymentId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!paymentToDelete) return;
+
+    try {
+      const response = await fetch(`/api/admin/bank-payments/${paymentToDelete}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete payment');
+      }
+
+      setShowDeleteModal(false);
+      setPaymentToDelete(null);
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error deleting payment:', error);
+      alert('Chyba pri mazaní platby');
+    }
+  };
+
+  const togglePaymentSelection = (paymentId: string) => {
+    const newSelection = new Set(selectedPayments);
+    if (newSelection.has(paymentId)) {
+      newSelection.delete(paymentId);
+    } else {
+      newSelection.add(paymentId);
+    }
+    setSelectedPayments(newSelection);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedPayments.size === filteredPayments.length) {
+      setSelectedPayments(new Set());
+    } else {
+      setSelectedPayments(new Set(filteredPayments.map(p => p.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedPayments.size === 0) return;
+
+    try {
+      await Promise.all(
+        Array.from(selectedPayments).map(id =>
+          fetch(`/api/admin/bank-payments/${id}`, { method: 'DELETE' })
+        )
+      );
+
+      setSelectedPayments(new Set());
+      setBulkDeleteMode(false);
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error deleting payments:', error);
+      alert('Chyba pri mazaní platieb');
+    }
+  };
+
   useEffect(() => {
     fetchPayments();
   }, [fetchPayments]);
@@ -327,6 +396,28 @@ export default function BankaAdminPage() {
           </p>
         </div>
         <div className="flex gap-3">
+          {bulkDeleteMode && selectedPayments.size > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium shadow-md"
+            >
+              <X size={20} />
+              Vymazať vybrané ({selectedPayments.size})
+            </button>
+          )}
+          <button
+            onClick={() => {
+              setBulkDeleteMode(!bulkDeleteMode);
+              setSelectedPayments(new Set());
+            }}
+            className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-medium shadow-md ${
+              bulkDeleteMode
+                ? 'bg-gray-600 text-white hover:bg-gray-700'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {bulkDeleteMode ? 'Zrušiť výber' : 'Hromadné mazanie'}
+          </button>
           <button
             onClick={handleAutoMatch}
             disabled={matching || stats.unmatched === 0}
@@ -343,6 +434,13 @@ export default function BankaAdminPage() {
                 Spárovať platby ({stats.unmatched})
               </>
             )}
+          </button>
+          <button
+            onClick={() => router.push('/admin/shop/banka/history')}
+            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2 font-medium shadow-md"
+          >
+            <FileText size={20} />
+            História importov
           </button>
           <button
             onClick={() => router.push('/admin/shop/banka/import')}
@@ -466,6 +564,16 @@ export default function BankaAdminPage() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                {bulkDeleteMode && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectedPayments.size === filteredPayments.length && filteredPayments.length > 0}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                  </th>
+                )}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Dátum
                 </th>
@@ -492,7 +600,7 @@ export default function BankaAdminPage() {
             <tbody className="divide-y divide-gray-200">
               {filteredPayments.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={bulkDeleteMode ? 8 : 7} className="px-6 py-12 text-center text-gray-500">
                     Žiadne bankové platby
                   </td>
                 </tr>
@@ -501,6 +609,16 @@ export default function BankaAdminPage() {
                   .slice((currentPage - 1) * pageSize, currentPage * pageSize)
                   .map((payment) => (
                   <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
+                    {bulkDeleteMode && (
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedPayments.has(payment.id)}
+                          onChange={() => togglePaymentSelection(payment.id)}
+                          className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                      </td>
+                    )}
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
                         {new Date(payment.transaction_date).toLocaleDateString('sk-SK')}
@@ -563,25 +681,38 @@ export default function BankaAdminPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {payment.matched ? (
-                        <button
-                          onClick={() => handleUnmatch(payment.id)}
-                          className="px-3 py-1 text-xs font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          Odpárovať
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setSelectedPayment(payment);
-                            setShowMatchModal(true);
-                          }}
-                          className="px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
-                        >
-                          <LinkIcon size={14} />
-                          Spárovať
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {!bulkDeleteMode && (
+                          <>
+                            {payment.matched ? (
+                              <button
+                                onClick={() => handleUnmatch(payment.id)}
+                                className="px-3 py-1 text-xs font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                              >
+                                Odpárovať
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setSelectedPayment(payment);
+                                  setShowMatchModal(true);
+                                }}
+                                className="px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
+                              >
+                                <LinkIcon size={14} />
+                                Spárovať
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDelete(payment.id)}
+                              className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                              title="Vymazať platbu"
+                            >
+                              <X size={14} />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -810,6 +941,46 @@ export default function BankaAdminPage() {
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 Spárovať platbu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <X className="text-red-600" size={24} />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Vymazať platbu</h2>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-700">
+                Naozaj chcete vymazať túto platbu? Táto akcia sa nedá vrátiť späť.
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setPaymentToDelete(null);
+                }}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Zrušiť
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Vymazať
               </button>
             </div>
           </div>

@@ -212,6 +212,26 @@ interface PaymentHistoryItem {
   status?: string;
 }
 
+interface SpiritualExerciseRegistration {
+  id: number;
+  created_at: string;
+  room_type: string;
+  payment_status: string;
+  status: string;
+  first_name: string;
+  last_name: string;
+  spiritual_exercise: {
+    id: number;
+    title: string;
+    slug: string;
+    start_date: string;
+    end_date: string;
+    location_name: string;
+    location_city: string;
+    image_url: string | null;
+  };
+}
+
 interface ShippingAddress {
   name: string;
   street: string;
@@ -296,6 +316,12 @@ export default function ProfilePage() {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Spiritual Exercises Registrations state
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [spiritualExercisesRegistrations, setSpiritualExercisesRegistrations] = useState<SpiritualExerciseRegistration[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loadingExercises, setLoadingExercises] = useState(false);
 
   // Billing info state
   const [billingInfo, setBillingInfo] = useState<BillingInfo>({

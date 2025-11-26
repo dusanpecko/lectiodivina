@@ -15,6 +15,7 @@ export interface AdminSidebarTranslations {
     notifications: string;
     notification_topics: string;
     bible_bulk_import: string;
+    spiritual_exercises: string;
   };
   states: {
     loading: string;
@@ -45,7 +46,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       programs: "Programy",
       notifications: "Notifikácie",
       notification_topics: "Témy notifikácií",
-      bible_bulk_import: "Bible Import"
+      bible_bulk_import: "Bible Import",
+      spiritual_exercises: "Duchovné cvičenia"
     },
     states: {
       loading: "Načítava..."
@@ -74,7 +76,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       programs: "Programy",
       notifications: "Oznámení",
       notification_topics: "Témata oznámení",
-      bible_bulk_import: "Bible Import"
+      bible_bulk_import: "Bible Import",
+      spiritual_exercises: "Duchovní cvičení"
     },
     states: {
       loading: "Načítá..."
@@ -103,7 +106,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       programs: "Programs",
       notifications: "Notifications",
       notification_topics: "Notification Topics",
-      bible_bulk_import: "Bible Import"
+      bible_bulk_import: "Bible Import",
+      spiritual_exercises: "Spiritual Exercises"
     },
     states: {
       loading: "Loading..."
@@ -132,7 +136,8 @@ export const adminSidebarTranslations: Record<string, AdminSidebarTranslations> 
       programs: "Programas",
       notifications: "Notificaciones",
       notification_topics: "Temas de Notificaciones",
-      bible_bulk_import: "Importar Biblia"
+      bible_bulk_import: "Importar Biblia",
+      spiritual_exercises: "Ejercicios Espirituales"
     },
     states: {
       loading: "Cargando..."

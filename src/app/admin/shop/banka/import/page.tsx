@@ -103,6 +103,25 @@ export default function BankImportPage() {
 
       const data = await response.json();
 
+      // Handle duplicate XML import (409 Conflict)
+      if (response.status === 409) {
+        setResult({
+          success: false,
+          imported: 0,
+          duplicates: 0,
+          errors: [
+            data.message || 'Tento XML súbor bol už naimportovaný',
+            data.details?.imported_at 
+              ? `Importovaný: ${new Date(data.details.imported_at).toLocaleString('sk-SK')}`
+              : '',
+            data.details?.imported_count 
+              ? `Počet platieb: ${data.details.imported_count}`
+              : ''
+          ].filter(Boolean)
+        });
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(data.error || 'Import failed');
       }

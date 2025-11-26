@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd" xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>CEKOSKBXXXX-***-251127-0000TEST002</MsgId>
+      <CreDtTm>2025-11-27T14:00:00.0+01:00</CreDtTm>
+      <MsgPgntn>
+        <PgNb>1</PgNb>
+        <LastPgInd>true</LastPgInd>
+      </MsgPgntn>
+      <AddtlInf>denny</AddtlInf>
+    </GrpHdr>
+    <Stmt>
+      <Id>SK4275000000004035156222-5-251127</Id>
+      <ElctrncSeqNb>1</ElctrncSeqNb>
+      <LglSeqNb>1</LglSeqNb>
+      <CreDtTm>2025-11-27T14:00:00.0+01:00</CreDtTm>
+      <FrToDt>
+        <FrDtTm>2025-11-01T00:00:00.0+01:00</FrDtTm>
+        <ToDtTm>2025-11-27T23:59:59.9+01:00</ToDtTm>
+      </FrToDt>
+      <Acct>
+        <Id>
+          <IBAN>SK4275000000004035156222</IBAN>
+        </Id>
+        <Tp>
+          <Cd>CACC</Cd>
+        </Tp>
+        <Ccy>EUR</Ccy>
+        <Nm>Zdruzenie 45</Nm>
+      </Acct>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>CLBD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="EUR">700.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt>
+          <Dt>2025-11-27</Dt>
+        </Dt>
+      </Bal>
+      <TxsSummry>
+        <TtlNtries>
+          <NbOfNtries>4</NbOfNtries>
+          <Sum>700.00</Sum>
+        </TtlNtries>
+      </TxsSummry>
+      
+      <!-- Duplicate from test_xml_1.xml -->
+      <Ntry>
+        <NtryRef>1001</NtryRef>
+        <Amt Ccy="EUR">50.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>1001</AcctSvcrRef>
+              <EndToEndId>/VS100001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">50.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Martin Horvath</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK1111111111111111111111</IBAN>
+                </Id>
+                <Nm>Martin Horvath</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>GIBASKBXXXX</BIC>
+                  <Nm>Slovenska sporitelna, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Dar - Martin Horvath</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>2001</NtryRef>
+        <Amt Ccy="EUR">200.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>2001</AcctSvcrRef>
+              <EndToEndId>/VS200001/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">200.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Anna Vargova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK4444444444444444444444</IBAN>
+                </Id>
+                <Nm>Anna Vargova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>FIOZSKBAXXX</BIC>
+                  <Nm>Fio banka, a.s., pobocka zahranicnej banky</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Dar - Anna Vargova</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T14:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>2002</NtryRef>
+        <Amt Ccy="EUR">250.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>2002</AcctSvcrRef>
+              <EndToEndId>/VS200002/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">250.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Michal Tokar</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK5555555555555555555555</IBAN>
+                </Id>
+                <Nm>Michal Tokar</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>POBNSKBA</BIC>
+                  <Nm>365.bank, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Predplatne - Michal Tokar</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T15:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>2003</NtryRef>
+        <Amt Ccy="EUR">200.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-27</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-27</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>2003</AcctSvcrRef>
+              <EndToEndId>/VS200003/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">200.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Lucia Kovalikova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK6666666666666666666666</IBAN>
+                </Id>
+                <Nm>Lucia Kovalikova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>KOMASK2X</BIC>
+                  <Nm>Prima banka Slovensko, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Kalendar - Lucia Kovalikova</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-27T16:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

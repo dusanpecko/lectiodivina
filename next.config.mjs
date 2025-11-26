@@ -88,11 +88,11 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.stripe.com https://*.supabase.co",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.stripe.com https://*.supabase.co https://analytics.lectio.one",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://*.supabase.co https://*.stripe.com https://*.upstash.io wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://*.stripe.com https://*.upstash.io https://analytics.lectio.one wss://*.supabase.co",
               "frame-src 'self' https://*.stripe.com",
               "media-src 'self' https://*.supabase.co blob:",
               "object-src 'none'",

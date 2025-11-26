@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02 camt.053.001.02.xsd" xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>CEKOSKBXXXX-***-251130-0000TEST005</MsgId>
+      <CreDtTm>2025-11-30T10:00:00.0+01:00</CreDtTm>
+      <MsgPgntn>
+        <PgNb>1</PgNb>
+        <LastPgInd>true</LastPgInd>
+      </MsgPgntn>
+      <AddtlInf>denny</AddtlInf>
+    </GrpHdr>
+    <Stmt>
+      <Id>SK4275000000004035156222-8-251130</Id>
+      <ElctrncSeqNb>1</ElctrncSeqNb>
+      <LglSeqNb>1</LglSeqNb>
+      <CreDtTm>2025-11-30T10:00:00.0+01:00</CreDtTm>
+      <FrToDt>
+        <FrDtTm>2025-11-01T00:00:00.0+01:00</FrDtTm>
+        <ToDtTm>2025-11-30T23:59:59.9+01:00</ToDtTm>
+      </FrToDt>
+      <Acct>
+        <Id>
+          <IBAN>SK4275000000004035156222</IBAN>
+        </Id>
+        <Tp>
+          <Cd>CACC</Cd>
+        </Tp>
+        <Ccy>EUR</Ccy>
+        <Nm>Zdruzenie 45</Nm>
+      </Acct>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>CLBD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="EUR">625.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt>
+          <Dt>2025-11-30</Dt>
+        </Dt>
+      </Bal>
+      <TxsSummry>
+        <TtlNtries>
+          <NbOfNtries>4</NbOfNtries>
+          <Sum>625.00</Sum>
+        </TtlNtries>
+      </TxsSummry>
+      
+      <!-- Payment WITHOUT variable symbol -->
+      <Ntry>
+        <NtryRef>5001</NtryRef>
+        <Amt Ccy="EUR">75.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-30</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-30</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>5001</AcctSvcrRef>
+              <EndToEndId>/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">75.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Igor Novak</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK1234567890123456789012</IBAN>
+                </Id>
+                <Nm>Igor Novak</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>POBNSKBA</BIC>
+                  <Nm>365.bank, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Spontanny prispevok bez VS</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-30T08:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- Payment with special characters in name -->
+      <Ntry>
+        <NtryRef>5002</NtryRef>
+        <Amt Ccy="EUR">150.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-30</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-30</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>5002</AcctSvcrRef>
+              <EndToEndId>/VS500002/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">150.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Ján Ďuriš-Čížek</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK2345678901234567890123</IBAN>
+                </Id>
+                <Nm>Ján Ďuriš-Čížek</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>KOMASK2X</BIC>
+                  <Nm>Prima banka Slovensko, a.s.</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Príspevok s diakritikou &amp; špeciálnymi znakmi!</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-30T09:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <!-- Two payments from same person (different NtryRef, same counterparty) -->
+      <Ntry>
+        <NtryRef>5003</NtryRef>
+        <Amt Ccy="EUR">200.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-30</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-30</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>5003</AcctSvcrRef>
+              <EndToEndId>/VS500003/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">200.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Petra Svobodova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK3456789012345678901234</IBAN>
+                </Id>
+                <Nm>Petra Svobodova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>BREXSKBXXXX</BIC>
+                  <Nm>mBank S.A., pobocka zahranicnej banky</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Prva platba - December 2025</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-30T10:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+      <Ntry>
+        <NtryRef>5004</NtryRef>
+        <Amt Ccy="EUR">200.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2025-11-30</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2025-11-30</Dt>
+        </ValDt>
+        <BkTxCd>
+          <Prtry>
+            <Cd>10000405000</Cd>
+            <Issr>SBA</Issr>
+          </Prtry>
+        </BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>5004</AcctSvcrRef>
+              <EndToEndId>/VS500004/SS/KS</EndToEndId>
+            </Refs>
+            <AmtDtls>
+              <InstdAmt>
+                <Amt Ccy="EUR">200.00</Amt>
+              </InstdAmt>
+            </AmtDtls>
+            <BkTxCd>
+              <Prtry>
+                <Cd>10000405000</Cd>
+                <Issr>SBA</Issr>
+              </Prtry>
+            </BkTxCd>
+            <RltdPties>
+              <Dbtr>
+                <Nm>Petra Svobodova</Nm>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>SK3456789012345678901234</IBAN>
+                </Id>
+                <Nm>Petra Svobodova</Nm>
+              </DbtrAcct>
+              <Cdtr>
+                <Nm>Zdruzenie 45</Nm>
+              </Cdtr>
+              <CdtrAcct>
+                <Id>
+                  <IBAN>SK4275000000004035156222</IBAN>
+                </Id>
+                <Nm>Zdruzenie 45</Nm>
+              </CdtrAcct>
+            </RltdPties>
+            <RltdAgts>
+              <DbtrAgt>
+                <FinInstnId>
+                  <BIC>BREXSKBXXXX</BIC>
+                  <Nm>mBank S.A., pobocka zahranicnej banky</Nm>
+                </FinInstnId>
+              </DbtrAgt>
+              <CdtrAgt>
+                <FinInstnId>
+                  <BIC>CEKOSKBX</BIC>
+                  <Nm>Ceskoslovenska obchodna banka, a.s.</Nm>
+                </FinInstnId>
+              </CdtrAgt>
+            </RltdAgts>
+            <RmtInf>
+              <Ustrd>Druha platba - January 2026</Ustrd>
+            </RmtInf>
+            <RltdDts>
+              <TxDtTm>2025-11-30T15:00:00.0+01:00</TxDtTm>
+            </RltdDts>
+            <AddtlTxInf>Prijata platba</AddtlTxInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>
