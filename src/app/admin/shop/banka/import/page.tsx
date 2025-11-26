@@ -20,25 +20,59 @@ export default function BankImportPage() {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [preview, setPreview] = useState<string[]>([]);
   const [fileType, setFileType] = useState<'csv' | 'xml'>('csv');
+  const [isDragging, setIsDragging] = useState(false);
+
+  const processFile = (selectedFile: File) => {
+    setFile(selectedFile);
+    setResult(null);
+    
+    // Detect file type
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+    setFileType(extension === 'xml' ? 'xml' : 'csv');
+    
+    // Preview first 5 lines
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n').slice(0, 6); // Header + 5 rows
+      setPreview(lines);
+    };
+    reader.readAsText(selectedFile);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setResult(null);
-      
-      // Detect file type
-      const extension = selectedFile.name.split('.').pop()?.toLowerCase();
-      setFileType(extension === 'xml' ? 'xml' : 'csv');
-      
-      // Preview first 5 lines
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
-        const lines = text.split('\n').slice(0, 6); // Header + 5 rows
-        setPreview(lines);
-      };
-      reader.readAsText(selectedFile);
+      processFile(selectedFile);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (droppedFile) {
+      // Check if file is CSV or XML
+      const extension = droppedFile.name.split('.').pop()?.toLowerCase();
+      if (extension === 'csv' || extension === 'xml') {
+        processFile(droppedFile);
+      } else {
+        alert('Prosím nahrajte CSV alebo XML súbor');
+      }
     }
   };
 
@@ -154,12 +188,17 @@ export default function BankImportPage() {
         <div className="max-w-2xl mx-auto">
           <label
             htmlFor="csv-upload"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             className={`
               flex flex-col items-center justify-center w-full h-64 
               border-2 border-dashed rounded-xl cursor-pointer
               transition-all duration-200
               ${
-                file
+                isDragging
+                  ? 'border-blue-500 bg-blue-100 scale-105'
+                  : file
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
               }
