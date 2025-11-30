@@ -16,6 +16,7 @@ interface Exercise {
   slug: string;
   description: string | null;
   image_url: string | null;
+  home_image_url: string | null;
   start_date: string;
   end_date: string;
   location_name: string;
@@ -170,9 +171,9 @@ export default function SpiritualExercisesPage() {
               >
                 {/* Image */}
                 <div className="relative h-56 bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
-                  {exercise.image_url ? (
+                  {exercise.home_image_url ? (
                     <Image
-                      src={exercise.image_url}
+                      src={exercise.home_image_url}
                       alt={exercise.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-300"

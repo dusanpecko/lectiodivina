@@ -14,6 +14,8 @@ interface ImageUploadCropProps {
   supabase: SupabaseClient;
   bucketName?: string;
   folder?: string;
+  aspect?: number;
+  showPreview?: boolean;
 }
 
 export default function ImageUploadCrop({
@@ -22,6 +24,8 @@ export default function ImageUploadCrop({
   supabase,
   bucketName = "news",
   folder = "images",
+  aspect = 16 / 9,
+  showPreview = true,
 }: ImageUploadCropProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -68,9 +72,16 @@ export default function ImageUploadCrop({
       throw new Error("No 2d context");
     }
 
-    // Nastavenie veľkosti canvasu na 16:9
-    canvas.width = 1920; // Full HD šírka
-    canvas.height = 1080; // Full HD výška
+    // Dynamické nastavenie veľkosti canvasu podľa aspect ratio
+    if (aspect === 1) {
+      // Pre 1:1 (štvorcové obrázky)
+      canvas.width = 1080;
+      canvas.height = 1080;
+    } else {
+      // Pre 16:9 a ostatné
+      canvas.width = 1920;
+      canvas.height = 1080;
+    }
 
     // Vykreslenie orezaného obrázka
     ctx.drawImage(
@@ -179,7 +190,7 @@ export default function ImageUploadCrop({
           className="hidden"
         />
 
-        {currentImageUrl && (
+        {showPreview && currentImageUrl && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <p className="text-sm font-semibold text-gray-700 mb-3">
               Aktuálny obrázok:
@@ -219,7 +230,7 @@ export default function ImageUploadCrop({
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={16 / 9}
+                aspect={aspect}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}

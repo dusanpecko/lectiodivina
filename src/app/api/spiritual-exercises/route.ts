@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
         slug,
         description,
         image_url,
+        home_image_url,
         start_date,
         end_date,
         location_name,

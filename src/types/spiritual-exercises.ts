@@ -7,6 +7,7 @@ export interface SpiritualExercise {
   description: string | null;
   full_description: string | null;
   image_url: string | null;
+  home_image_url: string | null;
   
   start_date: string; // ISO timestamp
   end_date: string; // ISO timestamp

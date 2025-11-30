@@ -253,10 +253,10 @@ export default function SpiritualExercisesSection({ lang }: SpiritualExerciseSec
 
           {/* Right Column - Image with Testimonials Overlay */}
           <div className="relative">
-            {currentExercise.image_url ? (
+            {currentExercise.home_image_url ? (
               <div className="relative rounded-2xl overflow-hidden shadow-2xl h-full">
                 <Image
-                  src={currentExercise.image_url}
+                  src={currentExercise.home_image_url}
                   alt={currentExercise.title}
                   width={800}
                   height={500}

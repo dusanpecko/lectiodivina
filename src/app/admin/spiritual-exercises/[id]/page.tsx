@@ -1,6 +1,7 @@
 'use client';
 
 import ImageUploadCrop from '@/app/components/ImageUploadCrop';
+import SimpleRichTextEditor from '@/app/components/SimpleRichTextEditor';
 import { createClient } from '@/app/lib/supabase/client';
 import {
   Locale,
@@ -38,6 +39,7 @@ export default function EditSpiritualExercisePage() {
     description: '',
     full_description: '',
     image_url: '',
+    home_image_url: '',
     start_date: '',
     end_date: '',
     location_name: '',
@@ -91,6 +93,7 @@ export default function EditSpiritualExercisePage() {
           description: exercise.description || '',
           full_description: exercise.full_description || '',
           image_url: exercise.image_url || '',
+          home_image_url: exercise.home_image_url || '',
           start_date: exercise.start_date ? new Date(exercise.start_date).toISOString().slice(0, 16) : '',
           end_date: exercise.end_date ? new Date(exercise.end_date).toISOString().slice(0, 16) : '',
           location_name: exercise.location_name || '',
@@ -550,28 +553,18 @@ export default function EditSpiritualExercisePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Krátky popis
-                    </label>
-                    <textarea
-                      name="description"
-                      rows={3}
+                    <SimpleRichTextEditor
+                      label="Krátky popis"
                       value={formData.description}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Úplný popis
-                    </label>
-                    <textarea
-                      name="full_description"
-                      rows={6}
+                    <SimpleRichTextEditor
+                      label="Úplný popis"
                       value={formData.full_description}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      onChange={(value) => setFormData(prev => ({ ...prev, full_description: value }))}
                     />
                   </div>
 
@@ -579,24 +572,58 @@ export default function EditSpiritualExercisePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Hlavný obrázok
                     </label>
-                    <ImageUploadCrop
-                      supabase={supabase}
-                      currentImageUrl={formData.image_url}
-                      onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-                      bucketName="spiritual-exercises"
-                      folder="images"
-                    />
-                    {formData.image_url && (
-                      <div className="mt-3">
-                        <Image
-                          src={formData.image_url}
-                          alt="Náhľad"
-                          width={400}
-                          height={225}
-                          className="rounded-lg border border-gray-200"
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <ImageUploadCrop
+                          supabase={supabase}
+                          currentImageUrl={formData.image_url}
+                          onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                          bucketName="spiritual-exercises"
+                          folder="images"
+                          showPreview={false}
                         />
                       </div>
-                    )}
+                      {formData.image_url && (
+                        <div className="flex-shrink-0">
+                          <Image
+                            src={formData.image_url}
+                            alt="Náhľad"
+                            width={120}
+                            height={120}
+                            className="rounded-lg border-2 border-gray-200 shadow-sm object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ilustračný obrázok (domovská stránka)
+                    </label>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <ImageUploadCrop
+                          supabase={supabase}
+                          currentImageUrl={formData.home_image_url}
+                          onImageUploaded={(url) => setFormData(prev => ({ ...prev, home_image_url: url }))}
+                          bucketName="spiritual-exercises"
+                          folder="home-images"
+                          showPreview={false}
+                        />
+                      </div>
+                      {formData.home_image_url && (
+                        <div className="flex-shrink-0">
+                          <Image
+                            src={formData.home_image_url}
+                            alt="Náhľad domovský"
+                            width={120}
+                            height={120}
+                            className="rounded-lg border-2 border-gray-200 shadow-sm object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -706,39 +733,40 @@ export default function EditSpiritualExercisePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Biografia lektora
-                    </label>
-                    <textarea
-                      name="leader_bio"
-                      rows={4}
+                    <SimpleRichTextEditor
+                      label="Biografia lektora"
                       value={formData.leader_bio}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      onChange={(value) => setFormData(prev => ({ ...prev, leader_bio: value }))}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Fotka lektora
                     </label>
-                    <ImageUploadCrop
-                      supabase={supabase}
-                      currentImageUrl={formData.leader_photo}
-                      onImageUploaded={(url) => setFormData(prev => ({ ...prev, leader_photo: url }))}
-                      bucketName="spiritual-exercises"
-                      folder="leaders"
-                    />
-                    {formData.leader_photo && (
-                      <div className="mt-3">
-                        <Image
-                          src={formData.leader_photo}
-                          alt="Lektor"
-                          width={200}
-                          height={200}
-                          className="rounded-full border border-gray-200"
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <ImageUploadCrop
+                          supabase={supabase}
+                          currentImageUrl={formData.leader_photo}
+                          onImageUploaded={(url) => setFormData(prev => ({ ...prev, leader_photo: url }))}
+                          bucketName="spiritual-exercises"
+                          folder="leaders"
+                          aspect={1}
+                          showPreview={false}
                         />
                       </div>
-                    )}
+                      {formData.leader_photo && (
+                        <div className="flex-shrink-0">
+                          <Image
+                            src={formData.leader_photo}
+                            alt="Lektor"
+                            width={100}
+                            height={100}
+                            className="rounded-full border-2 border-gray-200 shadow-sm object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

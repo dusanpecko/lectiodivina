@@ -210,9 +210,9 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
             {exercise.description && (
               <section className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">O cvičení</h2>
-                <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
-                  {exercise.description}
-                </p>
+                <div className="prose prose-lg max-w-none text-gray-700">
+                  <div dangerouslySetInnerHTML={{ __html: exercise.description }} />
+                </div>
               </section>
             )}
 
@@ -236,8 +236,9 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
                       <Image
                         src={exercise.leader_photo}
                         alt={exercise.leader_name}
-                        fill
-                        className="object-cover"
+                        width={112}
+                        height={112}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   )}
@@ -245,9 +246,9 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">
                       {exercise.leader_name}
                     </h3>
-                    <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
-                      {exercise.leader_bio}
-                    </p>
+                    <div className="prose prose-lg max-w-none text-gray-700">
+                      <div dangerouslySetInnerHTML={{ __html: exercise.leader_bio }} />
+                    </div>
                   </div>
                 </div>
               </section>
