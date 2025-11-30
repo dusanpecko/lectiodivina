@@ -36,7 +36,8 @@ interface ExerciseWithStats extends Omit<SpiritualExercise, 'pricing' | 'testimo
 }
 
 export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) {
-  const { slug } = use(params);
+  const resolvedParams = use(params);
+  const slug = resolvedParams?.slug;
   const [exercise, setExercise] = useState<ExerciseWithStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
