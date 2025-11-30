@@ -3,8 +3,10 @@ import { useState } from 'react';
 interface TranslateButtonProps {
   text: string;
   fieldType?: string;
+  targetLanguage?: string; // Automaticky prekladať do tohto jazyka (en, es, cs, atď.)
   onTranslated: (translatedText: string) => void;
   disabled?: boolean;
+  iconOnly?: boolean; // Zobrazovať len ikonu bez textu
   className?: string;
 }
 
@@ -30,15 +32,17 @@ const AVAILABLE_LANGUAGES: LanguageOption[] = [
 export default function TranslateButton({ 
   text, 
   fieldType, 
+  targetLanguage,
   onTranslated, 
-  disabled = false, 
+  disabled = false,
+  iconOnly = false,
   className = "" 
 }: TranslateButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleTranslate = async (targetLanguage: string) => {
+  const handleTranslate = async (targetLang: string) => {
     if (!text.trim()) {
       setError("Žiadny text na preloženie");
       return;
@@ -55,7 +59,7 @@ export default function TranslateButton({
         },
         body: JSON.stringify({
           text: text.trim(),
-          targetLanguage: targetLanguage, // Posielame kód jazyka (en, cs, es)
+          targetLanguage: targetLang, // Posielame kód jazyka (en, cs, es)
           fieldType,
         }),
       });
@@ -79,29 +83,49 @@ export default function TranslateButton({
 
   const isTextEmpty = !text || text.trim().length === 0;
 
+  // Ak je nastavený targetLanguage, prekladaj priamo bez výberu
+  const handleButtonClick = () => {
+    if (targetLanguage) {
+      handleTranslate(targetLanguage);
+    } else {
+      setIsOpen(!isOpen);
+    }
+  };
+
   return (
     <div className="relative inline-block">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleButtonClick}
         disabled={disabled || isTextEmpty || isTranslating}
-        className={`admin-edit-button-primary text-sm ${className}`}
-        title={isTextEmpty ? "Najprv zadajte text" : "Preložiť text"}
+        className={iconOnly 
+          ? `p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors ${className}` 
+          : `admin-edit-button-primary text-sm ${className}`}
+        title={isTextEmpty ? "Najprv zadajte text" : targetLanguage ? `Preložiť do ${targetLanguage}` : "Preložiť text"}
       >
         {isTranslating ? (
-          <>
-            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
-            Prekladám...
-          </>
+          iconOnly ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+          ) : (
+            <>
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
+              Prekladám...
+            </>
+          )
         ) : (
-          <>
-            <span className="mr-2">🌐</span>
-            Preložiť
-          </>
+          iconOnly ? (
+            <span className="text-lg">🌐</span>
+          ) : (
+            <>
+              <span className="mr-2">🌐</span>
+              Preložiť
+            </>
+          )
         )}
       </button>
 
-      {isOpen && !isTextEmpty && (
+      {/* Dropdown s jazykmi - zobraz len ak nie je nastavený targetLanguage */}
+      {isOpen && !isTextEmpty && !targetLanguage && (
         <div className="absolute z-50 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg">
           <div className="p-3">
             <div className="text-sm font-semibold text-gray-700 mb-2">

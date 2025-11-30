@@ -170,7 +170,11 @@ export default function LectioPage() {
   };
 
   // Pomocná funkcia na načítanie lectio na základe kalendárneho dňa
-  const loadLectioFromCalendar = useCallback(async (calendarDay: LiturgicalCalendarDay, currentLang: string) => {
+  const loadLectioFromCalendar = useCallback(async (
+    calendarDay: LiturgicalCalendarDay, 
+    currentLang: string, 
+    correctLiturgicalYear?: LiturgicalYear | null
+  ) => {
     if (!calendarDay.lectio_hlava) {
       console.log('⚠️ Kalendárny deň nemá priradené lectio_hlava');
       setLectioData(null);
@@ -179,20 +183,26 @@ export default function LectioPage() {
 
     console.log(`🔍 Hľadám lectio_sources pre hlavu: "${calendarDay.lectio_hlava}", jazyk: ${currentLang}`);
 
-    // 1. Získame správny liturgický rok z calendar day (už obsahuje správny liturgical_year_id)
-    const { data: liturgicalYear, error: yearError } = await supabase
-      .from('liturgical_years')
-      .select('*')
-      .eq('id', calendarDay.liturgical_year_id)
-      .single() as { data: LiturgicalYear | null, error: Error | null };
+    // 1. Použijeme poskytnutý liturgický rok (správny podľa dátumu), alebo načítame z calendar day
+    let liturgicalYear = correctLiturgicalYear;
+    
+    if (!liturgicalYear) {
+      const { data: yearData, error: yearError } = await supabase
+        .from('liturgical_years')
+        .select('*')
+        .eq('id', calendarDay.liturgical_year_id)
+        .single() as { data: LiturgicalYear | null, error: Error | null };
 
-    if (yearError || !liturgicalYear) {
-      console.error('❌ Liturgický rok nenájdený pre ID:', calendarDay.liturgical_year_id, yearError);
-      setLectioData(null);
-      return;
+      if (yearError || !yearData) {
+        console.error('❌ Liturgický rok nenájdený pre ID:', calendarDay.liturgical_year_id, yearError);
+        setLectioData(null);
+        return;
+      }
+      
+      liturgicalYear = yearData;
     }
 
-    console.log(`📅 Liturgický rok ${liturgicalYear.year} (${liturgicalYear.start_date} - ${liturgicalYear.end_date}), cyklus: ${liturgicalYear.lectionary_cycle}, jazyk: ${calendarDay.locale_code}`);
+    console.log(`📅 Používam liturgický rok ${liturgicalYear.year} (${liturgicalYear.start_date} - ${liturgicalYear.end_date}), cyklus: ${liturgicalYear.lectionary_cycle}, jazyk: ${currentLang}`);
 
     // 2. Určíme či použiť cyklus (A/B/C) alebo 'N' pre všedné dni
     // Pre všedné dni (pondelok-sobota v cezročnom období) používame 'N'
@@ -294,7 +304,38 @@ export default function LectioPage() {
       const dateStr = formatDateToLocalString(selectedDate);
       console.log(`🔍 Načítavam lectio pre dátum: ${dateStr}, jazyk: ${lang}`);
       
-      // 1. Nájdi deň v liturgical_calendar pre zadaný dátum a jazyk
+      // 1. Najprv nájdeme správny liturgický rok na základe dátumu
+      const { data: liturgicalYears, error: yearsError } = await supabase
+        .from('liturgical_years')
+        .select('*')
+        .eq('locale_code', lang)
+        .lte('start_date', dateStr)
+        .gte('end_date', dateStr);
+
+      if (yearsError) {
+        console.error('❌ Chyba pri hľadaní liturgického roka:', yearsError);
+      }
+
+      const correctLiturgicalYear = liturgicalYears?.[0];
+      
+      if (!correctLiturgicalYear && lang !== 'sk') {
+        // Skúsme slovenčinu
+        console.log('🔄 Hľadám liturgický rok v slovenčine...');
+        const { data: skYears } = await supabase
+          .from('liturgical_years')
+          .select('*')
+          .eq('locale_code', 'sk')
+          .lte('start_date', dateStr)
+          .gte('end_date', dateStr);
+        
+        if (skYears?.[0]) {
+          console.log(`✅ Nájdený liturgický rok: ${skYears[0].year} (${skYears[0].start_date} - ${skYears[0].end_date}), cyklus: ${skYears[0].lectionary_cycle}`);
+        }
+      } else if (correctLiturgicalYear) {
+        console.log(`✅ Nájdený liturgický rok: ${correctLiturgicalYear.year} (${correctLiturgicalYear.start_date} - ${correctLiturgicalYear.end_date}), cyklus: ${correctLiturgicalYear.lectionary_cycle}`);
+      }
+      
+      // 2. Nájdi deň v liturgical_calendar pre zadaný dátum a jazyk
       const { data: calendarDay, error: calendarError } = await supabase
         .from('liturgical_calendar')
         .select('*')
@@ -308,6 +349,17 @@ export default function LectioPage() {
         // Fallback na slovenčinu ak aktuálny jazyk nie je SK
         if (lang !== 'sk') {
           console.log('🔄 Skúšam načítať pre slovenčinu...');
+          
+          // Najprv nájdeme liturgický rok pre slovenčinu
+          const { data: skYears } = await supabase
+            .from('liturgical_years')
+            .select('*')
+            .eq('locale_code', 'sk')
+            .lte('start_date', dateStr)
+            .gte('end_date', dateStr);
+          
+          const skLiturgicalYear = skYears?.[0];
+          
           const { data: skCalendarDay, error: skCalendarError } = await supabase
             .from('liturgical_calendar')
             .select('*')
@@ -316,7 +368,7 @@ export default function LectioPage() {
             .single();
             
           if (!skCalendarError && skCalendarDay) {
-            await loadLectioFromCalendar(skCalendarDay, 'sk');
+            await loadLectioFromCalendar(skCalendarDay, 'sk', skLiturgicalYear);
             return;
           }
         }
@@ -335,7 +387,9 @@ export default function LectioPage() {
         lectio_hlava: calendarDay.lectio_hlava,
         liturgical_year_id: calendarDay.liturgical_year_id
       });
-      await loadLectioFromCalendar(calendarDay, lang);
+      
+      // Použijeme správny liturgický rok (ktorý sme našli podľa dátumu)
+      await loadLectioFromCalendar(calendarDay, lang, correctLiturgicalYear);
       
     } catch (error) {
       console.error('❌ Chyba pri načítaní lectio:', error);

@@ -1,29 +1,31 @@
 "use client";
 
 import BulkBibleImportModal from "@/app/admin/components/BulkBibleImportModal";
+import BulkLanguageMigrationDialog from "@/app/admin/components/BulkLanguageMigrationDialog";
 import { useSupabase } from "@/app/components/SupabaseProvider";
+import TranslateButton from "@/app/components/TranslateButton";
 import {
-    AlertCircle,
-    ArrowLeft, ArrowRight,
-    Book,
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    ChevronDown, ChevronUp,
-    Copy,
-    Download,
-    Edit3,
-    Eye,
-    FileText,
-    Filter,
-    Globe,
-    Headphones,
-    Heart,
-    PlusCircle,
-    Search,
-    Trash2,
-    Upload,
-    X
+  AlertCircle,
+  ArrowLeft, ArrowRight,
+  Book,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  ChevronDown, ChevronUp,
+  Copy,
+  Download,
+  Edit3,
+  Eye,
+  FileText,
+  Filter,
+  Globe,
+  Headphones,
+  Heart,
+  PlusCircle,
+  Search,
+  Trash2,
+  Upload,
+  X
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -36,6 +38,7 @@ interface LectioSource {
   kniha: string;
   kapitola: string;
   hlava: string;
+  rok: string;
   suradnice_pismo: string;
   nazov_biblia_1: string;
   biblia_1: string;
@@ -426,12 +429,24 @@ export default function LectioSourcesAdminPage() {
     isOpen: boolean;
     selectedCount: number;
   }>({ isOpen: false, selectedCount: 0 });
+  const [bulkCopyProgress, setBulkCopyProgress] = useState<{
+    isProcessing: boolean;
+    current: number;
+    total: number;
+  }>({ isProcessing: false, current: 0, total: 0 });
 
   // Bulk Bible Import state  
   const [showBulkBibleImport, setShowBulkBibleImport] = useState(false);
 
-  // Filtre a stránkovanie - inicializuj page z URL
-  const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">("sk");
+  // Bulk Language Migration state
+  const [showLanguageMigration, setShowLanguageMigration] = useState(false);
+
+  // Filtre a stránkovanie - inicializuj z URL
+  const [filterLang, setFilterLang] = useState<"sk" | "cz" | "en" | "es">(() => {
+    const langParam = searchParams?.get('lang');
+    const validLangs = ['sk', 'cz', 'en', 'es'];
+    return (langParam && validLangs.includes(langParam)) ? langParam as "sk" | "cz" | "en" | "es" : "sk";
+  });
   const [page, setPage] = useState(() => {
     const pageParam = searchParams?.get('page');
     const pageNum = pageParam ? parseInt(pageParam, 10) : 1;
@@ -497,45 +512,57 @@ export default function LectioSourcesAdminPage() {
   // Helper pre zmenu stránky s aktualizáciou URL
   const updatePage = useCallback((newPage: number) => {
     setPage(newPage);
-    if (newPage > 1) {
-      router.push(`/admin/lectio-sources?page=${newPage}`, { scroll: false });
-    } else {
-      router.push('/admin/lectio-sources', { scroll: false });
-    }
-  }, [router]);
+    const params = new URLSearchParams();
+    if (filterLang !== 'sk') params.set('lang', filterLang);
+    if (newPage > 1) params.set('page', newPage.toString());
+    
+    const queryString = params.toString();
+    router.push(queryString ? `/admin/lectio-sources?${queryString}` : '/admin/lectio-sources', { scroll: false });
+  }, [router, filterLang]);
 
   // Notifikácie helper
   const showNotification = useCallback((message: string, type: NotificationType) => {
     setNotification({ message, type });
   }, []);
 
-  // Load page from URL on mount or from localStorage if returning from edit
+  // Helper pre zmenu jazyka s aktualizáciou URL
+  const updateLanguage = useCallback((newLang: "sk" | "cz" | "en" | "es") => {
+    setFilterLang(newLang);
+    setPage(1); // Reset na prvú stránku pri zmene jazyka
+    const params = new URLSearchParams();
+    if (newLang !== 'sk') params.set('lang', newLang);
+    
+    const queryString = params.toString();
+    router.push(queryString ? `/admin/lectio-sources?${queryString}` : '/admin/lectio-sources', { scroll: false });
+  }, [router]);
+
+  // Synchronizuj state s URL parametrami
   useEffect(() => {
     const pageParam = searchParams?.get('page');
+    const langParam = searchParams?.get('lang');
     
-    // Ak nie je stránka v URL, skús načítať z localStorage (návrat z editácie)
-    if (!pageParam) {
-      const returnPage = localStorage.getItem('lectio_sources_return_page');
-      const returnLang = localStorage.getItem('lectio_sources_return_lang');
-      
-      if (returnLang) {
-        setFilterLang(returnLang as "sk" | "cz" | "en" | "es");
+    // Aktualizuj page ak sa zmenila v URL
+    if (pageParam) {
+      const pageNum = parseInt(pageParam, 10);
+      if (pageNum > 0 && pageNum !== page) {
+        setPage(pageNum);
       }
-      
-      if (returnPage) {
-        const pageNum = parseInt(returnPage, 10);
-        if (pageNum > 0) {
-          updatePage(pageNum); // Používame updatePage aby sa aktualizoval aj URL
-        }
-        // Vymaž localStorage po použití
-        localStorage.removeItem('lectio_sources_return_page');
-      }
-      
-      if (returnLang) {
-        localStorage.removeItem('lectio_sources_return_lang');
-      }
+    } else if (page !== 1) {
+      setPage(1);
     }
-  }, [searchParams, updatePage]);
+    
+    // Aktualizuj jazyk ak sa zmenil v URL
+    const validLangs = ['sk', 'cz', 'en', 'es'];
+    if (langParam && validLangs.includes(langParam)) {
+      const newLang = langParam as "sk" | "cz" | "en" | "es";
+      if (newLang !== filterLang) {
+        setFilterLang(newLang);
+      }
+    } else if (filterLang !== 'sk' && !langParam) {
+      setFilterLang('sk');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]); // Zámerne iba searchParams - filterLang a page sa menia interným volaním
 
   // Fetch data s optimalizáciou
   const fetchLectioSources = useCallback(async () => {
@@ -544,7 +571,7 @@ export default function LectioSourcesAdminPage() {
     try {
       let dataQuery = supabase
         .from("lectio_sources")
-        .select("id, lang, kniha, kapitola, hlava, suradnice_pismo, lectio_text, meditatio_text, oratio_text, contemplatio_text, actio_text, nazov_biblia_1, biblia_1, nazov_biblia_2, biblia_2, nazov_biblia_3, biblia_3, lectio_audio, meditatio_audio, oratio_audio, contemplatio_audio, actio_audio, reference, checked, created_at")
+        .select("id, lang, kniha, kapitola, hlava, rok, suradnice_pismo, lectio_text, meditatio_text, oratio_text, contemplatio_text, actio_text, nazov_biblia_1, biblia_1, nazov_biblia_2, biblia_2, nazov_biblia_3, biblia_3, lectio_audio, meditatio_audio, oratio_audio, contemplatio_audio, actio_audio, reference, checked, created_at")
         .eq("lang", filterLang);
 
       let countQuery = supabase
@@ -588,6 +615,14 @@ export default function LectioSourcesAdminPage() {
 
       setLectioSources(data as LectioSource[]);
       setTotal(count || 0);
+      
+      // Ak je stránka prázdna a nie je to prvá stránka, presuň sa na predošlú
+      if (data && data.length === 0 && page > 1 && count && count > 0) {
+        const maxPage = Math.ceil(count / PAGE_SIZE);
+        if (page > maxPage) {
+          updatePage(maxPage);
+        }
+      }
     } catch (error) {
       console.error('Fetch error:', error);
       showNotification("Chyba pri načítavaní dát", "error");
@@ -596,7 +631,7 @@ export default function LectioSourcesAdminPage() {
     } finally {
       setLoading(false);
     }
-  }, [supabase, filterLang, filter, page, showNotification]);
+  }, [supabase, filterLang, filter, page, showNotification, updatePage]);
 
   // Effects
   useEffect(() => {
@@ -669,6 +704,30 @@ export default function LectioSourcesAdminPage() {
     }
   }, [supabase, showNotification]);
 
+  // Funkcia na preloženie nadpisu (hlava)
+  const handleTranslateHlava = useCallback(async (id: number, translatedText: string) => {
+    try {
+      const { error } = await supabase
+        .from('lectio_sources')
+        .update({ hlava: translatedText })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      showNotification('Nadpis bol úspešne preložený', 'success');
+      
+      // Aktualizuj lokálny state
+      setLectioSources(prev => 
+        prev.map(source => 
+          source.id === id ? { ...source, hlava: translatedText } : source
+        )
+      );
+    } catch (error) {
+      console.error('Translation error:', error);
+      showNotification('Chyba pri preklade nadpisu', 'error');
+    }
+  }, [supabase, showNotification]);
+
   const clearFilters = useCallback(() => {
     setFilter({ hlava: "", suradnice_pismo: "", checked: "", created_at: "" });
     updatePage(1);
@@ -681,6 +740,7 @@ export default function LectioSourcesAdminPage() {
       kniha: original.kniha || "", // Pridané aby splnilo NOT NULL constraint
       kapitola: original.kapitola || "", // Pridané aby splnilo NOT NULL constraint  
       hlava: original.hlava,
+      rok: original.rok || "N",
       suradnice_pismo: original.suradnice_pismo,
       lectio_text: original.lectio_text || "",
       meditatio_text: original.meditatio_text || "",
@@ -763,12 +823,14 @@ export default function LectioSourcesAdminPage() {
         "success"
       );
       
-      // Uložíme aktuálnu stránku a jazyk
-      localStorage.setItem('lectio_sources_return_page', page.toString());
-      localStorage.setItem('lectio_sources_return_lang', filterLang);
+      // Vytvoríme návratové URL s aktuálnym jazykom a stránkou
+      const params = new URLSearchParams();
+      if (filterLang !== 'sk') params.set('lang', filterLang);
+      if (page > 1) params.set('page', page.toString());
+      const returnUrl = params.toString() ? `/admin/lectio-sources?${params.toString()}` : '/admin/lectio-sources';
       
-      // Presmerujeme na editáciu nového záznamu
-      router.push(`/admin/lectio-sources/${data.id}`);
+      // Presmerujeme na editáciu nového záznamu s návratovým URL
+      router.push(`/admin/lectio-sources/${data.id}?returnUrl=${encodeURIComponent(returnUrl)}`);
     } catch (error) {
       console.error('Copy and open error:', error);
       showNotification("Chyba pri kopírovaní", "error");
@@ -807,16 +869,33 @@ export default function LectioSourcesAdminPage() {
     }
 
     try {
-      const newLectioSources = selectedSources.map(original => 
-        createNewLectioSource(original, targetLang)
-      );
+      setBulkCopyProgress({ isProcessing: true, current: 0, total: selectedSources.length });
+      setBulkCopyDialog({ isOpen: false, selectedCount: 0 });
+      
+      const BATCH_SIZE = 10; // Kopíruj po 10 záznamoch
+      let processedCount = 0;
+      
+      for (let i = 0; i < selectedSources.length; i += BATCH_SIZE) {
+        const batch = selectedSources.slice(i, i + BATCH_SIZE);
+        const newLectioSources = batch.map(original => 
+          createNewLectioSource(original, targetLang)
+        );
 
-      const { error } = await supabase
-        .from("lectio_sources")
-        .insert(newLectioSources);
+        const { error } = await supabase
+          .from("lectio_sources")
+          .insert(newLectioSources);
 
-      if (error) {
-        throw new Error(error.message);
+        if (error) {
+          throw new Error(error.message);
+        }
+        
+        processedCount += batch.length;
+        setBulkCopyProgress(prev => ({ ...prev, current: processedCount }));
+        
+        // Malá pauza medzi batch-mi
+        if (i + BATCH_SIZE < selectedSources.length) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       }
 
       const targetLangName = LANGUAGE_OPTIONS.find(l => l.value === targetLang)?.label || targetLang;
@@ -835,6 +914,8 @@ export default function LectioSourcesAdminPage() {
     } catch (error) {
       console.error('Bulk copy error:', error);
       showNotification("Chyba pri skupinovom kopírovaní", "error");
+    } finally {
+      setBulkCopyProgress({ isProcessing: false, current: 0, total: 0 });
     }
   }, [lectioSources, selectedRows, createNewLectioSource, supabase, showNotification, filterLang, fetchLectioSources]);
 
@@ -925,6 +1006,32 @@ export default function LectioSourcesAdminPage() {
           type={notification.type}
           onClose={() => setNotification(null)}
         />
+      )}
+
+      {/* Bulk Copy Progress */}
+      {bulkCopyProgress.isProcessing && (
+        <div className="fixed top-4 right-4 z-50 bg-white rounded-xl shadow-2xl border-2 border-indigo-200 p-6 min-w-[320px]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+              <Copy size={20} className="text-indigo-600 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900">Kopírujem záznamy</h3>
+              <p className="text-sm text-gray-600">
+                {bulkCopyProgress.current} / {bulkCopyProgress.total}
+              </p>
+            </div>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${(bulkCopyProgress.current / bulkCopyProgress.total) * 100}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            {Math.round((bulkCopyProgress.current / bulkCopyProgress.total) * 100)}% dokončené
+          </p>
+        </div>
       )}
 
       <CopyDialog
@@ -1099,9 +1206,9 @@ export default function LectioSourcesAdminPage() {
             <select
               value={filterLang}
               onChange={e => { 
-                setFilterLang(e.target.value as "sk" | "cz" | "en" | "es"); 
+                const newLang = e.target.value as "sk" | "cz" | "en" | "es";
                 setSelectedRows(new Set()); // Vyčistiť označené riadky pri zmene jazyka
-                updatePage(1); 
+                updateLanguage(newLang); 
               }}
               className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#40467b] focus:border-[#40467b] transition"
             >
@@ -1123,7 +1230,8 @@ export default function LectioSourcesAdminPage() {
             </div>
             <div className="space-y-2">
               <div className="flex gap-2">
-                <label className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-800 transition cursor-pointer text-center text-sm flex items-center justify-center gap-2 shadow-sm">
+                {/* XLSX Import - skryté, ale funkcia ostáva */}
+                <label className="hidden flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-blue-800 transition cursor-pointer text-center text-sm items-center justify-center gap-2 shadow-sm">
                   {importing ? <LoadingSpinner size={4} /> : <Upload size={16} />}
                   {importing ? "Importujem..." : "Import"}
                   <input
@@ -1150,6 +1258,16 @@ export default function LectioSourcesAdminPage() {
                 <BookOpen size={16} />
                 <span className="hidden sm:inline">Import biblických textov</span>
                 <span className="sm:hidden">Biblia Import</span>
+              </button>
+              <button
+                onClick={() => setShowLanguageMigration(true)}
+                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-2.5 rounded-lg hover:from-orange-700 hover:to-amber-700 transition text-sm flex items-center justify-center gap-2 shadow-sm font-medium"
+                title="Hromadné kopírovanie do iného jazyka + automatický preklad + Bible import"
+              >
+                <Globe size={16} />
+                <BookOpen size={16} />
+                <span className="hidden sm:inline">Hromadná migrácia</span>
+                <span className="sm:hidden">Migrácia</span>
               </button>
             </div>
           </div>
@@ -1383,6 +1501,12 @@ export default function LectioSourcesAdminPage() {
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     <div className="flex items-center gap-2">
+                      <Calendar size={16} />
+                      Lit. rok
+                    </div>
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2">
                       <Globe size={16} />
                       Jazyk
                     </div>
@@ -1400,7 +1524,7 @@ export default function LectioSourcesAdminPage() {
               <tbody className="divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={8} className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center gap-3">
                         <LoadingSpinner />
                         <span className="text-gray-500">Načítavam...</span>
@@ -1409,7 +1533,7 @@ export default function LectioSourcesAdminPage() {
                   </tr>
                 ) : lectioSources.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={8} className="px-6 py-12 text-center">
                       <div className="text-gray-500">
                         <Book size={48} className="mx-auto mb-4 text-gray-300" />
                         <p className="text-lg font-medium">Žiadne Lectio zdroje</p>
@@ -1431,18 +1555,35 @@ export default function LectioSourcesAdminPage() {
                         />
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-gray-900 font-medium">
-                          {l.hlava?.length > 50 ? (
-                            <span title={l.hlava}>{l.hlava.slice(0, 50)}...</span>
-                          ) : (
-                            l.hlava
-                          )}
+                        <div className="flex items-center gap-2">
+                          <div className="text-gray-900 font-medium flex-1">
+                            {l.hlava?.length > 50 ? (
+                              <span title={l.hlava}>{l.hlava.slice(0, 50)}...</span>
+                            ) : (
+                              l.hlava
+                            )}
+                          </div>
+                          <TranslateButton
+                            text={l.hlava || ''}
+                            fieldType="hlava"
+                            targetLanguage={l.lang}
+                            onTranslated={(translatedText) => handleTranslateHlava(l.id!, translatedText)}
+                            iconOnly={true}
+                            disabled={false}
+                          />
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-gray-700 font-mono text-sm bg-gray-100 px-2 py-1 rounded">
                           {l.suradnice_pismo}
                         </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {l.rok && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded-full">
+                            {l.rok}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-800 text-sm font-medium rounded-full">
@@ -1526,9 +1667,11 @@ export default function LectioSourcesAdminPage() {
                             className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition"
                             title="Upraviť"
                             onClick={() => {
-                              localStorage.setItem('lectio_sources_return_page', page.toString());
-                              localStorage.setItem('lectio_sources_return_lang', filterLang);
-                              router.push(`/admin/lectio-sources/${l.id}`);
+                              const params = new URLSearchParams();
+                              if (filterLang !== 'sk') params.set('lang', filterLang);
+                              if (page > 1) params.set('page', page.toString());
+                              const returnUrl = params.toString() ? `/admin/lectio-sources?${params.toString()}` : '/admin/lectio-sources';
+                              router.push(`/admin/lectio-sources/${l.id}?returnUrl=${encodeURIComponent(returnUrl)}`);
                             }}
                           >
                             <Edit3 size={18} />
@@ -1624,6 +1767,18 @@ export default function LectioSourcesAdminPage() {
             fetchDetailedStats();
           }}
           currentLang={filterLang}
+        />
+
+        {/* Bulk Language Migration Dialog */}
+        <BulkLanguageMigrationDialog
+          isOpen={showLanguageMigration}
+          onClose={() => setShowLanguageMigration(false)}
+          onCompleted={() => {
+            fetchLectioSources();
+            fetchDetailedStats();
+          }}
+          sourceLang={filterLang}
+          availableLanguages={LANGUAGE_OPTIONS}
         />
       </div>
     </div>

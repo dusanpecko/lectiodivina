@@ -14,7 +14,7 @@ import { useSupabase } from "@/app/components/SupabaseProvider";
 import TranslateButton from "@/app/components/TranslateButton";
 import VoiceSelector from "@/app/components/VoiceSelector";
 import { BookOpen, Calendar, FileText, Globe, Save } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // Interfaces
@@ -68,6 +68,7 @@ export default function LectioSourceEditPage() {
   const { supabase } = useSupabase();
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const id = params?.id ? String(params.id) : "";
 
   const { lang: appLang } = useLanguage();
@@ -416,12 +417,11 @@ export default function LectioSourceEditPage() {
           setMessage("Úspešne uložené");
           setMessageType("success");
           
-          // Redirect späť na zoznam s povodnou strankovu ak existuje
+          // Redirect späť na zoznam s returnUrl ak existuje
           setTimeout(() => {
-            const returnPage = localStorage.getItem('lectio_sources_return_page');
-            if (returnPage) {
-              router.push(`/admin/lectio-sources?page=${returnPage}`);
-              localStorage.removeItem('lectio_sources_return_page');
+            const returnUrl = searchParams?.get('returnUrl');
+            if (returnUrl) {
+              router.push(decodeURIComponent(returnUrl));
             } else {
               router.push('/admin/lectio-sources');
             }
@@ -454,10 +454,9 @@ export default function LectioSourceEditPage() {
     : locales.find(l => l.code === formData.lang);
 
   const getBackUrl = () => {
-    const returnPage = localStorage.getItem('lectio_sources_return_page');
-    localStorage.removeItem('lectio_sources_return_page');
-    if (returnPage) {
-      return `/admin/lectio-sources?page=${returnPage}`;
+    const returnUrl = searchParams?.get('returnUrl');
+    if (returnUrl) {
+      return decodeURIComponent(returnUrl);
     }
     return '/admin/lectio-sources';
   };

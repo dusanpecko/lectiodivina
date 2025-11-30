@@ -424,25 +424,32 @@ KRITICKY DÔLEŽITÉ PRAVIDLÁ PRE ŠPANIELČINU:
    ✓ "Lunes, 5 semana del Tiempo Ordinario" 
    ✓ "Viernes, 15 semana de Adviento"
    ✓ "Martes, 3 semana de Cuaresma"
+   ✓ "Miércoles, 4 semana del Tiempo Pascual"
    
    NEDELE:
    ✓ "15º Domingo del Tiempo Ordinario"
    ✓ "3º Domingo de Cuaresma"
    ✓ "2º Domingo de Adviento"
-   ✓ "4 Domingo de Pascua"
+   ✓ "4º Domingo de Pascua" (alebo "del Tiempo Pascual")
    
    ❌ NESPRÁVNE:
    ✗ "Jueves de la 28. semana del Tiempo Ordinario"
    ✗ "Jueves de la 28 semana del Tiempo Ordinario"
    ✗ "Jueves, 28. semana del Tiempo Ordinario"
    ✗ "Domingo, 15 semana del Tiempo Ordinario" (nesprávny formát pre nedele)
+   ✗ "Lunes, 3 semana de Pascua" (má byť "del Tiempo Pascual")
+   ✗ "Viernes, 10 semana del período ordinario" (má byť "del Tiempo Ordinario")
 
 4. LITURGICKÉ OBDOBIA V ŠPANIELČINE:
-   - "Cezročné obdobie" → "Tiempo Ordinario"
+   - "Cezročné obdobie" → "Tiempo Ordinario" (NIKDY nie "período ordinario")
    - "Advent" → "Adviento"  
-   - "Pôst" → "Cuaresma"
-   - "Veľká noc" → "Pascua"
-   - "Vianoce" → "Navidad"
+   - "Pôst/Pôstne obdobie" → "Cuaresma" alebo "Tiempo de Cuaresma"
+   - "Veľkonočné obdobie" → "Tiempo Pascual" alebo "Tiempo de Pascua" (NIKDY nie len "Pascua")
+   - "Vianoce/Vianočné obdobie" → "Navidad" alebo "Tiempo de Navidad"
+   
+   KRITICKY DÔLEŽITÉ:
+   - "Pascua" = len sám sviatok Veľkej noci
+   - "Tiempo Pascual" / "Tiempo de Pascua" = celé Veľkonočné obdobie (50 dní)
 
 5. DNI TÝŽDŇA:
    - Pondelok → Lunes

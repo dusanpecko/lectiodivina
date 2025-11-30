@@ -2,6 +2,7 @@
 "use client";
 
 import { useSupabase } from "@/app/components/SupabaseProvider";
+import TranslateButton from "@/app/components/TranslateButton";
 import {
   AlertCircle,
   BookOpen,
@@ -799,17 +800,23 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
   };
 
   // Načítanie lectio sources pre dropdown
-  const loadLectioSources = async () => {
+  const loadLectioSources = async (localeCode: string) => {
+    if (!localeCode) {
+      console.error('loadLectioSources called without localeCode');
+      return;
+    }
+    
     setLoadingLectioSources(true);
     try {
       const { data, error } = await supabase
         .from('lectio_sources')
         .select('hlava, rok')
-        .eq('lang', 'sk')
+        .eq('lang', localeCode)
         .order('hlava', { ascending: true });
 
       if (error) throw error;
 
+      console.log(`Načítaných ${data?.length || 0} lectio sources pre jazyk ${localeCode}`);
       setAvailableLectioSources(data || []);
     } catch (error) {
       console.error('Error loading lectio sources:', error);
@@ -832,8 +839,8 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
     });
     setShowEditModal(true);
     
-    // Načítaj lectio sources pre dropdown
-    await loadLectioSources();
+    // Načítaj lectio sources pre dropdown podľa jazyka dňa
+    await loadLectioSources(day.locale_code);
   };
 
   // Zatvorenie modálu bez uloženia
@@ -841,6 +848,11 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
     setShowEditModal(false);
     setEditingDay(null);
     setEditForm({});
+  };
+
+  // Spracovanie prekladu celebration_title
+  const handleCelebrationTitleTranslation = (translatedText: string) => {
+    setEditForm(prev => ({ ...prev, celebration_title: translatedText }));
   };
 
   // Uloženie zmien z modálu
@@ -869,6 +881,12 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
             : day
         )
       );
+      
+      // Znova načítaj štatistiky (spárované/nespárované počty)
+      await fetchStats();
+      
+      // Znova načítaj lectio sources pre správnu validáciu statusu
+      await loadLectioSources(editingDay.locale_code);
       
       // Zatvor modal
       setShowEditModal(false);
@@ -902,22 +920,60 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
     }
   };
 
+  // Odpárovanie lectio hlavy (vymazanie všetkých lectio_hlava pre daný rok)
+  const handleUnpairLectioSources = async (yearId: number) => {
+    if (!confirm('Toto vymaže všetky napárované lectio hlavy v tomto kalendári. Pokračovať?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('liturgical_calendar')
+        .update({ lectio_hlava: null })
+        .eq('liturgical_year_id', yearId);
+
+      if (error) throw error;
+
+      showNotification('Všetky lectio hlavy boli vymazané', 'success');
+      
+      // Aktualizuj lokálny state
+      setCalendarDays(prev => prev.map(day => ({ ...day, lectio_hlava: null })));
+      
+      // Znova načítaj štatistiky
+      await fetchStats();
+      
+      // Vyčisti availableLectioSources (nebudú sa zobrazovať žiadne ako validné)
+      setAvailableLectioSources([]);
+    } catch (error) {
+      console.error('Unpair error:', error);
+      showNotification('Chyba pri odparovaní lectio sources', 'error');
+    }
+  };
+
   // Import lectio hlavy z lectio_sources
-  const handleImportLectioSources = async (yearId: number) => {
+  const handleImportLectioSources = async (yearId: number, localeCode: string = 'sk') => {
     if (!confirm('Toto automaticky namapuje celebration_title na lectio_sources.hlava. Pokračovať?')) {
       return;
     }
 
     try {
-      // 1. Načítaj všetky lectio sources pre slovenský jazyk
+      // 1. Načítaj všetky lectio sources pre daný jazyk
       const { data: lectioSources, error: lectioError } = await supabase
         .from('lectio_sources')
-        .select('hlava, rok, locale_id, locales(code)')
-        .eq('locales.code', 'sk');
+        .select('hlava, rok')
+        .eq('lang', localeCode);
 
       if (lectioError) throw lectioError;
+      
+      if (!lectioSources || lectioSources.length === 0) {
+        showNotification(
+          `Žiadne lectio sources pre jazyk "${localeCode}". Vytvorte najprv lectio sources pre tento jazyk.`,
+          'error'
+        );
+        return;
+      }
 
-      console.log(`Načítaných ${lectioSources?.length || 0} lectio sources`);
+      console.log(`Načítaných ${lectioSources?.length || 0} lectio sources pre jazyk ${localeCode}`);
       
       // Debug: Ukáž rozdelenie podľa cyklov
       const byCycle = lectioSources?.reduce((acc, s) => {
@@ -954,8 +1010,12 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
         }
 
         // Detekcia typu dňa (nedeľa vs všedný deň)
-        const isSunday = day.weekday.toLowerCase().includes('neděl') || 
-                         day.weekday.toLowerCase().includes('nedel');
+        const weekdayLower = day.weekday.toLowerCase();
+        const isSunday = weekdayLower.includes('neděl') || 
+                         weekdayLower.includes('nedel') ||
+                         weekdayLower.includes('sunday') ||
+                         weekdayLower.includes('domingo') ||
+                         weekdayLower.includes('dimanche');
 
         // Normalizuj text pre lepšie porovnanie
         const normalizeText = (text: string) => {
@@ -966,11 +1026,51 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
             .trim();
         };
 
+        // Pomocná funkcia pre normalizáciu textov všedných dní
+        const normalizeWeekdayText = (text: string) => {
+          let normalized = normalizeText(text);
+          
+          // Normalizuj formát dátumov: "18th December" <-> "December 18th"
+          // Najprv European style -> American style
+          normalized = normalized.replace(/(\d+)(st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december)/gi,
+            (match, day, ordinal, month) => {
+              return `${month} ${day}${ordinal || ''}`;
+            });
+          
+          // Špecifické pravidlá pre Advent/Lent/Easter
+          // "Monday, 1st week of Advent" -> "Monday after 1st Sunday Advent"
+          // "Tuesday, 2nd week of Lent" -> "Tuesday after 2nd Sunday Lent"
+          // "Wednesday, 5th week of Easter" -> "Wednesday after 5th Sunday Easter"
+          normalized = normalized.replace(/(\w+day),?\s+(\d+)(st|nd|rd|th)?\s+week\s+of\s+(advent|lent|easter)/gi, 
+            (match, weekday, num, ordinal, season) => {
+              return `${weekday} after ${num}${ordinal || ''} sunday ${season}`;
+            });
+          
+          // Odstráň "of the" / "in the" / "in" pre lepšie porovnanie
+          normalized = normalized.replace(/\s+of\s+the\s+/g, ' ');
+          normalized = normalized.replace(/\s+in\s+the\s+/g, ' in ');
+          normalized = normalized.replace(/\s+of\s+/g, ' ');
+          
+          // Normalizuj "week" vs "Week" (už je lowercase ale pre istotu)
+          // Odstráň nadbytočné "the"
+          normalized = normalized.replace(/\s+the\s+/g, ' ');
+          
+          // Normalizuj poradie slov pre všedné dni
+          // "wednesday, 31st week in ordinary time" -> "wednesday 31 week ordinary time"
+          // "wednesday of the 31st week in ordinary time" -> "wednesday 31 week ordinary time"
+          normalized = normalized.replace(/,\s*/g, ' '); // odstráň čiarky
+          normalized = normalized.replace(/\s+/g, ' ').trim(); // normalizuj medzery
+          
+          return normalized;
+        };
+
         const dayTitleNormalized = normalizeText(day.celebration_title);
+        const dayTitleWeekdayNorm = normalizeWeekdayText(day.celebration_title);
 
         // Hľadaj zhodu v lectio_sources
         const match = lectioSources?.find(source => {
           const sourceHlavaNormalized = normalizeText(source.hlava);
+          const sourceHlavaWeekdayNorm = normalizeWeekdayText(source.hlava);
 
           // PRAVIDLO 1: Nedele - musia mať špecifický cyklus (A/B/C)
           if (isSunday) {
@@ -990,6 +1090,37 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
             return true;
           }
 
+          // PRAVIDLO 3b: Presná zhoda pre všedné dni (s normalizáciou "of the", "in the")
+          if (dayTitleWeekdayNorm === sourceHlavaWeekdayNorm) {
+            return true;
+          }
+
+          // PRAVIDLO 3c: Špeciálna kontrola pre Advent/Lent/Easter všedné dni
+          // "tuesday 2nd week lent" vs "tuesday after 2nd sunday lent"
+          const isSpecialSeason = /advent|lent|easter/i.test(dayTitleWeekdayNorm) || 
+                                  /advent|lent|easter/i.test(sourceHlavaWeekdayNorm);
+          if (isSpecialSeason) {
+            // Oba musia obsahovať rovnaké obdobie
+            const seasons = ['advent', 'lent', 'easter'];
+            const daySeason = seasons.find(s => dayTitleWeekdayNorm.includes(s));
+            const sourceSeason = seasons.find(s => sourceHlavaWeekdayNorm.includes(s));
+            
+            if (daySeason && sourceSeason && daySeason === sourceSeason) {
+              // Kontroluj deň
+              const weekdayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+              const dayWeekday = weekdayNames.find(wd => dayTitleWeekdayNorm.includes(wd));
+              const sourceWeekday = weekdayNames.find(wd => sourceHlavaWeekdayNorm.includes(wd));
+              
+              const dayWeekNum = dayTitleWeekdayNorm.match(/(\d+)(st|nd|rd|th)?/)?.[1];
+              const sourceWeekNum = sourceHlavaWeekdayNorm.match(/(\d+)(st|nd|rd|th)?/)?.[1];
+              
+              // Ak sa zhoduje deň, číslo týždňa a obdobie, je to match
+              if (dayWeekday === sourceWeekday && dayWeekNum === sourceWeekNum) {
+                return true;
+              }
+            }
+          }
+
           // PRAVIDLO 4: Extrahuj čísla z oboch textov a porovnaj
           const extractNumbers = (text: string) => {
             const matches = text.match(/\d+/g);
@@ -999,41 +1130,165 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
           const dayNumbers = extractNumbers(dayTitleNormalized);
           const sourceNumbers = extractNumbers(sourceHlavaNormalized);
 
-          // Ak oba obsahujú čísla, musia sa zhodovať
+          // Ak oba obsahujú čísla, musia sa zhodovať PRESNE
           if (dayNumbers.length > 0 && sourceNumbers.length > 0) {
-            const numbersMatch = dayNumbers.every((num, idx) => num === sourceNumbers[idx]);
+            const numbersMatch = dayNumbers.length === sourceNumbers.length && 
+                                  dayNumbers.every((num, idx) => num === sourceNumbers[idx]);
             if (!numbersMatch) return false;
           }
 
-          // PRAVIDLO 5: Textová podobnosť (bez čísel)
-          const removeNumbers = (text: string) => text.replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
-          const dayTextOnly = removeNumbers(dayTitleNormalized);
-          const sourceTextOnly = removeNumbers(sourceHlavaNormalized);
+          // PRAVIDLO 5: Kontrola dní v týždni - nesmú sa líšiť
+          const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+                           'pondelok', 'utorok', 'streda', 'stvrtok', 'piatok', 'sobota', 'nedela'];
+          
+          const dayWeekday = weekdays.find(wd => dayTitleNormalized.includes(wd));
+          const sourceWeekday = weekdays.find(wd => sourceHlavaNormalized.includes(wd));
+          
+          // Ak oba obsahujú deň v týždni, musia sa zhodovať
+          if (dayWeekday && sourceWeekday && dayWeekday !== sourceWeekday) {
+            return false;
+          }
 
-          // Čiastočná zhoda v texte (po odstránení čísel)
+          // PRAVIDLO 6: Textová podobnosť (s prísnejšími podmienkami)
+          const removeNumbers = (text: string) => text.replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
+          const dayTextOnly = removeNumbers(dayTitleWeekdayNorm);
+          const sourceTextOnly = removeNumbers(sourceHlavaWeekdayNorm);
+
+          // Musí byť aspoň 70% podobnosť
           if (dayTextOnly.length > 5 && sourceTextOnly.length > 5) {
-            return dayTextOnly.includes(sourceTextOnly) || sourceTextOnly.includes(dayTextOnly);
+            const shorter = dayTextOnly.length < sourceTextOnly.length ? dayTextOnly : sourceTextOnly;
+            const longer = dayTextOnly.length >= sourceTextOnly.length ? dayTextOnly : sourceTextOnly;
+            
+            // Ak kratší text je aspoň 70% dĺžky dlhšieho A je obsiahnutý v ňom
+            const similarityRatio = shorter.length / longer.length;
+            if (similarityRatio >= 0.7 && longer.includes(shorter)) {
+              return true;
+            }
           }
 
           return false;
         });
 
-        // Ak nenájdeme priamy match a je to spomienka/sviatok, hľadaj všedný deň
+        // Ak nenájdeme priamy match a je to spomienka, hľadaj všedný deň
         let finalMatch = match;
         
-        if (!match && !isSunday) {
-          // Toto je pravdepodobne spomienka/sviatok - hľadaj všedný deň
-          // Napríklad "sv. Terézia z Avily" → hľadaj "Streda 25. týždňa v Cezročnom období"
+        // Spúšťaj fallback len pre memoriály (rank_num 10-11)
+        // Feasts (12+) ostávajú prázdne ak sa nenájdu
+        // Bežné všedné dni (rank_num null alebo < 10) párujú priamo
+        const isMemorial = day.celebration_rank_num && day.celebration_rank_num >= 10 && day.celebration_rank_num < 12;
+        
+        if (!match && !isSunday && isMemorial) {
+          // Toto je memorial/spomienka - hľadaj všedný deň obdobia
+          // Napríklad "St. Teresa of Avila" → hľadaj "Wednesday of the 31st Week in Ordinary Time"
           
-          // Extrahuj deň v týždni z day.weekday (ANGLICKÉ názvy!)
           const weekdayMap: Record<string, string> = {
+            'monday': 'monday',
+            'tuesday': 'tuesday', 
+            'wednesday': 'wednesday',
+            'thursday': 'thursday',
+            'friday': 'friday',
+            'saturday': 'saturday',
+            'sunday': 'sunday'
+          };
+          
+          let weekdayName = '';
+          const weekdayLower = day.weekday.toLowerCase();
+          for (const enKey of Object.keys(weekdayMap)) {
+            if (weekdayLower.includes(enKey)) {
+              weekdayName = enKey;
+              break;
+            }
+          }
+          
+          const weekNumber = day.season_week;
+          
+          // Season keywords v angličtine
+          const seasonMap: Record<string, string[]> = {
+            'lent': ['lent'],
+            'easter': ['easter'],
+            'advent': ['advent'],
+            'ordinary': ['ordinary time', 'ordinary'],
+            'christmas': ['christmas']
+          };
+          
+          let seasonKeywords: string[] = [];
+          const seasonLower = normalizeText(day.season);
+          for (const [key, keywords] of Object.entries(seasonMap)) {
+            if (seasonLower.includes(key)) {
+              seasonKeywords = keywords;
+              break;
+            }
+          }
+          
+          if (weekdayName && weekNumber && seasonKeywords.length > 0) {
+            let searchPatterns: string[] = [];
+            
+            const isEaster = seasonKeywords.some(kw => kw.includes('easter'));
+            if (isEaster) {
+              searchPatterns = [
+                `${weekdayName} after ${weekNumber} sunday easter`,
+                `${weekdayName} after ${weekNumber}th sunday easter`,
+                `${weekdayName} after ${weekNumber}st sunday easter`,
+                `${weekdayName} after ${weekNumber}nd sunday easter`,
+                `${weekdayName} after ${weekNumber}rd sunday easter`
+              ];
+            } else {
+              searchPatterns = [
+                `${weekdayName} ${weekNumber} week`,
+                `${weekdayName} ${weekNumber}th week`,
+                `${weekdayName} ${weekNumber}st week`,
+                `${weekdayName} ${weekNumber}nd week`,
+                `${weekdayName} ${weekNumber}rd week`
+              ];
+            }
+            
+            finalMatch = lectioSources?.find(source => {
+              const isWeekday = source.rok === 'N' || source.rok === 'ABC' || !source.rok;
+              if (!isWeekday) return false;
+              
+              const sourceNormalized = normalizeWeekdayText(source.hlava);
+              
+              for (const pattern of searchPatterns) {
+                const patternNormalized = normalizeWeekdayText(pattern);
+                const matches = sourceNormalized.includes(patternNormalized);
+                
+                if (matches) {
+                  if (isEaster) {
+                    return true;
+                  }
+                  const hasSeasonKeyword = seasonKeywords.some(kw => sourceNormalized.includes(kw));
+                  if (hasSeasonKeyword) {
+                    return true;
+                  }
+                }
+              }
+              
+              return false;
+            });
+          }
+        }
+
+        // ===== SLOVENSKÝ FALLBACK =====
+        // Len pre slovenský jazyk - hľadaj všedný deň s podobným patternom
+        if (!finalMatch && !isSunday && localeCode === 'sk') {
+          
+          // Extrahuj deň v týždni z day.weekday (MÔŽE BYŤ česky alebo anglicky)
+          const weekdayMap: Record<string, string> = {
+            // Anglické názvy
             'monday': 'pondelok',
             'tuesday': 'utorok',
             'wednesday': 'streda',
             'thursday': 'štvrtok',
             'friday': 'piatok',
             'saturday': 'sobota',
-            'sunday': 'nedeľa'
+            'sunday': 'nedeľa',
+            // České názvy (CalAPI)
+            'pondělí': 'pondelok',
+            'úterý': 'utorok',
+            'středa': 'streda',
+            'čtvrtek': 'štvrtok',
+            'pátek': 'piatok'
+            // sobota a neděle sú rovnaké
           };
           
           let weekdayName = '';
@@ -1048,13 +1303,13 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
           // Extrahuj číslo týždňa z day.season_week
           const weekNumber = day.season_week;
           
-          // Normalizuj názov obdobia (season) - do SLOVENSKÉHO (vracia kľúčové slovo)
+          // Normalizuj názov obdobia (season) - mapuj z anglického API na slovenské kľúčové slová
           const seasonMap: Record<string, string[]> = {
-            'lent': ['postnom', 'postne', 'postnej'],
-            'easter': ['velkonocnom', 'velkonocne', 'velkonocnej'],
-            'advent': ['adventnom', 'adventne', 'adventnej'],
-            'ordinary': ['cezrocnom', 'cezrocne', 'medziobdob'],
-            'christmas': ['vianocnom', 'vianocne', 'vianocnej']
+            'lent': ['postnom', 'postne', 'postnej', 'postn'],
+            'easter': ['veľkonoc', 'velkonoc'],
+            'advent': ['advent'],
+            'ordinary': ['cezročnom', 'cezroc', 'medziobdob'],
+            'christmas': ['vianoč', 'vianocne', 'vianocn']
           };
           
           let seasonKeywords: string[] = [];
@@ -1152,8 +1407,9 @@ POZNÁMKA: Použite tlačidlo "Preložiť CZ → SK" na preklad do slovenčiny
           } else {
             console.log(`⚠️ Nepodarilo sa extrahovať: weekday="${weekdayName}", week=${weekNumber}, season keywords="${seasonKeywords}" z "${day.weekday}", "${day.season}"`);
           }
-        }
+        } // Koniec slovenského fallbacku
 
+        // Ak máme finalMatch (z priameho párovania ALEBO z fallbacku), aktualizuj
         if (finalMatch) {
           // Našli sme zhodu (priamu alebo fallback), aktualizuj
           const { error: updateError } = await supabase
@@ -1770,13 +2026,15 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           if (expandedYear === year.id) {
                             setExpandedYear(null);
                             setCalendarDays([]);
+                            setAvailableLectioSources([]);
                           } else {
                             setExpandedYear(year.id);
-                            fetchCalendarDays(year.id);
+                            await fetchCalendarDays(year.id);
+                            await loadLectioSources(year.locale_code);
                           }
                         }}
                         className="p-2 hover:bg-gray-200 rounded-lg transition"
@@ -1847,7 +2105,7 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
                               
                               {/* Tlačidlo na import z lectio_sources */}
                               <button
-                                onClick={() => handleImportLectioSources(year.id)}
+                                onClick={() => handleImportLectioSources(year.id, year.locale_code)}
                                 disabled={translating}
                                 className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Automaticky namapovať celebration_title na lectio_sources"
@@ -1855,6 +2113,19 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
                                 <Sparkles size={16} />
                                 <span>Importovať z Lectio Sources</span>
                               </button>
+                              
+                              {/* Tlačidlo na odpárovanie lectio hlavy */}
+                              {calendarDays.some(d => d.lectio_hlava) && (
+                                <button
+                                  onClick={() => handleUnpairLectioSources(year.id)}
+                                  disabled={translating}
+                                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Vymazať všetky napárované lectio hlavy"
+                                >
+                                  <X size={16} />
+                                  <span>Odpárovať</span>
+                                </button>
+                              )}
                             </div>
                           </div>
                           
@@ -2089,9 +2360,17 @@ ${debugLog.length > 50 ? `\n... a ďalších ${debugLog.length - 50} záznamov` 
               <div className="p-6 space-y-4">
                 {/* Hlavná oslava */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Názov oslavy *
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Názov oslavy *
+                    </label>
+                    <TranslateButton
+                      text={editForm.celebration_title || ''}
+                      fieldType="celebration_title"
+                      onTranslated={handleCelebrationTitleTranslation}
+                      disabled={false}
+                    />
+                  </div>
                   <input
                     type="text"
                     value={editForm.celebration_title || ''}
