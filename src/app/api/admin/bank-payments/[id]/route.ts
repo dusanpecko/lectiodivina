@@ -14,10 +14,10 @@ const supabase = createClient(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     // Delete the payment
     const { error } = await supabase
