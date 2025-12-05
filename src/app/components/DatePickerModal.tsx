@@ -244,11 +244,10 @@ export default function DatePickerModal({
                         ? 'text-gray-800 hover:bg-gray-100'
                         : 'text-gray-400 hover:bg-gray-50'
                   }
-                  ${dayInfo.isToday && !dayInfo.isSelected ? 'ring-2 ring-offset-1' : ''}
+                  ${dayInfo.isToday && !dayInfo.isSelected ? 'ring-2 ring-offset-1 ring-[#40467b]' : ''}
                 `}
                 style={{
-                  backgroundColor: dayInfo.isSelected ? '#40467b' : undefined,
-                  ringColor: dayInfo.isToday ? '#40467b' : undefined
+                  backgroundColor: dayInfo.isSelected ? '#40467b' : undefined
                 }}
               >
                 {dayInfo.day}
