@@ -135,9 +135,11 @@ export async function POST(request: NextRequest) {
     for (const entry of entries) {
       console.log('Processing entry:', JSON.stringify(entry, null, 2));
       
-      // Skip debit transactions (outgoing payments)
-      if (entry.CdtDbtInd !== 'CRDT') {
-        console.log('Skipping non-credit entry:', entry.CdtDbtInd);
+      // Get transaction type (CRDT = incoming, DBIT = outgoing)
+      const transactionDirection = entry.CdtDbtInd; // 'CRDT' or 'DBIT'
+      
+      if (!transactionDirection || (transactionDirection !== 'CRDT' && transactionDirection !== 'DBIT')) {
+        console.log('Skipping entry with unknown direction:', transactionDirection);
         continue;
       }
 
@@ -158,8 +160,15 @@ export async function POST(request: NextRequest) {
 
       // Extract payer information
       const relatedParties = txDetails.RltdPties;
-      const payerName = relatedParties?.Dbtr?.Nm || null;
-      const payerAccount = relatedParties?.DbtrAcct?.Id?.IBAN || null;
+      
+      // For CRDT (incoming): Dbtr = payer, for DBIT (outgoing): Cdtr = recipient
+      const counterpartyName = transactionDirection === 'CRDT' 
+        ? (relatedParties?.Dbtr?.Nm || null)
+        : (relatedParties?.Cdtr?.Nm || null);
+      
+      const counterpartyAccount = transactionDirection === 'CRDT'
+        ? (relatedParties?.DbtrAcct?.Id?.IBAN || null)
+        : (relatedParties?.CdtrAcct?.Id?.IBAN || null);
 
       // Extract references (VS, SS, KS)
       const endToEndId = txDetails.Refs?.EndToEndId || '';
@@ -180,7 +189,7 @@ export async function POST(request: NextRequest) {
       // Fallback to generated hash if no bank reference exists
       const transactionHash = entryRef 
         ? `bank-${entryRef}` 
-        : `${transactionDate}-${amount}-${payerAccount || ''}-${variableSymbol || ''}`;
+        : `${transactionDate}-${amount}-${counterpartyAccount || ''}-${variableSymbol || ''}`;
 
       // Create payment record matching the database schema
       const payment: BankPayment = {
@@ -188,9 +197,9 @@ export async function POST(request: NextRequest) {
         amount: amount,
         currency: currency,
         payer_reference: variableSymbol,
-        transaction_type: 'Prijatá platba',
-        counterparty_account: payerAccount,
-        counterparty_name: payerName,
+        transaction_type: transactionDirection === 'CRDT' ? 'Prijatá platba' : 'Odoslaná platba',
+        counterparty_account: counterpartyAccount,
+        counterparty_name: counterpartyName,
         message_for_recipient: paymentNote,
         additional_info: endToEndId,
         transaction_hash: transactionHash
@@ -201,7 +210,7 @@ export async function POST(request: NextRequest) {
 
     if (payments.length === 0) {
       return NextResponse.json({ 
-        error: 'No valid credit transactions found in XML',
+        error: 'No valid transactions found in XML',
         imported: 0
       }, { status: 400 });
     }

@@ -29,6 +29,7 @@ import {
   Volume2,
   VolumeX
 } from 'lucide-react';
+import DatePickerModal from '../components/DatePickerModal';
 import ErrorReportModal, { ErrorReportData } from '../components/ErrorReportModal';
 
 // Interface pre liturgical_calendar
@@ -132,6 +133,7 @@ export default function LectioPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorReportSuccess, setErrorReportSuccess] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [audioMode, setAudioMode] = useState<'none' | 'short' | 'long'>('short');
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
 
@@ -144,6 +146,7 @@ export default function LectioPage() {
   };
 
   // Helper funkcie pre kalendárne obmedzenia
+  // TODO: Po nahratí všetkých dát rozšíriť na 3 mesiace dozadu a 1 mesiac dopredu
   const getCalendarLimits = () => {
     // Pre adminov žiadne obmedzenia
     if (isAdmin) {
@@ -155,13 +158,13 @@ export default function LectioPage() {
     
     const today = new Date();
     
-    // 3 mesiace dozadu
+    // 15 dní dozadu (dočasne, kým nie sú všetky dáta)
     const minDate = new Date(today);
-    minDate.setMonth(minDate.getMonth() - 3);
+    minDate.setDate(minDate.getDate() - 15);
     
-    // 1 mesiac dopredu
+    // 7 dní dopredu (dočasne, kým nie sú všetky dáta)
     const maxDate = new Date(today);
-    maxDate.setMonth(maxDate.getMonth() + 1);
+    maxDate.setDate(maxDate.getDate() + 7);
     
     return {
       min: formatDateToLocalString(minDate),
@@ -1000,53 +1003,15 @@ export default function LectioPage() {
                                 {formatDateShort(selectedDate.toISOString())}
                               </div>
                               
-                              <div className="relative">
-                                <input
-                                  type="date"
-                                  value={formatDateToLocalString(selectedDate)}
-                                  {...(!isAdmin && getCalendarLimits().min ? { min: getCalendarLimits().min } : {})}
-                                  {...(!isAdmin && getCalendarLimits().max ? { max: getCalendarLimits().max } : {})}
-                                  onChange={(e) => {
-                                    // Kontrola či sa hodnota skutočne zmenila (nie len navigácia medzi mesiacmi)
-                                    const newValue = e.target.value;
-                                    const currentValue = formatDateToLocalString(selectedDate);
-                                    
-                                    if (newValue && newValue !== currentValue) {
-                                      const [year, month, day] = newValue.split('-').map(Number);
-                                      const newDate = new Date(year, month - 1, day);
-                                      setSelectedDate(newDate);
-                                    }
-                                  }}
-                                  onBlur={(e) => {
-                                    // Fallback: ak používateľ zavrie kalendár bez výberu, necháme pôvodný dátum
-                                    if (e.target.value && e.target.value !== formatDateToLocalString(selectedDate)) {
-                                      const [year, month, day] = e.target.value.split('-').map(Number);
-                                      const newDate = new Date(year, month - 1, day);
-                                      setSelectedDate(newDate);
-                                    }
-                                  }}
-                                  style={{ position: 'absolute', width: 0, height: 0, opacity: 0, zIndex: -1 }}
-                                  id="datePickerInput"
-                                />
-                                <button
+                              <button
                                   type="button"
                                   className="p-2 rounded-lg transition-all hover:opacity-80 cursor-pointer flex items-center justify-center"
                                   style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
                                   title={t.navigation.select_date}
-                                  onClick={() => {
-                                    const input = document.getElementById('datePickerInput') as HTMLInputElement;
-                                    if (input) {
-                                      if (input.showPicker) {
-                                        input.showPicker();
-                                      } else {
-                                        input.click();
-                                      }
-                                    }
-                                  }}
+                                  onClick={() => setShowDatePicker(true)}
                                 >
                                   <Calendar size={16} />
                                 </button>
-                              </div>
                             </div>
 
                             <button
@@ -1605,53 +1570,15 @@ export default function LectioPage() {
                           {formatDateShort(selectedDate.toISOString())}
                         </div>
                         
-                        <div className="relative">
-                          <input
-                            type="date"
-                            value={formatDateToLocalString(selectedDate)}
-                            {...(!isAdmin && getCalendarLimits().min ? { min: getCalendarLimits().min } : {})}
-                            {...(!isAdmin && getCalendarLimits().max ? { max: getCalendarLimits().max } : {})}
-                            onChange={(e) => {
-                              // Kontrola či sa hodnota skutočne zmenila (nie len navigácia medzi mesiacmi)
-                              const newValue = e.target.value;
-                              const currentValue = formatDateToLocalString(selectedDate);
-                              
-                              if (newValue && newValue !== currentValue) {
-                                const [year, month, day] = newValue.split('-').map(Number);
-                                const newDate = new Date(year, month - 1, day);
-                                setSelectedDate(newDate);
-                              }
-                            }}
-                            onBlur={(e) => {
-                              // Fallback: ak používateľ zavrie kalendár bez výberu, necháme pôvodný dátum
-                              if (e.target.value && e.target.value !== formatDateToLocalString(selectedDate)) {
-                                const [year, month, day] = e.target.value.split('-').map(Number);
-                                const newDate = new Date(year, month - 1, day);
-                                setSelectedDate(newDate);
-                              }
-                            }}
-                            style={{ position: 'absolute', width: 0, height: 0, opacity: 0, zIndex: -1 }}
-                            id="datePickerInputError"
-                          />
-                          <button
+                        <button
                             type="button"
                             className="p-2 rounded-lg transition-all hover:opacity-80 cursor-pointer flex items-center justify-center"
                             style={{ backgroundColor: 'rgba(64, 70, 123, 0.1)', color: '#40467b' }}
                             title={t.navigation.select_date}
-                            onClick={() => {
-                              const input = document.getElementById('datePickerInputError') as HTMLInputElement;
-                              if (input) {
-                                if (input.showPicker) {
-                                  input.showPicker();
-                                } else {
-                                  input.click();
-                                }
-                              }
-                            }}
+                            onClick={() => setShowDatePicker(true)}
                           >
                             <Calendar size={16} />
                           </button>
-                        </div>
                       </div>
 
                       <button
@@ -1771,6 +1698,17 @@ export default function LectioPage() {
           />
         );
       })()}
+
+      {/* Date Picker Modal */}
+      <DatePickerModal
+        isOpen={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        selectedDate={selectedDate}
+        onDateSelect={(date) => setSelectedDate(date)}
+        minDate={!isAdmin && getCalendarLimits().min ? new Date(getCalendarLimits().min!) : undefined}
+        maxDate={!isAdmin && getCalendarLimits().max ? new Date(getCalendarLimits().max!) : undefined}
+        locale={lang}
+      />
     </div>
   );
 }

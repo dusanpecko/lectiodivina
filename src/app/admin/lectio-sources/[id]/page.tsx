@@ -2,6 +2,7 @@
 
 import { ActionButton, EditPageHeader, FormSection } from "@/app/admin/components";
 import BibleImportModal from "@/app/admin/components/BibleImportModal";
+import LectioImportModal from "@/app/admin/components/LectioImportModal";
 import { LectioTemplate } from "@/app/admin/components/LectioTemplates";
 import TemplateSelector from "@/app/admin/components/TemplateSelector";
 import AITextField from "@/app/components/AITextField";
@@ -90,6 +91,7 @@ export default function LectioSourceEditPage() {
   const [currentBibleField, setCurrentBibleField] = useState<number>(1);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [showLectioImport, setShowLectioImport] = useState(false);
   
   // Voice and model settings
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>("scOwDtmlUjD3prqpp97I"); // Sam ako predvolený
@@ -217,6 +219,15 @@ export default function LectioSourceEditPage() {
     
     setShowTemplateSelector(false);
     showTempMessage(`✨ Šablóna "${template.name}" bola aplikovaná`, 'success', 3000);
+  }, [updateFormField]);
+
+  // Lectio import handler - importuje texty z iného jazyka
+  const handleLectioImport = useCallback((data: Record<string, string>) => {
+    Object.entries(data).forEach(([fieldName, value]) => {
+      updateFormField(fieldName, value);
+    });
+    const count = Object.keys(data).length;
+    showTempMessage(`📥 Importovaných ${count} polí z iného jazyka`, 'success', 3000);
   }, [updateFormField]);
 
   // Load data
@@ -518,6 +529,37 @@ export default function LectioSourceEditPage() {
                 >
                   <span>✨</span>
                   Vybrať šablónu
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Import textov z iného jazyka */}
+          {formData.suradnice_pismo && (
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-6">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">📥</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Import textov z iného jazyka</h3>
+                    <p className="text-sm text-gray-600">
+                      Importujte Lectio, Meditatio, Oratio, Contemplatio, Actio a Reference z existujúceho záznamu
+                    </p>
+                    <p className="text-xs text-emerald-600 mt-1">
+                      Vyhľadá zhody podľa: <span className="font-mono font-semibold">{formData.suradnice_pismo}</span>
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowLectioImport(true)}
+                  disabled={saving}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition shadow-md hover:shadow-lg disabled:opacity-50"
+                >
+                  <Globe size={20} />
+                  Importovať z iného jazyka
                 </button>
               </div>
             </div>
@@ -1235,6 +1277,15 @@ export default function LectioSourceEditPage() {
           isOpen={showTemplateSelector}
           onClose={() => setShowTemplateSelector(false)}
           onSelect={handleTemplateSelect}
+        />
+
+        {/* Lectio Import Modal */}
+        <LectioImportModal
+          isOpen={showLectioImport}
+          onClose={() => setShowLectioImport(false)}
+          currentLang={formData.lang || ""}
+          currentSuradnicePismo={formData.suradnice_pismo || ""}
+          onImport={handleLectioImport}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Banknote, Building2, Calendar, FileText, Link as LinkIcon, Search, TrendingUp, Upload, X } from 'lucide-react';
+import { Banknote, Building2, FileText, Link as LinkIcon, Search, TrendingUp, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -39,6 +39,16 @@ interface Stats {
   unmatched: number;
   thisMonth: number;
   thisMonthAmount: number;
+  // Income stats
+  incomingTotal: number;
+  incomingAmount: number;
+  incomingThisMonth: number;
+  incomingThisMonthAmount: number;
+  // Expense stats
+  outgoingTotal: number;
+  outgoingAmount: number;
+  outgoingThisMonth: number;
+  outgoingThisMonthAmount: number;
 }
 
 export default function BankaAdminPage() {
@@ -49,6 +59,7 @@ export default function BankaAdminPage() {
   const [matching, setMatching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMatched, setFilterMatched] = useState<'all' | 'matched' | 'unmatched'>('all');
+  const [transactionTypeFilter, setTransactionTypeFilter] = useState<'all' | 'incoming' | 'outgoing'>('incoming');
   const [stats, setStats] = useState<Stats>({
     total: 0,
     totalAmount: 0,
@@ -56,6 +67,14 @@ export default function BankaAdminPage() {
     unmatched: 0,
     thisMonth: 0,
     thisMonthAmount: 0,
+    incomingTotal: 0,
+    incomingAmount: 0,
+    incomingThisMonth: 0,
+    incomingThisMonthAmount: 0,
+    outgoingTotal: 0,
+    outgoingAmount: 0,
+    outgoingThisMonth: 0,
+    outgoingThisMonthAmount: 0,
   });
 
   // Manual matching modal state
@@ -106,7 +125,6 @@ export default function BankaAdminPage() {
       setTotalPages(Math.ceil(allPayments.length / pageSize));
 
       // Calculate stats
-      const totalAmount = allPayments.reduce((sum: number, p: BankPayment) => sum + p.amount, 0);
       const matched = allPayments.filter((p: BankPayment) => p.matched);
       const unmatched = allPayments.filter((p: BankPayment) => !p.matched);
 
@@ -115,10 +133,26 @@ export default function BankaAdminPage() {
       const thisMonthPayments = allPayments.filter(
         (p: BankPayment) => new Date(p.transaction_date) >= firstDayOfMonth
       );
-      const thisMonthAmount = thisMonthPayments.reduce(
-        (sum: number, p: BankPayment) => sum + p.amount,
-        0
+
+      // Separate incoming and outgoing transactions
+      const incomingPayments = allPayments.filter((p: BankPayment) => p.transaction_type === 'Prijatá platba');
+      const outgoingPayments = allPayments.filter((p: BankPayment) => p.transaction_type === 'Odoslaná platba');
+
+      const incomingThisMonth = incomingPayments.filter(
+        (p: BankPayment) => new Date(p.transaction_date) >= firstDayOfMonth
       );
+      const outgoingThisMonth = outgoingPayments.filter(
+        (p: BankPayment) => new Date(p.transaction_date) >= firstDayOfMonth
+      );
+
+      // Calculate total amount (incoming - outgoing)
+      const incomingAmount = incomingPayments.reduce((sum: number, p: BankPayment) => sum + p.amount, 0);
+      const outgoingAmount = outgoingPayments.reduce((sum: number, p: BankPayment) => sum + p.amount, 0);
+      const totalAmount = incomingAmount - outgoingAmount;
+
+      const incomingThisMonthAmount = incomingThisMonth.reduce((sum: number, p: BankPayment) => sum + p.amount, 0);
+      const outgoingThisMonthAmount = outgoingThisMonth.reduce((sum: number, p: BankPayment) => sum + p.amount, 0);
+      const thisMonthAmount = incomingThisMonthAmount - outgoingThisMonthAmount;
 
       setStats({
         total: allPayments.length,
@@ -127,6 +161,14 @@ export default function BankaAdminPage() {
         unmatched: unmatched.length,
         thisMonth: thisMonthPayments.length,
         thisMonthAmount,
+        incomingTotal: incomingPayments.length,
+        incomingAmount,
+        incomingThisMonth: incomingThisMonth.length,
+        incomingThisMonthAmount,
+        outgoingTotal: outgoingPayments.length,
+        outgoingAmount,
+        outgoingThisMonth: outgoingThisMonth.length,
+        outgoingThisMonthAmount,
       });
     } catch (error) {
       console.error('Error fetching bank payments:', error);
@@ -321,6 +363,18 @@ export default function BankaAdminPage() {
       );
     }
 
+    // Filter by transaction type
+    if (transactionTypeFilter !== 'all') {
+      filtered = filtered.filter((p) => {
+        if (transactionTypeFilter === 'incoming') {
+          return p.transaction_type === 'Prijatá platba';
+        } else if (transactionTypeFilter === 'outgoing') {
+          return p.transaction_type === 'Odoslaná platba';
+        }
+        return true;
+      });
+    }
+
     if (searchTerm) {
       filtered = filtered.filter(
         (payment) =>
@@ -335,7 +389,7 @@ export default function BankaAdminPage() {
     setFilteredPayments(filtered);
     setTotalPages(Math.ceil(filtered.length / pageSize));
     setCurrentPage(1); // Reset to first page when filters change
-  }, [searchTerm, filterMatched, payments, pageSize]);
+  }, [searchTerm, filterMatched, transactionTypeFilter, payments, pageSize]);
 
   // Search users with debounce
   useEffect(() => {
@@ -454,55 +508,101 @@ export default function BankaAdminPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Transactions */}
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Celkový počet</p>
+            <div className="w-full">
+              <p className="text-sm text-gray-600 mb-1">Celkový počet platieb</p>
               <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <p className="text-xs text-gray-500">Tento mesiac: {stats.thisMonth}</p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
               <Building2 className="text-blue-600" size={24} />
             </div>
           </div>
         </div>
 
+        {/* Total Amount (Balance) */}
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Celková suma</p>
-              <p className="text-3xl font-bold text-blue-600">€{stats.totalAmount.toFixed(2)}</p>
+            <div className="w-full">
+              <p className="text-sm text-gray-600 mb-1">Celková suma (bilancia)</p>
+              <p className={`text-3xl font-bold ${stats.totalAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                €{stats.totalAmount.toFixed(2)}
+              </p>
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <p className={`text-xs ${stats.thisMonthAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  Tento mesiac: €{stats.thisMonthAmount.toFixed(2)}
+                </p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Banknote className="text-blue-600" size={24} />
+            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Banknote className="text-purple-600" size={24} />
             </div>
           </div>
         </div>
 
+        {/* Incoming Payments */}
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Spárované / Nespárované</p>
-              <p className="text-3xl font-bold text-green-600">
-                {stats.matched} / <span className="text-orange-600">{stats.unmatched}</span>
-              </p>
+            <div className="w-full">
+              <p className="text-sm text-gray-600 mb-1">Príjmy</p>
+              <p className="text-3xl font-bold text-green-600">+€{stats.incomingAmount.toFixed(2)}</p>
+              <p className="text-xs text-gray-500 mt-1">{stats.incomingTotal} platieb</p>
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <p className="text-xs text-green-600">Tento mesiac: +€{stats.incomingThisMonthAmount.toFixed(2)}</p>
+                <p className="text-[10px] text-gray-500">{stats.incomingThisMonth} platieb</p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
               <TrendingUp className="text-green-600" size={24} />
             </div>
           </div>
         </div>
 
+        {/* Outgoing Payments */}
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Tento mesiac</p>
-              <p className="text-3xl font-bold text-purple-600">
-                €{stats.thisMonthAmount.toFixed(2)}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">{stats.thisMonth} platieb</p>
+            <div className="w-full">
+              <p className="text-sm text-gray-600 mb-1">Výdaje</p>
+              <p className="text-3xl font-bold text-red-600">-€{stats.outgoingAmount.toFixed(2)}</p>
+              <p className="text-xs text-gray-500 mt-1">{stats.outgoingTotal} platieb</p>
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <p className="text-xs text-red-600">Tento mesiac: -€{stats.outgoingThisMonthAmount.toFixed(2)}</p>
+                <p className="text-[10px] text-gray-500">{stats.outgoingThisMonth} platieb</p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-              <Calendar className="text-purple-600" size={24} />
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Banknote className="text-red-600" size={24} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Matching Stats - Second Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="w-full">
+              <p className="text-sm text-gray-600 mb-1">Spárované platby</p>
+              <p className="text-3xl font-bold text-green-600">{stats.matched}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <LinkIcon className="text-green-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="w-full">
+              <p className="text-sm text-gray-600 mb-1">Nespárované platby</p>
+              <p className="text-3xl font-bold text-orange-600">{stats.unmatched}</p>
+            </div>
+            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <LinkIcon className="text-orange-600" size={24} />
             </div>
           </div>
         </div>
@@ -556,16 +656,50 @@ export default function BankaAdminPage() {
             Nespárované ({stats.unmatched})
           </button>
         </div>
+
+        {/* Transaction Type Filter */}
+        <div className="flex gap-2 pt-2 border-t border-gray-200">
+          <button
+            onClick={() => setTransactionTypeFilter('incoming')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              transactionTypeFilter === 'incoming'
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Príjmy
+          </button>
+          <button
+            onClick={() => setTransactionTypeFilter('outgoing')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              transactionTypeFilter === 'outgoing'
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Výdaje
+          </button>
+          <button
+            onClick={() => setTransactionTypeFilter('all')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              transactionTypeFilter === 'all'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Všetky transakcie
+          </button>
+        </div>
       </div>
 
       {/* Payments List */}
       <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 {bulkDeleteMode && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="w-12 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <input
                       type="checkbox"
                       checked={selectedPayments.size === filteredPayments.length && filteredPayments.length > 0}
@@ -574,25 +708,25 @@ export default function BankaAdminPage() {
                     />
                   </th>
                 )}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-28 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Dátum
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-40 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Platiteľ
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-28 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Suma
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Správa
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-40 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Používateľ
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-32 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Typ / Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-32 px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Akcie
                 </th>
               </tr>
@@ -600,7 +734,7 @@ export default function BankaAdminPage() {
             <tbody className="divide-y divide-gray-200">
               {filteredPayments.length === 0 ? (
                 <tr>
-                  <td colSpan={bulkDeleteMode ? 8 : 7} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={bulkDeleteMode ? 8 : 7} className="px-2 py-12 text-center text-gray-500">
                     Žiadne bankové platby
                   </td>
                 </tr>
@@ -610,7 +744,7 @@ export default function BankaAdminPage() {
                   .map((payment) => (
                   <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
                     {bulkDeleteMode && (
-                      <td className="px-6 py-4">
+                      <td className="px-2 py-3">
                         <input
                           type="checkbox"
                           checked={selectedPayments.has(payment.id)}
@@ -619,75 +753,95 @@ export default function BankaAdminPage() {
                         />
                       </td>
                     )}
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
+                    <td className="px-2 py-3">
+                      <div className="text-xs font-medium text-gray-900 truncate">
                         {new Date(payment.transaction_date).toLocaleDateString('sk-SK')}
                       </div>
-                      <div className="text-xs text-gray-500">{payment.payer_reference}</div>
+                      <div className="text-[10px] text-gray-500 truncate">{payment.payer_reference}</div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">
+                    <td className="px-2 py-3">
+                      <div className="text-xs font-medium text-gray-900 truncate" title={payment.counterparty_name || 'Neznámy'}>
                         {payment.counterparty_name || 'Neznámy'}
                       </div>
-                      <div className="text-xs text-gray-500">{payment.counterparty_account}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-xl text-blue-600">
-                        €{payment.amount.toFixed(2)}
+                      <div className="text-[10px] text-gray-500 truncate" title={payment.counterparty_account}>
+                        {payment.counterparty_account}
                       </div>
-                      <div className="text-xs text-gray-500">{payment.currency}</div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-3">
+                      <div className={`font-bold text-base ${
+                        payment.transaction_type === 'Odoslaná platba' 
+                          ? 'text-red-600' 
+                          : 'text-green-600'
+                      }`}>
+                        {payment.transaction_type === 'Odoslaná platba' ? '-' : '+'}€{payment.amount.toFixed(2)}
+                      </div>
+                      <div className="text-[10px] text-gray-500">{payment.currency}</div>
+                    </td>
+                    <td className="px-2 py-3">
                       {payment.message_for_recipient || payment.additional_info ? (
-                        <div className="text-sm text-gray-700 max-w-md">
+                        <div className="text-xs text-gray-700 truncate" title={payment.message_for_recipient || payment.additional_info}>
                           {payment.message_for_recipient || payment.additional_info}
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">Bez správy</span>
+                        <span className="text-xs text-gray-400">Bez správy</span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-3">
                       {payment.matched && payment.user_id ? (
                         <div>
-                          <div className="font-medium text-gray-900">
+                          <div className="text-xs font-medium text-gray-900 truncate" title={payment.user_name || payment.user_email || 'Neznámy'}>
                             {payment.user_name || payment.user_email || 'Neznámy'}
                           </div>
                           {payment.user_name && payment.user_email && (
-                            <div className="text-xs text-gray-500">{payment.user_email}</div>
+                            <div className="text-[10px] text-gray-500 truncate" title={payment.user_email}>{payment.user_email}</div>
                           )}
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">Nespárované</span>
+                        <span className="text-xs text-gray-400">Nespárované</span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-3">
                       <div className="space-y-1">
+                        {/* Transaction direction badge */}
+                        <div>
+                          {payment.transaction_type === 'Odoslaná platba' ? (
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-red-100 text-red-800 whitespace-nowrap">
+                              Výdaj
+                            </span>
+                          ) : (
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-green-100 text-green-800 whitespace-nowrap">
+                              Príjem
+                            </span>
+                          )}
+                        </div>
+                        {/* Payment type badge */}
                         {payment.payment_type && (
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getPaymentTypeColor(payment.payment_type)}`}>
+                          <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded-full whitespace-nowrap ${getPaymentTypeColor(payment.payment_type)}`}>
                             {getPaymentTypeLabel(payment.payment_type)}
                           </span>
                         )}
+                        {/* Match status badge */}
                         <div>
                           {payment.matched ? (
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-blue-100 text-blue-800 whitespace-nowrap">
                               Spárované
                             </span>
                           ) : (
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-orange-100 text-orange-800 whitespace-nowrap">
                               Nespárované
                             </span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-2 py-3">
+                      <div className="flex items-center gap-1">
                         {!bulkDeleteMode && (
                           <>
                             {payment.matched ? (
                               <button
                                 onClick={() => handleUnmatch(payment.id)}
-                                className="px-3 py-1 text-xs font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                                className="px-2 py-1 text-[10px] font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors whitespace-nowrap"
                               >
                                 Odpárovať
                               </button>
@@ -697,18 +851,18 @@ export default function BankaAdminPage() {
                                   setSelectedPayment(payment);
                                   setShowMatchModal(true);
                                 }}
-                                className="px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
+                                className="px-2 py-1 text-[10px] font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors flex items-center gap-1 whitespace-nowrap"
                               >
-                                <LinkIcon size={14} />
+                                <LinkIcon size={12} />
                                 Spárovať
                               </button>
                             )}
                             <button
                               onClick={() => handleDelete(payment.id)}
-                              className="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                              className="px-1.5 py-1 text-[10px] font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors flex items-center"
                               title="Vymazať platbu"
                             >
-                              <X size={14} />
+                              <X size={12} />
                             </button>
                           </>
                         )}
